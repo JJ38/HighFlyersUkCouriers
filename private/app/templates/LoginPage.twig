@@ -1,0 +1,31 @@
+{% extends 'BoilerPlate.twig' %}
+    {% block content %}
+        <div class="login-page content">
+            <h1 class="heading">{{ heading_1 }}</h1>
+
+            <form action="loginpage" method="post">
+                <div class="form-elements">
+                    <div class="form-wrapper">
+                        <h2 id="login-heading">Login</h2>
+                        <div class="message-info form-input">
+                            <span>Enter your details below.</span>
+                        </div>
+                        <div class="form-input">
+                            <label for="username">Username:</label>
+                            <br>
+                            <input class="form-input-text" id="username" name="username" type="text" placeholder="Username" size="33" maxlength="32" tabindex="1" required> <! ╌ required makes it so the field cant be blank  ╌>
+                            <br><br>
+                        </div>
+                        <div class="form-input" id="password-input">
+                            <label for="password">Password:</label>
+                            <br>
+                            <input  id="password" name="password" type="text" placeholder="Password" size="30"  size="33" maxlength="32" tabindex="2" required>
+                        </div>
+                        <div class="form-input">
+                            <input class="form-input-button" type="submit" value="Login">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endblock %}

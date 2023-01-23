@@ -1,0 +1,62 @@
+{% extends 'boilerplate.twig' %}
+    {% block content %}
+      <div id="wrapper">
+        <header>
+          <nav id="menu">
+            <a class="navLinks" href="/HighFlyersUkCouriers/public/logout">Logout</a>
+            <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-orders">Manage Bookings</a>
+            <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-accounts">Manage Accounts</a>
+          </nav>
+        </header>
+        <div id="maincontent">
+
+          <div class="orderviewcontainer">
+            <div class="searchbar bubble">
+              <div class="searchoption">Filter</div>
+              <select class="searchoption" name="filter" id="filter">
+                <option disabled selected value> -- select an option -- </option>
+                <option value="Collection">Collection</option>
+                <option value="Delivery">Delivery</option>
+              </select>
+              <input class="searchoption" type="text" id="search" name="fname" placeholder="search value">
+              <button class="searchoption" type="button">Search</button>
+              <button class="searchoption" type="button">Add</button>
+            </div>
+            <div class="bubble">
+              <div class="orderdata">
+                <table>
+
+                    <tr class="headerrow">
+                      <th>ID</th>
+                      <th>Animal Type</th>
+                      <th>Quantity</th>
+                      <th>Email</th>
+                      <th>Phone Number</th>
+                      <th>Collection Address 1</th>
+                      <th>Collection Address 2</th>
+                      <th>Collection Address 3</th>
+                      <th>Collection Postcode</th>
+                      <th>Delivery Name</th>
+                      <th>Delivery Address 1</th>
+                      <th>Delivery Address 2</th>
+                      <th>Delivery Address 3</th>
+                      <th>Delivery Postcode</th>
+                      <th>Delivery Phone Number</th>
+                      <th>Payment</th>
+                      <th>Message</th>
+                      <th>Time</th>
+                      <th></th>
+                    </tr>
+
+                  <div class="tabledata">
+                    {{ orderdata|raw }}
+                  </div>
+
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    {% endblock %}

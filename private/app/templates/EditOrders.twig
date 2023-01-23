@@ -1,0 +1,23 @@
+{% extends 'boilerplate.twig' %}
+    {% block content %}
+      <div id="wrapper">
+        <header>
+          <nav id="menu">
+            <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-orders">Back</a>
+          </nav>
+        </header>
+        <div id="maincontent">
+
+
+          <form action="/HighFlyersUkCouriers/public/edit-order"  method="post">
+            <div class="form">
+              <table>
+                {{orderdata|raw}}
+              </table>
+            </div>
+            <input type="submit" value="Save">
+          </form>
+
+        </div>
+      </div>
+    {% endblock %}
