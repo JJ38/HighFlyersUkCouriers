@@ -1,0 +1,191 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&family=Raleway:wght@500&display=swap');
+
+div.underlineHome{
+  background-color: #2881FF;
+  height: 3px;
+  margin-top: 1em;
+  margin-left: 1em;
+  margin-right: 1em;
+  border-radius: 20em;
+}
+
+body{
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+h1{
+  margin:0;
+}
+
+
+section.maincontent{
+  display: flex;
+  width: 100vw;
+  flex-direction: column;
+  flex-grow: 1;
+
+
+}
+
+div.imagewrapper{
+  position: relative;
+}
+
+
+div.imageoverlaywrapper{
+  display: flex;
+  flex-basis: 1;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #00000000;
+
+}
+
+div.arrow{
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 64px;
+  color: white;
+  text-shadow: 0px 0px 5px #000000;
+}
+
+div.arrow:hover{
+
+  text-shadow: 0px 0px 25px #000000;
+}
+
+div.leftarrowwrapper{
+  margin-left: 1em;
+}
+
+div.rightarrowwrapper{
+  margin-right: 1em;
+}
+
+div.imageoverlaycontentwrapper{
+  display: flex;
+  flex-grow: 1;
+  height:100%
+}
+
+div.imageoverlaycontent{
+
+  font-family: 'Roboto Slab';
+  font-style: normal;
+  font-weight: 800;
+  font-size: 2.5em;
+  color: #FFFFFF;
+  text-shadow: 0px 0px 13px #000000;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width:50%;
+  padding: 2em 0;
+  padding-left:3em;
+
+}
+
+div.button{
+  text-shadow: none;
+  background: #FFFFFF;
+  padding: 0.6em 1em;
+  border-radius: 1em;
+  font-size: 32px;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  box-shadow: 0px 0px 15px #000000;
+  width: fit-content;
+
+}
+
+a.button{
+  text-decoration: none;
+
+}
+
+div.button{
+
+}
+
+div.contactus{
+  margin-left: 0.3em;
+  margin-right: 1em;
+  background-color: black;
+  color: white;
+
+}
+
+div.booknow{
+  background-color: white;
+  color: black;
+}
+
+div.buttonwrapper{
+  display:flex;
+
+}
+
+div.homepageinfo{
+  padding: 4em 20em;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+h2{
+  margin: 0;
+  font-family: 'Roboto Slab';
+  font-style: normal;
+  font-weight: 800;
+  font-size: 36px;
+  margin-bottom: 0.3em;
+
+}
+
+h3{
+  margin: 0;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 32px;
+  margin-bottom: 1em;
+}
+
+h4{
+  margin: 0;
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 32px;
+  margin-bottom: 30px;
+
+}
+
+h4:last-child{
+  margin-bottom: 0;
+}
+
+hr{
+  margin-top: 0;
+  transform: translateX(-10%);
+  border: 0;
+  width: 120%;
+  background-color:#000000FF;
+  height: 1px;
+  margin-bottom: 30px;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
+
+}

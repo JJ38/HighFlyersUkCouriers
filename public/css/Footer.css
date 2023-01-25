@@ -1,0 +1,54 @@
+html,body{
+  margin:0;
+}
+
+footer{
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 500;
+  padding: 3em;
+  display: flex;
+  flex-direction: column;
+  background-color: #E0E0E0;
+  align-items: center;
+  gap: 30px;
+}
+
+div.footerlinkswrapper{
+  display: flex;
+  justify-content: center;
+}
+
+a.footerlinks{
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  padding: 0 1em;
+  color: black;
+}
+
+a{
+  text-decoration: none;
+}
+
+div.facebookicon{
+  display: flex;
+  justify-content: center;
+
+}
+
+i{
+  font-size: 40px;
+}
+
+div.copyright{
+  font-size: 20px;
+}
+
+a.login{
+  font-size: 20px;
+  text-decoration: none;
+  color: #393939;
+
+}

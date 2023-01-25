@@ -6,9 +6,11 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/', function (Request $request, Response $response) use ($app) : Response{
 
-    return $this->view->render($response,'Homepage.twig', array(
+    return $this->view->render($response,'NewHomepage.twig', array(
             'page_title' => APP_TITLE,
-            'css_file' => CSS_PATH . "avents.css",
+            'css_file' => CSS_PATH . "NewHomepage.css",
+            'css_nav_file' => CSS_PATH . "NavigationBar.css",
+            'css_footer_file' => CSS_PATH . "Footer.css",
             'asset_path' => ASSET_PATH,
             'js_path' => JS_PATH . "avents.js",
             'landing_page' => __FILE__,

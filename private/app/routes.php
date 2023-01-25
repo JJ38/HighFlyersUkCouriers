@@ -16,3 +16,5 @@ require "routes/WhereWeAre.php";
 require "routes/ManageOrders.php";
 require "routes/ManageAccounts.php";
 require "routes/EditOrder.php";
+require "routes/DeleteOrder.php";
+require "routes/AddOrder.php";

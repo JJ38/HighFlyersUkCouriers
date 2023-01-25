@@ -1,0 +1,168 @@
+{% extends 'boilerplate.twig' %}
+    {% block content %}
+    <div id="wrapper">
+      <header>
+        <nav id="menu">
+          <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-orders">Back</a>
+        </nav>
+      </header>
+      <div id="maincontent">
+        <section class="formSection">
+          <form class="contactUsForm" action="/HighFlyersUkCouriers/public/add-order" method="post">
+            <table>
+              <tr>
+                <td>
+                  <label for="animalType">Bird/Animal type: </label>
+                </td>
+                <td>
+                  <input id="animalType" name="animalType" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="quantity">Quantity: </label>
+                </td>
+                <td>
+                  <input id="quantity" name="quantity" type="number" min="1" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="collectionTelephone">Collection Telephone number: </label>
+                </td>
+                <td>
+                  <input id="collectionTelephone" name="collectionTelephone" type="text" minlength="11" maxlength="12" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="email">Email Address: </label>
+                </td>
+                <td>
+                  <input id="email" name="email" type="email" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="collectionAddress1">Collection Address 1: </label>
+                </td>
+                <td>
+                  <input id="collectionAddress1" name="collectionAddress1" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="collectionAddress2">Collection Address 2: </label>
+                </td>
+                <td>
+                  <input id="collectionAddress2" name="collectionAddress2" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="collectionAddress3">Collection Address 3: </label>
+                </td>
+                <td>
+                  <input id="collectionAddress3" name="collectionAddress3" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="collectionPostcode">Collection Postcode: </label>
+                </td>
+                <td>
+                  <input id="collectionPostcode" name="collectionPostcode" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="deliveryName">Delivery Name: </label>
+                </td>
+                <td>
+                  <input id="deliveryName" name="deliveryName" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="deliveryAddress1">Delivery Address Line 1: </label>
+                </td>
+                <td>
+                  <input id="deliveryAddress1" name="deliveryAddress1" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="deliveryAddress2">Delivery Address Line 2: </label>
+                </td>
+                <td>
+                  <input id="deliveryAddress2" name="deliveryAddress2" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="deliveryAddress3">Delivery Address Line 3: </label>
+                </td>
+                <td>
+                  <input id="deliveryAddress3" name="deliveryAddress3" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="deliveryPostcode">Delivery Postcode: </label>
+                </td>
+                <td>
+                  <input id="deliveryPostcode" name="deliveryPostcode" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="deliveryTelephone">Delivery Telephone Number: </label>
+                </td>
+                <td>
+                  <input id="deliveryTelephone" name="deliveryTelephone" type="text" minlength="11" maxlength="12" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="payment">Payment on Delivery or Collection?: </label>
+                </td>
+                <td>
+                  <select name="payment" id="payment" required>
+                    <option value=""> -- select an option -- </option>
+                    <option value="Collection">Collection</option>
+                    <option value="Delivery">Delivery</option>
+                  </select>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="message">Message: </label>
+                </td>
+                <td>
+                  <textarea id="message" name="message" rows="8" wrap="soft" required></textarea>
+                </td>
+              </tr>
+            </table>
+
+            <input class="submitButton" type="submit" value="submit" aria-label="Submit">
+          </form>
+        </section>
+      </div>
+    </div>
+
+    {% endblock %}

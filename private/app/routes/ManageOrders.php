@@ -15,22 +15,51 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
       // $response->getBody()->write('<pre>' . var_export($allGetVars,true) . '</pre>');
       // return $response;
 
+      $cleaned_field = null;
+      $cleaned_filter = null;
+
       if(!empty($allGetVars)){
+        if(!empty($allGetVars['updated'])){
+          $tainted_invalid_form = $allGetVars['updated'];
+          if($tainted_invalid_form){
+            $sanitizer = $app->getContainer()->get('sanitizer');
+            $cleaned_invalid_form = $sanitizer->sanitizeBoolean($tainted_invalid_form);
 
-        $tainted_invalid_form = $allGetVars['updated'];
-        if($tainted_invalid_form){
-          $sanitizer = $app->getContainer()->get('sanitizer');
-          $cleaned_invalid_form = $sanitizer->sanitizeBoolean($tainted_invalid_form);
+            if($cleaned_invalid_form != null){
 
-          if($cleaned_invalid_form != null){
+              if($cleaned_invalid_form === "true"){
+                echo "<script>alert('Order Updated');</script>";
 
-            if($cleaned_invalid_form === "true"){
-              echo "<script>alert('Order Updated');</script>";
-
-            }else{
-              echo "<script>alert('Order Not Updated - Error');</script>";
+              }else{
+                echo "<script>alert('Order Not Updated - Error');</script>";
+              }
             }
           }
+        }else if(!empty($allGetVars['addorder'])){
+          $tainted_add_order = $allGetVars['addorder'];
+          if($tainted_add_order){
+            $sanitizer = $app->getContainer()->get('sanitizer');
+            $cleaned_add_order = $sanitizer->sanitizeBoolean($tainted_add_order);
+
+            if($cleaned_add_order != null){
+
+              if($cleaned_add_order === "true"){
+                echo "<script>alert('Order Added successfully!');</script>";
+
+              }else{
+                echo "<script>alert('Order Not Added - Error');</script>";
+              }
+            }
+          }
+        }else if(!empty($allGetVars['field'])){
+          if(!empty($allGetVars['filter'])){
+            $tainted_field = $allGetVars['field'];
+            $tainted_filter = $allGetVars['filter'];
+
+            $cleaned_field = $tainted_field;
+            $cleaned_filter = $tainted_filter;
+          }
+
         }
 
       }
@@ -50,7 +79,13 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
 
       $manage_order_model = $container->get('manageOrderModel');
       $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
-      $manage_order_model->fetchALLOrderData();
+
+      if($cleaned_field == null || $cleaned_filter == null){
+        $manage_order_model->fetchALLOrderData();
+      }else{
+        $manage_order_model->fetchOrderDataByField($cleaned_field, $cleaned_filter);
+      }
+
       $manage_order_model->generateHTMLFromData();
       $HTML_order_data = $manage_order_model->getHTMLOrderData();
 

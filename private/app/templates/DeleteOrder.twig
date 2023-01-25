@@ -1,0 +1,25 @@
+{% extends 'boilerplate.twig' %}
+    {% block content %}
+      <div id="wrapper">
+        <header>
+          <nav id="menu">
+            <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-orders">Back</a>
+          </nav>
+        </header>
+        <div id="maincontent">
+          <div class="form">
+            <table>
+              {{orderdata|raw}}
+            </table>
+          </div>
+          <form action="/HighFlyersUkCouriers/public/delete-order"  method="post">
+            <div class="formItem">
+              Are you sure you want to delete this order?
+            </div>
+            <div class="formItem">
+              <input type="submit" value="Yes">
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endblock %}

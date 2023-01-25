@@ -1,0 +1,70 @@
+html,
+body {
+  height: 100vh;
+  margin: 0;
+  font-family: 'inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.1em;
+  line-height: 2em;
+
+}
+
+header {
+  flex: 0 1 auto;
+  /* The above is shorthand for:
+  flex-grow: 0,
+  flex-shrink: 1,
+  flex-basis: auto
+  */
+}
+
+nav {
+  align: center;
+  padding: 2.5em;
+}
+
+nav a {
+ font-size: 1.5em;
+ font-style: normal;
+ text-decoration: none;
+ color: black;
+ vertical-align: left;
+ text-align: left;
+ z-index: 2;
+ padding-left: 2em;
+ padding-right: 2em;
+}
+
+
+#maincontent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  /* The above is shorthand for:
+  flex-grow: 1, this is about ratio this works because header is 0
+  flex-shrink: 1,
+  flex-basis: auto
+  */
+  background-color: #D9D9D9;
+
+}
+
+section.formSection{
+  display: flex;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.submitButton{
+  align-self: center;
+}
+.contactUsForm{
+  display: flex;
+  flex-direction: column;
+}
+
+td{
+  vertical-align: top;
+}

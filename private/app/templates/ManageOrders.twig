@@ -13,14 +13,33 @@
           <div class="orderviewcontainer">
             <div class="searchbar bubble">
               <div class="searchoption">Filter</div>
-              <select class="searchoption" name="filter" id="filter">
-                <option disabled selected value> -- select an option -- </option>
-                <option value="Collection">Collection</option>
-                <option value="Delivery">Delivery</option>
-              </select>
-              <input class="searchoption" type="text" id="search" name="fname" placeholder="search value">
-              <button class="searchoption" type="button">Search</button>
-              <button class="searchoption" type="button">Add</button>
+              <form action="/HighFlyersUkCouriers/public/manage-orders" method="get">
+                <select class="searchoption" name="field" id="filter">
+                  <option disabled selected value> -- select an option -- </option>
+                  <option value="id">ID</option>
+                  <option value="animal_type">AnimalType</option>
+                  <option value="quantity">Quantity</option>
+                  <option value="email">Email</option>
+                  <option value="collection_phone_number">PhoneNumber</option>
+                  <option value="collection_address_1">CollectionAddress1</option>
+                  <option value="collection_address_2">CollectionAddress2</option>
+                  <option value="collection_address_3">CollectionAddress3</option>
+                  <option value="collection_postcode">CollectionPostcode</option>
+                  <option value="delivery_address_1">DeliveryAddress1</option>
+                  <option value="delivery_address_2">DeliveryAddress2</option>
+                  <option value="delivery_address_3">DeliveryAddress3</option>
+                  <option value="delivery_postcode">DeliveryPostcode</option>
+                  <option value="delivery_phone_number">DeliveryPhoneNumber</option>
+                  <option value="payment_option">Payment</option>
+                  <option value="message">Message</option>
+                </select>
+                <input class="searchoption" type="text" id="search" name="filter" placeholder="search value">
+
+                <button class="searchoption" type="submit">Search</button>
+              </form>
+              <a href="/HighFlyersUkCouriers/public/add-order">
+                <button class="searchoption" type="button">Add</button>
+              </a>
             </div>
             <div class="bubble">
               <div class="orderdata">

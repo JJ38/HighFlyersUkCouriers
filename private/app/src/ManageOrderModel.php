@@ -24,6 +24,11 @@ class ManageOrderModel
       $this->doctrine_wrapper = $doctrine_wrapper;
   }
 
+  public function deleteOrderById(string $id) : void
+  {
+    $this->doctrine_wrapper->deleteOrderById($id);
+    $this->order_data = $this->doctrine_wrapper->getQueryResult();
+  }
 
   public function fetchAllOrderData() : void
   {
@@ -32,10 +37,10 @@ class ManageOrderModel
     $this->order_data = $this->doctrine_wrapper->getQueryResult();
   }
 
-  public function fetchOrderDataById(string $id) : void
+  public function fetchOrderDataByField(string $field_name, string $value) : void
   {
 
-    $this->doctrine_wrapper->fetchOrderDataById($id);
+    $this->doctrine_wrapper->fetchOrderDataByField($field_name, $value);
     $this->order_data = $this->doctrine_wrapper->getQueryResult();
   }
 
@@ -52,7 +57,7 @@ class ManageOrderModel
           $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
         }
 
-      $HTML = $HTML . '<td><a href="/HighFlyersUkCouriers/public/edit-order?id=' . $number_of_orders - $i .'"><button>edit</button></a><button type="button">Delete</button> <button type="button">Print</button></td>';
+      $HTML = $HTML . '<td><a href="/HighFlyersUkCouriers/public/edit-order?id=' . $this->order_data[$i]['id'] .'"><button>edit</button></a><a href="/HighFlyersUkCouriers/public/delete-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">Delete</button></a><button type="button">Print</button></td>';
       $HTML = $HTML . '</tr>';
     }
 
@@ -89,6 +94,26 @@ class ManageOrderModel
 
     $this->HTML_order_data = $HTML;
 
+  }
+
+  public function generateHTMLForDeleteData() : void
+  {
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'collection_phone_number', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
+    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Collection Phone Number', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Timestamp');
+
+    $HTML = '';
+    $number_of_fields = count($this->order_data[0]);
+
+    //TODO: Accessibility
+
+    for ($i = 0; $i < $number_of_fields ; $i++) {
+      $HTML = $HTML . '<tr>';
+      $HTML = $HTML . '<td>' . $form_fields[$i] . '</td>'; //<label for="fname">First name:</label>
+      $HTML = $HTML . '<td>' . $this->order_data[0][$headers[$i]];
+      $HTML = $HTML . '</tr>';
+    }
+
+    $this->HTML_order_data = $HTML;
   }
 
 }

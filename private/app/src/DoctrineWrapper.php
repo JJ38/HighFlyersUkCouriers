@@ -151,7 +151,7 @@ class DoctrineWrapper
 
     }
 
-    public function fetchOrderDataById(string $id) : void
+    public function fetchOrderDataByField(string $field_name, string $value) : void
     {
 
       $password = null;
@@ -160,9 +160,9 @@ class DoctrineWrapper
           $query_builder = $this->query_builder
               ->select('o.*')
               ->from('orders', 'o')
-              ->where('o.id= :id')
+              ->where('o.' . $field_name . '= :' . $field_name)
               ->setParameters(array(
-                  'id' => $id,
+                  '' . $field_name => $value,
               ));
 
           $query = $query_builder->execute();
@@ -177,6 +177,28 @@ class DoctrineWrapper
       }
 
     }
+
+    public function deleteOrderById(string $id) : void
+    {
+        $delete_result = false;
+
+        try {
+            $query_builder = $this->query_builder
+                ->delete('orders')
+                ->where('id = :id')
+                ->setParameter('id', $id);
+
+            $delete_result = $query_builder->execute();
+
+        } catch (\Exception $exception) {
+            if ($this->doctrine_logger !== null) {
+                $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+            }
+        } finally {
+            $this->query_result = $delete_result;
+        }
+    }
+
 
     public function updateOrderDataById($cleaned_parameters) : void
     {

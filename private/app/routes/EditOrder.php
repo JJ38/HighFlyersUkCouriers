@@ -40,7 +40,7 @@ $app->get('/edit-order[/id]', function (Request $request, Response $response) us
 
         $manage_order_model = $container->get('manageOrderModel');
         $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
-        $manage_order_model->fetchOrderDataById($cleaned_order_id);
+        $manage_order_model->fetchOrderDataByField('id', $cleaned_order_id);
         if(empty($manage_order_model->getOrderData())){
           return $response->withRedirect('manage-orders', 302);
         }
@@ -48,8 +48,6 @@ $app->get('/edit-order[/id]', function (Request $request, Response $response) us
         $order_data = $manage_order_model->getOrderData();
 
         $session_wrapper = $app->getContainer()->get('sessionWrapper');
-
-        $session_wrapper->unsetSessionVar('id');
 
         $session_wrapper->setSessionVar('id', $order_data[0]['id']);
 
