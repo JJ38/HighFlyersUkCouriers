@@ -1,13 +1,31 @@
 {% extends 'boilerplate.twig' %}
     {% block content %}
       {% include 'navigationbar.twig' %}
-      <section class="maincontent box">
-        <div class="imagewrapper box">
-          <img class="parrot" src="/HighFlyersUkCouriers/public/assets/parrot.jpg">
-          <div class="imageoverlaywrapper">
+        <div>
+          <div class="carousel box">
+            <div class="carouseltrackcontainer">
+              <ul class="carouseltrack">
+                <li class="carouselslide currentslide">
+                  <img class="parrot carouselimage" src="/HighFlyersUkCouriers/public/assets/parrot.jpg">
+
+                </li>
+                <li class="carouselslide">
+                  <img class="parrot carouselimage secondimage" src="/HighFlyersUkCouriers/public/assets/parrot.jpg">
+                </li>
+                <li class="carouselslide">
+                  <img class="parrot carouselimage thirdimage" src="/HighFlyersUkCouriers/public/assets/parrot.jpg">
+                </li>
+                
+              </ul>
+            </div>
             <div class="leftarrowwrapper arrow">
               <
             </div>
+            <div class="rightarrowwrapper arrow">
+              >
+            </div>
+          {# <div class="imageoverlaywrapper">
+
             <div class="imageoverlaycontentwrapper">
               <div class="imageoverlaycontent">
                 <h1>COVERING THE WHOLE OF THE UK</h1>
@@ -21,32 +39,37 @@
             <div class="rightarrowwrapper arrow">
               >
             </div>
+          </div> #}
+
           </div>
         </div>
-        <div class="homepageinfo">
-          <h2>
-            COVERING THE WHOLE OF THE UK
-          </h2>
 
-          <h3>
-            WEDNESDAY COLLECTION & THURSDAY DELIVERY
-          </h3>
+        <div>
+          <div class="homepageinfo">
+            <h2>
+              COVERING THE WHOLE OF THE UK
+            </h2>
 
-          <h4>
-            We can transport your Pigeons, Tropical birds, Poultry, Cats and Dogs all over the UK from Scotland to Cornwall, Norfolk to South Wales and everything in between.
-          </h4>
-          <hr>
+            <h3>
+              WEDNESDAY COLLECTION & THURSDAY DELIVERY
+            </h3>
 
-          <h4>
-            Great prices available for transport of all animals
-          </h4>
-          <hr>
-          <h4>
-            Open 7 days a week 10AM - 4PM
-          </h4>
+            <h4>
+              We can transport your Pigeons, Tropical birds, Poultry, Cats and Dogs all over the UK from Scotland to Cornwall, Norfolk to South Wales and everything in between.
+            </h4>
+            <hr>
+
+            <h4>
+              Great prices available for transport of all animals
+            </h4>
+            <hr>
+            <h4>
+              Open 7 days a week 10AM - 4PM
+            </h4>
+          </div>
         </div>
 
-      </section>
+
 
 
 

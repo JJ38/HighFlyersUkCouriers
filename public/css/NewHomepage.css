@@ -15,7 +15,7 @@ div.underlineHome{
 body{
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+
 }
 
 h1{
@@ -32,12 +32,8 @@ section.maincontent{
 
 }
 
-div.imagewrapper{
-  position: relative;
-}
 
-
-div.imageoverlaywrapper{
+/* div.imageoverlaywrapper{
   display: flex;
   flex-basis: 1;
   align-items: center;
@@ -48,7 +44,7 @@ div.imageoverlaywrapper{
   width: 100%;
   background-color: #00000000;
 
-}
+} */
 
 div.arrow{
   font-family: 'Inter';
@@ -64,15 +60,7 @@ div.arrow:hover{
   text-shadow: 0px 0px 25px #000000;
 }
 
-div.leftarrowwrapper{
-  margin-left: 1em;
-}
-
-div.rightarrowwrapper{
-  margin-right: 1em;
-}
-
-div.imageoverlaycontentwrapper{
+/* div.imageoverlaycontentwrapper{
   display: flex;
   flex-grow: 1;
   height:100%
@@ -94,7 +82,7 @@ div.imageoverlaycontent{
   padding: 2em 0;
   padding-left:3em;
 
-}
+} */
 
 div.button{
   text-shadow: none;
@@ -112,11 +100,6 @@ div.button{
 
 a.button{
   text-decoration: none;
-
-}
-
-div.button{
-
 }
 
 div.contactus{
@@ -188,4 +171,78 @@ hr{
   margin-bottom: 30px;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 
+}
+
+div.carousel{
+
+  position: relative;
+  height: 650px;
+  width:90%;
+  margin: 0 auto;
+
+}
+
+img.carouselimage{
+  height:100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+img.thirdimage{
+  filter: invert();
+}
+
+img.secondimage{
+  filter: blur(10px);
+}
+
+div.carouseltrackcontainer{
+  background: lightgreen;
+  height:100%;
+}
+
+ul.carouseltrack{
+  position: relative;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+}
+
+li.carouselslide{
+  position: absolute;
+  top:0;
+  bottom:0;
+  width: 100%;
+
+}
+
+div.leftarrowwrapper{
+  position: absolute;
+  left: 0;
+  margin-left: 1em;
+  top:50%;
+  transform: translateY(-50%);
+
+}
+
+div.rightarrowwrapper{
+  position: absolute;
+  margin-right: 1em;
+  right: 0;
+  top:50%;
+  transform: translateY(-50%);
+}
+
+
+
+li.right{
+  transform: translateX(100%);
+  transition: 1s;
+}
+
+li.left{
+  transform: translateX(-100%);
+  transition: 1s;
 }

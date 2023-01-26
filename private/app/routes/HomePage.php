@@ -12,7 +12,7 @@ $app->get('/', function (Request $request, Response $response) use ($app) : Resp
             'css_nav_file' => CSS_PATH . "NavigationBar.css",
             'css_footer_file' => CSS_PATH . "Footer.css",
             'asset_path' => ASSET_PATH,
-            'js_path' => JS_PATH . "avents.js",
+            'js_file' => JS_PATH . "NewHomepage.js",
             'landing_page' => __FILE__,
             'heading_1' => APP_TITLE,
             'links'=> array(
