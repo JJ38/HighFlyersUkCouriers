@@ -25,11 +25,13 @@ $app->get('/bookings[/invalidform]', function (Request $request, Response $respo
     }
   };
 
-  return $this->view->render($response,'Bookings.twig', array(
+  return $this->view->render($response,'NewBooking.twig', array(
           'page_title' => APP_TITLE,
-          'css_file' => CSS_PATH . "",
+          'css_file' => CSS_PATH . "NewBooking.css",
+          'css_nav_file' => CSS_PATH . "NavigationBar.css",
+          'css_footer_file' => CSS_PATH . "Footer.css",
           'asset_path' => ASSET_PATH,
-          'js_path' => JS_PATH . "",
+          'js_file' => JS_PATH . "NewBooking.js",
           'landing_page' => __FILE__,
           'heading_1' => APP_TITLE,
           'links'=> array(

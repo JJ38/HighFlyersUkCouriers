@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap');
+
+div.underlineBooking{
+  background-color: #2881FF;
+  height: 3px;
+  margin-top: 1em;
+  margin-left: 1em;
+  margin-right: 1em;
+  border-radius: 20em;
+}
+
+
+section.maincontent{
+
+  display: flex;
+  flex-direction: column;
+
+
+
+  padding: 20px 0;
+  background-color: #FAFAFA;
+  padding-left: 200px;
+  padding-right: 200px;
+}
+
+h1{
+  margin: 0;
+  font-family: 'Roboto Slab';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 40px;
+  padding-bottom: 20px;
+}
+
+h2{
+  margin:0;
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 26px;
+}
+
+hr{
+  color: black;
+  margin: 3px;
+  width: 106%;
+  transform: translateX(-3%);
+  border: 0;
+  background-color:#000000FF;
+  height: 1px;
+}
+
+section.formsection{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 0;
+}
+
+section.bookingInput{
+  display:flex;
+  gap: 10px;
+  flex-direction: column;
+  width: 45%;
+
+}
+
+label{
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 22px;
+  color: black;
+}
+
+input{
+  height: 35px;
+  border-radius: 6px;
+  border: 1px solid #000000;;
+  font-family: 'Raleway';
+  font-style: 300;
+  font-weight: 500;
+  font-size: 22px;
+}
+
+textarea{
+  width: 100% ;
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+
+}
+
+select{
+  background: #F5F4F4;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  height: 40px;
+
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 22px;
+}
+
+#submitButton{
+  margin: 0 50%;
+  transform: translateX(-50%);
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  color: white;
+  width: 150px;
+  height: 40px;
+  background: #2881FF;
+  border-radius: 16px;
+  border: none;
+}

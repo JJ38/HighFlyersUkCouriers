@@ -1,0 +1,127 @@
+{% extends 'boilerplate.twig' %}
+    {% block content %}
+      {% include 'navigationbar.twig' %}
+        <section class="maincontent">
+        	<form id="contactUsForm" action="bookings" method="post">
+            <div>
+              <h1>
+                Booking
+              </h1>
+              <h2>
+                Contact info
+              </h2>
+              <hr>
+              <section class="formsection">
+                <section class="bookingInput">
+                  <label for="email">Email</label>
+                  <input id="email" name="email" type="email" required>
+                </section>
+              </section>
+              <h2>
+                Order info
+              </h2>
+              <hr>
+              <section class="formsection">
+                <section class="bookingInput">
+                  <label for="animalType">Bird/Animal type</label>
+                  <input id="animalType" name="animalType" type="text" required>
+                </section>
+
+                <section class="bookingInput">
+                  <label for="quantity">Quantity</label>
+                  <input id="quantity" name="quantity" type="number" min="1" required>
+                </section>
+              </section>
+              <h2>
+                Collection info
+              </h2>
+                <hr>
+              <section class="formsection">
+
+                <section class="bookingInput">
+                  <label for="collectionAddress1">Collection Address 1 </label>
+                  <input id="collectionAddress1" name="collectionAddress1" type="text" required>
+                </section>
+
+                <section class="bookingInput">
+                  <label for="collectionAddress2">Collection Address 2 </label>
+                  <input id="collectionAddress2" name="collectionAddress2" type="text" required>
+                </section>
+
+                <section class="bookingInput">
+                  <label for="collectionAddress3">Collection Address 3 </label>
+                  <input id="collectionAddress3" name="collectionAddress3" type="text" required>
+                </section>
+
+                <section class="bookingInput">
+                  <label for="collectionPostcode">Collection Postcode</label>
+                  <input id="collectionPostcode" name="collectionPostcode" type="text" required>
+                </section>
+
+                <section class="bookingInput">
+                  <label for="email">Collection Telephone Number</label>
+                  <input id="collectionTelephone" name="collectionTelephone" type="text" minlength="11" maxlength="12" required>
+                </section>
+              </section>
+              <h2>
+                Delivery info
+              </h2>
+              <hr>
+              <section class="formsection">
+                <section class="bookingInput">
+                  <label for="deliveryName">Delivery Name </label>
+                  <input id="deliveryName" name="deliveryName" type="text" required>
+                </section>
+
+                <section class="bookingInput">
+                  <label for="deliveryAddress1">Delivery Address Line 1 </label>
+                  <input id="deliveryAddress1" name="deliveryAddress1" type="text" required>
+                </section>
+
+                <section class="bookingInput">
+                  <label for="deliveryAddress2">Delivery Address Line 2 </label>
+                  <input id="deliveryAddress2" name="deliveryAddress2" type="text" required>
+                </section>
+
+                <section class="bookingInput">
+                  <label for="deliveryAddress3">Delivery Address Line 3 </label>
+                  <input id="deliveryAddress3" name="deliveryAddress3" type="text" required>
+                </section>
+
+                <section class="bookingInput">
+                  <label for="deliveryPostcode">Delivery Postcode </label>
+                  <input id="deliveryPostcode" name="deliveryPostcode" type="text" required>
+                </section>
+
+                <section class="bookingInput">
+                  <label for="deliveryTelephone">Delivery Telephone Number </label>
+                  <input id="deliveryTelephone" name="deliveryTelephone" type="text" minlength="11" maxlength="12" required>
+                </section>
+              </section>
+
+              <h2>
+                Order info
+              </h2>
+              <hr>
+              <section class="formsection">
+                <section class="bookingInput">
+                  <label for="payment">Payment on Delivery or Collection? </label>
+                  <select name="payment" id="payment" required>
+                    <option value=""> </option>
+                    <option value="Collection">Collection</option>
+                    <option value="Delivery">Delivery</option>
+                  </select>
+                </section>
+                <section class="bookingInput">
+                  <label for="message">Message </label>
+                  <textarea id="message" name="message" rows="6" wrap="soft" required></textarea>
+                </section>
+              </section>
+              <input id="submitButton" type="submit" value="Submit" aria-label="Submit">
+            </div>
+          </form>
+
+        </section>
+
+      {% include 'Footer.twig' %}
+    {% endblock %}

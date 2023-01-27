@@ -6,11 +6,13 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/f-a-q', function (Request $request, Response $response) use ($app) : Response{
 
-    return $this->view->render($response,'FAQ.twig', array(
+    return $this->view->render($response,'NewFAQ.twig', array(
             'page_title' => APP_TITLE,
-            'css_file' => CSS_PATH . "avents.css",
+            'css_file' => CSS_PATH . "NewFAQ.css",
+            'css_nav_file' => CSS_PATH . "NavigationBar.css",
+            'css_footer_file' => CSS_PATH . "Footer.css",
             'asset_path' => ASSET_PATH,
-            'js_path' => JS_PATH . "avents.js",
+            'js_file' => JS_PATH . "NewFAQ.js",
             'landing_page' => __FILE__,
             'heading_1' => APP_TITLE,
             'links'=> array(

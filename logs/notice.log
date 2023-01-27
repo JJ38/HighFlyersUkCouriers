@@ -91,3 +91,8 @@
 [2023-01-25T03:12:28.599174+01:00] logger.ERROR: Doctrine Error ["An exception occurred while executing a query: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':$tainted_field' at line 1"] []
 [2023-01-25T03:12:41.035115+01:00] logger.ERROR: Doctrine Error ["An exception occurred while executing a query: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ':$tainted_field' at line 1"] []
 [2023-01-25T04:30:20.869385+01:00] logger.NOTICE: User Authentication ["telemetry_user"] []
+[2023-01-27T02:52:29.581547+01:00] logger.NOTICE: User Authentication ["telemetry_user"] []
+[2023-01-27T02:53:01.736162+01:00] logger.NOTICE: User Authentication ["telemetry_user"] []
+[2023-01-27T02:56:43.516137+01:00] logger.NOTICE: User Authentication ["telemetry_user"] []
+[2023-01-27T03:01:36.703404+01:00] logger.NOTICE: User Authentication ["telemetry_user"] []
+[2023-01-27T07:54:38.900727+01:00] logger.NOTICE: User Authentication ["telemetry_user"] []

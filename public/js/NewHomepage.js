@@ -20,35 +20,79 @@ if(numberOfSlides > 2){
   }
 }
 
-rightButton.addEventListener('click', e => {
+let moving = false;
 
-  slides[carouselOffset % numberOfSlides].style.transform = "translateX(-100%)";
-  slides[carouselOffset % numberOfSlides].style.transition = "none";
+setTimeout(() => {carouselLoop();}, 5000);
 
-  slides[(carouselOffset + 1) % numberOfSlides].style.transform = "translateX(100%)";
-  slides[(carouselOffset + 1) % numberOfSlides].style.transition = "1s";
 
-  slides[(carouselOffset + 2) % numberOfSlides].style.transform = "none";
-  slides[(carouselOffset + 2) % numberOfSlides].style.transition = "1s";
+function carouselLoop() {
 
-  carouselOffset++;
+  shiftCarouselLeft();
+  setTimeout(() => {carouselLoop();}, 5000);
 
 
 
-});
+}
+
+function shiftCarouselRight(){
+
+  console.log(moving);
+
+  if(!moving){
+    moving = true;
+
+    slides[carouselOffset % numberOfSlides].style.transform = "translateX(-100%)";
+    slides[carouselOffset % numberOfSlides].style.transition = "none";
+
+    slides[(carouselOffset + 1) % numberOfSlides].style.transform = "translateX(100%)";
+    slides[(carouselOffset + 1) % numberOfSlides].style.transition = "1s";
+
+    slides[(carouselOffset + 2) % numberOfSlides].style.transform = "none";
+    slides[(carouselOffset + 2) % numberOfSlides].style.transition = "1s";
+
+    carouselOffset++;
+
+    setTimeout(() => {moving = false;}, 1000);
+
+  }
+}
+
+function shiftCarouselLeft(){
+
+  if(!moving){
+    moving = true;
+
+    slides[carouselOffset % numberOfSlides].style.transform = "none";
+    slides[carouselOffset % numberOfSlides].style.transition = "1s";
+
+    slides[(carouselOffset + 1) % numberOfSlides].style.transform = "translateX(-100%)";
+    slides[(carouselOffset + 1) % numberOfSlides].style.transition = "1s";
+
+    slides[(carouselOffset + numberOfSlides - 1) % numberOfSlides].style.transform = "translateX(100%)"; //move slide at bottom of stack to right
+    slides[(carouselOffset + numberOfSlides - 1) % numberOfSlides].style.transition = "none";
+
+    carouselOffset--;
+
+    setTimeout(() => {  moving = false;}, 1000);
+  }
+
+}
 
 leftButton.addEventListener('click', e => {
 
-  slides[carouselOffset % numberOfSlides].style.transform = "none";
-  slides[carouselOffset % numberOfSlides].style.transition = "1s";
+  //are images currently moving
 
-  slides[(carouselOffset + 1) % numberOfSlides].style.transform = "translateX(-100%)";
-  slides[(carouselOffset + 1) % numberOfSlides].style.transition = "1s";
+  //move images left
+  shiftCarouselRight();
 
-  slides[(carouselOffset + numberOfSlides - 1) % numberOfSlides].style.transform = "translateX(100%)"; //move slide at bottom of stack to right
-  slides[(carouselOffset + numberOfSlides - 1) % numberOfSlides].style.transition = "none";
+});
 
-  carouselOffset--;
+rightButton.addEventListener('click', e => {
+  //are images currently moving
+
+  //move images right
+  shiftCarouselLeft();
+
 });
 
 const moveToSlide = (track, currentSlide, targetSlide) => {
