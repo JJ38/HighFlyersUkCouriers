@@ -56,6 +56,7 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
 
   if(empty($cleaned_parameters)){
     return $response->withRedirect('/HighFlyersUkCouriers/public/bookings?invalidform=true', 302);
+    
   }
 
   //if cleaned and ready to send emails and store

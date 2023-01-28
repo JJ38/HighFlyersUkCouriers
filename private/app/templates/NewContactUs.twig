@@ -1,0 +1,41 @@
+{% extends 'boilerplate.twig' %}
+    {% block content %}
+      {% include 'navigationbar.twig' %}
+        <div class="maincontent">
+          <div class="leftcontainer">
+
+            <h1>
+              Contact Us
+            </h1>
+          
+            <div class="contactusinput">
+              <label for="deliveryAddress3">Delivery Address Line 3 </label>
+              <input id="deliveryAddress3" name="deliveryAddress3" type="text" required>
+            </div>
+
+            <div class="contactusinput">
+              <label for="deliveryAddress3">Delivery Address Line 3 </label>
+              <input id="deliveryAddress3" name="deliveryAddress3" type="text" required>
+            </div>
+
+            <div class="contactusinput">
+              <label for="deliveryAddress3">Delivery Address Line 3 </label>
+              <input id="deliveryAddress3" name="deliveryAddress3" type="text" required>
+            </div>
+
+            <div class="contactusinput">
+              <label for="message">Message </label>
+              <textarea id="message" name="message" rows="13" wrap="soft" required></textarea>
+            </div>
+
+             <input id="submitButton" type="submit" value="Submit" aria-label="Submit">
+
+          </div>
+          <div class="rightcontainer">
+            <div class="googlemapsimagewrapper">
+              <img id="googlemapsimage" data-src="https://maps.googleapis.com/maps/api/staticmap?channel=mws-visit&amp;language=en_GB&amp;center=53.1655728%2C-2.2041472999999&amp;zoom=14&amp;size=760x400&amp;maptype=roadmap&amp;client=gme-11internet&amp;markers=53.165573,-2.204147&amp;signature=Q2bVxN5oN6gemzS8vBUAFoUUpQo=" src="https://maps.googleapis.com/maps/api/staticmap?channel=mws-visit&amp;language=en_GB&amp;center=53.1655728%2C-2.2041472999999&amp;zoom=14&amp;size=760x400&amp;maptype=roadmap&amp;client=gme-11internet&amp;markers=53.165573,-2.204147&amp;signature=Q2bVxN5oN6gemzS8vBUAFoUUpQo=" alt="">
+            </div>
+          </div>
+        </div>
+      {% include 'Footer.twig' %}
+    {% endblock %}

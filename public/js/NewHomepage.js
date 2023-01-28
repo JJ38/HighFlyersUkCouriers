@@ -25,11 +25,11 @@ let moving = false;
 setTimeout(() => {carouselLoop();}, 5000);
 
 
+
 function carouselLoop() {
 
   shiftCarouselLeft();
   setTimeout(() => {carouselLoop();}, 5000);
-
 
 
 }

@@ -6,11 +6,13 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/contact-us', function (Request $request, Response $response) use ($app) : Response{
 
-    return $this->view->render($response,'ContactUs.twig', array(
+    return $this->view->render($response,'NewContactUs.twig', array(
             'page_title' => APP_TITLE,
-            'css_file' => CSS_PATH . "avents.css",
+            'css_file' => CSS_PATH . "NewContactUs.css",
+            'css_nav_file' => CSS_PATH . "NavigationBar.css",
+            'css_footer_file' => CSS_PATH . "Footer.css",
             'asset_path' => ASSET_PATH,
-            'js_path' => JS_PATH . "avents.js",
+            'js_file' => JS_PATH . "NewContactUs.js",
             'landing_page' => __FILE__,
             'heading_1' => APP_TITLE,
             'links'=> array(
@@ -30,8 +32,6 @@ $app->post('/contact-us', function (Request $request, Response $response) use ($
 {
 
   $response->getBody()->write("post contact-us"); //from input tag name
-
-
 
   return $response;
 
