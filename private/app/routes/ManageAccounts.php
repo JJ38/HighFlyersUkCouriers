@@ -13,7 +13,7 @@ $app->get('/manage-accounts', function (Request $request, Response $response) us
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "ManageAccounts.css",
               'asset_path' => ASSET_PATH,
-              'js_path' => JS_PATH . "",
+              // 'js_file' => JS_PATH . "ManageAccounts.js",
               'landing_page' => __FILE__,
               'heading_1' => APP_TITLE,
               'links'=> array(

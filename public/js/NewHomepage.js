@@ -1,9 +1,7 @@
-const track = document.querySelector('.carouseltrack');
 const slides = document.querySelectorAll('.carouselslide');
 const leftButton = document.querySelector('.leftarrowwrapper');
 const rightButton = document.querySelector('.rightarrowwrapper');
 
-const slideWidth = slides[0].getBoundingClientRect().width;
 
 const numberOfSlides = slides.length
 let carouselOffset = 100000000;
@@ -95,8 +93,3 @@ rightButton.addEventListener('click', e => {
 
 });
 
-const moveToSlide = (track, currentSlide, targetSlide) => {
-  track.style.transform = 'translateX(-' + targetSlide.style.left + ')';
-  currentSlide.classList.remove('currentslide');
-  targetSlide.classList.add('currentslide');
-}

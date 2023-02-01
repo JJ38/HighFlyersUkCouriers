@@ -98,7 +98,7 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "ManageOrders.css",
               'asset_path' => ASSET_PATH,
-              'js_path' => JS_PATH . "",
+              'js_file' => JS_PATH . "ManageOrders.js",
               'landing_page' => __FILE__,
               'heading_1' => APP_TITLE,
               'orderdata' => $manage_order_model->getHTMLOrderData(),

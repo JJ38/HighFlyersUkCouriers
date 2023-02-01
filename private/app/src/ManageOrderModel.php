@@ -57,7 +57,7 @@ class ManageOrderModel
           $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
         }
 
-      $HTML = $HTML . '<td><a href="/HighFlyersUkCouriers/public/edit-order?id=' . $this->order_data[$i]['id'] .'"><button>edit</button></a><a href="/HighFlyersUkCouriers/public/delete-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">Delete</button></a><button type="button">Print</button></td>';
+      $HTML = $HTML . '<td><a href="/HighFlyersUkCouriers/public/edit-order?id=' . $this->order_data[$i]['id'] .'"><button>edit</button></a><a href="/HighFlyersUkCouriers/public/delete-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">Delete</button></a><a class="print"><button type="button">Print</button></a></td>';
       $HTML = $HTML . '</tr>';
     }
 
@@ -88,7 +88,7 @@ class ManageOrderModel
     }
 
     $HTML = $HTML . '<tr>';
-    $HTML = $HTML . '<td>' . 'Timestamp' . '</td>'; //<label for="fname">First name:</label>
+    $HTML = $HTML . '<td>' . 'Timestamp' . '</td>'; 
     $HTML = $HTML . '<td>' . $this->order_data[0]['timestamp'] . "</td>";
     $HTML = $HTML . '</tr>';
 

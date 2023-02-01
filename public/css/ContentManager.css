@@ -3,6 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@1,300&family=Roboto:wght@100;300&display=swap');
 
+
 html,
 body {
   height: 100%;
@@ -12,14 +13,9 @@ body {
   font-weight: 400;
   font-size: 1.1em;
   line-height: 2em;
- 
 }
 
-#wrapper {
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-}
+
 
 .box .row {
   border: 1px dotted grey;
@@ -40,26 +36,64 @@ nav {
 }
 
 nav a {
-  font-size: 1.2em;
-  font-style: normal;
-  text-decoration: none;
-  color: black;
-  vertical-align: left;
-  text-align: left;
-  z-index: 2;
-  padding-left: 2em;
-  padding-right: 2em;
+ font-size: 1.2em;
+ font-style: normal;
+ text-decoration: none;
+ color: black;
+ vertical-align: left;
+ text-align: left;
+ z-index: 2;
+ padding-left: 2em;
+ padding-right: 2em;
 }
 
-
-
-
-#maincontent {
-  flex: 1 1 auto;
-  /* The above is shorthand for:
-  flex-grow: 1, this is about ratio this works because header is 0
-  flex-shrink: 1,
-  flex-basis: auto
-  */
+div.maincontent {
+  
+  min-height: 100vh;
   background-color: gray;
+}
+
+div.contentmanagerwrapper{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  height: 300px;
+  
+}
+
+div.objecttree{
+  background-color: yellow;
+ 
+}
+
+div.editablepage{
+  background-color: orange;
+  
+
+}
+
+div.attributeeditor{
+  background-color: blue;
+  
+}
+
+div.window{
+ 
+}
+
+div.draggable{
+  width: 4px;
+  height: 300px;
+  position: absolute;
+  background-color: black;
+  z-index: 1;
+}
+
+div.leftdraggable{
+  left: 33%;
+  /* transform: translateX(50%); */
+}
+
+div.rightdraggable{
+  right: 33%;
+  /* transform: translateX(-50%); */
 }
