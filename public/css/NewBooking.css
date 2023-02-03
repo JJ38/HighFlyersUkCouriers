@@ -91,7 +91,7 @@ textarea{
 
 }
 
-select{
+select.payment{
   background: #F5F4F4;
   border: 1px solid #000000;
   border-radius: 6px;
@@ -101,6 +101,7 @@ select{
   font-style: normal;
   font-weight: 500;
   font-size: 22px;
+  color: black;
 }
 
 #submitButton{

@@ -102,10 +102,12 @@ label{
 
   }
 
-  i{
+  .fa-location-pin, .fa-phone, .fa-envelope{
+    font-size: 40px;
+
     color: transparent;
     background-color: #00000000;
-  
+
     -webkit-text-stroke-width: 3px;
     -webkit-text-stroke-color: #000000;
   

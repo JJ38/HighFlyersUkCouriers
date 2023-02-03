@@ -67,6 +67,11 @@ div.formwrapper{
   flex-direction: column;
   height: 100vh;
   padding: 0;
+  background-color: white;
+}
+
+.page:nth-child(2){
+  background-color: lightblue;
 }
 
 p{

@@ -61,7 +61,7 @@ div.quicklinkcontainerwrapper{
   height: 140px;
 }
 
-i{
+.fa-flag, .fa-money-bill-wave, .fa-truck{
   margin-top: 15px;
   font-size: 60px;
   flex: 3;
@@ -87,7 +87,6 @@ div.faqsectionswrapper{
   margin: 75px 0;
   width: 100%;
   
-
 }
 
 div.faqsectionname{

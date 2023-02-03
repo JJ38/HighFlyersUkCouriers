@@ -33,19 +33,6 @@ section.maincontent{
 }
 
 
-/* div.imageoverlaywrapper{
-  display: flex;
-  flex-basis: 1;
-  align-items: center;
-  justify-content: space-between;
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  background-color: #00000000;
-
-} */
-
 div.arrow{
   font-family: 'Inter';
   font-style: normal;
