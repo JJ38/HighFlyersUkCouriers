@@ -375,7 +375,7 @@ function generateObjectTree(){
     var parentElement = root;
 
     //objectTreeDom.innerHTML = '';
-    objectTreeDom.replaceChildren(getChildElements(parentElement));
+    objectTreeDom.replaceChildren(getChildElements(parentElement, 1));
 
     document.querySelector('.objecttree').innerHTML = objectTreeDom.innerHTML;
 
@@ -401,23 +401,82 @@ function generateObjectTree(){
     //get all corrosponding elements in selected page in array
     allSelectedPageElements.push(getAllObjectTreeElements(document.querySelector('.content'), allSelectedPageElements));
 
-    var filteredAllSelectedTreeElements = allSelectedPageElements.slice(0, allSelectedPageElements.length - 1);
+    const filteredAllSelectedTreeElements = allSelectedPageElements.slice(0, allSelectedPageElements.length - 1);
     
 
     
     console.log(filteredAllObjectTreeElements);
     console.log(filteredAllSelectedTreeElements);
 
+    var currentlySelectedElement;
+
+
+    //adds event listeners to object tree to interact with corrosponding selected page element
     for(let i = 0; i < filteredAllSelectedTreeElements.length; i++){
-        filteredAllObjectTreeElements[i].addEventListener('click', e => {
+        filteredAllObjectTreeElements[i].addEventListener('mouseover', e => {
             filteredAllSelectedTreeElements[i].classList.toggle('objecttreeselectoutline');
             e.stopPropagation();
-        })
+        });
+
+        filteredAllObjectTreeElements[i].addEventListener('mouseout', e => {
+            filteredAllSelectedTreeElements[i].classList.toggle('objecttreeselectoutline');
+            e.stopPropagation();
+        });
+
+        filteredAllObjectTreeElements[i].addEventListener('click', e => {
+
+            //deselect currently selected
+            currentlySelectedElement = document.querySelector('.listitemselected');
+            if(currentlySelectedElement != null){
+                currentlySelectedElement.classList.toggle('listitemselected');
+            }
+            
+            //highlight newly selected item
+            filteredAllObjectTreeElements[i].classList.toggle('listitemselected');
+            e.stopPropagation();
+
+            //update attribute window
+            const generatedAttributes = generateAttributes(filteredAllSelectedTreeElements[i]);
+            rightBox.replaceChildren(generatedAttributes);
+        });
     }
 
-
-
 }
+
+function generateAttributes(selectedElement){
+
+    const attributesWrapper = document.createElement('div');
+
+    const elementName = document.createElement('div');
+    elementName.innerHTML = selectedElement.tagName;
+    attributesWrapper.appendChild(elementName);
+
+
+    //get appearance attributes
+
+    attributesWrapper.appendChild(generateAppearanceAttributes(selectedElement));
+
+    
+
+    //get dimension attributes
+
+   
+
+
+    return attributesWrapper;
+}
+
+function generateAppearanceAttributes(selectedElement){
+
+    const appearanceAttributeWrapper = document.createElement('div');
+
+    var css = window.getComputedStyle(selectedElement);
+
+    console.log(css);
+
+
+    return appearanceAttributeWrapper;
+}   
 
 function getAllObjectTreeElements(element, array){
 
@@ -443,7 +502,7 @@ function getAllObjectTreeElements(element, array){
 
 
 
-function getChildElements(element){
+function getChildElements(element, layer){
 
     const listItemElement = document.createElement('li');
     
@@ -451,8 +510,9 @@ function getChildElements(element){
     if(element.children.length > 0){
         //add expandable div to tree
         const expandableDivElement = document.createElement('div');
-        expandableDivElement.className = 'expandablelist';
+        expandableDivElement.className = 'expandablelist listitem';
         expandableDivElement.innerHTML = 'v ' + element.tagName;
+        expandableDivElement.style.paddingLeft = 15 * layer + 'px';
 
 
         listItemElement.appendChild(expandableDivElement);
@@ -463,7 +523,7 @@ function getChildElements(element){
         //loop through children
         for(let i = 0; i < element.children.length; i++){
        
-            unorderedList.appendChild(getChildElements(element.children[i]));
+            unorderedList.appendChild(getChildElements(element.children[i], layer + 1));
            
         } 
 
@@ -472,6 +532,8 @@ function getChildElements(element){
         
     }else{
         const divTextHolder = document.createElement('div');
+        divTextHolder.className = "listitem";
+        divTextHolder.style.paddingLeft = 15 * layer + 'px';
         divTextHolder.innerHTML = element.tagName;
         listItemElement.appendChild(divTextHolder);
         return listItemElement;
@@ -480,28 +542,3 @@ function getChildElements(element){
 
     return listItemElement;
 }
-
-
-
-//li
-    // div
-    // ol
-// link = document.createElement('link');
-//     link.rel = 'stylesheet';
-//     link.type = 'text/css';
-//     link.href = 'css/Footer.css';
-
-/* <ul class="root">
-    <li><div class="expandablelist">V Beverages</div>
-        <ul class="nested">
-            <li>Water</li>
-            <li>Coffee</li>
-            <li><div class="expandablelist">V Tea</div>
-                <ul class="nested">
-                    <li>Black Tea</li>
-                    <li>White Tea</li>                         
-                </ul>
-            </li>  
-        </ul>
-    </li>
-</ul> */
