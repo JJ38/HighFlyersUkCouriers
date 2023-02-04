@@ -414,28 +414,42 @@ function generateObjectTree(){
     //adds event listeners to object tree to interact with corrosponding selected page element
     for(let i = 0; i < filteredAllSelectedTreeElements.length; i++){
         filteredAllObjectTreeElements[i].addEventListener('mouseover', e => {
-            filteredAllSelectedTreeElements[i].classList.toggle('objecttreeselectoutline');
             e.stopPropagation();
+            filteredAllSelectedTreeElements[i].classList.add('objecttreehoveroutline');
+           
         });
 
         filteredAllObjectTreeElements[i].addEventListener('mouseout', e => {
-            filteredAllSelectedTreeElements[i].classList.toggle('objecttreeselectoutline');
             e.stopPropagation();
+            filteredAllSelectedTreeElements[i].classList.remove('objecttreehoveroutline');
+           
         });
 
         filteredAllObjectTreeElements[i].addEventListener('click', e => {
             e.stopPropagation();
+            highlightSelectedElement(filteredAllSelectedTreeElements[i]);
             elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i], filteredAllObjectTreeElements);
 
            
         });
 
         filteredAllSelectedTreeElements[i].addEventListener('dblclick', e => {
-            e.stopPropagation();
+            e.stopPropagation(filteredAllSelectedTreeElements[i]);
+            highlightSelectedElement(filteredAllSelectedTreeElements[i]);
             elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i], filteredAllObjectTreeElements);
-            console.log('doubleclick' + filteredAllSelectedTreeElements[i].tagName);
         });
     }
+
+}
+
+function highlightSelectedElement(element){
+    const currentlySelected = document.querySelector('.objecttreeselectoutline');
+    console.log(currentlySelected);
+    if(currentlySelected != null){
+        currentlySelected.classList.remove('objecttreeselectoutline');
+    }
+
+    element.classList.add('objecttreeselectoutline');
 
 }
 
@@ -454,8 +468,6 @@ function elementSelect(objectTreeElement, selectedElement, filteredAllObjectTree
 
      var elementToCheck = getObjectTreeParentElement(objectTreeElement);
      var elementToMakeVisible = ulToAddVisibleTo(objectTreeElement);
-
-     console.log("_______________________________");
 
      while(elementToCheck != document.querySelector('.selectpagewrapper')){
         elementToMakeVisible.classList = 'visible';
