@@ -424,23 +424,57 @@ function generateObjectTree(){
         });
 
         filteredAllObjectTreeElements[i].addEventListener('click', e => {
-
-            //deselect currently selected
-            currentlySelectedElement = document.querySelector('.listitemselected');
-            if(currentlySelectedElement != null){
-                currentlySelectedElement.classList.toggle('listitemselected');
-            }
-            
-            //highlight newly selected item
-            filteredAllObjectTreeElements[i].classList.toggle('listitemselected');
             e.stopPropagation();
+            elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i], filteredAllObjectTreeElements);
 
-            //update attribute window
-            const generatedAttributes = generateAttributes(filteredAllSelectedTreeElements[i]);
-            rightBox.replaceChildren(generatedAttributes);
+           
+        });
+
+        filteredAllSelectedTreeElements[i].addEventListener('dblclick', e => {
+            e.stopPropagation();
+            elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i], filteredAllObjectTreeElements);
+            console.log('doubleclick' + filteredAllSelectedTreeElements[i].tagName);
         });
     }
 
+}
+
+function elementSelect(objectTreeElement, selectedElement, filteredAllObjectTreeElements){
+     
+    //deselect currently selected
+     currentlySelectedElement = document.querySelector('.listitemselected');
+     if(currentlySelectedElement != null){
+         currentlySelectedElement.classList.toggle('listitemselected');
+     }
+     
+     //highlight newly selected item
+     objectTreeElement.classList.toggle('listitemselected');
+
+     //make newly selected item in object tree visible.
+
+     var elementToCheck = getObjectTreeParentElement(objectTreeElement);
+     var elementToMakeVisible = ulToAddVisibleTo(objectTreeElement);
+
+     console.log("_______________________________");
+
+     while(elementToCheck != document.querySelector('.selectpagewrapper')){
+        elementToMakeVisible.classList = 'visible';
+        console.log(elementToCheck);
+        elementToCheck = getObjectTreeParentElement(elementToCheck);
+        elementToMakeVisible = ulToAddVisibleTo(elementToMakeVisible);
+     }
+
+     //update attribute window
+     const generatedAttributes = generateAttributes(selectedElement);
+     rightBox.replaceChildren(generatedAttributes);
+}
+
+function getObjectTreeParentElement(element){
+    return element.parentElement.parentElement.parentElement.children[0];
+}
+
+function ulToAddVisibleTo(element){
+    return element.parentElement.parentElement;
 }
 
 function generateAttributes(selectedElement){
@@ -472,7 +506,7 @@ function generateAppearanceAttributes(selectedElement){
 
     var css = window.getComputedStyle(selectedElement);
 
-    console.log(css);
+    //console.log(css);
 
 
     return appearanceAttributeWrapper;

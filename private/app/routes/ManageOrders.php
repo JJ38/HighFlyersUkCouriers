@@ -97,6 +97,8 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
       return $this->view->render($response,'ManageOrders.twig', array(
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "ManageOrders.css",
+              'css_nav_file' => CSS_PATH . "NavigationBar.css",
+              'css_footer_file' => CSS_PATH . "Footer.css",
               'asset_path' => ASSET_PATH,
               'js_file' => JS_PATH . "ManageOrders.js",
               'landing_page' => __FILE__,
