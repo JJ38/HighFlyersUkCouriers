@@ -40,6 +40,7 @@ let rightWidth = sidebarWidth;
 
 var allObjectTreeElements = [];
 var allSelectedPageElements = [];
+var allEditableDocumentElements = [];
 
 
 
@@ -49,6 +50,7 @@ var selectedFile = 'NewHomepage.twig';
 
 
 var objectTreeDom = parser.parseFromString('<div class = root> </div>', "text/html").body.children[0];
+const editableElements = ['H1', 'H2', 'H3', 'H4', 'P', 'A'];
 
 
 //Set object window, edit window and attribute window
@@ -252,12 +254,48 @@ async function getFile(selectedFile){
     const parser = new DOMParser();
     editableDocument = parser.parseFromString(contentHTML, "text/html");
 
-
-    //generate object tree for selected page
-    
+    //replace text directly in tag with p tag
+    wrapDivTextInPTag(editableDocument);
+   
     content.innerHTML = editableDocument.querySelector('body').innerHTML;
 
+    //generate object tree for selected page
     generateObjectTree();
+}
+
+function wrapDivTextInPTag(editableDocument){
+    
+    getAllElements(editableDocument, allEditableDocumentElements);
+
+    for(let i = 0; i < allEditableDocumentElements.length; i++){
+        if(allEditableDocumentElements[i].tagName == 'DIV'){
+            
+            var elementInnerHTML = allEditableDocumentElements[i].innerHTML;
+            const elementChildren = allEditableDocumentElements[i].children;
+
+            for(let i = 0; i < elementChildren.length; i++){
+                
+                elementInnerHTML = elementInnerHTML.replaceAll(elementChildren[i].outerHTML, "");
+                
+            }
+            
+            if(elementInnerHTML.trim().length > 0){
+                console.log(elementInnerHTML);
+                console.log(elementInnerHTML.length);
+               
+                const textWrappedInPTag = document.createElement('p');
+                textWrappedInPTag.classList.add('generatedWrapperParagraph');
+                textWrappedInPTag.innerHTML = elementInnerHTML;
+
+                allEditableDocumentElements[i].innerHTML = allEditableDocumentElements[i].innerHTML.replace(elementInnerHTML, textWrappedInPTag.outerHTML);
+            
+            }   
+           
+        }
+
+    }
+
+
 }
 
 async function getHTMLFile(filePath){
@@ -363,12 +401,6 @@ function selectOnChange(){
 
 function generateObjectTree(){
 
-    //remove all object tree children
-
-
-    //Loop through every element
-
-    //if element has children add expandable list class and 
 
     const root = editableDocument.querySelector('body');
 
@@ -392,14 +424,14 @@ function generateObjectTree(){
     allSelectedPageElements = [];
    
     //get all object tree elements in array
-    allObjectTreeElements.push(getAllObjectTreeElements(document.querySelector('.objecttree'), allObjectTreeElements));
+    allObjectTreeElements.push(getAllElements(document.querySelector('.objecttree'), allObjectTreeElements));
 
     var filteredAllObjectTreeElements = allObjectTreeElements.filter(i => i.tagName != 'UL' && i.tagName != 'LI');
     filteredAllObjectTreeElements = filteredAllObjectTreeElements.slice(1, filteredAllObjectTreeElements.length - 1); //removes object tree wrapper 
     
     
     //get all corrosponding elements in selected page in array
-    allSelectedPageElements.push(getAllObjectTreeElements(document.querySelector('.content'), allSelectedPageElements));
+    allSelectedPageElements.push(getAllElements(document.querySelector('.content'), allSelectedPageElements));
 
     const filteredAllSelectedTreeElements = allSelectedPageElements.slice(0, allSelectedPageElements.length - 1);
     
@@ -427,34 +459,58 @@ function generateObjectTree(){
 
         filteredAllObjectTreeElements[i].addEventListener('click', e => {
             e.stopPropagation();
-            highlightSelectedElement(filteredAllSelectedTreeElements[i]);
-            elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i], filteredAllObjectTreeElements);
+            elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i]);
 
            
         });
 
         filteredAllSelectedTreeElements[i].addEventListener('dblclick', e => {
             e.stopPropagation(filteredAllSelectedTreeElements[i]);
-            highlightSelectedElement(filteredAllSelectedTreeElements[i]);
-            elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i], filteredAllObjectTreeElements);
+            elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i]);
         });
     }
 
 }
 
-function highlightSelectedElement(element){
-    const currentlySelected = document.querySelector('.objecttreeselectoutline');
-    console.log(currentlySelected);
-    if(currentlySelected != null){
-        currentlySelected.classList.remove('objecttreeselectoutline');
-    }
 
-    element.classList.add('objecttreeselectoutline');
+//selects element in editable window and in object tree
+function elementSelect(objectTreeElement, selectedElement){
 
+    //highlight element in editable window
+    highlightSelectedElementEditableWindow(selectedElement);
+     
+    //highlight element in object tree
+    highlightSelectedElementObjectTree(objectTreeElement)
+
+    //update attribute window
+    generateAttributes(selectedElement);
+   
 }
 
-function elementSelect(objectTreeElement, selectedElement, filteredAllObjectTreeElements){
-     
+function highlightSelectedElementEditableWindow(element){
+
+
+    const currentlySelected = document.querySelector('.objecttreeselectoutline');
+  
+    //remove highlighting and content editable from previouosly selected element 
+    if(currentlySelected != null){
+        currentlySelected.classList.remove('objecttreeselectoutline');
+        currentlySelected.contentEditable = false;
+
+    }
+
+    //add highlighting to selected element
+    element.classList.add('objecttreeselectoutline');
+
+    //make element editable
+    if(editableElements.includes(element.tagName)){
+        element.contentEditable = true;
+    }
+}
+
+
+function highlightSelectedElementObjectTree(objectTreeElement){
+
     //deselect currently selected
      currentlySelectedElement = document.querySelector('.listitemselected');
      if(currentlySelectedElement != null){
@@ -471,15 +527,12 @@ function elementSelect(objectTreeElement, selectedElement, filteredAllObjectTree
 
      while(elementToCheck != document.querySelector('.selectpagewrapper')){
         elementToMakeVisible.classList = 'visible';
-        console.log(elementToCheck);
         elementToCheck = getObjectTreeParentElement(elementToCheck);
         elementToMakeVisible = ulToAddVisibleTo(elementToMakeVisible);
      }
 
-     //update attribute window
-     const generatedAttributes = generateAttributes(selectedElement);
-     rightBox.replaceChildren(generatedAttributes);
 }
+
 
 function getObjectTreeParentElement(element){
     return element.parentElement.parentElement.parentElement.children[0];
@@ -507,9 +560,10 @@ function generateAttributes(selectedElement){
     //get dimension attributes
 
    
+    //update attributes windows
+    rightBox.replaceChildren(attributesWrapper);
 
-
-    return attributesWrapper;
+ 
 }
 
 function generateAppearanceAttributes(selectedElement){
@@ -524,7 +578,7 @@ function generateAppearanceAttributes(selectedElement){
     return appearanceAttributeWrapper;
 }   
 
-function getAllObjectTreeElements(element, array){
+function getAllElements(element, array){
 
 
 
@@ -535,7 +589,7 @@ function getAllObjectTreeElements(element, array){
         //loop through children
         for(let i = 0; i < element.children.length; i++){
            
-            getAllObjectTreeElements(element.children[i], array);       
+            getAllElements(element.children[i], array);       
         
         } 
        

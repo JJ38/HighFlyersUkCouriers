@@ -173,3 +173,8 @@ div.expandablelist{
   box-sizing: border-box;
   border: solid 2px pink;
 }
+
+p.generatedWrapperParagraph{
+  margin: 0;
+  padding: 0;
+}
