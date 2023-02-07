@@ -33,7 +33,7 @@ let initialXPos = 0;
 let initialYPos = 0;
 let initialAbsoluteRight = 0;
 let initialAbsoluteTop = 0;
-let contentScale = 1;
+let contentScale = 0.55;
 let links = [];
 
 
@@ -45,12 +45,11 @@ var allObjectTreeElements = [];
 var allSelectedPageElements = [];
 var allEditableDocumentElements = [];
 
-
-
 var editableDocument; //select page as document
 var contentHTML;   //selected page as string
 var selectedFile = 'NewHomepage.twig';
 
+var labelFor;
 
 var objectTreeDom = parser.parseFromString('<div class = root> </div>', "text/html").body.children[0];
 const editableElements = ['H1', 'H2', 'H3', 'H4', 'P', 'A', 'LABEL'];
@@ -64,6 +63,12 @@ getFile(selectedFile);
 
 //sets content to content div
 content.innerHTML =  contentHTML;
+
+
+content.style.transform = "matrix(" + (contentScale) + ",0,0," + (contentScale) + ",0,0)";
+console.log(content.getBoundingClientRect().height);
+content.style.right = ((midBox.getBoundingClientRect().width - content.getBoundingClientRect().width) / 2) +'px';
+
 
 //add event listeners to
 
@@ -153,23 +158,6 @@ onresize = (event) => {
  
 };
 
-function savePage(){
-
-    //remove contenteditable tag on currently selected element
-    const currentlySelected = document.querySelector('.objecttreeselectoutline');
-
-    if(currentlySelected != null){
-        currentlySelected.classList.remove('objecttreeselectoutline');
-        currentlySelected.contentEditable = false;
-    }
-   
-    
-    editableContentValue.value = document.querySelector('.content').innerHTML;
-    fileNameValue.value = selectedFile;
-
-    editableContentValue.form.submit();
-    
-}
 
 
 midBox.addEventListener('pointerdown', (e) => {
@@ -213,10 +201,31 @@ midBox.addEventListener('wheel', (e) =>{
     contentScale = contentScale + scaleAmount;
     content.style.transform = matrix;
 
+
 });
 
 
+
 //functions
+
+function savePage(){
+
+    //remove contenteditable tag on currently selected element
+    const currentlySelected = document.querySelector('.objecttreeselectoutline');
+
+    if(currentlySelected != null){
+        currentlySelected.classList.remove('objecttreeselectoutline');
+        currentlySelected.contentEditable = false;
+    }
+   
+    
+    editableContentValue.value = document.querySelector('.content').innerHTML;
+    fileNameValue.value = selectedFile;
+
+    editableContentValue.form.submit();
+    
+}
+
 
 function moveRightSlider(moveToX){
 
@@ -271,6 +280,7 @@ async function getFile(selectedFile){
    
     content.innerHTML = editableDocument.querySelector('body').innerHTML;
 
+  
     //generate object tree for selected page
     generateObjectTree();
 }
@@ -292,9 +302,7 @@ function wrapDivTextInPTag(editableDocument){
             }
             
             if(elementInnerHTML.trim().length > 0){
-                console.log(elementInnerHTML);
-                console.log(elementInnerHTML.length);
-               
+         
                 const textWrappedInPTag = document.createElement('p');
                 textWrappedInPTag.style.margin = 0;
                 textWrappedInPTag.style.padding = 0;
@@ -445,13 +453,6 @@ function generateObjectTree(){
     allSelectedPageElements.push(getAllElements(document.querySelector('.content'), allSelectedPageElements));
 
     const filteredAllSelectedTreeElements = allSelectedPageElements.slice(0, allSelectedPageElements.length - 1);
-    
-
-    
-    console.log(filteredAllObjectTreeElements);
-    console.log(filteredAllSelectedTreeElements);
-
-    var currentlySelectedElement;
 
 
     //adds event listeners to object tree to interact with corrosponding selected page element
@@ -477,12 +478,29 @@ function generateObjectTree(){
 
         filteredAllSelectedTreeElements[i].addEventListener('dblclick', e => {
             e.stopPropagation(filteredAllSelectedTreeElements[i]);
+
+            if(filteredAllSelectedTreeElements[i].tagName == "LABEL"){
+                labelDoubleClick(filteredAllSelectedTreeElements[i]);
+            }
+
             elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i]);
+           
         });
     }
 
 }
 
+function labelDoubleClick(label){
+    console.log("label double click");
+    const currentlySelected = document.querySelector('.objecttreeselectoutline');
+    if(currentlySelected != null && currentlySelected.tagName == "LABEL"){
+        currentlySelected.htmlFor = labelFor;
+    }
+
+    labelFor = label.htmlFor;
+    label.htmlFor = "";
+
+}
 
 //selects element in editable window and in object tree
 function elementSelect(objectTreeElement, selectedElement){
@@ -565,9 +583,6 @@ function generateAttributes(selectedElement){
     //get appearance attributes
 
     attributesWrapper.appendChild(generateAppearanceAttributes(selectedElement));
-
-    
-
     //get dimension attributes
 
    
@@ -591,8 +606,6 @@ function generateAppearanceAttributes(selectedElement){
 
 function getAllElements(element, array){
 
-
-
     array.push(element);
 
     if(element.children.length > 0){
@@ -610,7 +623,6 @@ function getAllElements(element, array){
     }
     return element;
 }
-
 
 
 function getChildElements(element, layer){
