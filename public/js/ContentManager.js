@@ -8,6 +8,9 @@ const contentManagerWrapper = document.querySelector('.contentmanagerwrapper');
 const content = document.querySelector('.content');
 const head = document.querySelector('head');
 const selectPage = document.getElementById("selectpage");
+const saveButton = document.getElementById("savebutton");
+const editableContentValue = document.getElementById("editabledocumentvalue");
+const fileNameValue = document.getElementById("filename");
 
 
 const leftBox = contentManagerWindows[0];
@@ -50,7 +53,7 @@ var selectedFile = 'NewHomepage.twig';
 
 
 var objectTreeDom = parser.parseFromString('<div class = root> </div>', "text/html").body.children[0];
-const editableElements = ['H1', 'H2', 'H3', 'H4', 'P', 'A'];
+const editableElements = ['H1', 'H2', 'H3', 'H4', 'P', 'A', 'LABEL'];
 
 
 //Set object window, edit window and attribute window
@@ -150,6 +153,24 @@ onresize = (event) => {
  
 };
 
+function savePage(){
+
+    //remove contenteditable tag on currently selected element
+    const currentlySelected = document.querySelector('.objecttreeselectoutline');
+
+    if(currentlySelected != null){
+        currentlySelected.classList.remove('objecttreeselectoutline');
+        currentlySelected.contentEditable = false;
+    }
+   
+    
+    editableContentValue.value = document.querySelector('.content').innerHTML;
+    fileNameValue.value = selectedFile;
+
+    editableContentValue.form.submit();
+    
+}
+
 
 midBox.addEventListener('pointerdown', (e) => {
     
@@ -193,15 +214,6 @@ midBox.addEventListener('wheel', (e) =>{
     content.style.transform = matrix;
 
 });
-
-
-
-
-
-
-
-
-
 
 
 //functions
@@ -284,18 +296,15 @@ function wrapDivTextInPTag(editableDocument){
                 console.log(elementInnerHTML.length);
                
                 const textWrappedInPTag = document.createElement('p');
-                textWrappedInPTag.classList.add('generatedWrapperParagraph');
+                textWrappedInPTag.style.margin = 0;
+                textWrappedInPTag.style.padding = 0;
                 textWrappedInPTag.innerHTML = elementInnerHTML;
 
                 allEditableDocumentElements[i].innerHTML = allEditableDocumentElements[i].innerHTML.replace(elementInnerHTML, textWrappedInPTag.outerHTML);
             
             }   
-           
         }
-
     }
-
-
 }
 
 async function getHTMLFile(filePath){
@@ -396,7 +405,9 @@ async function convertTwigToHTML(twigExpressionsUnfiltered){
 
 function selectOnChange(){
 
-    getFile(selectPage.value);
+    selectedFile = selectPage.value
+
+    getFile(selectedFile);
 }
 
 function generateObjectTree(){

@@ -1,31 +1,54 @@
 {% extends 'boilerplate.twig' %}
-    {% block content %}
-      {% include 'navigationbar.twig' %}
+    {% block content %}<header class="">
+  <nav class="menu">
+    <div>
+      <a class="navLinks" href="/HighFlyersUkCouriers/public/">Home</a>
+      <div class="underlineHome"></div>
+    </div>
+    <div>
+      <a class="navLinks" href="/HighFlyersUkCouriers/public/prices">Prices</a>
+      <div class="underlinePrices"></div>
+    </div>
+    <div>
+      <a class="navLinks" href="/HighFlyersUkCouriers/public/bookings">Booking</a>
+      <div class="underlineBooking"></div>
+    </div>
+    <div>
+      <a class="navLinks" href="/HighFlyersUkCouriers/public/f-a-q">FAQ</a>
+      <div class="underlineFAQ"></div>
+    </div>
+    <div>
+      <a class="navLinks" href="/HighFlyersUkCouriers/public/contact-us">Contact Us</a>
+      <div class="underlineContactUs"></div>
+    </div>
+  </nav>
+</header>
+ 
         <div class="maincontent">
           <div class="leftcontainer">
 
-            <h1>
+            <h1 class="">
               Contact Us
             </h1>
           
             <div class="contactusinput">
-              <label for="deliveryAddress3">Delivery Address Line 3 </label>
-              <input id="deliveryAddress3" name="deliveryAddress3" type="text" required>
+              <label for="deliveryAddress3" class="" contenteditable="false">Name</label>
+              <input id="deliveryAddress3" name="deliveryAddress3" type="text" required="" class="">
             </div>
 
             <div class="contactusinput">
-              <label for="deliveryAddress3">Delivery Address Line 3 </label>
-              <input id="deliveryAddress3" name="deliveryAddress3" type="text" required>
+              <label for="deliveryAddress3" class="" contenteditable="false">Email</label>
+              <input id="deliveryAddress3" name="deliveryAddress3" type="text" required="">
             </div>
 
             <div class="contactusinput">
-              <label for="deliveryAddress3">Delivery Address Line 3 </label>
-              <input id="deliveryAddress3" name="deliveryAddress3" type="text" required>
+              <label for="deliveryAddress3" class="" contenteditable="false">Phone</label>
+              <input id="deliveryAddress3" name="deliveryAddress3" type="text" required="">
             </div>
 
             <div class="contactusinput">
               <label for="message">Message </label>
-              <textarea id="message" name="message" rows="13" wrap="soft" required></textarea>
+              <textarea id="message" name="message" rows="13" wrap="soft" required=""></textarea>
             </div>
 
              <input id="submitButton" type="submit" value="Submit" aria-label="Submit">
@@ -82,5 +105,20 @@
             </div>
           </div>
         </div>
-      {% include 'Footer.twig' %}
+       <footer>
+  <div class="footerlinkswrapper">
+    <a class="footerlinks" href="/HighFlyersUkCouriers/public/">Home</a>
+    <a class="footerlinks" href="/HighFlyersUkCouriers/public/prices">Prices</a>
+    <a class="footerlinks" href="/HighFlyersUkCouriers/public/bookings">Booking</a>
+    <a class="footerlinks" href="/HighFlyersUkCouriers/public/f-a-q">FAQ</a>
+    <a class="footerlinks" href="/HighFlyersUkCouriers/public/contact-us">Contact Us</a>
+  </div>
+  <div class="facebookicon">
+    <i class="fa-brands fa-facebook"></i>
+  </div>
+  <div class="copyright"><p style="margin: 0px; padding: 0px;">© High Flyers UK Couriers</p></div>
+  <a class="login" href="/HighFlyersUkCouriers/public/loginpage">Login</a>
+
+</footer>
+ 
     {% endblock %}

@@ -14,7 +14,13 @@
             <div class="contentmanagermaincontent">
                 <div class="contentmanagerwrapper">
                     <div class="objecttreewindow window">
-                        <div class="selectpagewrapper">                      
+                        <div class="selectpagewrapper">  
+                            
+                            <form method="post" action="content-manager">
+                                <input id="editabledocumentvalue" type="hidden" name="editabledocumentvalue">
+                                <input id="filename" type="hidden" name="filename">
+                                <input type="button" onclick="savePage()" value="Save">
+                            </form>                    
                             <select class='selectpage' onchange="selectOnChange()" id="selectpage">
                                 <option value="NewHomepage.twig">Homepage</option>
                                 <option value="NewBooking.twig">Booking</option>
@@ -22,18 +28,15 @@
                                 <option value="NewContactUs.twig">ContactUs</option>
                                 <option value="PrintableForm.html">Printable Form</option>
                             </select>
-                        
                         </div>
-
-                        <div class="objecttree">
-                            
+                        <div class="objecttree">                            
                         </div>
                     </div>
                     <div class="leftdraggable draggable">              
                     </div>
-                    <div class="editablepage window">            
+                    <div class="editablepage window">                      
                         <div class="content">
-                        </div>
+                        </div>                                
                     </div>
                     <div class="rightdraggable draggable">
                     </div>
