@@ -217,6 +217,11 @@ function savePage(){
         currentlySelected.classList.remove('objecttreeselectoutline');
         currentlySelected.contentEditable = false;
     }
+
+    //if currently selected element is a label add the for property back before saving
+    if(currentlySelected.tagName == "LABEL"){
+        currentlySelected.htmlFor = labelFor;
+    }
    
     
     editableContentValue.value = document.querySelector('.content').innerHTML;
@@ -473,32 +478,39 @@ function generateObjectTree(){
             e.stopPropagation();
             elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i]);
 
-           
         });
 
         filteredAllSelectedTreeElements[i].addEventListener('dblclick', e => {
             e.stopPropagation(filteredAllSelectedTreeElements[i]);
 
-            if(filteredAllSelectedTreeElements[i].tagName == "LABEL"){
-                labelDoubleClick(filteredAllSelectedTreeElements[i]);
-            }
+            labelDoubleClick(filteredAllSelectedTreeElements[i]);
 
             elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i]);
            
         });
     }
-
 }
 
-function labelDoubleClick(label){
-    console.log("label double click");
+function labelDoubleClick(element){
     const currentlySelected = document.querySelector('.objecttreeselectoutline');
-    if(currentlySelected != null && currentlySelected.tagName == "LABEL"){
+
+    if(element.tagName == "LABEL"){
+
+
+        if(currentlySelected != null && currentlySelected.tagName == "LABEL"){
+            console.log("currently selected" + currentlySelected.htmlFor);
+            currentlySelected.htmlFor = labelFor;
+            console.log(labelFor);    
+        }
+
+        labelFor = element.htmlFor;
+        element.htmlFor = "";
+
+    }else if(currentlySelected.tagName == "LABEL"){
+        console.log("currently selected is label");
         currentlySelected.htmlFor = labelFor;
     }
 
-    labelFor = label.htmlFor;
-    label.htmlFor = "";
 
 }
 
