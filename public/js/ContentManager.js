@@ -10,6 +10,7 @@ const head = document.querySelector('head');
 const selectPage = document.getElementById("selectpage");
 const saveButton = document.getElementById("savebutton");
 const editableContentValue = document.getElementById("editabledocumentvalue");
+const fontLinks = document.getElementById("fontlinks");
 const fileNameValue = document.getElementById("filename");
 
 
@@ -35,6 +36,10 @@ let initialAbsoluteRight = 0;
 let initialAbsoluteTop = 0;
 let contentScale = 0.55;
 let links = [];
+let fontFamilys = [];
+let fontsInUse = [];
+let lastFontInUse;
+let selectedFileLinks = [];
 
 
 let leftWidth = sidebarWidth;
@@ -58,7 +63,8 @@ const editableElements = ['H1', 'H2', 'H3', 'H4', 'P', 'A', 'LABEL'];
 //Set object window, edit window and attribute window
 contentManagerWrapper.style.gridTemplateColumns = sidebarWidth + 'px ' + (innerWidth - (2 * sidebarWidth)) + 'px ' + sidebarWidth + 'px';
 
-//gets files of initialpage
+//gets files of initialpage 
+
 getFile(selectedFile);
 
 //sets content to content div
@@ -66,7 +72,6 @@ content.innerHTML =  contentHTML;
 
 
 content.style.transform = "matrix(" + (contentScale) + ",0,0," + (contentScale) + ",0,0)";
-console.log(content.getBoundingClientRect().height);
 content.style.right = ((midBox.getBoundingClientRect().width - content.getBoundingClientRect().width) / 2) +'px';
 
 
@@ -222,11 +227,75 @@ function savePage(){
     if(currentlySelected.tagName == "LABEL"){
         currentlySelected.htmlFor = labelFor;
     }
-   
+
+    const newBody = document.createElement('body');
+    console.log(newBody);
+    const newBodyElements = document.querySelector('.content').children;
+    var parser = new DOMParser();   
+
+
+    for(let i = 0; i < newBodyElements.length; i++){
+        const copyOfElementDocument = parser.parseFromString(newBodyElements[i].outerHTML, 'text/html');
+        var copyOfElement;
+        if(copyOfElementDocument.querySelector('body').childElementCount == 0){
+            copyOfElement = copyOfElementDocument.querySelector('head').firstChild;
+        }else{
+            copyOfElement = copyOfElementDocument.querySelector('body').firstChild;
+        }
+        //console.log(copyOfElement);
+        newBody.appendChild(copyOfElement);
+    }
+
+    //console.log(newBody);
+
+    console.log(editableDocument.querySelector('head'));
     
-    editableContentValue.value = document.querySelector('.content').innerHTML;
+    //add header info to newPageHTML
+    
+   
+    const newHead = document.createElement('head');
+    const newHeadElements = editableDocument.querySelector('head').children;
+    console.log(editableDocument.querySelector('head'));
+    //create link tags
+
+    const editableDocumentHead =  editableDocument.querySelector('head');
+
+    for(let i = 0; i < newHeadElements.length; i++){
+        
+        const copyOfElement = parser.parseFromString(newHeadElements[i].outerHTML, 'text/html').querySelector('head');
+        //check if link already exist in document
+        
+        newHead.appendChild(getCopyOfElement(newHeadElements[i]));
+    }
+
+    
+    console.log(getCopyOfElement(newHead).parentNode);
+
+    const fontsInUseNoDuplicates = Array.from(new Set(fontsInUse));
+
+    console.log(fontsInUseNoDuplicates.length);
+    
+    for(let i = 0; i < fontsInUseNoDuplicates.length; i++){
+        const link = document.createElement('link');
+        link.rel = "stylesheet";
+        link.href = 'https://fonts.googleapis.com/css?family=' + fontsInUseNoDuplicates[i];
+        link.id = fontsInUseNoDuplicates[i].replace(" ", "");
+
+        newHead.appendChild(link); 
+    }
+
+    //newPageHTML headerinfo plus bodgy info
+
+    var newPageHTML = document.createElement('html');
+    newPageHTML.appendChild(newHead);
+    newPageHTML.appendChild(newBody);
+
+    console.log(newPageHTML);
+
+    editableContentValue.value = "<!DOCTYPE html>"  + newPageHTML.outerHTML;
     fileNameValue.value = selectedFile;
 
+    //console.log(editableContentValue.value);
     editableContentValue.form.submit();
     
 }
@@ -261,33 +330,33 @@ function moveLeftSlider(moveToX){
 
 async function getFile(selectedFile){
 
+    
+
     contentHTML = await getHTMLFile('/HighFlyersUkCouriers/private/app/templates/' + selectedFile);
-
-    //identify and twig templating and which files need to be fetched
-    var twigExpressionsUnfiltered = contentHTML.match(/(?<={%\s+).*?(?=\s+%})/gs);
-
-    if(twigExpressionsUnfiltered != null){
-        //converts twig file to html
-        await convertTwigToHTML(twigExpressionsUnfiltered);
-    }
-
-
-    //gets css files
-    getCSSFiles(selectedFile);
-
-
+   
     //converts html file into dom element for manipulation later on
     const parser = new DOMParser();
     editableDocument = parser.parseFromString(contentHTML, "text/html");
 
+    console.log(editableDocument);
+
+    
+
     //replace text directly in tag with p tag
     wrapDivTextInPTag(editableDocument);
-   
+
+
+    //get links from selectedpage and add into contentmanager
+    
     content.innerHTML = editableDocument.querySelector('body').innerHTML;
 
-  
+    
     //generate object tree for selected page
     generateObjectTree();
+    
+    //gets css files
+    getCSSFiles();
+   
 }
 
 function wrapDivTextInPTag(editableDocument){
@@ -326,49 +395,65 @@ async function getHTMLFile(filePath){
 
 }
 
-function getCSSFiles(selectedFile){
+//Used to print out elements in console as console.log is pass by reference not value
+function getCopyOfElement(element){
 
+    const copyOfElementDocument = parser.parseFromString(element.outerHTML, 'text/html');
+    var copyOfElement;
+    if(copyOfElementDocument.querySelector('body').childElementCount == 0){
+        copyOfElement = copyOfElementDocument.querySelector('head').firstChild;
+    }else{
+        copyOfElement = copyOfElementDocument.querySelector('body').firstChild;
+    }
+    return copyOfElement;
+}
 
-    var strippedSelectedFile = selectedFile.substring(0, selectedFile.indexOf('.'));
+function getCSSFiles(){
+
+    //remove links from previously selected file
+    for(let i = 0; i < selectedFileLinks.length; i++){
+        
+        head.removeChild(selectedFileLinks[i]);
+    }
+  
+    const selectedFileHead = editableDocument.querySelector('head');
+
+    selectedFileLinks = selectedFileHead.querySelectorAll('link');
+    fontsInUse = [];
+
+    console.log(fontsInUse);
+    console.log(selectedFileLinks);
     
-    //if css links have been added for different page then remove them before adding new ones
-    
-    if(links.length > 0){
-        console.log(links)
-        for(let i = 0; i < links.length; i++){
-            head.removeChild(links[i]);
+
+    for(let i = 0; i < selectedFileLinks.length; i++){
+        
+        head.appendChild(selectedFileLinks[i]);
+
+        if(selectedFileLinks[i].href.startsWith("https://fonts.googleapis.com/css?family=")){
             
+            //const font = selectedFileLinks[i].href.replace("https://fonts.googleapis.com/css?family=", "").replace("%20", " ");
+
+            //fontsInUse.push(font);
+        }else{
+            //add copy of link element back to orignal
+            selectedFileHead.appendChild(getCopyOfElement(selectedFileLinks[i]));
         }
-       
+
     }
 
-    links = [];
+    //get all fonts in use
 
-    //creates css links
-    var link = document.createElement('link');
- 
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'css/' + strippedSelectedFile + '.css';
+    for(let i = 0; i < allSelectedPageElements.length; i++){
 
-    links.push(link);
-    head.prepend(link);
+        if(editableElements.includes(allSelectedPageElements[i].tagName)){
+            console.log(window.getComputedStyle(allSelectedPageElements[i], null).getPropertyValue('font-family').replaceAll('"', ""));
+            fontsInUse.push(window.getComputedStyle(allSelectedPageElements[i], null).getPropertyValue('font-family').replaceAll('"', ""));
+        }
+    }
 
-    link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'css/Footer.css';
 
-    links.push(link);
-    head.prepend(link);
+    console.log(fontsInUse);
 
-    link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'css/NavigationBar.css';
-
-    links.push(link);
-    head.prepend(link);
 }
 
 async function convertTwigToHTML(twigExpressionsUnfiltered){
@@ -419,9 +504,9 @@ async function convertTwigToHTML(twigExpressionsUnfiltered){
 function selectOnChange(){
 
     selectedFile = selectPage.value
-
     getFile(selectedFile);
 }
+
 
 function generateObjectTree(){
 
@@ -496,18 +581,14 @@ function labelDoubleClick(element){
 
     if(element.tagName == "LABEL"){
 
-
         if(currentlySelected != null && currentlySelected.tagName == "LABEL"){
-            console.log("currently selected" + currentlySelected.htmlFor);
             currentlySelected.htmlFor = labelFor;
-            console.log(labelFor);    
         }
 
         labelFor = element.htmlFor;
         element.htmlFor = "";
 
-    }else if(currentlySelected.tagName == "LABEL"){
-        console.log("currently selected is label");
+    }else if(currentlySelected != null && currentlySelected.tagName == "LABEL"){
         currentlySelected.htmlFor = labelFor;
     }
 
@@ -574,15 +655,6 @@ function highlightSelectedElementObjectTree(objectTreeElement){
 
 }
 
-
-function getObjectTreeParentElement(element){
-    return element.parentElement.parentElement.parentElement.children[0];
-}
-
-function ulToAddVisibleTo(element){
-    return element.parentElement.parentElement;
-}
-
 function generateAttributes(selectedElement){
 
     const attributesWrapper = document.createElement('div');
@@ -601,20 +673,348 @@ function generateAttributes(selectedElement){
     //update attributes windows
     rightBox.replaceChildren(attributesWrapper);
 
+
+    //add event listener to colour picker
+
+    const backgroundColorPicker = document.getElementById("backgroundcolourpicker");
+    backgroundColorPicker.addEventListener('input', e =>{
+        selectedElement.style.backgroundColor = getBackgroundColor(backgroundColorPicker.value, backgroundAlphaPicker.value);
+    });
+
+    const backgroundAlphaPicker = document.getElementById("backgroundalphapicker");
+    backgroundAlphaPicker.addEventListener('input', e =>{
+        selectedElement.style.backgroundColor = getBackgroundColor(backgroundColorPicker.value, backgroundAlphaPicker.value);
+    });
+    //If text element
+    if(editableElements.includes(selectedElement.tagName)){
+        const fontColorPicker = document.getElementById("fontcolourpicker");
+        fontColorPicker.addEventListener('input', e =>{
+            selectedElement.style.color = getBackgroundColor(fontColorPicker.value, fontAlphaPicker.value);
+        });
+
+        const fontAlphaPicker = document.getElementById("fontalphapicker");
+        fontAlphaPicker.addEventListener('input', e =>{
+            console.log("fontalphapicker");
+            selectedElement.style.color = getBackgroundColor(fontColorPicker.value, fontAlphaPicker.value);
+        });
+
+
+        const fontSize = document.getElementById("fontsize");
+        fontSize.addEventListener('input', e =>{
+            console.log(fontSize.value);
+            selectedElement.style.fontSize = fontSize.value + 'px';
+        });
+
+        const fontFamily = document.getElementById("fontfamilyselector");
+        fontFamily.addEventListener('change', e =>{
+            setFontFamily(selectedElement, e.target.value);
+        });
+
+    }
+
  
 }
+
+//AIzaSyCEPmGmIT73SR0LLqVXxpAS11L_Q3FmJL8
+
+function setFontFamily(selectedElement, fontFamily){
+
+
+    console.log(fontFamily);
+
+    var selectedElementAttributes = window.getComputedStyle(selectedElement);
+
+    //remove current font from list
+
+    currentFont = selectedElementAttributes.fontFamily;
+    currentFont = currentFont.replaceAll('"', "");
+    var indexOfCurrentFont = fontsInUse.indexOf(currentFont);
+    if(indexOfCurrentFont != -1){
+        fontsInUse.splice(indexOfCurrentFont,1);
+    }
+
+    //check if link for new font is already a child of the head tag
+
+    var link = head.querySelector("#" + fontFamily.replace(" ", ""));
+
+
+    if(link == null){
+        link = document.createElement('link');
+        link.rel = "stylesheet";
+        link.id = fontFamily.replace(" ", "");
+        link.href = "https://fonts.googleapis.com/css?family=" + fontFamily;
+        head.appendChild(link);
+    }
+
+
+    // check if any other elements are using that font
+    indexOfCurrentFont = fontsInUse.indexOf(currentFont);
+
+    if(indexOfCurrentFont == -1){
+        //remove link form head
+        const link = head.querySelector('#' + currentFont.replace(' ', ''));
+
+        //if link tag exist for font
+        if(link != null){
+            head.removeChild(link);
+        }
+    }
+
+    //add newly selected font to list
+    fontsInUse.push(fontFamily);
+
+    console.log(fontsInUse);
+
+    selectedElement.style.fontFamily = fontFamily;
+
+}
+
+function getBackgroundColor(RGB, alpha){
+
+    return RGB + eightBitToHex(alpha);
+
+}
+
+function getAlphaValue(color){
+
+    var rgba = getRGBAValues(color);
+    if(rgba.length == 3){
+        return 255;
+    }
+
+    return rgba[3] * 255;
+}
+
+function hexToDecimal(hex){
+
+    var total;
+
+    for(let i = 0; i < hex.length; i++){
+        //is number
+        if(hex.charCodeAt(i) < 58){
+            total += hex.charCodeAt(i) * 16;
+        }else{
+            total += hex.charCodeAt(i) - 64;
+        }
+    }
+
+    return total + '';
+
+}
+
 
 function generateAppearanceAttributes(selectedElement){
 
     const appearanceAttributeWrapper = document.createElement('div');
+    
+    var selectedElementAttributes = window.getComputedStyle(selectedElement);
+    
 
-    var css = window.getComputedStyle(selectedElement);
+    //background colour
+    label = document.createElement('label');
+    label.innerHTML = "Background Colour";
+    label.htmlFor = "backgroundcolour";
 
+    backgroundColourPicker = document.createElement('input');
+    backgroundColourPicker.id = "backgroundcolourpicker"
+    backgroundColourPicker.name = "backgroundcolour";
+    backgroundColourPicker.type = 'color';
+    backgroundColourPicker.value = convertRGBToHex(selectedElementAttributes.backgroundColor);
     //console.log(css);
 
+    backgroundAlphaPicker = document.createElement('input');
+    backgroundAlphaPicker.id = "backgroundalphapicker";
+    backgroundAlphaPicker.type = "range";
+    backgroundAlphaPicker.min = 0;
+    backgroundAlphaPicker.max = 255;
+    backgroundAlphaPicker.value = getAlphaValue(selectedElementAttributes.backgroundColor);
 
+    appearanceAttributeWrapper.appendChild(label);
+    appearanceAttributeWrapper.appendChild(backgroundColourPicker);
+    appearanceAttributeWrapper.appendChild(backgroundAlphaPicker);
+
+    //If text element
+    if(editableElements.includes(selectedElement.tagName)){
+
+
+        label = document.createElement('label');
+        label.innerHTML = "Font Colour";
+        label.htmlFor = "fontcolourpicker";
+    
+        fontColourPicker = document.createElement('input');
+        fontColourPicker.id = "fontcolourpicker"
+        fontColourPicker.name = "fontcolour";
+        fontColourPicker.type = 'color';
+        fontColourPicker.value = convertRGBToHex(selectedElementAttributes.color);
+        //console.log(css);
+    
+        fontAlphaPicker = document.createElement('input');
+        fontAlphaPicker.id = "fontalphapicker";
+        fontAlphaPicker.type = "range";
+        fontAlphaPicker.min = 0;
+        fontAlphaPicker.max = 255;
+        fontAlphaPicker.value = getAlphaValue(selectedElementAttributes.color);
+
+        
+        appearanceAttributeWrapper.appendChild(label);
+        appearanceAttributeWrapper.appendChild(fontColourPicker);
+        appearanceAttributeWrapper.appendChild(fontAlphaPicker);
+
+
+
+        
+        label = document.createElement('label');
+        label.innerHTML = "Font Size";
+        label.htmlFor = "fontsize";
+    
+        fontSize = document.createElement('input');
+        fontSize.id = "fontsize"
+        fontSize.name = "fontsize";
+        fontSize.type = 'number';
+        fontSize.value = selectedElementAttributes.fontSize.replace("px", "");
+
+
+        appearanceAttributeWrapper.appendChild(label);
+        appearanceAttributeWrapper.appendChild(fontSize);
+
+
+        label = document.createElement('label');
+        label.innerHTML = "Font Family";
+        label.htmlFor = "fontfamilyselector";
+    
+        fontFamilySelector = document.createElement('select');
+        fontFamilySelector.id = "fontfamilyselector"
+        fontFamilySelector.name = "fontfamilyselector";
+        fontFamilySelector.type = 'text';
+
+        if(fontFamilys == 0){
+            getFontFamilys(fontFamilySelector, selectedElementAttributes);
+        }else{
+            generateFontFamilyOptions(fontFamilySelector, selectedElementAttributes);
+        }
+
+        appearanceAttributeWrapper.appendChild(label);
+        appearanceAttributeWrapper.appendChild(fontFamilySelector);
+
+    }
+    //add event listener to colour picker
     return appearanceAttributeWrapper;
 }   
+
+function generateFontFamilyOptions(fontFamilySelector, selectedElementAttributes){
+
+    for(let i = 0; i < fontFamilys.length; i++){
+        const option = document.createElement('option');
+        option.value = fontFamilys[i];
+        option.innerHTML = fontFamilys[i];
+
+        if(option.value == selectedElementAttributes.fontFamily.replaceAll('"', "")){
+            option.selected = "selected";
+        }
+
+        fontFamilySelector.appendChild(option);
+    }
+}
+
+
+async function getFontFamilys(fontFamilySelector, selectedElementAttributes){
+
+    if(fontFamilys.length == 0){
+
+        fontFamilys.push("fetching fonts");
+
+        const url = "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyCEPmGmIT73SR0LLqVXxpAS11L_Q3FmJL8";
+
+        var response = await fetch(url);
+        var json = await response.json();
+        var fonts = json['items'];
+       
+        fontFamilys = [];
+
+        for(let i = 0; i < fonts.length; i++){
+            
+            fontFamilys.push(fonts[i]['family']);
+           
+        }
+
+        generateFontFamilyOptions(fontFamilySelector, selectedElementAttributes);
+
+        console.log(fontFamilys);
+
+        
+    }
+
+
+}
+
+function eightBitToHex(number){
+
+    const hexValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+
+    hex = "";
+    hex = hex + hexValues[Math.floor(number/16)];
+    hex = hex + hexValues[number%16];
+
+    return hex;
+
+}
+
+function getRGBAValues (color){
+
+    var elementColour = color.replaceAll(" ", "");
+
+    var rgba = [];
+    
+    var indexOfComma;
+
+    const numberOfColourChannels = elementColour.length - elementColour.replaceAll(",", "").length + 1;
+
+    //get rgba integer values
+    for(let i = 0; i < numberOfColourChannels; i++){
+        indexOfComma = 0;
+        indexOfComma = elementColour.indexOf(",");
+        if(indexOfComma == -1){
+            rgba.push(elementColour.substring(0, elementColour.length - 1));
+        }else{
+            rgba.push(elementColour.substring(0, indexOfComma).replace(/\D/g,''));
+        }
+        
+        elementColour = elementColour.substring(indexOfComma + 1, elementColour.length);
+
+    }
+
+    return rgba;
+}
+
+function convertRGBToHex(color){
+
+    var rgba = getRGBAValues(color);
+
+    //convert integer rgba values to hex
+
+    var hex = "";
+    const hexValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+    
+    for(let i = 0; i < 3; i++){
+        hex = hex + hexValues[Math.floor(rgba[i]/16)];
+        hex = hex + hexValues[rgba[i]%16];
+    }
+
+    return '#' + hex;
+}
+
+
+
+function getObjectTreeParentElement(element){
+    return element.parentElement.parentElement.parentElement.children[0];
+}
+
+function ulToAddVisibleTo(element){
+    return element.parentElement.parentElement;
+}
+
+
+
 
 function getAllElements(element, array){
 

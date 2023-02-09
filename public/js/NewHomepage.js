@@ -1,7 +1,7 @@
 const slides = document.querySelectorAll('.carouselslide');
 const leftButton = document.querySelector('.leftarrowwrapper');
 const rightButton = document.querySelector('.rightarrowwrapper');
-
+var inFocus = true;
 
 const numberOfSlides = slides.length
 let carouselOffset = 100000000;
@@ -22,13 +22,27 @@ let moving = false;
 
 setTimeout(() => {carouselLoop();}, 5000);
 
+window.addEventListener('focus', (e) =>{
 
+  inFocus = true;
+  console.log(inFocus);
+});
+
+window.addEventListener('blur', (e) =>{
+
+  inFocus = false;
+  console.log(inFocus);
+});
 
 function carouselLoop() {
 
-  shiftCarouselLeft();
-  setTimeout(() => {carouselLoop();}, 5000);
+  //if tab in focus
+  if(inFocus){
+    shiftCarouselLeft();
+    
+  }
 
+  setTimeout(() => {carouselLoop();}, 5000);
 
 }
 

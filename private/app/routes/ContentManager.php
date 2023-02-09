@@ -46,22 +46,12 @@ $app->post('/content-manager', function (Request $request, Response $response) u
     $fileName = $tainted_parameters['filename'];
     $filePath = TEMPLATE_PATH . $fileName;
 
-    //get current document
-    $currentFile = file_get_contents($filePath);
-
-    //get index of end of block content
-
-    $startBlockPos = strpos($currentFile, "{% block content %}") + strlen("{% block content %}");
-    $endBlockPos = strpos($currentFile, "{% endblock %}");
-
-    $newHTML = substr($currentFile, 0, $startBlockPos);
-    $newHTML = $newHTML . $editableDocument;
-    $newHTML = $newHTML . substr($currentFile, $endBlockPos, strlen($currentFile));
- 
-
+    $newHTML = $editableDocument;
+  
     //save file
     file_put_contents($filePath, $newHTML);
   }
+
 
   return $response->withRedirect('content-manager', 302);
 
