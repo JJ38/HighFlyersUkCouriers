@@ -12,6 +12,7 @@ const saveButton = document.getElementById("savebutton");
 const editableContentValue = document.getElementById("editabledocumentvalue");
 const fontLinks = document.getElementById("fontlinks");
 const fileNameValue = document.getElementById("filename");
+const rightClickMenu = document.getElementById("rightclickmenu");
 
 
 const leftBox = contentManagerWindows[0];
@@ -209,9 +210,183 @@ midBox.addEventListener('wheel', (e) =>{
 
 });
 
+var rightClickMenuChildren = [];
+rightClickMenuChildren.push(getAllElements(rightClickMenu, rightClickMenuChildren));
+rightClickMenuChildren = rightClickMenuChildren.slice(1, rightClickMenuChildren.length - 1);
+
+var listwrappers = [];
+
+for(let i = 0; i < rightClickMenuChildren.length; i++){
+    if(rightClickMenuChildren[i].classList.contains("listwrapper")){
+        listwrappers.push(rightClickMenuChildren[i]);
+    }
+    
+}
+console.log(listwrappers);
+
+window.addEventListener('click', e => {
+
+    rightClickMenu.classList.add("hidden");
+    for(let i = 0; i < listwrappers.length; i++){
+        if(!listwrappers[i].classList.contains("rootchild")){
+            listwrappers[i].classList.add("hidden");
+        }
+        
+    }
+});
 
 
-//functions
+for(let i = 0; i < rightClickMenuChildren.length; i++){ 
+    console.log("loop");
+    rightClickMenuChildren[i].addEventListener('mouseover', e => {
+        e.stopPropagation();
+
+        console.log("MOUSEOVER");
+        if(rightClickMenuChildren[i].children.length > 0){
+            rightClickMenuChildren[i].children[0].classList.remove("hidden");
+            console.log(rightClickMenuChildren[i].children[0]);
+        
+        }
+        
+
+       
+        var allSiblingElements = Array.from(rightClickMenuChildren[i].parentElement.children);
+        
+        var siblingElements = [];
+        //remove current item from list of siblings
+        for(let j = 0; j < allSiblingElements.length; j++){
+            if(allSiblingElements[j] != rightClickMenuChildren[i]){
+                siblingElements.push(allSiblingElements[j]);
+            }
+        }
+
+        console.log(siblingElements);
+
+        var siblingElementOpen;
+
+        //find sibling elements that have children visible
+        for(let i = 0; i < siblingElements.length; i++){
+            if(siblingElements[i].children.length > 0){
+                const childElement = siblingElements[i].children[0];
+              // console.log(!childElement.classList.contains("hidden"));
+               // console.log(childElement)
+               if(!childElement.classList.contains("hidden")){
+                siblingElementOpen = siblingElements[i];
+               }
+                
+            }
+           
+        }
+
+        console.log(siblingElementOpen);
+
+        //hide all child elements
+
+        if(siblingElementOpen != null){
+            var allChildElements = [];
+            console.log(siblingElementOpen);
+            allChildElements.push(getAllElements(siblingElementOpen,allChildElements));
+            allChildElements = allChildElements.slice(1, allChildElements.length - 1);
+            console.log(allChildElements);
+            // console.log(siblingElementOpen);
+
+            
+            for(let i = 0; i < allChildElements.length; i++){
+                if(allChildElements[i].classList.contains("listwrapper")){
+                    allChildElements[i].classList.add("hidden");
+                }
+                
+            }
+
+        }
+
+    });
+
+}
+
+
+// for(let i = 0; i < rightClickMenuChildren.length; i++){ 
+
+//     rightClickMenuChildren[i].addEventListener('mouseover', e => {
+//         e.stopPropagation();
+//         console.log("MOVEOVER: ");
+
+//         //check if any sibling elements are not hidden
+//         var allSiblingElements = Array.from(rightClickMenuChildren[i].parentElement.children);
+//         //console.log(allSiblingElements);
+
+//         var siblingElements = [];
+
+//         //current item from list of siblings
+//         for(let j = 0; j < allSiblingElements.length; j++){
+//           //  console.log(allSiblingElements[j]);
+//             if(allSiblingElements[j] != rightClickMenuChildren[i]){
+//                 siblingElements.push(allSiblingElements[j]);
+//             }
+//         }
+       
+//         //console.log(siblingElements);
+
+//         var siblingElementOpen;
+
+    
+//         //find sibling elemtn that has children visible
+//         for(let i = 0; i < siblingElements.length; i++){
+//             if(siblingElements[i].children.length > 0){
+//                 const childElement = siblingElements[i].children[0];
+//               // console.log(!childElement.classList.contains("hidden"));
+//                // console.log(childElement)
+//                if(!childElement.classList.contains("hidden")){
+//                 siblingElementOpen = siblingElements[i];
+//                }
+                
+//             }
+           
+//         }
+
+
+//         //hide all children of sibling element
+//         if(siblingElementOpen != null){
+//             var allChildElements = [];
+//             console.log(siblingElementOpen);
+//             allChildElements.push(getAllElements(siblingElementOpen,allChildElements));
+//             allChildElements = allChildElements.slice(1, allChildElements.length - 1);
+//             console.log(allChildElements);
+//             // console.log(siblingElementOpen);
+
+         
+//             for(let i = 0; i < allChildElements.length; i++){
+//                 allChildElements[i].classList.add("hidden");
+//             }
+
+//         }
+
+        
+//         //remove hidden from all of child elements
+//         const elementChildren = rightClickMenuChildren[i].children;
+//         for(let j = 0; j < elementChildren.length; j++){
+//             elementChildren[j].classList.remove("hidden");
+
+
+//             //indent element correctly
+//             var level = 0;
+//             var parentElement = elementChildren[j].parentElement;
+//             while(parentElement != rightClickMenu){
+//                 level += 1;
+//                 parentElement = parentElement.parentElement;
+//             }
+//             elementChildren[j].style.paddingLeft = (level) * 20 + 'px';
+//         }
+     
+//     });
+
+   
+// }
+
+
+
+
+
 
 function savePage(){
 
@@ -338,10 +513,6 @@ async function getFile(selectedFile){
     const parser = new DOMParser();
     editableDocument = parser.parseFromString(contentHTML, "text/html");
 
-    console.log(editableDocument);
-
-    
-
     //replace text directly in tag with p tag
     wrapDivTextInPTag(editableDocument);
 
@@ -420,9 +591,6 @@ function getCSSFiles(){
 
     selectedFileLinks = selectedFileHead.querySelectorAll('link');
     fontsInUse = [];
-
-    console.log(fontsInUse);
-    console.log(selectedFileLinks);
     
 
     for(let i = 0; i < selectedFileLinks.length; i++){
@@ -446,7 +614,6 @@ function getCSSFiles(){
     for(let i = 0; i < allSelectedPageElements.length; i++){
 
         if(editableElements.includes(allSelectedPageElements[i].tagName)){
-            console.log(window.getComputedStyle(allSelectedPageElements[i], null).getPropertyValue('font-family').replaceAll('"', ""));
             fontsInUse.push(window.getComputedStyle(allSelectedPageElements[i], null).getPropertyValue('font-family').replaceAll('"', ""));
         }
     }
@@ -515,7 +682,6 @@ function generateObjectTree(){
 
     var parentElement = root;
 
-    //objectTreeDom.innerHTML = '';
     objectTreeDom.replaceChildren(getChildElements(parentElement, 1));
 
     document.querySelector('.objecttree').innerHTML = objectTreeDom.innerHTML;
@@ -562,6 +728,7 @@ function generateObjectTree(){
         filteredAllObjectTreeElements[i].addEventListener('click', e => {
             e.stopPropagation();
             elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i]);
+            rightClickMenu.classList.add("hidden");
 
         });
 
@@ -573,8 +740,28 @@ function generateObjectTree(){
             elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i]);
            
         });
+
+        filteredAllObjectTreeElements[i].addEventListener('contextmenu', (e) => {
+            e.preventDefault();//stops context menu showing
+            rightClickMenu.style.left = e.clientX + "px";
+            rightClickMenu.style.top = e.clientY + "px";
+            rightClickMenu.classList.remove("hidden");
+       
+         
+        });
+
+        filteredAllObjectTreeElements[i].addEventListener('focusout', (e) => {
+            e.preventDefault();//stops context menu showing
+            rightClickMenu.classList.add("hidden");
+         
+        });
+
     }
 }
+
+
+
+
 
 function labelDoubleClick(element){
     const currentlySelected = document.querySelector('.objecttreeselectoutline');

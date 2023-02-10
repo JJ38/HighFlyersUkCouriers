@@ -133,7 +133,6 @@ select.selectpage{
 }
 
 li{
-
   list-style: none;
   margin: 0;
   padding: 0;
@@ -181,3 +180,47 @@ div.expandablelist{
 #save{
   
 }
+
+.rightclickmenu{
+  list-style: armenian;
+  position: absolute;
+  padding: 5px;
+  background-color: grey;
+  color: white;
+  z-index: 2;
+}
+
+.hidden{
+  display: none;
+}
+
+.rightclickmenustep{
+  margin: 0;
+}
+
+/* .rightclickmenulistitem{
+  list-style: decimal;
+} */
+
+.rightclickmentunorderedlist{
+  padding-left: 40px;
+}
+
+.listwrapper{
+  position: absolute;
+  top: -5px;
+  left: 100%;
+  padding: 5px;
+  background-color: grey;
+}
+
+.list{
+  position: relative;
+ 
+}
+
+
+
+
+
+
