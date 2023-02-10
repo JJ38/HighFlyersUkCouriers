@@ -13,6 +13,8 @@ const editableContentValue = document.getElementById("editabledocumentvalue");
 const fontLinks = document.getElementById("fontlinks");
 const fileNameValue = document.getElementById("filename");
 const rightClickMenu = document.getElementById("rightclickmenu");
+const beforeText = document.getElementById("beforetext");
+const afterText = document.getElementById("aftertext");
 
 
 const leftBox = contentManagerWindows[0];
@@ -41,6 +43,8 @@ let fontFamilys = [];
 let fontsInUse = [];
 let lastFontInUse;
 let selectedFileLinks = [];
+let selectedElementRightClick;
+let selectedObjectTreeElementRightClick;
 
 
 let leftWidth = sidebarWidth;
@@ -207,8 +211,84 @@ midBox.addEventListener('wheel', (e) =>{
     contentScale = contentScale + scaleAmount;
     content.style.transform = matrix;
 
-
 });
+
+
+beforeText.addEventListener('click', e => {
+    console.log(selectedElementRightClick);
+    
+    
+
+
+    const parentElement = selectedObjectTreeElementRightClick.parentElement.parentElement;
+    const insertBeforeElement = selectedObjectTreeElementRightClick.parentElement;
+
+    const newObjectTreeElement = document.createElement('li');
+    const newObjectTreeElementDiv = document.createElement('div');
+    newObjectTreeElementDiv.innerHTML = "P";
+    newObjectTreeElementDiv.style.padding
+    newObjectTreeElement.appendChild(newObjectTreeElementDiv);
+
+
+    parentElement.insertBefore(newObjectTreeElement, insertBeforeElement);
+
+
+    const newText = document.createElement('p');
+    newText.innerHTML = "Newly added text";
+    newText.style.margin = 0;
+
+    //select new text in object tree and in editable window
+    selectedElementRightClick.parentElement.insertBefore(newText, selectedElementRightClick);
+ 
+    //add event listeners
+    newObjectTreeElementDiv.addEventListener('click', e => {
+        e.stopPropagation();
+        elementSelect(newObjectTreeElementDiv, newText);
+        rightClickMenu.classList.add("hidden");
+
+    });
+
+    newText.addEventListener('dblclick', e => {
+        e.stopPropagation(newText);
+
+        labelDoubleClick(newText);
+
+        elementSelect(newObjectTreeElementDiv, newText);
+       
+    });
+
+    newObjectTreeElementDiv.addEventListener('mouseover', e => {
+        e.stopPropagation();
+        newText.classList.add('objecttreehoveroutline');
+       
+    });
+
+    newObjectTreeElementDiv.addEventListener('mouseout', e => {
+        e.stopPropagation();
+        newText.classList.remove('objecttreehoveroutline');
+       
+    });
+
+    newObjectTreeElementDiv.addEventListener('contextmenu', (e) => {
+        e.preventDefault();//stops context menu showing
+        selectedElementRightClick = newText;
+        selectedObjectTreeElementRightClick = newObjectTreeElementDiv;
+        rightClickMenu.style.left = e.clientX + "px";
+        rightClickMenu.style.top = e.clientY + "px";
+        rightClickMenu.classList.remove("hidden");
+   
+     
+    });
+
+    elementSelect(newObjectTreeElementDiv, newText);
+});
+
+
+afterText.addEventListener('click', e => {
+    console.log("after text");
+    console.log(selectedElementRightClick);
+});
+
 
 var rightClickMenuChildren = [];
 rightClickMenuChildren.push(getAllElements(rightClickMenu, rightClickMenuChildren));
@@ -222,7 +302,6 @@ for(let i = 0; i < rightClickMenuChildren.length; i++){
     }
     
 }
-console.log(listwrappers);
 
 window.addEventListener('click', e => {
 
@@ -241,10 +320,9 @@ for(let i = 0; i < rightClickMenuChildren.length; i++){
     rightClickMenuChildren[i].addEventListener('mouseover', e => {
         e.stopPropagation();
 
-        console.log("MOUSEOVER");
         if(rightClickMenuChildren[i].children.length > 0){
             rightClickMenuChildren[i].children[0].classList.remove("hidden");
-            console.log(rightClickMenuChildren[i].children[0]);
+
         
         }
         
@@ -260,7 +338,6 @@ for(let i = 0; i < rightClickMenuChildren.length; i++){
             }
         }
 
-        console.log(siblingElements);
 
         var siblingElementOpen;
 
@@ -268,8 +345,6 @@ for(let i = 0; i < rightClickMenuChildren.length; i++){
         for(let i = 0; i < siblingElements.length; i++){
             if(siblingElements[i].children.length > 0){
                 const childElement = siblingElements[i].children[0];
-              // console.log(!childElement.classList.contains("hidden"));
-               // console.log(childElement)
                if(!childElement.classList.contains("hidden")){
                 siblingElementOpen = siblingElements[i];
                }
@@ -278,18 +353,11 @@ for(let i = 0; i < rightClickMenuChildren.length; i++){
            
         }
 
-        console.log(siblingElementOpen);
-
         //hide all child elements
-
         if(siblingElementOpen != null){
             var allChildElements = [];
-            console.log(siblingElementOpen);
             allChildElements.push(getAllElements(siblingElementOpen,allChildElements));
             allChildElements = allChildElements.slice(1, allChildElements.length - 1);
-            console.log(allChildElements);
-            // console.log(siblingElementOpen);
-
             
             for(let i = 0; i < allChildElements.length; i++){
                 if(allChildElements[i].classList.contains("listwrapper")){
@@ -303,88 +371,6 @@ for(let i = 0; i < rightClickMenuChildren.length; i++){
     });
 
 }
-
-
-// for(let i = 0; i < rightClickMenuChildren.length; i++){ 
-
-//     rightClickMenuChildren[i].addEventListener('mouseover', e => {
-//         e.stopPropagation();
-//         console.log("MOVEOVER: ");
-
-//         //check if any sibling elements are not hidden
-//         var allSiblingElements = Array.from(rightClickMenuChildren[i].parentElement.children);
-//         //console.log(allSiblingElements);
-
-//         var siblingElements = [];
-
-//         //current item from list of siblings
-//         for(let j = 0; j < allSiblingElements.length; j++){
-//           //  console.log(allSiblingElements[j]);
-//             if(allSiblingElements[j] != rightClickMenuChildren[i]){
-//                 siblingElements.push(allSiblingElements[j]);
-//             }
-//         }
-       
-//         //console.log(siblingElements);
-
-//         var siblingElementOpen;
-
-    
-//         //find sibling elemtn that has children visible
-//         for(let i = 0; i < siblingElements.length; i++){
-//             if(siblingElements[i].children.length > 0){
-//                 const childElement = siblingElements[i].children[0];
-//               // console.log(!childElement.classList.contains("hidden"));
-//                // console.log(childElement)
-//                if(!childElement.classList.contains("hidden")){
-//                 siblingElementOpen = siblingElements[i];
-//                }
-                
-//             }
-           
-//         }
-
-
-//         //hide all children of sibling element
-//         if(siblingElementOpen != null){
-//             var allChildElements = [];
-//             console.log(siblingElementOpen);
-//             allChildElements.push(getAllElements(siblingElementOpen,allChildElements));
-//             allChildElements = allChildElements.slice(1, allChildElements.length - 1);
-//             console.log(allChildElements);
-//             // console.log(siblingElementOpen);
-
-         
-//             for(let i = 0; i < allChildElements.length; i++){
-//                 allChildElements[i].classList.add("hidden");
-//             }
-
-//         }
-
-        
-//         //remove hidden from all of child elements
-//         const elementChildren = rightClickMenuChildren[i].children;
-//         for(let j = 0; j < elementChildren.length; j++){
-//             elementChildren[j].classList.remove("hidden");
-
-
-//             //indent element correctly
-//             var level = 0;
-//             var parentElement = elementChildren[j].parentElement;
-//             while(parentElement != rightClickMenu){
-//                 level += 1;
-//                 parentElement = parentElement.parentElement;
-//             }
-//             elementChildren[j].style.paddingLeft = (level) * 20 + 'px';
-//         }
-     
-//     });
-
-   
-// }
-
-
-
 
 
 
@@ -743,6 +729,8 @@ function generateObjectTree(){
 
         filteredAllObjectTreeElements[i].addEventListener('contextmenu', (e) => {
             e.preventDefault();//stops context menu showing
+            selectedElementRightClick = filteredAllSelectedTreeElements[i];
+            selectedObjectTreeElementRightClick = filteredAllObjectTreeElements[i];
             rightClickMenu.style.left = e.clientX + "px";
             rightClickMenu.style.top = e.clientY + "px";
             rightClickMenu.classList.remove("hidden");
@@ -750,11 +738,6 @@ function generateObjectTree(){
          
         });
 
-        filteredAllObjectTreeElements[i].addEventListener('focusout', (e) => {
-            e.preventDefault();//stops context menu showing
-            rightClickMenu.classList.add("hidden");
-         
-        });
 
     }
 }
@@ -1191,7 +1174,6 @@ function convertRGBToHex(color){
 }
 
 
-
 function getObjectTreeParentElement(element){
     return element.parentElement.parentElement.parentElement.children[0];
 }
@@ -1199,8 +1181,6 @@ function getObjectTreeParentElement(element){
 function ulToAddVisibleTo(element){
     return element.parentElement.parentElement;
 }
-
-
 
 
 function getAllElements(element, array){

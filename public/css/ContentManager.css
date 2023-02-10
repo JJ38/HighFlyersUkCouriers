@@ -169,12 +169,14 @@ div.expandablelist{
 
 .objecttreehoveroutline{
   box-sizing: border-box;
-  border: solid 1px black;
+  border: solid 3px rgb(64, 170, 206);
+  box-shadow: 0px 0px 5px rgb(64, 170, 206);
 }
 
 .objecttreeselectoutline{
   box-sizing: border-box;
-  border: solid 10px pink;
+  border: solid 8px pink;
+  box-shadow: 0px 0px 10px pink;
 }
 
 #save{
@@ -185,8 +187,9 @@ div.expandablelist{
   list-style: armenian;
   position: absolute;
   padding: 5px;
-  background-color: grey;
-  color: white;
+  background-color: white;
+  color: black;
+  box-shadow: 0px 0px 5px black;
   z-index: 2;
 }
 
@@ -194,9 +197,7 @@ div.expandablelist{
   display: none;
 }
 
-.rightclickmenustep{
-  margin: 0;
-}
+
 
 /* .rightclickmenulistitem{
   list-style: decimal;
@@ -209,14 +210,15 @@ div.expandablelist{
 .listwrapper{
   position: absolute;
   top: -5px;
-  left: 100%;
+  left: calc(100% + 5px);
   padding: 5px;
-  background-color: grey;
+  background-color: white;
+  box-shadow: 0px 0px 5px black;
 }
 
 .list{
   position: relative;
- 
+  
 }
 
 
