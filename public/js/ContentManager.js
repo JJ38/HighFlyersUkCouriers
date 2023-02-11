@@ -716,6 +716,21 @@ function addEventListenersToSelectedPage(objectTreeElement, selectedPageElement)
         rightClickMenu.classList.remove("hidden");
      
     });
+
+    selectedPageElement.addEventListener('contextmenu', (e) => {
+        e.stopPropagation(selectedPageElement);
+        e.preventDefault();//stops context menu showing
+
+        //check if element is selected
+        if(selectedPageElement.classList.contains("objecttreeselectoutline")){
+            selectedElementRightClick = selectedPageElement;
+            selectedObjectTreeElementRightClick = objectTreeElement;
+            rightClickMenu.style.left = e.clientX + "px";
+            rightClickMenu.style.top = e.clientY + "px";
+            rightClickMenu.classList.remove("hidden");
+        }
+     
+    });
 }
 
 
