@@ -15,6 +15,7 @@ const fileNameValue = document.getElementById("filename");
 const rightClickMenu = document.getElementById("rightclickmenu");
 const beforeText = document.getElementById("beforetext");
 const afterText = document.getElementById("aftertext");
+const deleteOption = document.getElementById("deleteoption");
 
 
 const leftBox = contentManagerWindows[0];
@@ -224,6 +225,10 @@ afterText.addEventListener('click', e => {
     createNewTextElement(selectedElementRightClick,"AFTER");
 });
 
+deleteOption.addEventListener('click', e => {
+    selectedElementRightClick.remove();
+    selectedObjectTreeElementRightClick.remove();
+});
 
 var rightClickMenuChildren = [];
 rightClickMenuChildren.push(getAllElements(rightClickMenu, rightClickMenuChildren));
