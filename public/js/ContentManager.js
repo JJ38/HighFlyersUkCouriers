@@ -215,78 +215,13 @@ midBox.addEventListener('wheel', (e) =>{
 
 
 beforeText.addEventListener('click', e => {
-    console.log(selectedElementRightClick);
     
-    
-
-
-    const parentElement = selectedObjectTreeElementRightClick.parentElement.parentElement;
-    const insertBeforeElement = selectedObjectTreeElementRightClick.parentElement;
-
-    const newObjectTreeElement = document.createElement('li');
-    const newObjectTreeElementDiv = document.createElement('div');
-    newObjectTreeElementDiv.innerHTML = "P";
-    newObjectTreeElementDiv.style.padding
-    newObjectTreeElement.appendChild(newObjectTreeElementDiv);
-
-
-    parentElement.insertBefore(newObjectTreeElement, insertBeforeElement);
-
-
-    const newText = document.createElement('p');
-    newText.innerHTML = "Newly added text";
-    newText.style.margin = 0;
-
-    //select new text in object tree and in editable window
-    selectedElementRightClick.parentElement.insertBefore(newText, selectedElementRightClick);
- 
-    //add event listeners
-    newObjectTreeElementDiv.addEventListener('click', e => {
-        e.stopPropagation();
-        elementSelect(newObjectTreeElementDiv, newText);
-        rightClickMenu.classList.add("hidden");
-
-    });
-
-    newText.addEventListener('dblclick', e => {
-        e.stopPropagation(newText);
-
-        labelDoubleClick(newText);
-
-        elementSelect(newObjectTreeElementDiv, newText);
-       
-    });
-
-    newObjectTreeElementDiv.addEventListener('mouseover', e => {
-        e.stopPropagation();
-        newText.classList.add('objecttreehoveroutline');
-       
-    });
-
-    newObjectTreeElementDiv.addEventListener('mouseout', e => {
-        e.stopPropagation();
-        newText.classList.remove('objecttreehoveroutline');
-       
-    });
-
-    newObjectTreeElementDiv.addEventListener('contextmenu', (e) => {
-        e.preventDefault();//stops context menu showing
-        selectedElementRightClick = newText;
-        selectedObjectTreeElementRightClick = newObjectTreeElementDiv;
-        rightClickMenu.style.left = e.clientX + "px";
-        rightClickMenu.style.top = e.clientY + "px";
-        rightClickMenu.classList.remove("hidden");
-   
-     
-    });
-
-    elementSelect(newObjectTreeElementDiv, newText);
+    createNewTextElement(selectedElementRightClick,"BEFORE");
 });
 
 
 afterText.addEventListener('click', e => {
-    console.log("after text");
-    console.log(selectedElementRightClick);
+    createNewTextElement(selectedElementRightClick,"AFTER");
 });
 
 
@@ -372,6 +307,39 @@ for(let i = 0; i < rightClickMenuChildren.length; i++){
 
 }
 
+function createNewTextElement(selectedElementRightClick, insertPosition){
+
+    const parentElement = selectedObjectTreeElementRightClick.parentElement.parentElement;
+    const insertBeforeElement = selectedObjectTreeElementRightClick.parentElement;
+
+    const newObjectTreeElement = document.createElement('li');
+    const newObjectTreeElementDiv = document.createElement('div');
+    newObjectTreeElementDiv.innerHTML = "P";
+    newObjectTreeElementDiv.style.padding
+    newObjectTreeElement.appendChild(newObjectTreeElementDiv);
+
+
+
+
+    const newText = document.createElement('p');
+    newText.innerHTML = "Newly added text";
+    newText.style.margin = 0;
+
+    if(insertPosition == "BEFORE"){
+        
+        parentElement.insertBefore(newObjectTreeElement, insertBeforeElement);
+        selectedElementRightClick.parentElement.insertBefore(newText, selectedElementRightClick);
+    }else{
+        parentElement.insertBefore(newObjectTreeElement, insertBeforeElement.nextElementSibling);
+        selectedElementRightClick.parentElement.insertBefore(newText, selectedElementRightClick.nextElementSibling);
+    }
+
+    addEventListenersToSelectedPage(newObjectTreeElementDiv, newText);
+
+    elementSelect(newObjectTreeElementDiv, newText);
+
+    return newText;
+}
 
 
 function savePage(){
@@ -699,47 +667,50 @@ function generateObjectTree(){
 
     //adds event listeners to object tree to interact with corrosponding selected page element
     for(let i = 0; i < filteredAllSelectedTreeElements.length; i++){
-        filteredAllObjectTreeElements[i].addEventListener('mouseover', e => {
-            e.stopPropagation();
-            filteredAllSelectedTreeElements[i].classList.add('objecttreehoveroutline');
-           
-        });
 
-        filteredAllObjectTreeElements[i].addEventListener('mouseout', e => {
-            e.stopPropagation();
-            filteredAllSelectedTreeElements[i].classList.remove('objecttreehoveroutline');
-           
-        });
-
-        filteredAllObjectTreeElements[i].addEventListener('click', e => {
-            e.stopPropagation();
-            elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i]);
-            rightClickMenu.classList.add("hidden");
-
-        });
-
-        filteredAllSelectedTreeElements[i].addEventListener('dblclick', e => {
-            e.stopPropagation(filteredAllSelectedTreeElements[i]);
-
-            labelDoubleClick(filteredAllSelectedTreeElements[i]);
-
-            elementSelect(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i]);
-           
-        });
-
-        filteredAllObjectTreeElements[i].addEventListener('contextmenu', (e) => {
-            e.preventDefault();//stops context menu showing
-            selectedElementRightClick = filteredAllSelectedTreeElements[i];
-            selectedObjectTreeElementRightClick = filteredAllObjectTreeElements[i];
-            rightClickMenu.style.left = e.clientX + "px";
-            rightClickMenu.style.top = e.clientY + "px";
-            rightClickMenu.classList.remove("hidden");
-       
-         
-        });
-
-
+        addEventListenersToSelectedPage(filteredAllObjectTreeElements[i], filteredAllSelectedTreeElements[i]);
     }
+}
+
+function addEventListenersToSelectedPage(objectTreeElement, selectedPageElement){
+
+    objectTreeElement.addEventListener('mouseover', e => {
+        e.stopPropagation();
+        selectedPageElement.classList.add('objecttreehoveroutline');
+       
+    });
+
+    objectTreeElement.addEventListener('mouseout', e => {
+        e.stopPropagation();
+        selectedPageElement.classList.remove('objecttreehoveroutline');
+       
+    });
+
+    objectTreeElement.addEventListener('click', e => {
+        e.stopPropagation();
+        elementSelect(objectTreeElement, selectedPageElement);
+        rightClickMenu.classList.add("hidden");
+
+    });
+
+    selectedPageElement.addEventListener('dblclick', e => {
+        e.stopPropagation(selectedPageElement);
+
+        labelDoubleClick(selectedPageElement);
+
+        elementSelect(objectTreeElement, selectedPageElement);
+       
+    });
+
+    objectTreeElement.addEventListener('contextmenu', (e) => {
+        e.preventDefault();//stops context menu showing
+        selectedElementRightClick = selectedPageElement;
+        selectedObjectTreeElementRightClick = objectTreeElement;
+        rightClickMenu.style.left = e.clientX + "px";
+        rightClickMenu.style.top = e.clientY + "px";
+        rightClickMenu.classList.remove("hidden");
+     
+    });
 }
 
 
