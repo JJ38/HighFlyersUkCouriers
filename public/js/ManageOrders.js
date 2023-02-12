@@ -1,14 +1,16 @@
 
 const printButtons = document.querySelectorAll('.print');
-const orderData = document.querySelectorAll('tr')
-
-console.log(orderData[0]);
+const orderData = document.querySelectorAll('tr');
 
 for(let i = 0; i < printButtons.length; i++){
     printButtons[i].addEventListener('click', e => {
         printPage(i + 1);
     });
 }
+
+// const scrollableArea = document.querySelector('.orderdata');
+
+// scrollableArea.scrollTo({top: 0, left: -scrollableArea.scrollWidth});
 
 
 function closePrint() {

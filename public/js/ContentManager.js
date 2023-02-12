@@ -709,11 +709,13 @@ function addEventListenersToSelectedPage(objectTreeElement, selectedPageElement)
 
     objectTreeElement.addEventListener('contextmenu', (e) => {
         e.preventDefault();//stops context menu showing
-        selectedElementRightClick = selectedPageElement;
-        selectedObjectTreeElementRightClick = objectTreeElement;
-        rightClickMenu.style.left = e.clientX + "px";
-        rightClickMenu.style.top = e.clientY + "px";
-        rightClickMenu.classList.remove("hidden");
+        if(objectTreeElement.innerHTML.replaceAll(" ", "").replace("v", "") != "BODY"){
+            selectedElementRightClick = selectedPageElement;
+            selectedObjectTreeElementRightClick = objectTreeElement;
+            rightClickMenu.style.left = e.clientX + "px";
+            rightClickMenu.style.top = e.clientY + "px";
+            rightClickMenu.classList.remove("hidden");
+        }
      
     });
 
@@ -722,7 +724,8 @@ function addEventListenersToSelectedPage(objectTreeElement, selectedPageElement)
         e.preventDefault();//stops context menu showing
 
         //check if element is selected
-        if(selectedPageElement.classList.contains("objecttreeselectoutline")){
+        if(selectedPageElement.classList.contains("objecttreeselectoutline") && !selectedPageElement.classList.contains("content")){
+            console.log(selectedPageElement);
             selectedElementRightClick = selectedPageElement;
             selectedObjectTreeElementRightClick = objectTreeElement;
             rightClickMenu.style.left = e.clientX + "px";

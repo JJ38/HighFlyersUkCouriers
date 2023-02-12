@@ -118,3 +118,8 @@ select.payment{
   border-radius: 16px;
   border: none;
 }
+
+div.orderdatawrapper{
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+}

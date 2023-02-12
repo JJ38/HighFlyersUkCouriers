@@ -87,17 +87,20 @@ div.searchbar{
   border-radius: 2em;
   width: auto;
   height: auto;
-  overflow: hidden
+
 }
 
 div.orderdata{
+  direction: rtl;
   padding: 0 1em;
   height: 60vh;
-  overflow-y: auto;
 
 }
 
 table{
+  position: absolute;
+  left:0;
+  direction: ltr;
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -113,7 +116,6 @@ th{
 }
 
 td{
-
   padding: 1em;
   font-weight: 100;
   vertical-align: top;
@@ -132,8 +134,44 @@ tr:last-of-type{
   top: 0;
   background-color: white;
   border-bottom: none;
+  z-index: 2;
 }
 
 div.tabledata{
-  overflow-y: scroll;
+
 }
+
+
+td.orderbuttons{
+  margin: auto;
+  position: sticky;
+  right: 0px;
+  background-color: white;
+ 
+}
+
+div.orderdatawrapper{
+  position: relative;
+  overflow: scroll;
+}
+
+::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: none;
+	background-color: #ffffff00;
+}
+
+::-webkit-scrollbar
+{
+	width: 10px;
+  height: 10px;
+	
+}
+
+::-webkit-scrollbar-thumb
+{
+  border-radius: 5px;
+	background-color: lightgrey;
+	border: none;
+}
+
