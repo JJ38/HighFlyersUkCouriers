@@ -125,11 +125,19 @@ function cleanUserData($container, $tainted_user_data) : array{
 
     $cleaned_parameters = [];
 
-    $validator = $container->get('validator');
     $sanitizer =  $container->get('sanitizer');
 
-    $cleaned_parameters['username'] = $sanitizer->sanitizeUsername($tainted_user_data['username']);
-    $cleaned_parameters['accountType'] = $validator->validateAccountType($tainted_user_data['isadmin']);
     $cleaned_parameters['password'] = $tainted_user_data['password'];
+    
+    $cleaned_parameters['username'] = $sanitizer->sanitizeUsername($tainted_user_data['username']);
+   
+    $cleaned_parameters['accountType'] = $sanitizer->sanitizeBoolean($tainted_user_data['isadmin']);
+    if(empty($cleaned_parameters['accountType']) || empty($cleaned_parameters['username'])){     
+        $cleaned_parameters = [];
+    }
+   
+
+
+
     return $cleaned_parameters;
 }
