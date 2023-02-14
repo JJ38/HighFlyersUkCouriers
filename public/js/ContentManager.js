@@ -521,7 +521,11 @@ function wrapDivTextInPTag(editableDocument){
 
 async function getHTMLFile(filePath){
     //gets html file
-    return await fetch(filePath).then(response => response.text());
+    return await fetch(filePath, {
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      }).then(response => response.text());
 
 }
 

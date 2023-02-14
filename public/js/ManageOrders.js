@@ -8,11 +8,6 @@ for(let i = 0; i < printButtons.length; i++){
     });
 }
 
-// const scrollableArea = document.querySelector('.orderdata');
-
-// scrollableArea.scrollTo({top: 0, left: -scrollableArea.scrollWidth});
-
-
 function closePrint() {
     document.body.removeChild(this.__container__);
   }

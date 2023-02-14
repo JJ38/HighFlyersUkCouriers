@@ -87,7 +87,7 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
       }
 
       $manage_order_model->generateHTMLFromData();
-      $HTML_order_data = $manage_order_model->getHTMLOrderData();
+      
 
       // $response->getBody()->write('<pre>' . var_export($manage_order_model->getOrderData(), true) . '</pre>');
       // return $response;

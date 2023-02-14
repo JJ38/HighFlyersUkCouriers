@@ -10,7 +10,35 @@
           </nav>
         </header>
         <div id="maincontent">
-          manage accounts
+          <div class="searchbar bubble">
+              <div class="searchoption">Filter</div>
+              <form action="/HighFlyersUkCouriers/public/manage-orders" method="get">
+                <select class="searchoption" name="field" id="filter">
+                  <option disabled selected value> -- select an option -- </option>
+                  <option value="id">ID</option>
+                  <option value="username">Username</option>
+                  <option value="admin">Type</option>
+                </select>
+                <input class="searchoption" type="text" id="search" name="filter" placeholder="search value">
+                <button class="searchoption" type="submit">Search</button>
+              </form>
+              <a href="/HighFlyersUkCouriers/public/add-user">
+                <button class="searchoption" type="button">Add</button>
+              </a>
+            </div>
+          <div class="bubble">         
+              <div class="userdata">
+                <table>
+                    <tr class="headerrow">
+                      <th>ID</th>
+                      <th>Username</th>
+                      <th>Type</th>     
+                      <th>Timestamp</th>     
+                    </tr>     
+                    {{ userdata|raw }}
+                </table>
+              </div>     
+            </div>
         </div>
       </div>
     {% endblock %}

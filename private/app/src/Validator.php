@@ -32,6 +32,23 @@ class Validator
 
     }
 
+    public function validateAccountType(string $tainted_account_type) : string
+    {
+
+      $cleaned_option = '';
+
+      if($tainted_account_type == 'Admin' || $tainted_account_type == 'Staff')
+      {
+        $cleaned_option = $tainted_account_type;
+        $this->validateResult = true;
+      }else{
+        $this->validateResult = false;
+      }
+
+      return $cleaned_option;
+
+    }
+
     public function validatePositiveNumber(int $tainted_number) : int
     {
 
@@ -94,12 +111,7 @@ class Validator
 
     }
 
-    public function validateString(string $tainted_string) : string
-    {
-
-
-
-    }
+  
 
 
 }

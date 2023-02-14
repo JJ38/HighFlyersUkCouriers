@@ -278,7 +278,7 @@ class DoctrineWrapper
 
         try {
             $query_builder = $this->query_builder
-                ->select('u.username')
+                ->select('u.id', 'u.username', 'u.admin', 'u.user_created_timestamp')
                 ->from('users', 'u')
                 ->orderBy('u.username', 'DESC');
 
@@ -364,7 +364,7 @@ class DoctrineWrapper
      * @param string $cleaned_username
      * @param string $cleaned_password
      */
-    public function storeUserDetails(string $cleaned_username, string $cleaned_password) : void
+    public function storeUserDetails(string $cleaned_username, string $cleaned_password, string $cleaned_is_admin) : void
     {
         $store_result = false;
 
@@ -373,11 +373,13 @@ class DoctrineWrapper
                 ->insert('users')
                 ->values(array(
                     'username' => ':username',
-                    'password' => ':password'
+                    'password' => ':password',
+                    'admin' => ':admin'
                 ))
                 ->setParameters(array(
                     'username' => $cleaned_username,
-                    'password' => $cleaned_password
+                    'password' => $cleaned_password,
+                    'admin' => $cleaned_is_admin
                 ));
 
             $store_result = $query_builder->execute();

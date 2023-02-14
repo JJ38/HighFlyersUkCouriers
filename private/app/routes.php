@@ -19,3 +19,4 @@ require "routes/EditOrder.php";
 require "routes/DeleteOrder.php";
 require "routes/AddOrder.php";
 require "routes/ContentManager.php";
+require "routes/AddUser.php";

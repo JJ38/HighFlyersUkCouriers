@@ -5,7 +5,7 @@
 
 html,
 body {
-  height: 100vh;
+  height: 100%;
   margin: 0;
   font-family: 'inter', sans-serif;
   font-style: normal;
@@ -21,9 +21,7 @@ body {
   height: 100%;
 }
 
-.box .row {
-  border: 1px dotted grey;
-}
+
 
 header {
   flex: 0 1 auto;
@@ -35,7 +33,6 @@ header {
 }
 
 nav {
-  align: center;
   padding: 2em;
 }
 
@@ -136,11 +133,6 @@ tr:last-of-type{
   border-bottom: none;
   z-index: 2;
 }
-
-div.tabledata{
-
-}
-
 
 td.orderbuttons{
   margin: auto;

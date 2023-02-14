@@ -1,0 +1,52 @@
+{% extends 'boilerplate.twig' %}
+    {% block content %}
+   
+      <header>
+        <nav id="menu">
+          <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-orders">Back</a>
+        </nav>
+      </header>
+      <div id="maincontent">
+        <section class="formSection">
+          <form class="contactUsForm" action="/HighFlyersUkCouriers/public/add-user" method="post">
+            <table>
+
+              <tr>
+                <td>
+                  <label for="username">Username: </label>
+                </td>
+                <td>
+                  <input id="username" name="username" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="password">Password: </label>
+                </td>
+                <td>
+                  <input id="password" name="password" type="text" minlength="8" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="isadmin">Payment on Delivery or Collection?: </label>
+                </td>
+                <td>
+                    <select name="isadmin" id="isadmin" required>
+                        <option value=""> -- select an option -- </option>
+                        <option value="true">Admin</option>
+                        <option value="false">Staff</option>
+                    </select>
+                </td>
+              </tr>
+            </table>
+
+            <input class="submitButton" type="submit" value="submit" aria-label="Submit">
+          </form>
+        </section>
+      </div>
+
+
+    {% endblock %}
