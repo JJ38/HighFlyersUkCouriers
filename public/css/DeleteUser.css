@@ -20,7 +20,7 @@ header {
 }
 
 nav {
-
+  align: center;
   padding: 2.5em;
 }
 
@@ -38,10 +38,8 @@ nav a {
 
 
 #maincontent {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1 1 auto;
+
+  flex: 0 1 auto;
   /* The above is shorthand for:
   flex-grow: 1, this is about ratio this works because header is 0
   flex-shrink: 1,
@@ -51,20 +49,29 @@ nav a {
 
 }
 
-section.formSection{
-  display: flex;
-  margin: 0 auto;
-  align-items: center;
-}
+div.form{
+  display: inline-block;
+  margin: 0 50%;
+  transform: translateX(-50%);
 
-.submitButton{
-  align-self: center;
-}
-.contactUsForm{
-  display: flex;
-  flex-direction: column;
+  /* min-width: 50vw; */
+
 }
 
 td{
-  vertical-align: top;
+  width: auto;
+  padding: 0 3em;
+  white-space:nowrap;
+}
+
+form{
+  display: flex;
+  margin: 0 auto;
+  justify-content: center;
+
+}
+
+div.formItem{
+  margin: 1em;
+  max-width: 45vw;
 }

@@ -47,4 +47,5 @@ function logoutUser($app) : void
     $session_wrapper = $app->getContainer()->get('sessionWrapper');
 
     $session_wrapper->unsetSessionVar('user');
+    $session_wrapper->unsetSessionVar('accountType');
 }

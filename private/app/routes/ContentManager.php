@@ -6,12 +6,14 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 $app->get('/content-manager', function (Request $request, Response $response) use ($app) : Response{
 
 $is_authenticated = $request->getAttribute('isAuthenticated');
+$is_admin = $request->getAttribute('isAdmin');
 
-  if($is_authenticated){
+  if($is_authenticated && $is_admin){
 
     return $this->view->render($response,'ContentManager.twig', array(
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "ContentManager.css",
+            'css_nav_file' => CSS_PATH . "NavigationBar.css",
             'asset_path' => ASSET_PATH,
             'js_file' => JS_PATH . "ContentManager.js",
             'landing_page' => __FILE__,

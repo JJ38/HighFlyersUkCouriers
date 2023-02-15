@@ -8,8 +8,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 $app->get('/add-user[/usernameavailable]', function (Request $request, Response $response, $args) use ($app) : Response{
 
   $is_authenticated = $request->getAttribute('isAuthenticated');
+  $is_admin = $request->getAttribute('isAdmin');
 
-  if($is_authenticated){
+  if($is_authenticated && $is_admin){
 
     $container = $app->getContainer();
     
@@ -118,7 +119,7 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
 
 
 
-})->setName('add-orders');
+})->setName('add-user');
 
 
 function cleanUserData($container, $tainted_user_data) : array{

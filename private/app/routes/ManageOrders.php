@@ -9,6 +9,7 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
 
 
     $is_authenticated = $request->getAttribute('isAuthenticated');
+    $is_admin = $request->getAttribute('isAdmin');
 
     if($is_authenticated){
       $allGetVars = $_GET;
@@ -97,13 +98,12 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
       return $this->view->render($response,'ManageOrders.twig', array(
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "ManageOrders.css",
-              'css_nav_file' => CSS_PATH . "NavigationBar.css",
-              'css_footer_file' => CSS_PATH . "Footer.css",
               'asset_path' => ASSET_PATH,
               'js_file' => JS_PATH . "ManageOrders.js",
               'landing_page' => __FILE__,
               'heading_1' => APP_TITLE,
               'orderdata' => $manage_order_model->getHTMLOrderData(),
+              'isAdmin' => $is_admin,
               'links'=> array(
                   'register' => 'registerform',
                   'login' => 'loginform',

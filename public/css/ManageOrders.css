@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@1,300&family=Roboto:wght@100;300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap');
 
 html,
 body {
@@ -12,7 +13,6 @@ body {
   font-weight: 400;
   font-size: 1.1em;
   line-height: 2em;
-
 }
 
 #wrapper {
@@ -20,8 +20,6 @@ body {
   flex-flow: column;
   height: 100%;
 }
-
-
 
 header {
   flex: 0 1 auto;
@@ -33,21 +31,27 @@ header {
 }
 
 nav {
-  padding: 2em;
+  padding: 30px;
 }
 
-nav a {
- font-size: 1.2em;
- font-style: normal;
- text-decoration: none;
- color: black;
- vertical-align: left;
- text-align: left;
- z-index: 2;
- padding-left: 2em;
- padding-right: 2em;
+nav > a{
+ 
+  font-family: 'inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 2em;
+
+  text-decoration: none;
+  color: black;
+  text-align: left;
+  padding-left: 2em;
+  padding-right: 2em;
 }
 
+a:hover{
+  color: grey;
+}
 
 #maincontent {
   flex: 0 1 auto;

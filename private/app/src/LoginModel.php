@@ -137,9 +137,14 @@ class LoginModel
         }
 
         if ($login_result !== false) {
+
+            //check if admin
+            $this->doctrine_wrapper->checkIfAdmin($this->user_credentials['username']);
+            $is_admin = $this->doctrine_wrapper->getQueryResult();
+
             // Adding to Session Var
             $this->session_wrapper->setSessionVar('user', $this->user_credentials['username']);
-
+            $this->session_wrapper->setSessionVar('accountType', $is_admin);
             // Log Successful Authentication
             if ($this->logger_handle !== null) {
                 $this->logEvent('User Authentication', array($this->user_credentials['username']));

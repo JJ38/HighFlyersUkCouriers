@@ -11,9 +11,11 @@ div.underlineHome{
   margin-right: 1em;
   border-radius: 20em;
 }
+
 html,body{
   width: 100vw;
 }
+
 body{
   display: flex;
   flex-direction: column;
@@ -24,16 +26,12 @@ h1{
   margin:0;
 }
 
-
 section.maincontent{
   display: flex;
   width: 100vw;
   flex-direction: column;
   flex-grow: 1;
-
-
 }
-
 
 div.arrow{
   font-family: 'Inter';
@@ -45,10 +43,8 @@ div.arrow{
 }
 
 div.arrow:hover{
-
   text-shadow: 0px 0px 25px #000000;
 }
-
 
 h1.carouselslidetext{
   position: absolute;
@@ -77,7 +73,7 @@ div.button{
 
 }
 
-a.button{
+a{
   text-decoration: none;
 }
 
@@ -111,7 +107,6 @@ div.buttonwrapper{
   bottom:145px;
   left: 200px;
 }
-
 
 div.homepageinfo{
   padding: 4em 20em;
@@ -163,16 +158,13 @@ hr{
   height: 1px;
   margin-bottom: 30px;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
-
 }
 
 div.carousel{
-
   position: relative;
   height: 650px;
   width:100%;
   margin: 0 auto;
-
 }
 
 img.carouselimage{
@@ -182,7 +174,6 @@ img.carouselimage{
 }
 
 div.carouseltrackcontainer{
-
   height:100%;
 }
 
@@ -192,7 +183,6 @@ ul.carouseltrack{
   margin: 0;
   padding: 0;
   list-style: none;
-
 }
 
 li.carouselslide{
@@ -200,7 +190,6 @@ li.carouselslide{
   top:0;
   bottom:0;
   width: 100%;
-
 }
 
 div.leftarrowwrapper{
@@ -208,8 +197,7 @@ div.leftarrowwrapper{
   left: 0;
   margin-left: 1em;
   top:50%;
-  transform: translateY(-50%);
-
+  transform: translateY(-50%); 
 }
 
 div.rightarrowwrapper{
@@ -218,4 +206,8 @@ div.rightarrowwrapper{
   right: 0;
   top:50%;
   transform: translateY(-50%);
+}
+
+a:visited{
+  color: black;
 }

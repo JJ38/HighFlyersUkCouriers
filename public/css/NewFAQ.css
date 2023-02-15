@@ -170,3 +170,7 @@ div.answershowing{
 
   transition: 0.5s;
 }
+
+a:visited{
+  color: black;
+}

@@ -123,3 +123,7 @@ div.orderdatawrapper{
   display: grid;
   grid-template-columns: 4fr 1fr;
 }
+
+a:visited{
+  color: black;
+}

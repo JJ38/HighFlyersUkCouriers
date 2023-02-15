@@ -20,3 +20,5 @@ require "routes/DeleteOrder.php";
 require "routes/AddOrder.php";
 require "routes/ContentManager.php";
 require "routes/AddUser.php";
+require "routes/ChangePassword.php";
+require "routes/DeleteUser.php";

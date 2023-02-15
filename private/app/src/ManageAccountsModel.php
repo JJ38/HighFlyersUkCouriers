@@ -30,6 +30,17 @@ class ManageAccountsModel
         $this->user_data = $this->doctrine_wrapper->getQueryResult();
     }
 
+    public function fetchUserDataByID($id)
+    {
+        $this->doctrine_wrapper->fetchUserDataByField('id', $id);
+        $this->user_data = $this->doctrine_wrapper->getQueryResult();
+    }
+
+    public function fetchUserDataByField($field, $value){
+        $this->doctrine_wrapper->fetchUserDataByField($field, $value);
+        $this->user_data = $this->doctrine_wrapper->getQueryResult();
+    }   
+
     public function generateHTMLFromData() : void
     {
 
@@ -43,19 +54,34 @@ class ManageAccountsModel
                 $HTML = $HTML . "<td>{$this->user_data[$i][$headers[$j]]}</td>";
             }
 
-                    
-            $HTML = $HTML . '<td class="orderbuttons"><a href="/HighFlyersUkCouriers/public/edit-order?id=' . "" .'"><button>edit</button></a><a href="/HighFlyersUkCouriers/public/delete-order?id=' . "" .'"><button type="button">Delete</button></a>';
+            //add buttons
+            $HTML = $HTML . '<td class="orderbuttons"><a href="/HighFlyersUkCouriers/public/change-password?id=' . $this->user_data[$i]['id'] .'"><button>Reset Password</button></a><a href="/HighFlyersUkCouriers/public/delete-user?id=' . $this->user_data[$i]['id'] .'"><button type="button">Delete</button></a>';
             $HTML = $HTML . '</tr>';
 
         }
-
-        //add buttons
-       
 
         $this->HTML_user_data = $HTML;
 
     }
 
+    public function generateHTMLForDeleteData(){
+
+        $headers = array('id', 'username', 'admin', 'user_created_timestamp');
 
 
+        $HTML = '';
+        $number_of_users = count($this->user_data);
+        for ($i = 0; $i < $number_of_users; $i++) {
+        
+            for ($j = 0; $j < 4; $j++) {
+                $HTML = $HTML . '<tr>';
+                $HTML = $HTML . "<td>" . $headers[$j] . "</td>";
+                $HTML = $HTML . "<td>" . $this->user_data[$i][$headers[$j]] . "</td>";
+                $HTML = $HTML . '</tr>';
+            }
+           
+        }
+
+        $this->HTML_user_data = $HTML;
+    }
 }

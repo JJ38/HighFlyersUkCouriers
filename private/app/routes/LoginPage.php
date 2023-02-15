@@ -61,8 +61,9 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   $login_result = $login_model->getResult(); //If result is successful $login_result is true
 
   if ($login_result) {
-      //$response->getBody()->write('Successful Login');
-      //return $response;
+    //   $response->getBody()->write('Successful Login');
+    //   $response->getBody()->write($session_wrapper->getSessionVar('accountType'));
+    //   return $response;
       return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders', 302);
   } else {
       return $response->withRedirect('loginpage', 302);

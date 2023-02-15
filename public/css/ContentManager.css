@@ -27,29 +27,35 @@ div.body{
   height: 100%;
 }
 
-div.contentmanagermenu {
-  padding: 2em;
-}
-
 
 div.contentmanagermaincontent{
   height: 100%;
 
 }
 
-
-div.contentmanagermenu a {
- font-size: 1.2em;
- font-style: normal;
- text-decoration: none;
- color: black;
- vertical-align: left;
- text-align: left;
- z-index: 2;
- padding-left: 2em;
- padding-right: 2em;
+#contentmanagernav{
+  padding: 30px;
 }
 
+#contentmanagernav > a{
+ 
+  font-family: 'inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 2em;
+
+  text-decoration: none;
+  color: black;
+  text-align: left;
+  z-index: 2;
+  padding-left: 2em;
+  padding-right: 2em;
+}
+
+#contentmanagernav > a:hover{
+  color: grey;
+}
 
 div.contentmanagerwrapper{
   height: 100%;
@@ -67,8 +73,6 @@ div.objecttreewindow{
   font-weight: 400;
   font-size: 1.1em;
   line-height: 2em;
-
-
 }
 
 div.editablepage{

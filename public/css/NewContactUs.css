@@ -158,3 +158,6 @@ label{
     width: 75%;
   }
 
+  a:visited{
+    color: black;
+  }

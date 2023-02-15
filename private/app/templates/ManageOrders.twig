@@ -4,9 +4,11 @@
         <header>
           <nav id="menu">
             <a class="navLinks" href="/HighFlyersUkCouriers/public/logout">Logout</a>
-            <a class="navLinks" href="/HighFlyersUkCouriers/public/content-manager">Content Manager</a>
             <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-orders">Manage Bookings</a>
-            <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-accounts">Manage Accounts</a>
+            {% if isAdmin == true %}
+              <a class="navLinks" href="/HighFlyersUkCouriers/public/content-manager">Content Manager</a>
+              <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-accounts">Manage Accounts</a>
+            {% endif %}
           </nav>
         </header>
         <div id="maincontent">
@@ -74,7 +76,6 @@
               </div>     
             </div>
           </div>
-
         </div>
       </div>
     {% endblock %}

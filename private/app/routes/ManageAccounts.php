@@ -4,11 +4,17 @@ use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-$app->get('/manage-accounts[/error]', function (Request $request, Response $response) use ($app) : Response{
+$app->get('/manage-accounts[/error/deleted/passwordreset]', function (Request $request, Response $response) use ($app) : Response{
 
     $is_authenticated = $request->getAttribute('isAuthenticated');
+    $is_admin = $request->getAttribute('isAdmin');
 
-    if($is_authenticated){
+
+    if($is_authenticated && $is_admin){
+
+      
+      $cleaned_field = null;
+      $cleaned_filter = null;
 
       $allGetVars = $_GET;
       if(!empty($allGetVars)){
@@ -22,7 +28,49 @@ $app->get('/manage-accounts[/error]', function (Request $request, Response $resp
             echo "<script>alert('Error');</script>";
           }
         }
+        if(!empty($allGetVars['deleted'])){
+          $tainted_deleted = $allGetVars['deleted'];
+        
+          $sanitizer = $app->getContainer()->get('sanitizer');
+          $cleaned_deleted = $sanitizer->sanitizeBoolean($tainted_deleted);
+          if($cleaned_deleted == "true"){
+            echo "<script>alert('User deleted successfully');</script>";
+          }
+
+          if($cleaned_deleted == "false"){
+            echo "<script>alert('Error user not deleted');</script>";
+
+          }
+        }
+
+        if(!empty($allGetVars['passwordreset'])){
+          $tainted_deleted = $allGetVars['passwordreset'];
+        
+          $sanitizer = $app->getContainer()->get('sanitizer');
+          $cleaned_deleted = $sanitizer->sanitizeBoolean($tainted_deleted);
+          if($cleaned_deleted == "true"){
+            echo "<script>alert('Password changed successfully');</script>";
+          }
+
+          if($cleaned_deleted == "false"){
+            echo "<script>alert('Error password was not changed');</script>";
+
+          }
+        }
+
+        if(!empty($allGetVars['field'])){
+          if(!empty($allGetVars['filter'])){
+            $tainted_field = $allGetVars['field'];
+            $tainted_filter = $allGetVars['filter'];
+
+            $cleaned_field = $tainted_field;
+            $cleaned_filter = $tainted_filter;
+          }
+
+        }
       }
+
+    
       
       $container = $app->getContainer();
       $logger = $container->get('logger');
@@ -38,8 +86,12 @@ $app->get('/manage-accounts[/error]', function (Request $request, Response $resp
 
       $manage_accounts_model = $container->get('manageAccountsModel');
       $manage_accounts_model->setDoctrineWrapper($doctrine_wrapper);
-
-      $manage_accounts_model->fetchAllUsers();
+      if($cleaned_field == null || $cleaned_filter == null){
+        $manage_accounts_model->fetchAllUsers();
+      }else{
+        $manage_accounts_model->fetchUserDataByField($cleaned_field, $cleaned_filter);
+      }
+      
       $manage_accounts_model->generateHTMLFromData();
 
       return $this->view->render($response,'ManageAccounts.twig', array(

@@ -166,14 +166,42 @@ class DoctrineWrapper
               ));
 
           $query = $query_builder->execute();
-          $password = $query->fetchAll();
+          $query_result = $query->fetchAll();
 
       } catch (\Exception $exception) {
           if ($this->doctrine_logger !== null) {
               $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
           }
       } finally {
-          $this->query_result = $password;
+          $this->query_result = $query_result;
+      }
+
+    }
+
+    
+    public function fetchUserDataByField(string $field_name, string $value) : void
+    {
+
+      $password = null;
+
+      try {
+          $query_builder = $this->query_builder
+              ->select('u.*')
+              ->from('users', 'u')
+              ->where('u.' . $field_name . '= :' . $field_name)
+              ->setParameters(array(
+                  '' . $field_name => $value,
+              ));
+
+          $query = $query_builder->execute();
+          $query_result = $query->fetchAll();
+
+      } catch (\Exception $exception) {
+          if ($this->doctrine_logger !== null) {
+              $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+          }
+      } finally {
+          $this->query_result = $query_result;
       }
 
     }
@@ -430,15 +458,15 @@ class DoctrineWrapper
      *
      * @param string $cleaned_username
      */
-    public function deleteUser(string $cleaned_username) : void
+    public function deleteUser(string $id) : void
     {
         $delete_result = false;
 
         try {
             $query_builder = $this->query_builder
-                ->delete('telemetry_users')
-                ->where('username = :username')
-                ->setParameter('username', $cleaned_username);
+                ->delete('users')
+                ->where('id = :id')
+                ->setParameter('id', $id);
 
             $delete_result = $query_builder->execute();
 
@@ -458,16 +486,16 @@ class DoctrineWrapper
      * @param string $new_hashed_password
      * @return void
      */
-    public function changeUserPassword(string $cleaned_username, string $new_hashed_password) : void
+    public function changeUserPassword(string $cleaned_id, string $new_hashed_password) : void
     {
         $user_password_changed = false;
 
         try {
             $query_builder = $this->query_builder
-                ->update('telemetry_users', 'u')
+                ->update('users', 'u')
                 ->set('u.password', ':password')
-                ->where('u.username = :username')
-                ->setParameter('username', $cleaned_username)
+                ->where('u.id = :id')
+                ->setParameter('id', $cleaned_id)
                 ->setParameter('password', $new_hashed_password);
 
             $user_password_changed = $query_builder->execute();
