@@ -20,7 +20,7 @@ function closePrint() {
     this.contentWindow.print();
   }
 
-  function printPage(orderNumber) {
+  async function printPage(orderNumber) {
     const hideFrame = document.createElement("iframe");
     hideFrame.onload = setPrint;
     hideFrame.style.position = "fixed";
@@ -29,20 +29,23 @@ function closePrint() {
     hideFrame.style.width = "0";
     hideFrame.style.height = "0";
     hideFrame.style.border = "0";
-    const form = generateForm(orderNumber);
+    const form =  await generateForm(orderNumber);
     //hideFrame.src = "../private/app/templates/PrintableForm.html";
     hideFrame.srcdoc = form;
     document.body.appendChild(hideFrame);
   }
 
-  function generateForm(orderNumber){
-    console.log();
-    console.log(orderData[orderNumber]);
+  async function generateForm(orderNumber){
 
     const tableData = orderData[orderNumber].getElementsByTagName('td');
 
-    console.log(tableData[0].innerHTML);
+    // let form =  await fetch('/HighFlyersUkCouriers/private/app/templates/PrintableForm.html', {
+    //   headers: {
+    //     'Cache-Control': 'no-cache'
+    //   }
+    // }).then(response => response.text());
 
+    console.log(tableData);
 
     let form = '<!DOCTYPE html>'+
                 '<html lang="en">'+
@@ -68,7 +71,7 @@ function closePrint() {
                           '</h3>'+
                           '<div class="infowrapper">'+
                             '<label>Name:</label>'+
-                            '<p> TODO </p>'+
+                            '<p>' + tableData[4].innerHTML + '</p>'+
                   
 
                             '<label>Address:</label>'+
@@ -81,7 +84,7 @@ function closePrint() {
                         
                         
                           '<label>Telephone:</label>'+
-                          '<p>' + tableData[4].innerHTML + '</p>'+
+                          '<p>' + tableData[9].innerHTML + '</p>'+
                           
                         
                           '</div>'+
@@ -92,19 +95,19 @@ function closePrint() {
                           '</h3>'+
                             '<div class="infowrapper">'+
                               '<label>Name:</label>'+
-                              '<p> TODO </p>'+
+                              '<p>' + tableData[10].innerHTML + '</p>'+
                       
                       
                               '<label>Address:</label>'+
                               '<address>' + 
-                                '<p>' + tableData[10].innerHTML + '</p>'+
                                 '<p>' + tableData[11].innerHTML + '</p>'+
                                 '<p>' + tableData[12].innerHTML + '</p>'+
                                 '<p>' + tableData[13].innerHTML + '</p>'+
+                                '<p>' + tableData[14].innerHTML + '</p>'+
                               '</address>' +
                                             
                               '<label>Telephone:</label>'+
-                              '<p>' + tableData[14].innerHTML + '</p>'+
+                              '<p>' + tableData[15].innerHTML + '</p>'+
                             '</div>'+
                         '</div>'+
                     '</div>'+
@@ -123,7 +126,7 @@ function closePrint() {
                         '</h3>'+
                         '<div class="infowrapper">'+
                           '<label>Name:</label>'+
-                          '<p> TODO </p>'+
+                          '<p>' + tableData[4].innerHTML +'</p>'+
                   
 
                           '<label>Address:</label>'+
@@ -136,7 +139,7 @@ function closePrint() {
                     
                     
                           '<label>Telephone:</label>'+
-                          '<p>' + tableData[4].innerHTML + '</p>'+
+                          '<p>' + tableData[9].innerHTML + '</p>'+
                       
                         '</div>'+ 
                       '</div>'+
@@ -146,19 +149,19 @@ function closePrint() {
                         '</h3>'+
                         '<div class="infowrapper">'+
                           '<label>Name:</label>'+
-                          '<p> TODO </p>'+
+                          '<p>' + tableData[10].innerHTML + ' </p>'+
                       
                       
                           '<label>Address:</label>'+
                           '<address>' + 
-                            '<p>' + tableData[10].innerHTML + '</p>'+
                             '<p>' + tableData[11].innerHTML + '</p>'+
                             '<p>' + tableData[12].innerHTML + '</p>'+
                             '<p>' + tableData[13].innerHTML + '</p>'+
+                            '<p>' + tableData[14].innerHTML + '</p>'+
                           '</address>' +
                                         
                           '<label>Telephone:</label>'+
-                          '<p>' + tableData[14].innerHTML + '</p>'+
+                          '<p>' + tableData[15].innerHTML + '</p>'+
                         '</div>'+
                       '</div>'+
                   '</div>'+

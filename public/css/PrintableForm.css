@@ -24,13 +24,11 @@ h1, h2{
   margin:0 auto;
   padding: 10px 0;
   font-size: 1em;
-
 }
 
 h3{
   font-size: 1em;
   margin: 0;
-
 }
 
 div.h3{
@@ -58,8 +56,6 @@ div.formwrapper{
   display: flex;
   flex-direction: column;
   flex:1;
-  
-
 }
 
 .page{
@@ -77,8 +73,6 @@ div.formwrapper{
 p{
   margin: 0;
 }
-
-
 
 @media print {
   .pagebreak { 

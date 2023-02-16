@@ -174,6 +174,7 @@ function cleanEditOrderForm($app, array $tainted_parameters) : array
 
     //$cleaned_parameters['id'] = $tainted_parameters['id'];
     $cleaned_parameters['animal_type'] = $sanitizer->sanitizeString($tainted_parameters['animal_type']);
+    $cleaned_parameters['collection_name'] = $sanitizer->sanitizeString($tainted_parameters['collection_name']);
     $cleaned_parameters['collection_address_1'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_1']);
     $cleaned_parameters['collection_address_2'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_2']);
     $cleaned_parameters['collection_address_3'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_3']);

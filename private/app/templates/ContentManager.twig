@@ -50,13 +50,18 @@
                                 <input id="fontlinks" type="hidden" name="fontlinks">
                                 <input id="filename" type="hidden" name="filename">
                                 <input is="save" type="button" onclick="savePage()" value="Save">
-                            </form>                    
+                            </form>                                              
                             <select class='selectpage' onchange="selectOnChange()" id="selectpage">
                                 <option value="NewHomepage.twig">Homepage</option>
                                 <option value="NewBooking.twig">Booking</option>
                                 <option value="NewFAQ.twig">FAQ</option>
+                                <option value="NewPrices.twig">Prices</option>
                                 <option value="NewContactUs.twig">ContactUs</option>
                                 <option value="PrintableForm.html">Printable Form</option>
+                            </select>
+                            <select class='selectresolution' onchange="selectResolutionOnChange()" id="selectresolution">
+                                <option value="1920">1920</option>
+                                <option value="874">A5</option>                            
                             </select>
                         </div>
                         <div class="objecttree">                            

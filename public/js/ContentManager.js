@@ -8,6 +8,7 @@ const contentManagerWrapper = document.querySelector('.contentmanagerwrapper');
 const content = document.querySelector('.content');
 const head = document.querySelector('head');
 const selectPage = document.getElementById("selectpage");
+const selectedResolution= document.getElementById("selectresolution");
 const saveButton = document.getElementById("savebutton");
 const editableContentValue = document.getElementById("editabledocumentvalue");
 const fontLinks = document.getElementById("fontlinks");
@@ -635,6 +636,12 @@ function selectOnChange(){
 
     selectedFile = selectPage.value
     getFile(selectedFile);
+}
+
+function selectResolutionOnChange(){
+    let selectedResolutionInPixels = selectedResolution.value
+    console.log(selectedResolutionInPixels);
+    content.style.width = selectedResolutionInPixels + "px";
 }
 
 

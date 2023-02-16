@@ -4,6 +4,7 @@ CREATE TABLE orders (
  `animal_type` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
  `quantity` INT COLLATE utf8_unicode_ci NOT NULL,
  `email` varchar(319) COLLATE utf8_unicode_ci NOT NULL,
+ `collection_name` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
  `collection_phone_number` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
  `collection_address_1` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
  `collection_address_2` varchar(256) COLLATE utf8_unicode_ci NOT NULL,

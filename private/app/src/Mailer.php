@@ -124,4 +124,30 @@ class Mailer{
     $this->sendMail($email, $subject, $message);
   }
 
+  public function sendMailCustomerContactUs() : void
+  {
+    $email = $this->mailer_data['email'];
+    $subject = 'High Flyers Uk Couriers Booking Confirmation -NoReply';
+    $message = "Thankyou for contacting High Flyers UK Couriers. <br> <br> We have recieved your email and will get back to you shortly";
+
+   
+    $this->sendMail($email, $subject, $message);
+  }
+
+  public function sendMailInternalContactUs() : void
+  {
+    $email =  $this->mailer_settings['username'];
+    $subject = "Inquiry from {$this->mailer_data['name']}";
+    $message = 
+    "Name: {$this->mailer_data['name']}" . "<br>" . 
+    "Phone Number: {$this->mailer_data['phone']}" . "<br>" . 
+    "Email: {$this->mailer_data['email']}" . "<br> <br>" . 
+    $this->mailer_data['message'];
+
+
+   
+    $this->sendMail($email, $subject, $message);
+  }
+
+
 }

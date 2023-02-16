@@ -21,7 +21,7 @@ class ManageOrderModel
 
   public function setDoctrineWrapper($doctrine_wrapper) : void
   {
-      $this->doctrine_wrapper = $doctrine_wrapper;
+    $this->doctrine_wrapper = $doctrine_wrapper;
   }
 
   public function deleteOrderById(string $id) : void
@@ -47,7 +47,7 @@ class ManageOrderModel
   public function generateHTMLFromData() : void
   {
 
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'collection_phone_number', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
 
     $HTML = '';
     $number_of_orders = count($this->order_data);
@@ -67,8 +67,8 @@ class ManageOrderModel
 
   public function generateHTMLForEditData() : void
   {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'collection_phone_number', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
-    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Collection Phone Number', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Timestamp');
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
+    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Collection Name', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Collection Phone Number','Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Timestamp');
 
     $HTML = '';
     $number_of_fields = count($this->order_data[0]);
@@ -98,8 +98,8 @@ class ManageOrderModel
 
   public function generateHTMLForDeleteData() : void
   {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'collection_phone_number', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
-    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Collection Phone Number', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Timestamp');
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
+    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Collection Name', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Collection Phone Number','Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Timestamp');
 
     $HTML = '';
     $number_of_fields = count($this->order_data[0]);

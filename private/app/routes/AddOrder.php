@@ -43,7 +43,11 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $cleaned_parameters = cleanBookingForm($app, $tainted_parameters);
   //if one of the parameters does not meet requirements
 
+  var_dump($tainted_parameters);
+
   if(empty($cleaned_parameters)){
+
+    return $response;
     return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?addorder=false', 302);
   }
 
@@ -64,14 +68,25 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $doctrine_wrapper->setDoctrineLogger($logger);
 
   //check for duplicate orders
-//  $doctrine_wrapper->
+  //$doctrine_wrapper->
 
   //store data
   $doctrine_wrapper->storeOrderData($cleaned_parameters);
-  $doctrine_wrapper->getQueryResult();
 
+  $query_result = $doctrine_wrapper->getQueryResult();
 
-  return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?addorder=true', 302);
+  if($query_result){
+
+    
+
+    return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?addorder=true', 302);
+
+  }
+
+  $response->getBody()->write($query_result);
+
+  return $response;
+  return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?addorder=false', 302);
 
 
 })->setName('add-orders');
