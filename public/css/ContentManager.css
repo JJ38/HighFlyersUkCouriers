@@ -121,6 +121,7 @@ div.content{
   position: absolute;
   width: 1920px;
   transform-origin: top right;
+  overflow: visible;
 }
 
 div.selectpagewrapper{

@@ -5,16 +5,11 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/manage-orders[/updated]', function (Request $request, Response $response, $updated="null") use ($app) : Response{
+  
+    $account_type = $request->getAttribute('accountType');
 
-
-
-    $is_authenticated = $request->getAttribute('isAuthenticated');
-    $is_admin = $request->getAttribute('isAdmin');
-
-    if($is_authenticated){
+    if($account_type == "admin" || $account_type == "staff"){
       $allGetVars = $_GET;
-      // $response->getBody()->write('<pre>' . var_export($allGetVars,true) . '</pre>');
-      // return $response;
 
       $cleaned_field = null;
       $cleaned_filter = null;
@@ -91,7 +86,8 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
       
 
       // $response->getBody()->write('<pre>' . var_export($manage_order_model->getOrderData(), true) . '</pre>');
-      // return $response;
+      
+ 
 
 
 
@@ -103,7 +99,7 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
               'landing_page' => __FILE__,
               'heading_1' => APP_TITLE,
               'orderdata' => $manage_order_model->getHTMLOrderData(),
-              'isAdmin' => $is_admin,
+              'isAdmin' => $account_type == "admin",
               'links'=> array(
                   'register' => 'registerform',
                   'login' => 'loginform',
@@ -115,8 +111,8 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
                   'logout' => 'logout'
               ),
           ));
-    }else{
-
-      return $response->withRedirect('loginpage', 302);
     }
+
+    return $response->withRedirect('loginpage', 302);
+    
 });

@@ -6,9 +6,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/delete-user[/id]', function (Request $request, Response $response) use ($app) : Response{
 
-    $is_authenticated = $request->getAttribute('isAuthenticated');
+    $account_type = $request->getAttribute('accountType');
 
-    if($is_authenticated){
+    if($account_type == "admin"){
 
       $allGetVars = $request->getQueryParams();
 
@@ -25,7 +25,6 @@ $app->get('/delete-user[/id]', function (Request $request, Response $response) u
         if(empty($cleaned_user_id)){
           return $response->withRedirect('manage-accounts', 302);
         }
-
         
         $logger = $container->get('logger');
         $doctrine_wrapper = $container->get('doctrineWrapper');

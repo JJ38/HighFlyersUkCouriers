@@ -118,4 +118,23 @@ class Sanitizer
       return $cleaned_bool;
     }
 
+    
+    public function sanitizeAccountType($tainted_account_type) : string|null
+    {
+      
+      if($tainted_account_type == "staff"){
+        return "staff";
+      }
+      if($tainted_account_type == "admin"){
+        return "admin";
+
+      }if($tainted_account_type == "customer"){
+        return "customer";
+      }
+      
+      return null;
+      
+    
+    }
+
 }

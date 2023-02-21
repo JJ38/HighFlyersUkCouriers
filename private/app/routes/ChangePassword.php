@@ -7,10 +7,10 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/change-password[/id/equalpasswords]', function (Request $request, Response $response, $args) use ($app) : Response{
 
-  $is_authenticated = $request->getAttribute('isAuthenticated');
-  $is_admin = $request->getAttribute('isAdmin');
+
+  $account_type = $request->getAttribute('accountType');
  
-  if($is_authenticated && $is_admin){
+  if($account_type == "admin"){
     $allGetVars = $_GET;
     if(empty($allGetVars['id'])){
         return $response->withRedirect('manage-accounts', 302);

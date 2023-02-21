@@ -6,9 +6,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/edit-order[/id]', function (Request $request, Response $response) use ($app) : Response{
 
-    $is_authenticated = $request->getAttribute('isAuthenticated');
-
-    if($is_authenticated){
+    $account_type = $request->getAttribute('accountType');
+    
+    if($account_type == "admin" || $account_type == "staff"){
 
       $allGetVars = $request->getQueryParams();
 
@@ -115,8 +115,7 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
   $doctrine_wrapper->setQueryBuilder($query_builder);
   $doctrine_wrapper->setDoctrineLogger($logger);
 
-  //TODO: make sure id and timestamp are set as session vars before storing
-
+  
   $doctrine_wrapper->updateOrderDataById($cleaned_parameters);
   $doctrine_wrapper->getQueryResult();
 
@@ -134,7 +133,7 @@ function cleanEditOrderForm($app, array $tainted_parameters) : array
     $validator = $app->getContainer()->get('validator');
 
 
-    $sanitized_parameters['quantity'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['quantity']);
+    $sanitized_parameters['quantity'] = $sanitizer->sanitizePositiveNumber($tainted_parameters['quantity']);
     $cleaned_parameters['quantity'] = $validator->validatePositiveNumber($sanitized_parameters['quantity']);
     //$cleaned_parameters['quantity'] = $tainted_parameters['quantity'];
     if(!$validator->getValidationResult()){

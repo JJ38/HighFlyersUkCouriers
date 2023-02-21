@@ -184,8 +184,6 @@ class DoctrineWrapper
     public function fetchUserDataByField(string $field_name, string $value) : void
     {
 
-      $password = null;
-
       try {
           $query_builder = $this->query_builder
               ->select('u.*')
@@ -310,7 +308,7 @@ class DoctrineWrapper
 
         try {
             $query_builder = $this->query_builder
-                ->select('u.id', 'u.username', 'u.admin', 'u.user_created_timestamp')
+                ->select('u.id', 'u.username', 'u.account_type', 'u.user_created_timestamp')
                 ->from('users', 'u')
                 ->orderBy('u.username', 'DESC');
 
@@ -396,7 +394,7 @@ class DoctrineWrapper
      * @param string $cleaned_username
      * @param string $cleaned_password
      */
-    public function storeUserDetails(string $cleaned_username, string $cleaned_password, string $cleaned_is_admin) : void
+    public function storeUserDetails(string $cleaned_username, string $cleaned_password, string $cleaned_account_type) : void
     {
         $store_result = false;
 
@@ -406,12 +404,12 @@ class DoctrineWrapper
                 ->values(array(
                     'username' => ':username',
                     'password' => ':password',
-                    'admin' => ':admin'
+                    'account_type' => ':account_type'
                 ))
                 ->setParameters(array(
                     'username' => $cleaned_username,
                     'password' => $cleaned_password,
-                    'admin' => $cleaned_is_admin
+                    'account_type' => $cleaned_account_type
                 ));
 
             $store_result = $query_builder->execute();
@@ -432,13 +430,13 @@ class DoctrineWrapper
      *
      * @param string $cleaned_username
      */
-    public function checkIfAdmin(string $cleaned_username) : void
+    public function getAccountType(string $cleaned_username) : void
     {
-        $is_admin = false;
+        $account_type = false;
 
         try {
             $query_builder = $this->query_builder
-                ->select('u.admin')
+                ->select('u.account_type')
                 ->from('users', 'u')
                 ->where('u.username = :username')
                 ->setParameter('username', $cleaned_username);
@@ -446,14 +444,14 @@ class DoctrineWrapper
             $query = $query_builder->execute();
             $result = $query->fetch();
 
-            $is_admin = $result['admin'] == 1;
+            $account_type = $result['account_type'];
 
         } catch (\Exception $exception) {
             if ($this->doctrine_logger !== null) {
                 $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
             }
         } finally {
-            $this->query_result = $is_admin;
+            $this->query_result = $account_type;
         }
     }
 

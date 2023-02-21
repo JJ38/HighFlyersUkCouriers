@@ -7,10 +7,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/add-user[/usernameavailable]', function (Request $request, Response $response, $args) use ($app) : Response{
 
-  $is_authenticated = $request->getAttribute('isAuthenticated');
-  $is_admin = $request->getAttribute('isAdmin');
+  $account_type = $request->getAttribute('accountType');
 
-  if($is_authenticated && $is_admin){
+  if($account_type == "admin"){
 
     $container = $app->getContainer();
     
@@ -57,16 +56,18 @@ $app->get('/add-user[/usernameavailable]', function (Request $request, Response 
 
 $app->post('/add-user', function (Request $request, Response $response) use ($app) : Response
 {   
-    $is_authenticated = $request->getAttribute('isAuthenticated');
+    $account_type = $request->getAttribute('isAdmin');
 
-    if($is_authenticated){
+    if(1 == 1){
         $container = $app->getContainer();
 
         $tainted_parameters = $request->getParsedBody();
         $cleaned_parameters = cleanUserData($container, $tainted_parameters);
         //if one of the parameters does not meet requirements
-
+        
+        
         if(empty($cleaned_parameters)){
+          
             return $response->withRedirect('/HighFlyersUkCouriers/public/manage-accounts?error=true', 302);
         }
 
@@ -89,17 +90,14 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
         if($is_username_available){
             //store username
 
+            // var_dump($cleaned_parameters);
+            // echo "username is available";
+
+            // return $response;
+
             //hash password
             $bcryptWrapper = $container->get('bcryptWrapper');
             $cleaned_parameters['password'] = $bcryptWrapper->createHashedPassword($cleaned_parameters['password']);
-
-            //convert account type to 0 for staff and 1 for admin
-            if($cleaned_parameters['accountType'] == "true"){
-                $cleaned_parameters['accountType'] = 1;
-            }else{
-                $cleaned_parameters['accountType'] = 0;
-            }
-
 
             $doctrine_wrapper->storeUserDetails($cleaned_parameters['username'], $cleaned_parameters['password'], $cleaned_parameters['accountType']);
 
@@ -107,16 +105,12 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
             return $response->withRedirect('/HighFlyersUkCouriers/public/add-user?usernameavailable=false', 302);
         }
 
-
-   
         //store data
-
         return $response->withRedirect('/HighFlyersUkCouriers/public/manage-accounts', 302);
 
     }
 
     return $response->withRedirect('loginpage', 302);
-
 
 
 })->setName('add-user');
@@ -132,12 +126,13 @@ function cleanUserData($container, $tainted_user_data) : array{
     
     $cleaned_parameters['username'] = $sanitizer->sanitizeUsername($tainted_user_data['username']);
    
-    $cleaned_parameters['accountType'] = $sanitizer->sanitizeBoolean($tainted_user_data['isadmin']);
-    if(empty($cleaned_parameters['accountType']) || empty($cleaned_parameters['username'])){     
+    $cleaned_parameters['accountType'] = $sanitizer->sanitizeAccountType($tainted_user_data['isadmin']);
+
+    return $cleaned_parameters;
+
+    if($cleaned_parameters['accountType'] == null || empty($cleaned_parameters['username'])){     
         $cleaned_parameters = [];
     }
-   
-
 
 
     return $cleaned_parameters;

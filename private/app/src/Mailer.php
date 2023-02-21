@@ -53,7 +53,7 @@ class Mailer{
 
         //Content
         $mail->isHTML(true);                                  //Set email format to HTML
-        $mail->Subject = 'High Flyers Uk Couriers Booking Confirmation -NoReply';
+        $mail->Subject = $subject;
         $mail->Body    = $message;
 
 
@@ -127,10 +127,9 @@ class Mailer{
   public function sendMailCustomerContactUs() : void
   {
     $email = $this->mailer_data['email'];
-    $subject = 'High Flyers Uk Couriers Booking Confirmation -NoReply';
+    $subject = 'High Flyers Uk Couriers Inquiry Confirmation - NoReply';
     $message = "Thankyou for contacting High Flyers UK Couriers. <br> <br> We have recieved your email and will get back to you shortly";
 
-   
     $this->sendMail($email, $subject, $message);
   }
 
@@ -144,8 +143,6 @@ class Mailer{
     "Email: {$this->mailer_data['email']}" . "<br> <br>" . 
     $this->mailer_data['message'];
 
-
-   
     $this->sendMail($email, $subject, $message);
   }
 

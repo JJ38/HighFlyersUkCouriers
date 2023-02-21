@@ -83,13 +83,13 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
 
   //send email
 
-  // $mailer = $container->get('mailer');
-  // $mailer_settings = $container->get('settings')['mailerSettings'];
-  // $mailer->setMailerSettings($mailer_settings);
-  //
-  // $mailer->setMailData($cleaned_parameters);
-  // $mailer->sendMailCustomer();
-  // $mailer->sendMailInternal();
+  $mailer = $container->get('mailer');
+  $mailer_settings = $container->get('settings')['mailerSettings'];
+  $mailer->setMailerSettings($mailer_settings);
+  
+  $mailer->setMailData($cleaned_parameters);
+  $mailer->sendMailCustomer();
+  $mailer->sendMailInternal();
 
   return $response->withRedirect('/HighFlyersUkCouriers/public/bookings?invalidform=false', 302);
 

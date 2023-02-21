@@ -431,8 +431,13 @@ function savePage(){
     fileNameValue.value = selectedFile;
 
     //console.log(editableContentValue.value);
+    asyncAlert(fileNameValue.value + " has been saved");
     editableContentValue.form.submit();
     
+}
+
+async function asyncAlert($message){
+    alert($message);
 }
 
 

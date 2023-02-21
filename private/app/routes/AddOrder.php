@@ -7,9 +7,10 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/add-order', function (Request $request, Response $response, $args) use ($app) : Response{
 
-  $is_authenticated = $request->getAttribute('isAuthenticated');
+  
+  $account_type = $request->getAttribute('accountType');
 
-  if($is_authenticated){
+  if($account_type == "admin" || $account_type == "staff"){
 
     return $this->view->render($response,'AddOrder.twig', array(
             'page_title' => APP_TITLE,

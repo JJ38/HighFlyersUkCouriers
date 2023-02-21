@@ -60,18 +60,30 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   $login_model->login();
   $login_result = $login_model->getResult(); //If result is successful $login_result is true
 
-  if ($login_result) {
-    //   $response->getBody()->write('Successful Login');
-    //   $response->getBody()->write($session_wrapper->getSessionVar('accountType'));
-    //   return $response;
-      return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders', 302);
-  } else {
-      return $response->withRedirect('loginpage', 302);
-      //return $response->withRedirect('loginform', 302);
-  }
 
-  $response->getBody()->write($cleaned_parameters['username']); //from input tag name
-  return $response;
+
+  if($login_result) {
+      $account_type = $session_wrapper->getSessionVar('accountType');
+
+
+      if($account_type == "admin" || $account_type == "staff"){
+       
+        return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders', 302);
+      }
+
+      
+      
+
+      return $response->withRedirect('/HighFlyersUkCouriers/public/customer-order', 302);
+      
+
+
+  } 
+
+ 
+  
+  return $response->withRedirect('loginpage', 302);
+      
 
 })->setName('loginform');
 
@@ -79,9 +91,9 @@ function cleanLoginData($app, array $tainted_parameters) : array
 {
     $cleaned_parameters = array();
 
-    $authentication_validator = $app->getContainer()->get('sanitizer');
+    $sanitizer = $app->getContainer()->get('sanitizer');
 
-    $cleaned_parameters['username'] = $authentication_validator->sanitizeUsername($tainted_parameters['username']);
+    $cleaned_parameters['username'] = $sanitizer->sanitizeUsername($tainted_parameters['username']);
     $cleaned_parameters['password'] = $tainted_parameters['password'];
 
     return $cleaned_parameters;

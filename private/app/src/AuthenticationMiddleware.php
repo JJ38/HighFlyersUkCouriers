@@ -57,17 +57,17 @@ class AuthenticationMiddleware
     {
         $is_authenticated = false;
         $username = $this->session_wrapper->getSessionVar('user');
-        $is_admin = $this->session_wrapper->getSessionVar('accountType');
+        $account_type = $this->session_wrapper->getSessionVar('accountType');
 
         if (!empty($username)) {
             $is_authenticated = true;
             $request = $request->withAttribute('isAuthenticated', $is_authenticated); //If has username set as var then add authenticated attribut to request.
-            $request = $request->withAttribute('isAdmin', $is_admin); //If has username set as var then add authenticated attribut to request.
+            $request = $request->withAttribute('accountType', $account_type); //If has username set as var then add authenticated attribute to request.
 
         }
 
         $response = $next($request, $response);
 
-        return $response;
+        return $response; 
     }
 }

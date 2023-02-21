@@ -6,12 +6,10 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/manage-accounts[/error/deleted/passwordreset]', function (Request $request, Response $response) use ($app) : Response{
 
-    $is_authenticated = $request->getAttribute('isAuthenticated');
-    $is_admin = $request->getAttribute('isAdmin');
 
+    $account_type = $request->getAttribute('accountType');
 
-    if($is_authenticated && $is_admin){
-
+    if($account_type == "admin"){
       
       $cleaned_field = null;
       $cleaned_filter = null;
