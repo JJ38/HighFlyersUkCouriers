@@ -6,7 +6,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/delete-order[/id]', function (Request $request, Response $response) use ($app) : Response{
 
-    $is_authenticated = $request->getAttribute('isAuthenticated');
     $account_type = $request->getAttribute('accountType');
 
     if($account_type == "admin" || $account_type == "staff"){

@@ -30,10 +30,10 @@ $app->get('/add-order', function (Request $request, Response $response, $args) u
                 'logout' => 'logout'
             ),
         ));
-    }else{
-
-      return $response->withRedirect('loginpage', 302);
     }
+
+    return $response->withRedirect('loginpage', 302);
+    
 });
 
 
@@ -84,9 +84,6 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   }
 
-  $response->getBody()->write($query_result);
-
-  return $response;
   return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?addorder=false', 302);
 
 
