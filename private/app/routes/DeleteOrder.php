@@ -79,37 +79,40 @@ $app->get('/delete-order[/id]', function (Request $request, Response $response) 
                   'logout' => 'logout'
               ),
           ));
-    }else{
-
-      return $response->withRedirect('loginpage', 302);
     }
+
+    return $response->withRedirect('loginpage', 302);
+    
 });
 
 $app->post('/delete-order', function (Request $request, Response $response) use ($app) : Response
 {
 
-  $container = $app->getContainer();
+  $account_type = $request->getAttribute('accountType');
 
-  //store in database
-  $doctrine_wrapper = $container->get('doctrineWrapper');
-  $logger = $container->get('logger');
-  $session_wrapper = $container->get('sessionWrapper');
-  $order_id = $session_wrapper->getSessionVar('id');
+  if($account_type == "admin" || $account_type == "staff"){
+
+    $container = $app->getContainer();
+
+    $doctrine_wrapper = $container->get('doctrineWrapper');
+    $logger = $container->get('logger');
+
+    $session_wrapper = $container->get('sessionWrapper');
+    $order_id = $session_wrapper->getSessionVar('id');
 
 
-  // // Doctrine wrapper setup
-  $database_connection_settings = $container->get('settings')['doctrineSettings'];
-  $database_connection = DriverManager::getConnection($database_connection_settings);
-  $query_builder = $database_connection->createQueryBuilder();
-  $doctrine_wrapper->setQueryBuilder($query_builder);
-  $doctrine_wrapper->setDoctrineLogger($logger);
+    // // Doctrine wrapper setup
+    $database_connection_settings = $container->get('settings')['doctrineSettings'];
+    $database_connection = DriverManager::getConnection($database_connection_settings);
+    $query_builder = $database_connection->createQueryBuilder();
+    $doctrine_wrapper->setQueryBuilder($query_builder);
+    $doctrine_wrapper->setDoctrineLogger($logger);
 
-  //TODO: make sure id and timestamp are set as session vars before storing
+    $doctrine_wrapper->deleteOrderById($order_id);
+    $doctrine_wrapper->getQueryResult();
 
-  $doctrine_wrapper->deleteOrderById($order_id);
-  $doctrine_wrapper->getQueryResult();
-
-  return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?deleted=true', 302);
+    return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?deleted=true', 302);
+  }
 
 
 })->setName('edit-orders');

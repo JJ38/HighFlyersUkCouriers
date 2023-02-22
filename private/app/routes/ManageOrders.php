@@ -56,6 +56,22 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
             $cleaned_filter = $tainted_filter;
           }
 
+        }else if(!empty($allGetVars['deleted'])){
+          $tainted_add_order = $allGetVars['deleted'];
+          if($tainted_add_order){
+            $sanitizer = $app->getContainer()->get('sanitizer');
+            $cleaned_delete_order = $sanitizer->sanitizeBoolean($tainted_add_order);
+
+            if($cleaned_delete_order != null){
+
+              if($cleaned_delete_order === "true"){
+                echo "<script>alert('Order Deleted successfully!');</script>";
+
+              }else{
+                echo "<script>alert('Orders Not Deleted - Error');</script>";
+              }
+            }
+          }
         }
 
       }

@@ -1,0 +1,43 @@
+{% extends 'boilerplate.twig' %}
+    {% block content %}
+        <header>
+            <nav>
+                <a href="/HighFlyersUkCouriers/public/manage-orders"> < Back</a>
+            </nav>
+        </header>
+        <div class="bubble orderdatawrapper">         
+            <div class="orderdata">
+                <table>
+                    <tr class="headerrow">             
+                        <th>ID</th>
+                        <th>Animal Type</th>
+                        <th>Quantity</th>
+                        <th>Email</th>
+                        <th>Collection Name</th> 
+                        <th>Collection Address 1</th>
+                        <th>Collection Address 2</th>
+                        <th>Collection Address 3</th>
+                        <th>Collection Postcode</th>
+                        <th>Collection Phone Number</th>
+                        <th>Delivery Name</th>
+                        <th>Delivery Address 1</th>
+                        <th>Delivery Address 2</th>
+                        <th>Delivery Address 3</th>
+                        <th>Delivery Postcode</th>
+                        <th>Delivery Phone Number</th>
+                        <th>Payment</th>
+                        <th>Message</th>
+                        <th>Time</th>            
+                    </tr>
+
+                    {{ orderdata|raw }}
+
+                </table>
+            </div>
+        </div>
+        <form id="formconfirmdelete" action="/HighFlyersUkCouriers/public/delete-multiple-orders" method="post">
+            <label for="yes">Are you sure you want to delete these orders?</label>          
+            <button id="confirmdelete" onclick="confirmDelete()" type="button">Yes</button>
+        </form>
+        
+    {% endblock %}

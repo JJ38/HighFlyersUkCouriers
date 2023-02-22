@@ -9,7 +9,7 @@ class ManageOrderModel
   private $order_data;
   private $HTML_order_data;
 
-  public function getOrderData() : array //for testing purposes
+  public function getOrderData() : array|null //for testing purposes
   {
     return $this->order_data;
   }
@@ -44,18 +44,27 @@ class ManageOrderModel
     $this->order_data = $this->doctrine_wrapper->getQueryResult();
   }
 
-  public function generateHTMLFromData() : void
+  public function fetchOrderDataByFieldAndMultipleValues(string $field_name, array $value) : void
   {
 
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
+    $this->doctrine_wrapper->fetchOrderDataByFieldAndMultipleValues($field_name, $value);
+    $this->order_data = $this->doctrine_wrapper->getQueryResult();
+  }
 
+  public function generateHTMLFromData() : void
+  {
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
+    
     $HTML = '';
     $number_of_orders = count($this->order_data);
     for ($i = 0; $i < $number_of_orders; $i++) {
       $HTML = $HTML . '<tr>';
-        for ($j = 0; $j < count($this->order_data[$i]); $j++) {
-          $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
-        }
+
+      $HTML = $HTML . '<td><input type="checkbox" id="' . $this->order_data[$i]['id'] . '" name="' . $this->order_data[$i]['id'] . '" value="' . $this->order_data[$i]['id'] . '"></td>';
+
+      for ($j = 0; $j < count($this->order_data[$i]); $j++) {
+        $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
+      }
 
       $HTML = $HTML . '<td class="orderbuttons"><a href="/HighFlyersUkCouriers/public/edit-order?id=' . $this->order_data[$i]['id'] .'"><button>edit</button></a><a href="/HighFlyersUkCouriers/public/delete-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">Delete</button></a><a class="print"><button type="button">Print</button></a></td>';
       $HTML = $HTML . '</tr>';
@@ -114,6 +123,26 @@ class ManageOrderModel
     }
 
     $this->HTML_order_data = $HTML;
+  }
+
+  public function generateHTMLForMultipleDelete() : void
+  {
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
+    
+    $HTML = '';
+    $number_of_orders = count($this->order_data);
+    for ($i = 0; $i < $number_of_orders; $i++) {
+      $HTML = $HTML . '<tr>';
+
+      for ($j = 0; $j < count($this->order_data[$i]); $j++) {
+        $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
+      }
+
+      $HTML = $HTML . '</tr>';
+    }
+
+    $this->HTML_order_data = $HTML;
+
   }
 
 }

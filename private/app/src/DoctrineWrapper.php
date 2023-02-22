@@ -156,30 +156,55 @@ class DoctrineWrapper
     public function fetchOrderDataByField(string $field_name, string $value) : void
     {
 
-      $password = null;
+        $query_result = null;
 
-      try {
-          $query_builder = $this->query_builder
-              ->select('o.*')
-              ->from('orders', 'o')
-              ->where('o.' . $field_name . '= :' . $field_name)
-              ->setParameters(array(
-                  '' . $field_name => $value,
-              ));
+        try {
+            $query_builder = $this->query_builder
+                ->select('o.*')
+                ->from('orders', 'o')
+                ->where('o.' . $field_name . '= :' . $field_name)
+                ->setParameters(array(
+                    '' . $field_name => $value,
+                ));
 
-          $query = $query_builder->execute();
-          $query_result = $query->fetchAll();
+            $query = $query_builder->execute();
+            $query_result = $query->fetchAll();
 
-      } catch (\Exception $exception) {
-          if ($this->doctrine_logger !== null) {
-              $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
-          }
-      } finally {
-          $this->query_result = $query_result;
-      }
+        } catch (\Exception $exception) {
+            if ($this->doctrine_logger !== null) {
+                $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+            }
+        } finally {
+            $this->query_result = $query_result;
+        }
 
     }
 
+
+    public function fetchOrderDataByFieldAndMultipleValues(string $field_name, $value) : void
+    {
+
+        $query_result = null;
+
+        try {
+            $query_builder = $this->query_builder
+                ->select('o.*')
+                ->from('orders', 'o')
+                ->where($this->query_builder->expr()->in('o.' . $field_name, $value));
+                
+
+            $query = $query_builder->execute();
+            $query_result = $query->fetchAll();
+
+        } catch (\Exception $exception) {
+            if ($this->doctrine_logger !== null) {
+                $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+            }
+        } finally {
+            $this->query_result = $query_result;
+        }
+
+    }
     
     public function fetchUserDataByField(string $field_name, string $value) : void
     {
@@ -226,6 +251,28 @@ class DoctrineWrapper
             $this->query_result = $delete_result;
         }
     }
+
+    public function deleteMultipleOrders(array $ids) : void
+    {
+        $delete_result = false;
+
+        try {
+            $query_builder = $this->query_builder
+                ->delete('orders')
+                ->where($this->query_builder->expr()->in('id', $ids))
+                ->setParameter('arrayvalue', $ids);
+
+            $delete_result = $query_builder->execute();
+
+        } catch (\Exception $exception) {
+            if ($this->doctrine_logger !== null) {
+                $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+            }
+        } finally {
+            $this->query_result = $delete_result;
+        }
+    }
+
 
 
     public function updateOrderDataById($cleaned_parameters) : void
@@ -310,7 +357,7 @@ class DoctrineWrapper
             $query_builder = $this->query_builder
                 ->select('u.id', 'u.username', 'u.account_type', 'u.user_created_timestamp')
                 ->from('users', 'u')
-                ->orderBy('u.username', 'DESC');
+                ->orderBy('u.id', 'DESC');
 
             $query = $query_builder->execute();
             $retrieve_result = $query->fetchAll();

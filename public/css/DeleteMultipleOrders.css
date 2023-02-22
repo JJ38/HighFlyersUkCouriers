@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap');
+
+html,
+body {
+  margin: 0;
+  font-family: 'inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.1em;
+  line-height: 2em;
+  background-color: #d9d9d9;
+}
+
+div.orderdatawrapper{
+    overflow: scroll;
+    white-space: nowrap;
+    font-size: 1.1em;
+}
+
+.bubble{
+    margin-top: 1em;
+    margin-left: 2em;
+    margin-right: 2em;
+    background-color: white;
+    border-radius: 2em;
+    width: auto;
+    height: auto;
+  
+}
+
+  
+table{
+    left:0;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+th{
+
+    font-weight: 500;
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-bottom: 1em;
+    text-align: left;
+
+}
+
+td{
+    padding: 1em;
+    font-weight: 100;
+    vertical-align: top;
+}
+
+tr{
+    border-bottom: 1px solid black;
+}
+
+tr:last-of-type{
+    border-bottom: none;
+}
+
+.headerrow{
+    position: sticky;
+    top: 0;
+    background-color: white;
+    border-bottom: none;
+    z-index: 2;
+}
+
+::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: none;
+    background-color: #ffffff00;
+}
+
+::-webkit-scrollbar
+{
+    width: 10px;
+    height: 10px;
+    
+}
+
+::-webkit-scrollbar-thumb
+{
+    border-radius: 5px; 
+    background-color: lightgrey;    
+    border: none;
+}
+
+form{
+    margin: 25px 0;
+    display: flex;
+    justify-content: center;
+}
+
+button{
+    margin-left: 10px;
+    padding: 0 20px;
+}
+
+header {
+    flex: 0 1 auto;
+    /* The above is shorthand for:
+    flex-grow: 0,
+    flex-shrink: 1,
+    flex-basis: auto
+    */
+  }
+  
+  nav {
+    background-color: white;
+    padding: 2.5em;
+  }
+  
+  nav a {
+   font-size: 1.5em;
+   font-style: normal;
+   text-decoration: none;
+   color: black;
+   vertical-align: left;
+   text-align: left;
+   
+  }
+  

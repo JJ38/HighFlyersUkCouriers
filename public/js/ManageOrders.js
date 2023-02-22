@@ -1,12 +1,53 @@
 
 const printButtons = document.querySelectorAll('.print');
 const orderData = document.querySelectorAll('tr');
+const selectAllButton = document.getElementById('selectall');
+const deletedSelectedButton = document.getElementById('deleteselected');
+const printSelectedButton = document.getElementById('printselected');
+const allCheckBoxes = document.querySelectorAll('input[type=checkbox]');
+
 
 for(let i = 0; i < printButtons.length; i++){
     printButtons[i].addEventListener('click', e => {
         printPage(i + 1);
     });
 }
+
+
+function selectAll(){
+  for(let i = 0; i < allCheckBoxes.length; i++){
+    allCheckBoxes[i].checked = true;
+  }
+  
+}
+
+function deleteSelected(){
+  const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked');
+  const deleteSelectedForm = document.getElementById("deleteselectedform");
+
+  for(let i = 0; i < selectedCheckBoxes.length; i++){
+    selectedCheckBoxes[i].type = "hidden"; //stops visual bug when checkbox is added to form
+    deleteSelectedForm.appendChild(selectedCheckBoxes[i]);
+  }
+
+  if(selectedCheckBoxes.length > 0){
+    deleteSelectedForm.submit();
+  }
+
+
+}
+
+function printSelected(){
+  const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked');
+  var orderIDs = [];
+  for(let i = 0; i < selectedCheckBoxes.length; i++){
+    orderIDs.push(selectedCheckBoxes[i].value);
+  }
+
+  console.log(orderIDs);
+
+}
+
 
 function closePrint() {
     document.body.removeChild(this.__container__);
@@ -38,13 +79,6 @@ function closePrint() {
   async function generateForm(orderNumber){
 
     const tableData = orderData[orderNumber].getElementsByTagName('td');
-
-    // let form =  await fetch('/HighFlyersUkCouriers/private/app/templates/PrintableForm.html', {
-    //   headers: {
-    //     'Cache-Control': 'no-cache'
-    //   }
-    // }).then(response => response.text());
-
     console.log(tableData);
 
     let form = '<!DOCTYPE html>'+

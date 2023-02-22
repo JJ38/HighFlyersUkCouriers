@@ -34,14 +34,13 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   $tainted_parameters = $request->getParsedBody();
   $cleaned_parameters = cleanLoginData($app, $tainted_parameters);
 
-  // // Get models + Wrappers
+  // Get models + Wrappers
   $container = $app->getContainer();
   $login_model = $container->get('loginModel');
   $bcrypt_wrapper = $container->get('bcryptWrapper');
   $doctrine_wrapper = $container->get('doctrineWrapper');
   $session_wrapper = $container->get('sessionWrapper');
   $logger = $container->get('logger');
-
 
   // // Doctrine wrapper setup
   $database_connection_settings = $container->get('settings')['doctrineSettings'];
@@ -60,30 +59,19 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   $login_model->login();
   $login_result = $login_model->getResult(); //If result is successful $login_result is true
 
-
-
   if($login_result) {
       $account_type = $session_wrapper->getSessionVar('accountType');
-
 
       if($account_type == "admin" || $account_type == "staff"){
        
         return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders', 302);
       }
 
-      
-      
-
       return $response->withRedirect('/HighFlyersUkCouriers/public/customer-order', 302);
-      
-
-
+    
   } 
 
- 
-  
   return $response->withRedirect('loginpage', 302);
-      
 
 })->setName('loginform');
 

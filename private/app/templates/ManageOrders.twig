@@ -46,10 +46,22 @@
                 <button class="searchoption" type="button">Add</button>
               </a>
             </div>
+
+            <div class="massactionbuttons">
+                <button id="selectall" class="massactionbutton" onclick="selectAll()" type="button">Select all</button>
+                <form id="deleteselectedform" action="/HighFlyersUkCouriers/public/delete-multiple-orders" method="get">              
+                  <button id="deleteselected" class="massactionbutton" onclick="deleteSelected()" type="button">Delete Selected</button>
+                </form>
+                <form id="printselectedform" action="" method="get">
+                  <button id="printselected" class="massactionbutton" onclick="printSelected()" type="button">Print Selected</button>
+                </form>
+            </div>
+
             <div class="bubble orderdatawrapper">         
               <div class="orderdata">
                 <table>
                     <tr class="headerrow">
+                      <th></th>
                       <th>ID</th>
                       <th>Animal Type</th>
                       <th>Quantity</th>

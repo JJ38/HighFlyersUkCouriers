@@ -25,3 +25,4 @@ require "routes/DeleteUser.php";
 require "routes/Prices.php";
 require "routes/CustomerOrder.php";
 require "routes/CustomerProfile.php";
+require "routes/DeleteMultipleOrders.php";
