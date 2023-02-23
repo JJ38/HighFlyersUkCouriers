@@ -66,7 +66,7 @@ class ManageAccountsModel
 
     public function generateHTMLForDeleteData(){
 
-        $headers = array('id', 'username', 'admin', 'user_created_timestamp');
+        $headers = array('id', 'username', 'account_type', 'user_created_timestamp');
 
 
         $HTML = '';

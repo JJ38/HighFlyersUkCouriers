@@ -83,6 +83,7 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
         $doctrine_wrapper->setQueryBuilder($query_builder);
         $doctrine_wrapper->setDoctrineLogger($logger);
 
+
         //check for duplicate users
         $doctrine_wrapper->checkIfUsernameAvailable($cleaned_parameters['username']);
         $is_username_available = $doctrine_wrapper->getQueryResult();
@@ -97,9 +98,17 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
 
             //hash password
             $bcryptWrapper = $container->get('bcryptWrapper');
+
             $cleaned_parameters['password'] = $bcryptWrapper->createHashedPassword($cleaned_parameters['password']);
 
             $doctrine_wrapper->storeUserDetails($cleaned_parameters['username'], $cleaned_parameters['password'], $cleaned_parameters['accountType']);
+
+            if($cleaned_parameters['accountType'] == "customer"){
+
+                $doctrine_wrapper->createCustomer($cleaned_parameters['username']);
+                
+            }
+     
 
         }else{
             return $response->withRedirect('/HighFlyersUkCouriers/public/add-user?usernameavailable=false', 302);

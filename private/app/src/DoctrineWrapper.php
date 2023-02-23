@@ -192,6 +192,7 @@ class DoctrineWrapper
                 ->from('orders', 'o')
                 ->where($this->query_builder->expr()->in('o.' . $field_name, $value));
                 
+                
 
             $query = $query_builder->execute();
             $query_result = $query->fetchAll();
@@ -208,10 +209,11 @@ class DoctrineWrapper
     
     public function fetchUserDataByField(string $field_name, string $value) : void
     {
+        $query_result = null;
 
       try {
           $query_builder = $this->query_builder
-              ->select('u.*')
+              ->select('u.id', 'u.username', 'u.account_type', 'u.user_created_timestamp')
               ->from('users', 'u')
               ->where('u.' . $field_name . '= :' . $field_name)
               ->setParameters(array(
@@ -261,6 +263,7 @@ class DoctrineWrapper
                 ->delete('orders')
                 ->where($this->query_builder->expr()->in('id', $ids))
                 ->setParameter('arrayvalue', $ids);
+                
 
             $delete_result = $query_builder->execute();
 
@@ -528,6 +531,27 @@ class DoctrineWrapper
         }
     }
 
+    public function deleteCustomer(string $username) : void
+    {
+        $delete_result = false;
+
+        try {
+            $query_builder = $this->query_builder
+                ->delete('customers')
+                ->where('username = :username')
+                ->setParameter('username', $username);
+
+            $delete_result = $query_builder->execute();
+
+        } catch (\Exception $exception) {
+            if ($this->doctrine_logger !== null) {
+                $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+            }
+        } finally {
+            $this->query_result = $delete_result;
+        }
+    }
+
     /**
      * Changes the password of a specific stored user.
      *
@@ -557,4 +581,91 @@ class DoctrineWrapper
             $this->query_result = $user_password_changed;
         }
     }
+
+    
+
+    public function fetchCustomerDetails($username) : void
+    {
+        $retrieve_result = array();
+
+        try {
+            $query_builder = $this->query_builder
+                ->select('c.email', 'c.collection_name', 'c.collection_phone_number', 'c.collection_address_1', 'c.collection_address_2', 'c.collection_address_3', 'c.collection_postcode')
+                ->from('customers', 'c')
+                ->where('c.username = :username')
+                ->setParameter('username', $username);
+
+            $query = $query_builder->execute();
+            $retrieve_result = $query->fetchAll();
+
+        } catch (\Exception $exception) {
+            if ($this->doctrine_logger !== null) {
+                $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+            }
+        } finally {
+            $this->query_result = $retrieve_result;
+        }
+    }
+
+    public function createCustomer($username){
+
+        try {
+            $query_builder = $this->query_builder
+                ->insert('customers')
+                ->values(array(
+                    'username' => ':username',      
+                ))
+                ->setParameters(array(
+                    'username' => $username,                
+                ));
+
+            $store_result = $query_builder->execute();
+
+            $store_result = $store_result == 1;
+
+        } catch (\Exception $exception) {
+            if ($this->doctrine_logger !== null) {
+                $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+            }
+        } finally {
+            $this->query_result = $store_result;
+        }
+    }
+
+    public function updateCustomerDetails($username, $cleaned_parameters) : void
+    {
+        $updated_order = false;
+
+        try {
+            $query_builder = $this->query_builder
+                ->update('customers', 'c')
+                ->set('c.email', ':email')
+                ->set('c.collection_name', ':collection_name')
+                ->set('c.collection_address_1', ':collection_address_1')
+                ->set('c.collection_address_2', ':collection_address_2')
+                ->set('c.collection_address_3', ':collection_address_3')
+                ->set('c.collection_postcode', ':collection_postcode')
+                ->set('c.collection_phone_number', ':collection_phone_number')
+                ->where('c.username = :username')
+                ->setParameter('email', $cleaned_parameters['email'])
+                ->setParameter('collection_name', $cleaned_parameters['collection_name'])
+                ->setParameter('collection_address_1', $cleaned_parameters['collection_address_1'])
+                ->setParameter('collection_address_2', $cleaned_parameters['collection_address_2'])
+                ->setParameter('collection_address_3', $cleaned_parameters['collection_address_3'])
+                ->setParameter('collection_postcode', $cleaned_parameters['collection_postcode'])
+                ->setParameter('collection_phone_number', $cleaned_parameters['collection_phone_number'])
+                ->setParameter('username', $username);
+            
+
+            $updated_order = $query_builder->execute();
+
+        } catch (\Exception $exception) {
+            if ($this->doctrine_logger !== null) {
+                $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+            }
+        } finally {
+            $this->query_result = $updated_order;
+        }
+    }
+
 }

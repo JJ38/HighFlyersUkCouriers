@@ -42,8 +42,11 @@ $app->get('/delete-user[/id]', function (Request $request, Response $response) u
         $manage_accounts_model->fetchUserDataByID($cleaned_user_id);
         $manage_accounts_model->generateHTMLForDeleteData();
 
+        $username = $manage_accounts_model->getUserData()[0]['username'];
+
         $session_wrapper = $container->get('sessionWrapper');
         $session_wrapper->setSessionVar('delete_user_id', $cleaned_user_id);
+        $session_wrapper->setSessionVar('delete_username', $username);
 
 
       }else{
@@ -89,7 +92,7 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
     $logger = $container->get('logger');
     $session_wrapper = $container->get('sessionWrapper');
     $user_id = $session_wrapper->getSessionVar('delete_user_id');
-
+    $username = $session_wrapper->getSessionVar('delete_username');
 
     // // Doctrine wrapper setup
     $database_connection_settings = $container->get('settings')['doctrineSettings'];
@@ -101,9 +104,13 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
     //TODO: make sure id and timestamp are set as session vars before storing
 
     $session_wrapper->unsetSessionVar('delete_user_id');
+    $session_wrapper->unsetSessionVar('delete_username');
 
     $doctrine_wrapper->deleteUser($user_id);
+   
+
     if($doctrine_wrapper->getQueryResult()){
+        $doctrine_wrapper->deleteCustomer($username);
         return $response->withRedirect('/HighFlyersUkCouriers/public/manage-accounts?deleted=true', 302);
     }
 

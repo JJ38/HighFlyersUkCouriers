@@ -72,3 +72,7 @@ $container['manageOrderModel'] = function () {
 $container['manageAccountsModel'] = function () {
   return new \HighFlyersUkCouriers\ManageAccountsModel();
 };
+
+$container['customerProfileModel'] = function () {
+  return new \HighFlyersUkCouriers\CustomerProfileModel();
+};

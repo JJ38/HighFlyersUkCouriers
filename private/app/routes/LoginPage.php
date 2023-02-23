@@ -33,6 +33,7 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   // Retrieve user credentials in POST body
   $tainted_parameters = $request->getParsedBody();
   $cleaned_parameters = cleanLoginData($app, $tainted_parameters);
+  //$cleaned_parameters = $tainted_parameters;
 
   // Get models + Wrappers
   $container = $app->getContainer();
