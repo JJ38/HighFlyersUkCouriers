@@ -66,7 +66,7 @@ div.formwrapper{
   background-color: white;
 }
 
-.page:nth-child(2){
+.page:nth-child(even){
   background-color: lightblue;
 }
 
@@ -79,7 +79,7 @@ p{
     page-break-before: always; 
   } 
 
-  .page:nth-child(2){
+  .page:nth-child(even){
     background-color: lightblue;
   }
 }
