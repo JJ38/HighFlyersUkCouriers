@@ -9,7 +9,7 @@ const allCheckBoxes = document.querySelectorAll('input[type=checkbox]');
 
 for(let i = 0; i < printButtons.length; i++){
     printButtons[i].addEventListener('click', e => {
-        printPage(orderElements[i + 1].children[1].innerHTML);
+        printOrder(orderElements[i + 1].children[1].innerHTML);
     });
 }
 
@@ -46,9 +46,7 @@ function printSelected(){
 
   print(generateForms(orderIDs));
 
-
 }
-
 
 function closePrint() {
   document.body.removeChild(this.__container__);
@@ -62,7 +60,7 @@ function setPrint() {
   this.contentWindow.print();
 }
 
-function printPage(orderNumber) {
+function printOrder(orderNumber) {
 
   const form = generateForms([orderNumber]);
   print(form);
@@ -89,10 +87,6 @@ function generateForms(orderIDs){
 
   let html;
 
-  //const tableData = orderData[orderNumber].getElementsByTagName('td');
-
-
-
   let boilerplateTop = '<!DOCTYPE html>'+
     '<html lang="en">'+
       '<head>'+
@@ -110,12 +104,7 @@ function generateForms(orderIDs){
   '</html>';
 
   
-
   html = boilerplateTop;
-
-  console.log(orderIDs[0]);
-
-  console.log(orderElements[1].children[1].innerHTML);
 
   orderData = [];
 
@@ -125,7 +114,6 @@ function generateForms(orderIDs){
     }
   }
 
-  console.log(orderData);
 
   for(let i = 0; i < orderIDs.length; i++){
     const orderHTML = getOrderHTML(orderData[i].getElementsByTagName('td'));
@@ -134,15 +122,11 @@ function generateForms(orderIDs){
 
   html = html + boilerplateBottom;
   
-  console.log(html);
-
   return html;
     
 }
 
 function getOrderHTML(tableData){
-
-  console.log(tableData[5].innerHTML);
 
   let order =  
   '<div class="page">'+
@@ -160,7 +144,6 @@ function getOrderHTML(tableData){
           '<div class="infowrapper">'+
             '<label>Name:</label>'+
             '<p>' + tableData[5].innerHTML + '</p>'+
-  
 
             '<label>Address:</label>'+
             '<address>' + 
@@ -170,10 +153,8 @@ function getOrderHTML(tableData){
               '<p>' + tableData[9].innerHTML + '</p>'+
             '</address>' +
         
-        
           '<label>Telephone:</label>'+
-          '<p>' + tableData[10].innerHTML + '</p>'+
-          
+          '<p>' + tableData[10].innerHTML + '</p>'+          
         
           '</div>'+
         '</div>'+
@@ -184,8 +165,7 @@ function getOrderHTML(tableData){
             '<div class="infowrapper">'+
               '<label>Name:</label>'+
               '<p>' + tableData[11].innerHTML + '</p>'+
-      
-      
+          
               '<label>Address:</label>'+
               '<address>' + 
                 '<p>' + tableData[12].innerHTML + '</p>'+
@@ -216,7 +196,6 @@ function getOrderHTML(tableData){
           '<label>Name:</label>'+
           '<p>' + tableData[5].innerHTML +'</p>'+
   
-
           '<label>Address:</label>'+
           '<address>' + 
             '<p>' + tableData[6].innerHTML + '</p>'+
@@ -224,8 +203,7 @@ function getOrderHTML(tableData){
             '<p>' + tableData[8].innerHTML + '</p>'+
             '<p>' + tableData[9].innerHTML + '</p>'+
           '</address>' +
-    
-    
+        
           '<label>Telephone:</label>'+
           '<p>' + tableData[9].innerHTML + '</p>'+
       
@@ -238,8 +216,7 @@ function getOrderHTML(tableData){
         '<div class="infowrapper">'+
           '<label>Name:</label>'+
           '<p>' + tableData[11].innerHTML + ' </p>'+
-      
-      
+         
           '<label>Address:</label>'+
           '<address>' + 
             '<p>' + tableData[12].innerHTML + '</p>'+

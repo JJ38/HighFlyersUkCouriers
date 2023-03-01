@@ -3,7 +3,10 @@
     <header>
         <link rel="stylesheet" href="/HighFlyersUkCouriers/public/css/NavigationBar.css" type="text/css">
         <link rel="stylesheet" href="/HighFlyersUkCouriers/public/css/CustomerOrder.css" type="text/css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+        
     </header>
+    
     <body>
         <nav class="menu" contenteditable="false">
             <a class="navLinks" href="/HighFlyersUkCouriers/public/logout">Logout</a>
@@ -16,5 +19,189 @@
                 <div class="underlineProfile"></div>
             </div>
         </nav>
+        <div id="maincontent">
+            <div class="bubble orderwindow">
+                <section class="toprow">
+                    <h1>
+                        Collection info
+                    </h1>
+                    <button>
+                        Add To Basket
+                    </button>
+                </section>
+                <hr>
+                <section class="profiledata">
+                    {{ profiledata|raw }}
+                </section>
+                <h1>
+                    Delivery info
+                </h1>
+                <hr>
+                <section>
+                    <div class="forminput">
+                        <label for="" class="">Delivery Name</label>
+                        <input id="" name="" type="text" required="">
+                    </div>
+                    <div class="forminput">
+                        <label for="" class="">Delivery Postcode</label>
+                        <input id="" name="" type="text" required="">
+                    </div>
+                    <div class="forminput">
+                        <label for="" class="">Delivery Telephone</label>
+                        <input id="" name="" type="text" required="">
+                    </div>
+                    <div class="forminput">
+                        <label for="" class="">Delivery Address 1</label>
+                        <input id="" name="" type="text" required="">
+                    </div>
+                    <div class="forminput">
+                        <label for="" class="">Delivery Address 2</label>
+                        <input id="" name="" type="text" required="">
+                    </div>
+                    <div class="forminput">
+                        <label for="" class="">Delivery Address 3</label>
+                        <input id="" name="" type="text" required="">
+                    </div>
+                </section>
+                <h1>
+                    Payment info
+                </h1>
+                <hr>
+                <section class="paymentinfo">
+                    <div class="forminput">
+                        <label for="payment">Payment on Delivery or Collection?</label>
+                        <select name="payment" id="payment" required="">
+                            <option value=""> </option>
+                            <option value="Collection">Collection</option>
+                            <option value="Delivery">Delivery</option>
+                        </select>
+                    </div>
+                    <div class="forminput">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="4" wrap="soft" required=""></textarea>
+                    </div>
+                </section>
+
+            </div>
+            <h1>
+                Basket
+            </h1>
+            <div>
+                <div class="columns tablerow headerrow">         
+                
+                    <h3>Animal</h3>
+                    <h3>Quantity</h3>
+                    <h3>Name</h3>
+                    <h3>Delivery address</h3>
+                    <h3>Delivery telephone</h3>
+                    <h3>Payment</h3>
+                    <h3></h3>
+
+                </div>
+
+                <div class="tablerow">          
+                    <div class="transportinfowrapper">   
+                        <div class="hidden collectiondeliveryicons">
+                            <i class="fa-solid fa-box-open" title="collection"></i> 
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                            <i class="fa-solid fa-truck" title="delivery"></i>    
+                        </div>              
+                        <div class="columns hidden">
+                            <p>Pigeon</p>
+                            <p>10</p>
+                            <p>Katherine</p>
+                            <p>8 Marston, Belper, Derbyshire, DE56 1TP</p>
+                            <p>07842133519</p>   
+                            <p></p>                                                                                                                                  
+                        </div>
+                        <div class="columns">
+                            <p class="">Pigeon</p>
+                            <p>10</p>
+                            <p>Johnathon smih</p>
+                            <p>10 Kenilworth Road, Ripley, Derbyshire, DE5 3GY</p>
+                            <p>07842133519</p> 
+                            <p class="">Collection</p>   
+                            <div class="expand" onclick="toggleExpand(this)"><p>V</p></div>                                                                          
+                        </div>
+                    </div>
+                    <div class="hidden">
+                        <div>
+                            <i class="fa-solid fa-at" title="email"></i>
+                            <p>
+                                jamesbrass@ymail.com
+                            </p>
+                        </div>
+                        <div class="paymentinfo">
+                            <i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>
+                            <p>
+                                Delivery
+                            </p>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-message" title="message"></i>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Feugiat sed lectus vestibulum mattis ullamcorper velit sed ullamcorper. 
+                            </p>
+                        </div>
+                    </div>
+                    <div class="deletewrapper hidden">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div> 
+                </div>         
+                <div class="tablerow">          
+                    <div class="transportinfowrapper">   
+                        <div class="hidden collectiondeliveryicons">
+                            <i class="fa-solid fa-box-open" title="collection"></i> 
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                            <i class="fa-solid fa-truck" title="delivery"></i>    
+                        </div>              
+                        <div class="columns hidden">
+                            <p>Pigeon</p>
+                            <p>10</p>
+                            <p>Katherine</p>
+                            <p>8 Marston, Belper, Derbyshire, DE56 1TP</p>
+                            <p>07842133519</p>   
+                            <p></p>                                                                                                                                  
+                        </div>
+                        <div class="columns">
+                            <p class="">Pigeon</p>
+                            <p>10</p>
+                            <p>Johnathon smih</p>
+                            <p>10 Kenilworth Road, Ripley, Derbyshire, DE5 3GY</p>
+                            <p>07842133519</p> 
+                            <p class="">Collection</p>   
+                            <div class="expand" onclick="toggleExpand(this)"><p>V</p></div>                                                                          
+                        </div>
+                    </div>
+                    <div class="hidden">
+                        <div>
+                            <i class="fa-solid fa-at" title="email"></i>
+                            <p>
+                                jamesbrass@ymail.com
+                            </p>
+                        </div>
+                        <div class="paymentinfo">
+                            <i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>
+                            <p>
+                                Delivery
+                            </p>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-message" title="message"></i>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Feugiat sed lectus vestibulum mattis ullamcorper velit sed ullamcorper. 
+                            </p>
+                        </div>
+                    </div>
+                    <div class="deletewrapper hidden">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div> 
+                </div>   
+                 
+            </div>
+        </div>
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
+        <script src="/HighFlyersUkCouriers/public/js/CustomerOrder.js" crossorigin="anonymous"></script>
+
     </body>
 </html>

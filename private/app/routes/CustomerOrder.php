@@ -21,6 +21,8 @@ $app->get('/customer-order', function (Request $request, Response $response) use
                 echo "<script>alert('profile updated!');</script>";
             }
         }
+
+        $profile_data = "mef opkm,sep;f se";
     
         if($account_type == "customer"){
             return $this->view->render($response,'CustomerOrder.twig', array(
@@ -30,6 +32,7 @@ $app->get('/customer-order', function (Request $request, Response $response) use
                 'css_footer_file' => CSS_PATH . "Footer.css",
                 'asset_path' => ASSET_PATH,
                 'js_file' => JS_PATH . "CustomerOrder.js",
+                'profiledata' => $profile_data,
                 'landing_page' => __FILE__,
                 'heading_1' => APP_TITLE,
                 'links'=> array(
