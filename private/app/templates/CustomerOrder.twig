@@ -31,36 +31,67 @@
                 </section>
                 <hr>
                 <section class="profiledata">
-                    {{ profiledata|raw }}
+                    <div class="quickcollectionaddresswrapper">
+                        <p id="collectionaddressarrow"><</p>
+                        <p>James</p>
+                        <p>10 Kenilworth Road, Ripley, Derbyshire, DE5 3GY</p>
+                    </div>
+                    <section id="collectioninfo" class="info hidden">
+                        <div class="forminput">
+                            <label for="" class="">Collection Name</label>
+                            <input id="collectionname" name="" type="text" required="">
+                        </div>
+                        <div class="forminput">
+                            <label for="" class="">Collection Postcode</label>
+                            <input id="collectionpostcode" name="" type="text" required="">
+                        </div>
+                        <div class="forminput">
+                            <label for="" class="">Collection Telephone</label>
+                            <input id="collectiontelephone" name="" type="text" required="">
+                        </div>
+                        <div class="forminput">
+                            <label for="" class="">Collection Address 1</label>
+                            <input id="collectionaddress1" name="" type="text" required="">
+                        </div>
+                        <div class="forminput">
+                            <label for="" class="">Collection Address 2</label>
+                            <input id="collectionaddress2" name="" type="text" required="">
+                        </div>
+                        <div class="forminput">
+                            <label for="" class="">Collection Address 3</label>
+                            <input id="collectionaddress3" name="" type="text" required="">
+                        </div>
+                    </section>
+                    {# {{ profiledata|raw }} #}
                 </section>
                 <h1>
                     Delivery info
                 </h1>
                 <hr>
-                <section>
+                <section class="info">
                     <div class="forminput">
                         <label for="" class="">Delivery Name</label>
-                        <input id="" name="" type="text" required="">
+                        <input id="deliveryname" name="" type="text" required="">
                     </div>
                     <div class="forminput">
                         <label for="" class="">Delivery Postcode</label>
-                        <input id="" name="" type="text" required="">
+                        <input id="deliverypostcode" name="" type="text" required="">
                     </div>
                     <div class="forminput">
                         <label for="" class="">Delivery Telephone</label>
-                        <input id="" name="" type="text" required="">
+                        <input id="deliverytelephone" name="" type="text" required="">
                     </div>
                     <div class="forminput">
                         <label for="" class="">Delivery Address 1</label>
-                        <input id="" name="" type="text" required="">
+                        <input id="deliveryaddress1" name="" type="text" required="">
                     </div>
                     <div class="forminput">
                         <label for="" class="">Delivery Address 2</label>
-                        <input id="" name="" type="text" required="">
+                        <input id="deliveryaddress2" name="" type="text" required="">
                     </div>
                     <div class="forminput">
                         <label for="" class="">Delivery Address 3</label>
-                        <input id="" name="" type="text" required="">
+                        <input id="deliveryaddress3" name="" type="text" required="">
                     </div>
                 </section>
                 <h1>
@@ -101,12 +132,12 @@
 
                 <div class="tablerow">          
                     <div class="transportinfowrapper">   
-                        <div class="hidden collectiondeliveryicons">
+                        <div class="hidden collectiondeliveryicons transporticons">
                             <i class="fa-solid fa-box-open" title="collection"></i> 
                             <i class="fa-solid fa-ellipsis-vertical"></i>
                             <i class="fa-solid fa-truck" title="delivery"></i>    
                         </div>              
-                        <div class="columns hidden">
+                        <div class="columns hidden collectioninfomargin">
                             <p>Pigeon</p>
                             <p>10</p>
                             <p>Katherine</p>
@@ -114,7 +145,7 @@
                             <p>07842133519</p>   
                             <p></p>                                                                                                                                  
                         </div>
-                        <div class="columns">
+                        <div class="columns deliveryinfomargin">
                             <p class="">Pigeon</p>
                             <p>10</p>
                             <p>Johnathon smih</p>
@@ -124,7 +155,7 @@
                             <div class="expand" onclick="toggleExpand(this)"><p>V</p></div>                                                                          
                         </div>
                     </div>
-                    <div class="hidden">
+                    <div class="extrainfo hidden">
                         <div>
                             <i class="fa-solid fa-at" title="email"></i>
                             <p>
@@ -147,15 +178,16 @@
                     <div class="deletewrapper hidden">
                         <i class="fa-solid fa-trash-can"></i>
                     </div> 
-                </div>         
+                </div>    
+
                 <div class="tablerow">          
                     <div class="transportinfowrapper">   
-                        <div class="hidden collectiondeliveryicons">
+                        <div class="hidden collectiondeliveryicons transporticons">
                             <i class="fa-solid fa-box-open" title="collection"></i> 
                             <i class="fa-solid fa-ellipsis-vertical"></i>
                             <i class="fa-solid fa-truck" title="delivery"></i>    
                         </div>              
-                        <div class="columns hidden">
+                        <div class="columns hidden collectioninfomargin">
                             <p>Pigeon</p>
                             <p>10</p>
                             <p>Katherine</p>
@@ -163,7 +195,7 @@
                             <p>07842133519</p>   
                             <p></p>                                                                                                                                  
                         </div>
-                        <div class="columns">
+                        <div class="columns deliveryinfomargin">
                             <p class="">Pigeon</p>
                             <p>10</p>
                             <p>Johnathon smih</p>
@@ -173,7 +205,7 @@
                             <div class="expand" onclick="toggleExpand(this)"><p>V</p></div>                                                                          
                         </div>
                     </div>
-                    <div class="hidden">
+                    <div class="extrainfo hidden">
                         <div>
                             <i class="fa-solid fa-at" title="email"></i>
                             <p>
@@ -196,7 +228,8 @@
                     <div class="deletewrapper hidden">
                         <i class="fa-solid fa-trash-can"></i>
                     </div> 
-                </div>   
+                </div>       
+             
                  
             </div>
         </div>

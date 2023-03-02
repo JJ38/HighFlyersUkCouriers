@@ -62,7 +62,7 @@ button{
     border-radius: 10px;
     border-style: solid;
     color: white;
-    padding: 12px 25px;
+    padding: 9px 22px;
 }
 
 button:hover{
@@ -72,12 +72,13 @@ button:hover{
 
 hr{
     color: black;
-    margin: 3px;
+    margin: 15px 3px;
     width: 102%;
     transform: translateX(-1%);
     border: 0;
     background-color:#000000FF;
     height: 1px;
+
 }
 
 label{
@@ -93,14 +94,14 @@ label{
     flex-direction: column;
 }
 
-section{
+.info{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    /* justify-content: space-between; */
-    flex-wrap: wrap;
+    
 }
 
 .paymentinfo{
+    display: grid;
     justify-content: flex-start;
     grid-template-columns: 1fr 2fr;
 }
@@ -141,6 +142,13 @@ select{
     display: grid;
     grid-template-columns: 4fr 4fr 4fr 12fr 8fr 4fr 1fr;
     gap: 20px;
+    height: auto;
+    max-height: 100px;
+    margin-top: 25px;
+    margin-bottom: 20px;
+
+    transition: max-height 0.5s ease-in-out;
+    /* transition: margin-top 0.5s ease-in-out; */
     
 }
 
@@ -205,7 +213,13 @@ h3{
 }
 
 .hidefont{
-    font-size: 0px;
+    opacity: 0;
+    transition: none;
+}
+
+p{
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
 }
 
 .expand:hover{
@@ -223,15 +237,32 @@ p{
 }
 
 .hidden{
-    display: none;
-    font-size: 0px;
-    z-index: -2;
+  
+    overflow: hidden;
+    z-index: -2; 
+    max-height: 0px !important;
+    margin-top: 0px !important;
+    transition: max-height 0.5s ease-in-out;
+    /* transition: margin-top 0.5s ease-in-out; */
+    
+}
+
+.collectioninfomargin{   
+    margin-top: 25px !important;
+}
+
+.deliveryinfomargin{
+    margin-top: -25px;
+    margin-bottom: 0px;
+    transition: margin-top 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;
+
 }
 
 i{  
     width: 20px;
     height: 20px;
     font-size: 20px;
+    margin: 1px 0px;
     margin-right: 10px;
 }
 
@@ -242,17 +273,16 @@ i{
 .extrainfo{
     display: grid;
     grid-template-columns: 12fr 6fr 18fr 1fr;
-    margin-top: 20px;
+    /* margin-top: 20px; */
+    max-height: 100px;
+    transition: max-height 0.5s ease-in-out;
+    /* transition: margin-top 0.5s ease-in-out; */
+
 }
 
 .extrainfo > div{
     display: flex;
 }
-
-.paymentinfo{
-    padding-left: 20px;
-}
-
 
 .deletewrapper{
     position: absolute;
@@ -284,16 +314,33 @@ i{
     padding: 0px;
 }
 
-
-.columns{
-    margin-top: 25px;
-}
-
 .transporticons{
     display:flex;
     flex-direction: column;
     justify-content: space-between;
     position: absolute;
-    min-height: 67px;
-   
+    /* min-height: 67px; */
+}
+
+
+.profiledata{
+    font-family: 'Raleway';
+    font-style: 500;
+    font-size: 22px;
+
+    margin: 20px 0px;
+}
+
+.quickcollectionaddresswrapper{
+    display: flex;
+    gap: 15px;
+}
+
+#collectionaddressarrow{
+    transition: transform 0.25s ease-in-out;
+}
+
+.rotate90anticlockwise{
+    transform: rotate(-90deg);
+    transition: transform 0.25s ease-in-out;
 }
