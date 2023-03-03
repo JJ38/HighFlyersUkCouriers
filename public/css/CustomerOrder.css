@@ -63,6 +63,8 @@ button{
     border-style: solid;
     color: white;
     padding: 9px 22px;
+
+    cursor: pointer;
 }
 
 button:hover{
@@ -143,7 +145,7 @@ select{
     grid-template-columns: 4fr 4fr 4fr 12fr 8fr 4fr 1fr;
     gap: 20px;
     height: auto;
-    max-height: 100px;
+    max-height: 200px;
     margin-top: 25px;
     margin-bottom: 20px;
 
@@ -274,7 +276,7 @@ i{
     display: grid;
     grid-template-columns: 12fr 6fr 18fr 1fr;
     /* margin-top: 20px; */
-    max-height: 100px;
+    max-height: 200px;
     transition: max-height 0.5s ease-in-out;
     /* transition: margin-top 0.5s ease-in-out; */
 
@@ -343,4 +345,44 @@ i{
 .rotate90anticlockwise{
     transform: rotate(-90deg);
     transition: transform 0.25s ease-in-out;
+}
+
+.flex{
+    display: flex;
+}
+
+.hinttext{
+    padding-left: 5px;
+    color: rgb(160, 160, 160);
+}
+
+#basket{
+    margin: 20px 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 50px;
+
+}
+
+.comma{
+    margin-right: 5px;
+}
+
+
+#submitorders{
+    
+    margin: auto;
+    font-family: 'Raleway';
+    font-size: 20px;
+    font-weight: 400;
+    background-color: #2881FF;
+    border-color: #2881FF;
+    border-radius: 10px;
+    border-style: solid;
+    color: white;
+    padding: 9px 22px;
+
+    cursor: pointer;
+    height: fit-content;
 }

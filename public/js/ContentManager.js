@@ -166,8 +166,6 @@ onresize = (event) => {
     draggableLeft.style.right = rightWidth + midWidth + 'px';
     draggableRight.style.right = rightWidth + 'px';
 
-
- 
 };
 
 

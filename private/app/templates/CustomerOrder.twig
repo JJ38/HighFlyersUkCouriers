@@ -23,46 +23,65 @@
             <div class="bubble orderwindow">
                 <section class="toprow">
                     <h1>
-                        Collection info
+                        Order info
                     </h1>
-                    <button>
+                    <button onclick="addToBasket()">
                         Add To Basket
                     </button>
                 </section>
                 <hr>
+                <section id="orderinfo" class="info">
+                    <div class="forminput">
+                        <label for="" class="">Animal</label>
+                        <input id="animal" name="" type="text" required="">
+                    </div>
+                    <div class="forminput">
+                        <label for="" class="flex">Quantity <p class="hinttext">(number of birds/boxes)</p></label>
+                        <input id="quantity" name="" type="number" required="">
+                    </div>
+                </section>            
+                <h1>
+                    Collection info
+                </h1>
+                <hr>
                 <section class="profiledata">
-                    <div class="quickcollectionaddresswrapper">
+                    <div id="quickaddress" class="quickcollectionaddresswrapper">
                         <p id="collectionaddressarrow"><</p>
-                        <p>James</p>
-                        <p>10 Kenilworth Road, Ripley, Derbyshire, DE5 3GY</p>
+                        <p id="quickAddressName">{{ collection_name|raw }}</p>
+                        <div class="flex"><p id="quickAddress1">{{ collection_address_1|raw }}</p><p class="comma">,</p><p id="quickAddress2">{{ collection_address_2|raw }}</p><p class="comma">,</p><p id="quickAddress3">{{ collection_address_3|raw }}</p><p class="comma">,</p><p id="quickAddressPostcode">{{ collection_postcode|raw }}</p></div>
+                        <p id="quickAddressEmail">{{ email|raw }}</p>
+                        <p id="quickAddressTelephone">{{ collection_phone_number|raw }}</p>
                     </div>
                     <section id="collectioninfo" class="info hidden">
                         <div class="forminput">
                             <label for="" class="">Collection Name</label>
-                            <input id="collectionname" name="" type="text" required="">
+                            <input id="collectionname" name="" type="text" onchange="updateQuickAddressName()" required="">
                         </div>
                         <div class="forminput">
                             <label for="" class="">Collection Postcode</label>
-                            <input id="collectionpostcode" name="" type="text" required="">
+                            <input id="collectionpostcode" name="" type="text" onchange="updateQuickAddressPostcode()" required="">
                         </div>
                         <div class="forminput">
                             <label for="" class="">Collection Telephone</label>
-                            <input id="collectiontelephone" name="" type="text" required="">
+                            <input id="collectiontelephone" name="" type="text" onchange="updateQuickAddressTelephone()" required="">
                         </div>
                         <div class="forminput">
                             <label for="" class="">Collection Address 1</label>
-                            <input id="collectionaddress1" name="" type="text" required="">
+                            <input id="collectionaddress1" name="" type="text" onchange="updateQuickAddress1()" required="">
                         </div>
                         <div class="forminput">
                             <label for="" class="">Collection Address 2</label>
-                            <input id="collectionaddress2" name="" type="text" required="">
+                            <input id="collectionaddress2" name="" type="text" onchange="updateQuickAddress2()" required="">
                         </div>
                         <div class="forminput">
                             <label for="" class="">Collection Address 3</label>
-                            <input id="collectionaddress3" name="" type="text" required="">
+                            <input id="collectionaddress3" name="" type="text" onchange="updateQuickAddress3()" required="">
+                        </div>
+                        <div class="forminput">
+                            <label for="" class="">Email</label>
+                            <input id="email" name="" type="text" onchange="updateQuickAddressEmail()" required="">
                         </div>
                     </section>
-                    {# {{ profiledata|raw }} #}
                 </section>
                 <h1>
                     Delivery info
@@ -108,129 +127,35 @@
                         </select>
                     </div>
                     <div class="forminput">
-                        <label for="message">Message</label>
+                        <label class="flex" for="message">Message <p class="hinttext">(optional)</p></label>
                         <textarea id="message" name="message" rows="4" wrap="soft" required=""></textarea>
                     </div>
                 </section>
 
             </div>
-            <h1>
-                Basket
-            </h1>
-            <div>
-                <div class="columns tablerow headerrow">         
-                
-                    <h3>Animal</h3>
-                    <h3>Quantity</h3>
-                    <h3>Name</h3>
-                    <h3>Delivery address</h3>
-                    <h3>Delivery telephone</h3>
-                    <h3>Payment</h3>
-                    <h3></h3>
+            <div id="basket" class="hidden">
+                <h1>
+                    Basket
+                </h1>
+                <div id="table">
+                    <div class="columns tablerow headerrow">         
+                    
+                        <h3>Animal</h3>
+                        <h3>Quantity</h3>
+                        <h3>Name</h3>
+                        <h3>Delivery address</h3>
+                        <h3>Delivery telephone</h3>
+                        <h3>Payment</h3>
+                        <h3></h3>
 
+                    </div>
+            
                 </div>
-
-                <div class="tablerow">          
-                    <div class="transportinfowrapper">   
-                        <div class="hidden collectiondeliveryicons transporticons">
-                            <i class="fa-solid fa-box-open" title="collection"></i> 
-                            <i class="fa-solid fa-ellipsis-vertical"></i>
-                            <i class="fa-solid fa-truck" title="delivery"></i>    
-                        </div>              
-                        <div class="columns hidden collectioninfomargin">
-                            <p>Pigeon</p>
-                            <p>10</p>
-                            <p>Katherine</p>
-                            <p>8 Marston, Belper, Derbyshire, DE56 1TP</p>
-                            <p>07842133519</p>   
-                            <p></p>                                                                                                                                  
-                        </div>
-                        <div class="columns deliveryinfomargin">
-                            <p class="">Pigeon</p>
-                            <p>10</p>
-                            <p>Johnathon smih</p>
-                            <p>10 Kenilworth Road, Ripley, Derbyshire, DE5 3GY</p>
-                            <p>07842133519</p> 
-                            <p class="">Collection</p>   
-                            <div class="expand" onclick="toggleExpand(this)"><p>V</p></div>                                                                          
-                        </div>
-                    </div>
-                    <div class="extrainfo hidden">
-                        <div>
-                            <i class="fa-solid fa-at" title="email"></i>
-                            <p>
-                                jamesbrass@ymail.com
-                            </p>
-                        </div>
-                        <div class="paymentinfo">
-                            <i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>
-                            <p>
-                                Delivery
-                            </p>
-                        </div>
-                        <div>
-                            <i class="fa-solid fa-message" title="message"></i>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Feugiat sed lectus vestibulum mattis ullamcorper velit sed ullamcorper. 
-                            </p>
-                        </div>
-                    </div>
-                    <div class="deletewrapper hidden">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </div> 
-                </div>    
-
-                <div class="tablerow">          
-                    <div class="transportinfowrapper">   
-                        <div class="hidden collectiondeliveryicons transporticons">
-                            <i class="fa-solid fa-box-open" title="collection"></i> 
-                            <i class="fa-solid fa-ellipsis-vertical"></i>
-                            <i class="fa-solid fa-truck" title="delivery"></i>    
-                        </div>              
-                        <div class="columns hidden collectioninfomargin">
-                            <p>Pigeon</p>
-                            <p>10</p>
-                            <p>Katherine</p>
-                            <p>8 Marston, Belper, Derbyshire, DE56 1TP</p>
-                            <p>07842133519</p>   
-                            <p></p>                                                                                                                                  
-                        </div>
-                        <div class="columns deliveryinfomargin">
-                            <p class="">Pigeon</p>
-                            <p>10</p>
-                            <p>Johnathon smih</p>
-                            <p>10 Kenilworth Road, Ripley, Derbyshire, DE5 3GY</p>
-                            <p>07842133519</p> 
-                            <p class="">Collection</p>   
-                            <div class="expand" onclick="toggleExpand(this)"><p>V</p></div>                                                                          
-                        </div>
-                    </div>
-                    <div class="extrainfo hidden">
-                        <div>
-                            <i class="fa-solid fa-at" title="email"></i>
-                            <p>
-                                jamesbrass@ymail.com
-                            </p>
-                        </div>
-                        <div class="paymentinfo">
-                            <i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>
-                            <p>
-                                Delivery
-                            </p>
-                        </div>
-                        <div>
-                            <i class="fa-solid fa-message" title="message"></i>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Feugiat sed lectus vestibulum mattis ullamcorper velit sed ullamcorper. 
-                            </p>
-                        </div>
-                    </div>
-                    <div class="deletewrapper hidden">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </div> 
-                </div>       
-             
-                 
+                <button id="submitorders" type="button" onclick="submitOrders()">Submit Orders</button>
+                <form method="post" action="/HighFlyersUkCouriers/public/customer-order">
+                </form>
+                <br>
+                
             </div>
         </div>
         <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
