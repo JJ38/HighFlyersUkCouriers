@@ -80,7 +80,6 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
 
   //TODO: popups for database error
 
-
   //send email
 
   $mailer = $container->get('mailer');
@@ -92,7 +91,6 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   $mailer->sendMailInternal();
 
   return $response->withRedirect('/HighFlyersUkCouriers/public/bookings?invalidform=false', 302);
-
 
 })->setName('bookings');
 
@@ -162,12 +160,6 @@ function cleanBookingForm($app, array $tainted_parameters) : array
     $cleaned_parameters['delivery_postcode'] = $sanitizer->sanitizeString($tainted_parameters['deliveryPostcode']);
 
     $cleaned_parameters['message'] = $sanitizer->sanitizeString($tainted_parameters['message']);
-
-    //$cleaned_parameters['delivery_phone_number'] = $tainted_parameters['deliveryTelephone'];
-    $cleaned_parameters['collection_phone_number'] = $tainted_parameters['collectionTelephone'];
-
-
-
 
     return $cleaned_parameters;
 }

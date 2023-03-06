@@ -142,9 +142,7 @@ function validateOrder(){
     var isNumber = /^\d+$/;
     var isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-    // console.log(deliveryTelephone.value);
-
-     //validate phone numbers
+    //validate phone numbers
     
     if((!deliveryTelephone.value.match(isNumber)) || !(deliveryTelephone.value.length > 10 && deliveryTelephone.value.length < 13)){
         return "Delivery Telephone is not a valid phone number";
@@ -283,8 +281,6 @@ function addToBasket(){
         quantity.value = "";
 
 
-
-
         updateBasket();
     }
 
@@ -312,13 +308,10 @@ function submitOrders(){
 
     //get all orders
 
-    // var orders = Array.from(document.querySelectorAll('.tablerow'));
     const form = document.querySelector('form');
     var orders = document.querySelectorAll('.tablerow');
 
     //create input elements and then  add to DOM
-
-    console.log(orders);
 
     for(let i = 1; i < orders.length; i++){
         const orderWrapper = document.createElement('div');
@@ -355,7 +348,6 @@ function submitOrders(){
         form.appendChild(orderWrapper);
     }
 
-    console.log(form);
     //submit form
 
     form.submit();
