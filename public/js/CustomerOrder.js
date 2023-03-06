@@ -137,11 +137,50 @@ function updateQuickAddressEmail(){
 
 }
 
+function validateOrder(){
+
+    var isNumber = /^\d+$/;
+    var isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    // console.log(deliveryTelephone.value);
+
+     //validate phone numbers
+    
+    if((!deliveryTelephone.value.match(isNumber)) || !(deliveryTelephone.value.length > 10 && deliveryTelephone.value.length < 13)){
+        return "Delivery Telephone is not a valid phone number";
+    }
+
+    if((!collectionTelephone.value.match(isNumber)) || !(collectionTelephone.value.length > 10 && collectionTelephone.value.length < 13)){
+        return "Collection Telephone is not a valid phone number";
+    }
+
+    //validate quantity
+
+    if(!quantity.value.match(isNumber)){
+        return "Quantity is not a valid number";
+    }
+
+    //validate email
+
+    if(!email.value.match(isEmail)){
+        return "Email is not valid";
+    }
+
+    //validate payment method
+
+    if(paymentOption.value != "Collection" && paymentOption.value != "Delivery"){
+        return "Payment method is not valid";
+    }
+
+
+    return null;
+
+}
+
 
 function addToBasket(){
     
     //check if required fields are filled
-
     let requiredFieldsMet = true;
 
     for(let i = 0; i < requiredFields.length; i++){
@@ -150,10 +189,22 @@ function addToBasket(){
             requiredFieldsMet = false;
         }else{
             requiredFields[i].style.borderColor = "#000000FF";
-
         }
     }
 
+    if(!requiredFieldsMet){
+        alert("Please fill in all required fields");
+        return;
+    }
+
+
+    //validate fields
+    const validateResult = validateOrder();
+    if(validateResult != null){
+        alert(validateResult);
+        return;
+    }
+    
 
     //if required fields enetered add dom elements
 
@@ -276,7 +327,7 @@ function submitOrders(){
 
         for(let j = 0; j < orders[i].children[0].children[1].children.length; j++){ //collection info
             const input = document.createElement('input');
-            input.name="collection" + "[" + i + "][]";// + i + "_" + j;
+            input.name="collection" + "[" + i + "][]";
             input.type = "hidden";
             input.value = orders[i].children[0].children[1].children[j].textContent;
             orderWrapper.appendChild(input);
@@ -286,7 +337,7 @@ function submitOrders(){
 
         for(let j = 0; j < orders[i].children[0].children[2].children.length - 1; j++){ //delivery info
             const input = document.createElement('input');
-            input.name="delivery" + "[" + i + "][]";// + i + "_" + j;
+            input.name="delivery" + "[" + i + "][]";
             input.type = "hidden";
             input.value = orders[i].children[0].children[2].children[j].textContent;
             orderWrapper.appendChild(input);
@@ -294,7 +345,7 @@ function submitOrders(){
 
         for(let j = 0; j < orders[i].children[1].children.length; j++){
             const input = document.createElement('input');
-            input.name ="extra" + "[" + i + "][]"; //+ i + "_" + j;
+            input.name ="extra" + "[" + i + "][]";
             input.type = "hidden";
             input.value = orders[i].children[1].children[j].children[1].textContent;
             orderWrapper.appendChild(input);

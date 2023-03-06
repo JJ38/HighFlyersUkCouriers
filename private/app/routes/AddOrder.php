@@ -44,11 +44,10 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $cleaned_parameters = cleanBookingForm($app, $tainted_parameters);
   //if one of the parameters does not meet requirements
 
-  var_dump($tainted_parameters);
+  // var_dump($tainted_parameters);
 
   if(empty($cleaned_parameters)){
-
-    return $response;
+    
     return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?addorder=false', 302);
   }
 

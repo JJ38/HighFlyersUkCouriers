@@ -105,6 +105,10 @@ function cleanBookingForm($app, array $tainted_parameters) : array
     $sanitizer = $app->getContainer()->get('sanitizer');
     $validator = $app->getContainer()->get('validator');
 
+    //convert postcodes to uppercase
+    $tainted_parameters['collectionPostcode'] = strtoupper($tainted_parameters['collectionPostcode']);
+    $tainted_parameters['deliveryPostcode'] = strtoupper($tainted_parameters['deliveryPostcode']);
+
 
     $sanitized_parameters['quantity'] = $sanitizer->sanitizePositiveNumber($tainted_parameters['quantity']);
     $cleaned_parameters['quantity'] = $validator->validatePositiveNumber($sanitized_parameters['quantity']);

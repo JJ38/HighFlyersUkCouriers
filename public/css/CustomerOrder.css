@@ -123,6 +123,7 @@ textarea{
     font-family: 'Raleway';
     font-style: 300;
     font-size: 22px;
+    resize: vertical;
 }
 
 label{
@@ -386,3 +387,12 @@ i{
     cursor: pointer;
     height: fit-content;
 }
+
+#collectionpostcode{
+    text-transform: uppercase;
+}
+
+#deliverypostcode{
+    text-transform: uppercase;
+}
+
