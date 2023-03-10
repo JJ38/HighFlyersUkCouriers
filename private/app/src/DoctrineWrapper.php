@@ -64,6 +64,8 @@ class DoctrineWrapper
         return $this->query_result;
     }
 
+
+
     public function storeOrderData($cleaned_parameters) : void
     {
 
@@ -76,6 +78,8 @@ class DoctrineWrapper
                   'animal_type' => ':animal_type',
                   'quantity' => ':quantity',
                   'email' => ':email',
+                  'username' => ':username',
+                  'delivery_week' => ':delivery_week',
                   'collection_name' => ':collection_name',
                   'collection_phone_number' => ':collection_phone_number',
                   'collection_address_1' => ':collection_address_1',
@@ -90,13 +94,15 @@ class DoctrineWrapper
                   'delivery_phone_number' => ':delivery_phone_number',
                   'payment_option' => ':payment_option',
                   'message' => ':message',
-                  'timestamp' => ':timestamp'
+                  
 
               ))
               ->setParameters(array(
                 'animal_type' => $cleaned_parameters['animal_type'],
                 'quantity' => $cleaned_parameters['quantity'],
                 'email' => $cleaned_parameters['email'],
+                'username' => $cleaned_parameters['username'],
+                'delivery_week' => $cleaned_parameters['delivery_week'],
                 'collection_name' => $cleaned_parameters['collection_name'],
                 'collection_phone_number' => $cleaned_parameters['collection_phone_number'],
                 'collection_address_1' => $cleaned_parameters['collection_address_1'],
@@ -111,7 +117,7 @@ class DoctrineWrapper
                 'delivery_phone_number' => $cleaned_parameters['delivery_phone_number'],
                 'payment_option' => $cleaned_parameters['payment_option'],
                 'message' => $cleaned_parameters['message'],
-                'timestamp' => $cleaned_parameters['timestamp']
+                
               ));
 
           $store_result = $query_builder->execute();
@@ -128,6 +134,8 @@ class DoctrineWrapper
 
 
     }
+
+    
 
     public function fetchAllOrderData() : void
     {
@@ -291,6 +299,8 @@ class DoctrineWrapper
                 ->set('o.delivery_phone_number', ':delivery_phone_number')
                 ->set('o.collection_phone_number', ':collection_phone_number')
                 ->set('o.animal_type', ':animal_type')
+                ->set('o.username', ':username')
+                ->set('o.delivery_week', ':delivery_week')
                 ->set('o.collection_name', ':collection_name')
                 ->set('o.collection_address_1', ':collection_address_1')
                 ->set('o.collection_address_2', ':collection_address_2')
@@ -309,6 +319,8 @@ class DoctrineWrapper
                 ->setParameter('delivery_phone_number', $cleaned_parameters['delivery_phone_number'])
                 ->setParameter('collection_phone_number', $cleaned_parameters['collection_phone_number'])
                 ->setParameter('animal_type', $cleaned_parameters['animal_type'])
+                ->setParameter('username', $cleaned_parameters['username'])
+                ->setParameter('delivery_week', $cleaned_parameters['delivery_week'])
                 ->setParameter('collection_name', $cleaned_parameters['collection_name'])
                 ->setParameter('collection_address_1', $cleaned_parameters['collection_address_1'])
                 ->setParameter('collection_address_2', $cleaned_parameters['collection_address_2'])

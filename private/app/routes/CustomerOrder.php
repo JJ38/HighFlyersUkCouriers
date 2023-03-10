@@ -11,19 +11,45 @@ $app->get('/customer-order', function (Request $request, Response $response) use
 
     if($account_type == "customer"){
 
+        $container = $app->getContainer();
+
+        $santizer = $container->get('sanitizer');
+
+
         $allGetVars = $_GET;
 
         if(!empty($allGetVars)){   
     
-            $cleaned_updated = $allGetVars['updated'];
+           
     
-    
-            if($cleaned_updated == "true"){
-                echo "<script>alert('profile updated!');</script>";
+            if(!empty($allGetVars['updated'])){
+                $cleaned_updated = $santizer->sanitizeString($allGetVars['updated']);
+                if($cleaned_updated == "true"){
+                    echo "<script>alert('profile updated!');</script>";
+                }
+            }
+
+            if(!empty($allGetVars['success'])){
+                $cleaned_updated = $santizer->sanitizeString($allGetVars['success']);
+                if($cleaned_updated == "true"){
+                    echo "<script>alert('Success! Your orders have been place and you should recieve an email confirming your order shortly.');</script>";
+                }
+            }
+
+            if(!empty($allGetVars['error'])){
+                $cleaned_error = $santizer->sanitizeString($allGetVars['error']);
+                if($cleaned_error == "true"){
+                    echo "<script>alert('Error: Sorry something went wrong. No orders have been submitted.');</script>";
+                }
+            }
+
+            if(!empty($allGetVars['partial'])){
+                $cleaned_partial = $santizer->sanitizeString($allGetVars['partial']);
+                if($cleaned_partial == "true"){
+                    echo "<script>alert('Error: Sorry something went wrong. Some orders have been submitted. You will recieve an email shortly confirming the orders that have been submitted');</script>";
+                }
             }
         }
-
-        $profile_data = "mef opkm,sep;f se";
 
         // Get models + Wrappers
         $container = $app->getContainer();
@@ -92,54 +118,66 @@ $app->post('/customer-order', function (Request $request, Response $response) us
 
 
         $allPostVars = $request->getParsedBody();
-        echo "<pre>";
-        var_dump($allPostVars);
-        echo "</pre>";
-        return $response;
+
+     
 
         $container = $app->getContainer();
 
-        $customer_profile_model = $container->get('customerProfileModel');
-        $sanitizer = $container->get('sanitizer');
-        $validator = $container->get('validator');
-        $customer_profile_model->setSanitizer($sanitizer);
-        $customer_profile_model->setValidator($validator);
-        $customer_profile_model->cleanProfileForm($allPostVars);
+        $manage_order_model = $container->get('manageOrderModel');
 
-        if(empty($customer_profile_model->getCleanedFormData())){
-            return $response->withRedirect('/HighFlyersUkCouriers/public/customer-profile?updated=false', 302);
+        $session_wrapper = $container->get('sessionWrapper');
+        $account_name = $session_wrapper->getSessionVar('user');
+
+        $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $account_name);
+
+        if(empty($cleaned_orders)){
+            return $response->withRedirect('/customer-order?error=true', 302);
         }
+
 
         // Get models + Wrappers
         $container = $app->getContainer();
-        $session_wrapper = $container->get('sessionWrapper');
         $doctrine_wrapper = $container->get('doctrineWrapper');
         $logger = $container->get('logger');
 
-        // // Doctrine wrapper setup
+        // Doctrine wrapper setup
         $database_connection_settings = $container->get('settings')['doctrineSettings'];
         $database_connection = DriverManager::getConnection($database_connection_settings);
         $query_builder = $database_connection->createQueryBuilder();
         $doctrine_wrapper->setQueryBuilder($query_builder);
         $doctrine_wrapper->setDoctrineLogger($logger);
 
+        $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
+        $manage_order_model->setOrderData($cleaned_orders);
 
-        // $customer_details = $customer_profile_model->getCleanedFormData();
+    
+        // echo "<pre>";
+        // var_dump($cleaned_orders);
+        // echo "</pre>";
+        // return $response;
 
-        // $customer_profile_model->setDoctrineWrapper($doctrine_wrapper);
-        // $customer_profile_model->setSessionWrapper($session_wrapper);
+        $store_result = $manage_order_model->storeMultipleOrders();
+        $sanitizer = $container->get('sanitizer');
 
-        // $customer_profile_model->setCustomerDetails($customer_details);
-        // $customer_profile_model->updateCustomerDetails();
+        //send email
 
-        // $update_result = $customer_profile_model->getUpdateResult();
+        $cleaned_email = $sanitizer->sanitizeEmail($allPostVars['profileemail']);
 
+        $mailer = $container->get('mailer');
+        $mailer_settings = $container->get('settings')['mailerBookingSettings'];
+        $mailer->setMailerSettings($mailer_settings);
 
-        if($update_result){
-            return $response->withRedirect('/HighFlyersUkCouriers/public/customer-order?updated=true', 302);
+        $mailer->setMailData($cleaned_orders);
+        $mailer->sendMultipleOrderEmail($cleaned_email);
+        // $mailer->sendMailInternal();
+
+        if($store_result){
+
+            return $response->withRedirect('/customer-order?success=true', 302);
         }
 
-        return $response->withRedirect('/HighFlyersUkCouriers/public/customer-profile?updated=false', 302);
+
+        return $response->withRedirect('/customer-order?partial=true', 302);
     
         
     }

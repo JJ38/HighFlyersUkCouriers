@@ -1,8 +1,8 @@
-{% extends 'boilerplate.twig' %}
+{% extends 'BoilerPlate.twig' %}
     {% block content %}
         <header>
             <nav>
-                <a href="/HighFlyersUkCouriers/public/manage-orders"> < Back</a>
+                <a href="/manage-orders"> < Back</a>
             </nav>
         </header>
         <div class="bubble orderdatawrapper">         
@@ -13,6 +13,8 @@
                         <th>Animal Type</th>
                         <th>Quantity</th>
                         <th>Email</th>
+                        <th>Account</th>
+                        <th>Delivery Week</th>
                         <th>Collection Name</th> 
                         <th>Collection Address 1</th>
                         <th>Collection Address 2</th>
@@ -35,7 +37,7 @@
                 </table>
             </div>
         </div>
-        <form id="formconfirmdelete" action="/HighFlyersUkCouriers/public/delete-multiple-orders" method="post">
+        <form id="formconfirmdelete" action="/delete-multiple-orders" method="post">
             <label for="yes">Are you sure you want to delete these orders?</label>          
             <button id="confirmdelete" onclick="confirmDelete()" type="button">Yes</button>
         </form>

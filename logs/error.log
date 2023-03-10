@@ -223,3 +223,7 @@
 [2023-02-23T07:21:53.130931+01:00] logger.ERROR: Doctrine Error ["An exception occurred while executing a query: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.username' in 'where clause'"] []
 [2023-02-23T07:22:40.576599+01:00] logger.ERROR: Doctrine Error ["An exception occurred while executing a query: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.collecton_phone_number' in 'field list'"] []
 [2023-02-23T07:24:11.329753+01:00] logger.ERROR: Doctrine Error ["Named parameter \"collecton_phone_number\" does not have a bound value."] []
+[2023-03-10T13:41:17.773316+01:00] logger.ERROR: Doctrine Error ["An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'animal_type' cannot be null"] []
+[2023-03-10T13:41:43.403050+01:00] logger.ERROR: Doctrine Error ["An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'animal_type' cannot be null"] []
+[2023-03-10T13:43:16.334429+01:00] logger.ERROR: Doctrine Error ["An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'animal_type' cannot be null"] []
+[2023-03-10T13:49:55.558573+01:00] logger.ERROR: Doctrine Error ["An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'animal_type' cannot be null"] []

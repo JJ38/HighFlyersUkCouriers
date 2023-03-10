@@ -4,6 +4,8 @@ CREATE TABLE orders (
  `animal_type` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
  `quantity` INT COLLATE utf8_unicode_ci NOT NULL,
  `email` varchar(319) COLLATE utf8_unicode_ci NOT NULL,
+ `username` varchar(30) COLLATE utf8_unicode_ci,
+ `delivery_week` varchar(30) COLLATE utf8_unicode_ci,
  `collection_name` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
  `collection_phone_number` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
  `collection_address_1` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
@@ -17,12 +19,12 @@ CREATE TABLE orders (
  `delivery_postcode` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
  `delivery_phone_number` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
  `payment_option` varchar(12) COLLATE utf8_unicode_ci NOT NULL,
- `message` MEDIUMTEXT COLLATE utf8_unicode_ci NOT NULL,
+ `message` MEDIUMTEXT COLLATE utf8_unicode_ci,
  `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='CURRENT_TIMESTAMP';
 
 
-INSERT INTO 'orders' VALUES ('11', 'Pigeon', 11, 'jamesbrass@ymail.com', 'James', '07842133519', '10 Kenilworth Road', 'Ripely', 'derbyshire', 'DE5 3GY', 'Katherine', '10 Marston Close', 'Belper', 'Derbyshire','DE56 1TP', '07894567341', 'collection', 'a', '2022-01-01 00:00:00');
+INSERT INTO 'orders' VALUES ('11', 'Pigeon', 11, 'jamesbrass@ymail.com', 'James', '07842133519', '10 Kenilworth Road', 'Ripley', 'derbyshire', 'DE5 3GY', 'Katherine', '10 Marston Close', 'Belper', 'Derbyshire','DE56 1TP', '07894567341', 'collection', 'a', '2022-01-01 00:00:00');
 -- (
 -- `animal_type`,
 -- `quantity`,

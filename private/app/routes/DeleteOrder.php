@@ -78,7 +78,8 @@ $app->get('/delete-order[/id]', function (Request $request, Response $response) 
                   'send_telemetry' => 'sendtelemetrydata',
                   'logout' => 'logout'
               ),
-          ));
+          )
+      );
     }
 
     return $response->withRedirect('loginpage', 302);
@@ -111,7 +112,7 @@ $app->post('/delete-order', function (Request $request, Response $response) use 
     $doctrine_wrapper->deleteOrderById($order_id);
     $doctrine_wrapper->getQueryResult();
 
-    return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?deleted=true', 302);
+    return $response->withRedirect('/manage-orders?deleted=true', 302);
   }
 
 

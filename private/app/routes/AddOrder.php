@@ -41,14 +41,19 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 {
 
   $tainted_parameters = $request->getParsedBody();
-  $cleaned_parameters = cleanBookingForm($app, $tainted_parameters);
+
+  $container = $app->getContainer();
+  $manage_order_model = $container->get('manageOrderModel');
+
+  $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
+
   //if one of the parameters does not meet requirements
 
   // var_dump($tainted_parameters);
 
   if(empty($cleaned_parameters)){
     
-    return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?addorder=false', 302);
+    return $response->withRedirect('/manage-orders?addorder=false', 302);
   }
 
   //if cleaned and ready to send emails and store
@@ -75,15 +80,13 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   $query_result = $doctrine_wrapper->getQueryResult();
 
-  if($query_result){
+  if($query_result){    
 
-    
-
-    return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?addorder=true', 302);
+    return $response->withRedirect('/manage-orders?addorder=true', 302);
 
   }
 
-  return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?addorder=false', 302);
+  return $response->withRedirect('/manage-orders?addorder=false', 302);
 
 
 })->setName('add-orders');

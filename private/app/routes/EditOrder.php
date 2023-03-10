@@ -90,18 +90,28 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
 
   $tainted_parameters = $request->getParsedBody();
 
-  $cleaned_parameters = cleanEditOrderForm($app, $tainted_parameters);
+  $container = $app->getContainer();
+  $manage_order_model = $container->get('manageOrderModel');
+
+  $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
+
+ 
+
+
   //if one of the parameters does not meet requirements
 
   if(empty($cleaned_parameters)){
     //TODO: popup saying invalid form did not update form
 
-    return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?updated=false', 302);
+    return $response->withRedirect('/manage-orders?updated=false', 302);
   }
+
+  $session_wrapper = $app->getContainer()->get('sessionWrapper');
+  $cleaned_parameters['id'] = $session_wrapper->getSessionVar('id');
+  $session_wrapper->unsetSessionVar('id');
 
   //if cleaned and ready to send emails and store
 
-  $container = $app->getContainer();
 
   //store in database
   $doctrine_wrapper = $container->get('doctrineWrapper');
@@ -119,78 +129,7 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
   $doctrine_wrapper->updateOrderDataById($cleaned_parameters);
   $doctrine_wrapper->getQueryResult();
 
-  return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders?updated=true', 302);
+  return $response->withRedirect('/manage-orders?updated=true', 302);
 
 
 })->setName('edit-orders');
-
-function cleanEditOrderForm($app, array $tainted_parameters) : array
-{
-    $cleaned_parameters = array();
-    $sanitized_parameters = array();
-
-    $sanitizer = $app->getContainer()->get('sanitizer');
-    $validator = $app->getContainer()->get('validator');
-
-
-    $sanitized_parameters['quantity'] = $sanitizer->sanitizePositiveNumber($tainted_parameters['quantity']);
-    $cleaned_parameters['quantity'] = $validator->validatePositiveNumber($sanitized_parameters['quantity']);
-    //$cleaned_parameters['quantity'] = $tainted_parameters['quantity'];
-    if(!$validator->getValidationResult()){
-      $cleaned_parameters = array();
-      return $cleaned_parameters;
-    }
-
-    $sanitized_parameters['email'] = $sanitizer->sanitizeEmail($tainted_parameters['email']);
-    $cleaned_parameters['email'] = $validator->validateEmail($sanitized_parameters['email']);
-    if(!$validator->getValidationResult()){
-      $cleaned_parameters = array();
-      return $cleaned_parameters;
-    }
-
-    $sanitized_parameters['payment_option'] = $sanitizer->sanitizeString($tainted_parameters['payment_option']);
-    $cleaned_parameters['payment_option'] = $validator->validatePaymentOption($sanitized_parameters['payment_option']);
-    if(!$validator->getValidationResult()){
-      $cleaned_parameters = array();
-      return $cleaned_parameters;
-    }
-
-    $sanitized_parameters['delivery_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['delivery_phone_number']);
-    $cleaned_parameters['delivery_phone_number'] = $validator->validatePhoneNumber($sanitized_parameters['delivery_phone_number']);
-
-    if(!$validator->getValidationResult()){
-      $cleaned_parameters = array();
-      return $cleaned_parameters;
-    }
-
-
-    $sanitized_parameters['collection_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['collection_phone_number']);
-    $cleaned_parameters['collection_phone_number'] = $validator->validatePhoneNumber($sanitized_parameters['collection_phone_number']);
-    if(!$validator->getValidationResult()){
-      $cleaned_parameters = array();
-      return $cleaned_parameters;
-    }
-
-    //$cleaned_parameters['id'] = $tainted_parameters['id'];
-    $cleaned_parameters['animal_type'] = $sanitizer->sanitizeString($tainted_parameters['animal_type']);
-    $cleaned_parameters['collection_name'] = $sanitizer->sanitizeString($tainted_parameters['collection_name']);
-    $cleaned_parameters['collection_address_1'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_1']);
-    $cleaned_parameters['collection_address_2'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_2']);
-    $cleaned_parameters['collection_address_3'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_3']);
-    $cleaned_parameters['collection_postcode'] = $sanitizer->sanitizeString($tainted_parameters['collection_postcode']);
-    $cleaned_parameters['delivery_name'] = $sanitizer->sanitizeString($tainted_parameters['delivery_name']);
-    $cleaned_parameters['delivery_address_1'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_1']);
-    $cleaned_parameters['delivery_address_2'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_2']);
-    $cleaned_parameters['delivery_address_3'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_3']);
-    $cleaned_parameters['delivery_postcode'] = $sanitizer->sanitizeString($tainted_parameters['delivery_postcode']);
-    $cleaned_parameters['message'] = $sanitizer->sanitizeString($tainted_parameters['message']);
-
-    $session_wrapper = $app->getContainer()->get('sessionWrapper');
-
-    $cleaned_parameters['id'] = $session_wrapper->getSessionVar('id');
-
-    $session_wrapper->unsetSessionVar('id');
-
-
-    return $cleaned_parameters;
-}

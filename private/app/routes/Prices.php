@@ -24,4 +24,4 @@ return $this->view->render($response,'NewPrices.twig', array(
             'logout' => 'logout'
         ),
     ));
-})->setName('');
+})->setName('prices');

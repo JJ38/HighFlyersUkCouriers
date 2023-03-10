@@ -20,7 +20,7 @@ $app->get('/logout', function (Request $request, Response $response) use ($app) 
         logoutUser($app);
     }
 
-    return $response->withRedirect('/HighFlyersUkCouriers/public/', 302);
+    return $response->withRedirect('/', 302);
 })->setName('logout');
 
 /**

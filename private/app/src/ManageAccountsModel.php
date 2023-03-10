@@ -55,7 +55,7 @@ class ManageAccountsModel
             }
 
             //add buttons
-            $HTML = $HTML . '<td class="orderbuttons"><a href="/HighFlyersUkCouriers/public/change-password?id=' . $this->user_data[$i]['id'] .'"><button>Reset Password</button></a><a href="/HighFlyersUkCouriers/public/delete-user?id=' . $this->user_data[$i]['id'] .'"><button type="button">Delete</button></a>';
+            $HTML = $HTML . '<td class="orderbuttons"><a href="/change-password?id=' . $this->user_data[$i]['id'] .'"><button>Reset Password</button></a><a href="/delete-user?id=' . $this->user_data[$i]['id'] .'"><button type="button">Delete</button></a>';
             $HTML = $HTML . '</tr>';
 
         }

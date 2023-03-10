@@ -68,7 +68,7 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
         
         if(empty($cleaned_parameters)){
           
-            return $response->withRedirect('/HighFlyersUkCouriers/public/manage-accounts?error=true', 302);
+            return $response->withRedirect('/manage-accounts?error=true', 302);
         }
 
         //store in database
@@ -111,11 +111,11 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
      
 
         }else{
-            return $response->withRedirect('/HighFlyersUkCouriers/public/add-user?usernameavailable=false', 302);
+            return $response->withRedirect('/add-user?usernameavailable=false', 302);
         }
 
         //store data
-        return $response->withRedirect('/HighFlyersUkCouriers/public/manage-accounts', 302);
+        return $response->withRedirect('/manage-accounts', 302);
 
     }
 

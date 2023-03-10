@@ -89,7 +89,7 @@ $app->post('/change-password', function (Request $request, Response $response) u
   $cleaned_parameters = cleanChangePasswordForm($tainted_parameters, $container);
 
   if(empty($cleaned_parameters)){
-    return $response->withRedirect('/HighFlyersUkCouriers/public/manage-accounts', 302);
+    return $response->withRedirect('/manage-accounts', 302);
   }
 
   //are passwords equal
@@ -99,7 +99,7 @@ $app->post('/change-password', function (Request $request, Response $response) u
   
 
   if($password != $confirm_password){
-    return $response->withRedirect("/HighFlyersUkCouriers/public/change-password?id=" . $cleaned_parameters['id'] . "&equalpasswords=false", 302);
+    return $response->withRedirect("/change-password?id=" . $cleaned_parameters['id'] . "&equalpasswords=false", 302);
 
   }
 
@@ -122,12 +122,12 @@ $app->post('/change-password', function (Request $request, Response $response) u
   $doctrine_wrapper->changeUserPassword($cleaned_parameters['id'], $hashed_password);
 
   if($doctrine_wrapper->getQueryResult()){
-    return $response->withRedirect('/HighFlyersUkCouriers/public/manage-accounts?passwordreset=true', 302);
+    return $response->withRedirect('/manage-accounts?passwordreset=true', 302);
   }
   
 
 
-  return $response->withRedirect('/HighFlyersUkCouriers/public/manage-accounts?passwordreset=true', 302);
+  return $response->withRedirect('/manage-accounts?passwordreset=true', 302);
   
 
 

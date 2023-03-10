@@ -10,9 +10,6 @@ use PHPMailer\PHPMailer\Exception;
 
 class Mailer{
 
-  private $name;
-  private $email;
-  private $message;
   private $mailer_settings;
   private $mailer_data;
 
@@ -147,6 +144,149 @@ class Mailer{
 
     $this->sendMail($email, $subject, $message);
   }
+
+
+  public function sendMultipleOrderEmail($email){
+
+    $email =  $email;
+    $subject = "Order from testing";
+
+    $message = '<html>'.
+    '<head>'.
+    '<style>'.
+    'table{'.
+    'border-collapse: collapse;'.
+    'table-layout: fixed;'.
+    '}'.
+    ''.
+    'div.orderdatawrapper{'.
+    'overflow-x: scroll;'.
+    'max-width: 70vw;'.
+    '}'.
+    'th{'.
+    ''.
+    'font-weight: 500;'.
+    'padding-top: 1em;'.
+    'padding-left: 1em;'.
+    'padding-bottom: 1em;'.
+    'text-align: left;'.
+    'white-space: nowrap;'.
+    ''.
+    '}'.
+    ''.
+    'td{'.
+    'padding: 1em;'.
+    'font-weight: 100;'.
+    'vertical-align: top;'.
+    '}'.
+    ''.
+    'tr{'.
+    'border-bottom: 1px solid black;'.
+    '}'.
+    ''.
+    'tr:last-of-type{'.
+    'border-bottom: none;'.
+    '}'.
+    '.emailwrapper{'.
+    'width: 50vw;'.
+    '}'.
+    ''.
+    '</style>'.
+    '</head>'.
+    '<body>'.
+    ''.
+    '<div class="orderdatawrapper">'.
+    ''.
+    '<table>'.
+    '<thead>'.
+    '<tr class="headerrow">'.
+    '<th>Animal Type</th>'.
+    '<th>Quantity</th>'.
+    '<th>Email</th>'.
+    '<th>Delivery Week</th>'.
+    '<th>Collection Name</th>'.
+    '<th>Collection Address 1</th>'.
+    '<th>Collection Address 2</th>'.
+    '<th>Collection Address 3</th>'.
+    '<th>Collection Postcode</th>'.
+    '<th>Collection Phone Number</th>'.
+    '<th>Delivery Name</th>'.
+    '<th>Delivery Address 1</th>'.
+    '<th>Delivery Address 2</th>'.
+    '<th>Delivery Address 3</th>'.
+    '<th>Delivery Postcode</th>'.
+    '<th>Delivery Phone Number</th>'.
+    '<th>Payment</th>'.
+    '<th>Message</th>'.
+    '</tr>'.
+    '</thead>'.
+    '<tbody>';
+
+    for($i = 1; $i < count($this->mailer_data) + 1; $i++){
+
+      echo $this->mailer_data[$i]['animal_type'];
+
+      $message = $message . 
+      '<tr>'.
+
+        '<td>' . $this->mailer_data[$i]['animal_type'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['quantity'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['email'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['delivery_week'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['collection_name'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['collection_address_1'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['collection_address_2'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['collection_address_3'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['collection_postcode'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['collection_phone_number'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['delivery_name'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['delivery_address_1'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['delivery_address_2'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['delivery_address_3'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['delivery_postcode'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['delivery_phone_number'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['payment_option'] . '</td>'.
+        '<td>' . $this->mailer_data[$i]['message'] . '</td>'.
+      '</tr>';
+    }
+
+
+
+
+// '<tr>'.
+// '<td>7</td>'.
+// '<td> graardg rds </td>'.
+// '<td>7</td>'.
+// '<td>jamesbrass@ymail.com</td>'.
+// '<td>admin</td>'.
+// '<td>61st</td>'.
+// '<td>Matthegrd rgd gargw</td>'.
+// '<td>waddwa</td>'.
+// '<td>aadw</td>'.
+// '<td>dawrwdawdadw</td>'.
+// '<td>LE1 6NU</td>'.
+// '<td>07842133519</td>'.
+// '<td>wadawdawd</td>'.
+// '<td>16 York Street Flat 7</td>'.
+// '<td>dawadwdaw</td>'.
+// '<td>dwadaw</td>'.
+// '<td>DADAWW</td>'.
+// '<td>07842133519</td>'.
+// '<td>Collection</td>'.
+// '<td>daawdawd</td>'.
+// '<td>2023-03-09 13:15:37</td>'.
+// '</tr>'.
+    $message = $message . '</tbody>'.
+    '</table>'.
+    ''.
+    '</div>'.
+    ''.
+    '</body>'.
+    '</html>';
+
+
+    $this->sendMail($email, $subject, $message);
+}
 
 
 }

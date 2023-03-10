@@ -27,6 +27,7 @@ const collectionAddress3 = document.getElementById('collectionaddress3');
 const collectionPostcode= document.getElementById('collectionpostcode');
 const collectionTelephone = document.getElementById('collectiontelephone');
 const email = document.getElementById('email');
+const profileEmail = document.getElementById('profileemail');
 
 
 const deliveryName = document.getElementById('deliveryname');
@@ -133,7 +134,7 @@ function updateQuickAddress3(){
 }   
 
 function updateQuickAddressEmail(){
-    quickAddressEmail.innerHTML = collectionEmail.value;
+    quickAddressEmail.innerHTML = email.value;
 
 }
 
@@ -177,6 +178,12 @@ function validateOrder(){
 
 
 function addToBasket(){
+
+    //check if profile has email
+    var isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if(!profileEmail.value.match(isEmail)){
+        alert("Please enter a valid email under the profile tab before making an order");
+    }
     
     //check if required fields are filled
     let requiredFieldsMet = true;
@@ -222,7 +229,7 @@ function addToBasket(){
                                     '<p>' + animalType.value + '</p>'+
                                     '<p>' + quantity.value + '</p>'+
                                     '<p>' + collectionName.value + '</p>'+
-                                    '<p>' + collectionAddress1.value + ', ' + collectionAddress2.value + ', ' + collectionAddress3.value + ', ' + collectionPostcode.value + '</p>'+
+                                    '<div class="onelineaddress"><p>' + collectionAddress1.value + '</p><p>' + collectionAddress2.value + '</p><p>' + collectionAddress3.value + '</p><p>' + collectionPostcode.value + '</p></div>'+
                                     '<p>' + collectionTelephone.value + '</p>'+
                                     '<p></p>'+
                                 '</div>'+
@@ -230,7 +237,7 @@ function addToBasket(){
                                     '<p class="">' + animalType.value + '</p>'+
                                     '<p>' + quantity.value + '</p>'+
                                     '<p>' + deliveryName.value + '</p>'+
-                                    '<p>' + deliveryAddress1.value + ', ' + deliveryAddress2.value + ', ' + deliveryAddress3.value + ', ' + deliveryPostcode.value + '</p>'+
+                                    '<div class="onelineaddress"><p>' + deliveryAddress1.value + '</p><p>' + deliveryAddress2.value + '</p><p>' + deliveryAddress3.value + '</p><p>' + deliveryPostcode.value + '</p></div>'+
                                     '<p>' + deliveryTelephone.value + '</p>'+
                                     '<p class="">' + paymentOption.value + '</p>'+
                                     '<div class="expand" onclick="toggleExpand(this)"><p>V</p></div>'+
@@ -240,7 +247,7 @@ function addToBasket(){
                                 '<div>'+
                                     '<i class="fa-solid fa-at" title="email"></i>'+
                                     '<p>'+
-                                        'jamesbrass@ymail.com' +
+                                        email.value +
                                     '</p>'+
                                 '</div>'+
                                 '<div class="paymentinfo">'+
@@ -304,51 +311,100 @@ function deleteOrder(element){
 
 }
 
+
+function getAllElements(element, array){
+
+    array.push(element);
+
+    if(element.children.length > 0){
+       
+        //loop through children
+        for(let i = 0; i < element.children.length; i++){
+           
+            getAllElements(element.children[i], array);       
+        
+        } 
+       
+    }else{
+        return element;
+        
+    }
+    return array;
+}
+
+function getAllPTagsOfParent(element){
+
+    let all_child_elements = getAllElements(element, []);
+    let filter_child_elements = [];
+    for(let i = 0; i < all_child_elements.length; i++){
+        if(all_child_elements[i].tagName == "P"){
+            filter_child_elements.push(all_child_elements[i]);
+        }
+    }
+
+
+    return filter_child_elements;
+}
+
+
 function submitOrders(){
 
     //get all orders
 
     const form = document.querySelector('form');
     var orders = document.querySelectorAll('.tablerow');
+    
 
     //create input elements and then  add to DOM
 
     for(let i = 1; i < orders.length; i++){
         const orderWrapper = document.createElement('div');
 
-        console.log(orders[i].children[0].children[1]);
+        const collection_data = getAllPTagsOfParent(orders[i].children[0].children[1]);
 
-        for(let j = 0; j < orders[i].children[0].children[1].children.length; j++){ //collection info
+        for(let j = 0; j < collection_data.length - 1; j++){ //collection info -1 on length to stop payment option being submitted mulitple times.
+        
             const input = document.createElement('input');
             input.name="collection" + "[" + i + "][]";
             input.type = "hidden";
-            input.value = orders[i].children[0].children[1].children[j].textContent;
+            input.value = collection_data[j].textContent;
             orderWrapper.appendChild(input);
+        
         }
 
-        console.log(orders[i].children[0].children[2].children);
+        const delivery_data = getAllPTagsOfParent(orders[i].children[0].children[2]);
 
-        for(let j = 0; j < orders[i].children[0].children[2].children.length - 1; j++){ //delivery info
+        for(let j = 2; j < delivery_data.length - 2; j++){ //delivery info //j = 2 to stop animal type and quantity being submitted multiple times. -2 on length to stop payment and button being being submitted
             const input = document.createElement('input');
             input.name="delivery" + "[" + i + "][]";
             input.type = "hidden";
-            input.value = orders[i].children[0].children[2].children[j].textContent;
+            input.value = delivery_data[j].textContent;
             orderWrapper.appendChild(input);
         }
 
-        for(let j = 0; j < orders[i].children[1].children.length; j++){
+
+        const extra_data = getAllPTagsOfParent(orders[i].children[1]);
+
+        for(let j = 0; j < extra_data.length; j++){
             const input = document.createElement('input');
             input.name ="extra" + "[" + i + "][]";
             input.type = "hidden";
-            input.value = orders[i].children[1].children[j].children[1].textContent;
+            input.value = extra_data[j].textContent;
             orderWrapper.appendChild(input);
         }
 
         console.log(orderWrapper);
+
+        
         form.appendChild(orderWrapper);
     }
+    console.log(profileEmail);
+    //add profile email
+    form.appendChild(profileEmail);
 
     //submit form
+
+
 
     form.submit();
 }

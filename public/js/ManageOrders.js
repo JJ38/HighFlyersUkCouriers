@@ -143,18 +143,18 @@ function getOrderHTML(tableData){
           '</h3>'+
           '<div class="infowrapper">'+
             '<label>Name:</label>'+
-            '<p>' + tableData[5].innerHTML + '</p>'+
+            '<p>' + tableData[7].innerHTML + '</p>'+
 
             '<label>Address:</label>'+
             '<address>' + 
-              '<p>' + tableData[6].innerHTML + '</p>'+
-              '<p>' + tableData[7].innerHTML + '</p>'+
               '<p>' + tableData[8].innerHTML + '</p>'+
               '<p>' + tableData[9].innerHTML + '</p>'+
+              '<p>' + tableData[10].innerHTML + '</p>'+
+              '<p>' + tableData[11].innerHTML + '</p>'+
             '</address>' +
         
           '<label>Telephone:</label>'+
-          '<p>' + tableData[10].innerHTML + '</p>'+          
+          '<p>' + tableData[12].innerHTML + '</p>'+          
         
           '</div>'+
         '</div>'+
@@ -164,18 +164,18 @@ function getOrderHTML(tableData){
           '</h3>'+
             '<div class="infowrapper">'+
               '<label>Name:</label>'+
-              '<p>' + tableData[11].innerHTML + '</p>'+
+              '<p>' + tableData[13].innerHTML + '</p>'+
           
               '<label>Address:</label>'+
               '<address>' + 
-                '<p>' + tableData[12].innerHTML + '</p>'+
-                '<p>' + tableData[13].innerHTML + '</p>'+
                 '<p>' + tableData[14].innerHTML + '</p>'+
                 '<p>' + tableData[15].innerHTML + '</p>'+
+                '<p>' + tableData[16].innerHTML + '</p>'+
+                '<p>' + tableData[17].innerHTML + '</p>'+
               '</address>' +
                             
               '<label>Telephone:</label>'+
-              '<p>' + tableData[16].innerHTML + '</p>'+
+              '<p>' + tableData[18].innerHTML + '</p>'+
           '</div>'+
         '</div>'+
       '</div>'+
@@ -194,18 +194,18 @@ function getOrderHTML(tableData){
         '</h3>'+
         '<div class="infowrapper">'+
           '<label>Name:</label>'+
-          '<p>' + tableData[5].innerHTML +'</p>'+
+          '<p>' + tableData[7].innerHTML +'</p>'+
   
           '<label>Address:</label>'+
           '<address>' + 
-            '<p>' + tableData[6].innerHTML + '</p>'+
-            '<p>' + tableData[7].innerHTML + '</p>'+
             '<p>' + tableData[8].innerHTML + '</p>'+
             '<p>' + tableData[9].innerHTML + '</p>'+
+            '<p>' + tableData[10].innerHTML + '</p>'+
+            '<p>' + tableData[11].innerHTML + '</p>'+
           '</address>' +
         
           '<label>Telephone:</label>'+
-          '<p>' + tableData[9].innerHTML + '</p>'+
+          '<p>' + tableData[12].innerHTML + '</p>'+
       
         '</div>'+ 
       '</div>'+
@@ -215,18 +215,18 @@ function getOrderHTML(tableData){
         '</h3>'+
         '<div class="infowrapper">'+
           '<label>Name:</label>'+
-          '<p>' + tableData[11].innerHTML + ' </p>'+
+          '<p>' + tableData[13].innerHTML + ' </p>'+
          
           '<label>Address:</label>'+
           '<address>' + 
-            '<p>' + tableData[12].innerHTML + '</p>'+
-            '<p>' + tableData[13].innerHTML + '</p>'+
             '<p>' + tableData[14].innerHTML + '</p>'+
             '<p>' + tableData[15].innerHTML + '</p>'+
+            '<p>' + tableData[16].innerHTML + '</p>'+
+            '<p>' + tableData[17].innerHTML + '</p>'+
           '</address>' +
-                        
+          
           '<label>Telephone:</label>'+
-          '<p>' + tableData[16].innerHTML + '</p>'+
+          '<p>' + tableData[18].innerHTML + '</p>'+
         '</div>'+
       '</div>'+
   '</div>'+

@@ -55,7 +55,7 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   //if one of the parameters does not meet requirements
 
   if(empty($cleaned_parameters)){
-    return $response->withRedirect('/HighFlyersUkCouriers/public/bookings?invalidform=true', 302);
+    return $response->withRedirect('/bookings?invalidform=true', 302);
     
   }
 
@@ -83,14 +83,14 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   //send email
 
   $mailer = $container->get('mailer');
-  $mailer_settings = $container->get('settings')['mailerSettings'];
+  $mailer_settings = $container->get('settings')['mailerBookingSettings'];
   $mailer->setMailerSettings($mailer_settings);
   
   $mailer->setMailData($cleaned_parameters);
   $mailer->sendMailCustomer();
   $mailer->sendMailInternal();
 
-  return $response->withRedirect('/HighFlyersUkCouriers/public/bookings?invalidform=false', 302);
+  return $response->withRedirect('/bookings?invalidform=false', 302);
 
 })->setName('bookings');
 

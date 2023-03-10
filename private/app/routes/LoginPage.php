@@ -25,7 +25,7 @@ $app->get('/loginpage', function (Request $request, Response $response) use ($ap
                 'logout' => 'logout'
             ),
         ));
-});
+})->setName('loginpage');
 
 $app->post('/loginpage', function (Request $request, Response $response) use ($app) : Response
 {
@@ -65,16 +65,16 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
 
       if($account_type == "admin" || $account_type == "staff"){
        
-        return $response->withRedirect('/HighFlyersUkCouriers/public/manage-orders', 302);
+        return $response->withRedirect('/manage-orders', 302);
       }
 
-      return $response->withRedirect('/HighFlyersUkCouriers/public/customer-order', 302);
+      return $response->withRedirect('/customer-order', 302);
     
   } 
 
   return $response->withRedirect('loginpage', 302);
 
-})->setName('loginform');
+})->setName('loginpage');
 
 function cleanLoginData($app, array $tainted_parameters) : array
 {

@@ -8,6 +8,7 @@ const contentManagerWrapper = document.querySelector('.contentmanagerwrapper');
 const content = document.querySelector('.content');
 const head = document.querySelector('head');
 const selectPage = document.getElementById("selectpage");
+const selectPageForm = document.getElementById("selectpageform");
 const selectedResolution= document.getElementById("selectresolution");
 const saveButton = document.getElementById("savebutton");
 const editableContentValue = document.getElementById("editabledocumentvalue");
@@ -59,7 +60,7 @@ var allEditableDocumentElements = [];
 
 var editableDocument; //select page as document
 var contentHTML;   //selected page as string
-var selectedFile = 'NewHomepage.twig';
+var selectedFile = selectPage.value;
 
 var labelFor;
 
@@ -72,10 +73,44 @@ contentManagerWrapper.style.gridTemplateColumns = sidebarWidth + 'px ' + (innerW
 
 //gets files of initialpage 
 
-getFile(selectedFile);
+//getFile(selectedFile);
 
 //sets content to content div
-content.innerHTML =  contentHTML;
+//content.innerHTML =  contentHTML;
+console.log(selectedFile);
+editableDocument = parser.parseFromString("<!DOCTYPE html><html><head><body></body></head></html>", "text/html");
+
+//add body element to editable document
+
+
+let inBody = false;
+
+let editableDocumentBody = editableDocument.body;
+let editableDocumentHead = editableDocument.head;
+
+for(let i = 0; i < content.children.length; i++){
+    if(content.children[i].tagName == "HEADER" || inBody){
+        inBody = true;
+        console.log(content.children[i]);
+        editableDocumentBody.appendChild(getCopyOfElement(content.children[i]));
+
+    }else{
+        editableDocumentHead.appendChild(getCopyOfElement(content.children[i]));
+    }
+}
+
+console.log(editableDocumentBody);
+console.log(editableDocumentHead);
+console.log(editableDocument.head);
+console.log(editableDocument)
+//find end of head tag in list of children
+
+content.innerHTML = editableDocument.querySelector('body').innerHTML;
+
+wrapDivTextInPTag(editableDocument);
+generateObjectTree();
+getCSSFiles();
+
 
 
 content.style.transform = "matrix(" + (contentScale) + ",0,0," + (contentScale) + ",0,0)";
@@ -337,7 +372,7 @@ function createNewTextElement(selectedElementRightClick, insertPosition){
         parentElement.insertBefore(newObjectTreeElement, insertBeforeElement.nextElementSibling);
         selectedElementRightClick.parentElement.insertBefore(newText, selectedElementRightClick.nextElementSibling);
     }
-
+    
     addEventListenersToSelectedPage(newObjectTreeElementDiv, newText);
 
     elementSelect(newObjectTreeElementDiv, newText);
@@ -391,18 +426,29 @@ function savePage(){
     console.log(editableDocument.querySelector('head'));
     //create link tags
 
+    //remove style elements
+
+    // for(let i = 0; i < newHeadElements.length; i++){
+    //     if(newHeadElements[i].tagName == "STYLE"){
+    //         newHeadElements.removeChild(newHeadElements[i]);
+    //     }
+    // }
+
+
     const editableDocumentHead =  editableDocument.querySelector('head');
 
     for(let i = 0; i < newHeadElements.length; i++){
-        
-        const copyOfElement = parser.parseFromString(newHeadElements[i].outerHTML, 'text/html').querySelector('head');
+
         //check if link already exist in document
+        if(newHeadElements[i].tagName != "STYLE"){
+            newHead.appendChild(getCopyOfElement(newHeadElements[i]));
+           
+        }
         
-        newHead.appendChild(getCopyOfElement(newHeadElements[i]));
     }
 
     
-    console.log(getCopyOfElement(newHead).parentNode);
+    // console.log(getCopyOfElement(newHead).parentNode);
 
     const fontsInUseNoDuplicates = Array.from(new Set(fontsInUse));
 
@@ -428,7 +474,7 @@ function savePage(){
     editableContentValue.value = "<!DOCTYPE html>"  + newPageHTML.outerHTML;
     fileNameValue.value = selectedFile;
 
-    //console.log(editableContentValue.value);
+    console.log(editableContentValue.value);
     asyncAlert(fileNameValue.value + " has been saved");
     editableContentValue.form.submit();
     
@@ -470,7 +516,7 @@ async function getFile(selectedFile){
 
     
 
-    contentHTML = await getHTMLFile('/HighFlyersUkCouriers/private/app/templates/' + selectedFile);
+    contentHTML = await getHTMLFile('/templates/' + selectedFile);
    
     //converts html file into dom element for manipulation later on
     const parser = new DOMParser();
@@ -481,7 +527,6 @@ async function getFile(selectedFile){
 
 
     //get links from selectedpage and add into contentmanager
-    
     content.innerHTML = editableDocument.querySelector('body').innerHTML;
 
     
@@ -637,8 +682,8 @@ async function convertTwigToHTML(twigExpressionsUnfiltered){
 
 function selectOnChange(){
 
-    selectedFile = selectPage.value
-    getFile(selectedFile);
+    selectedFile = selectPage.value;
+   
 }
 
 function selectResolutionOnChange(){

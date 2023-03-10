@@ -1,18 +1,18 @@
-{% extends 'boilerplate.twig' %}
+{% extends 'BoilerPlate.twig' %}
     {% block content %}
       <div id="wrapper">
         <header>
           <nav id="menu">
-            <a class="navLinks" href="/HighFlyersUkCouriers/public/logout">Logout</a>
-            <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-orders">Manage Bookings</a>
-            <a class="navLinks" href="/HighFlyersUkCouriers/public/content-manager">Content Manager</a>
-            <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-accounts">Manage Accounts</a>
+            <a class="navLinks" href="/logout">Logout</a>
+            <a class="navLinks" href="/manage-orders">Manage Bookings</a>
+            <a class="navLinks" href="/content-manager">Content Manager</a>
+            <a class="navLinks" href="/manage-accounts">Manage Accounts</a>
           </nav>
         </header>
         <div id="maincontent">
           <div class="searchbar bubble">
               <div class="searchoption">Filter</div>
-              <form action="/HighFlyersUkCouriers/public/manage-accounts" method="get">
+              <form action="/manage-accounts" method="get">
                 <select class="searchoption" name="field" id="filter">
                   <option disabled selected value> -- select an option -- </option>
                   <option value="id">ID</option>
@@ -22,7 +22,7 @@
                 <input class="searchoption" type="text" id="search" name="filter" placeholder="search value">
                 <button class="searchoption" type="submit">Search</button>
               </form>
-              <a href="/HighFlyersUkCouriers/public/add-user">
+              <a href="/add-user">
                 <button class="searchoption" type="button">Add</button>
               </a>
             </div>

@@ -1,13 +1,13 @@
-{% extends 'boilerplate.twig' %}
+{% extends 'BoilerPlate.twig' %}
     {% block content %}
       <div id="wrapper">
         <header>
           <nav id="menu">
-            <a class="navLinks" href="/HighFlyersUkCouriers/public/logout">Logout</a>
-            <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-orders">Manage Bookings</a>
+            <a class="navLinks" href="/logout">Logout</a>
+            <a class="navLinks" href="/manage-orders">Manage Bookings</a>
             {% if isAdmin == true %}
-              <a class="navLinks" href="/HighFlyersUkCouriers/public/content-manager">Content Manager</a>
-              <a class="navLinks" href="/HighFlyersUkCouriers/public/manage-accounts">Manage Accounts</a>
+              <a class="navLinks" href="/content-manager">Content Manager</a>
+              <a class="navLinks" href="/manage-accounts">Manage Accounts</a>
             {% endif %}
           </nav>
         </header>
@@ -16,13 +16,15 @@
           <div class="orderviewcontainer">
             <div class="searchbar bubble">
               <div class="searchoption">Filter</div>
-              <form action="/HighFlyersUkCouriers/public/manage-orders" method="get">
+              <form action="/manage-orders" method="get">
                 <select class="searchoption" name="field" id="filter">
                   <option disabled selected value> -- select an option -- </option>
                   <option value="id">ID</option>
                   <option value="animal_type">Animal Type</option>
                   <option value="quantity">Quantity</option>
                   <option value="email">Email</option>
+                  <option value="username">Account</option>
+                  <option value="delivery_week">Delivery Week</option>
                   <option value="collection_phone_number">Phone Number</option>
                   <option value="collection_name">Collection Name</option>
                   <option value="collection_address_1">Collection Address 1</option>
@@ -42,14 +44,16 @@
 
                 <button class="searchoption" type="submit">Search</button>
               </form>
-              <a href="/HighFlyersUkCouriers/public/add-order">
+              <a href="/add-order">
                 <button class="searchoption" type="button">Add</button>
               </a>
             </div>
 
             <div class="massactionbuttons">
-                <button id="selectall" class="massactionbutton" onclick="selectAll()" type="button">Select all</button>
-                <form id="deleteselectedform" action="/HighFlyersUkCouriers/public/delete-multiple-orders" method="get">              
+                <form>
+                  <button id="selectall" class="massactionbutton" onclick="selectAll()" type="button">Select all</button> 
+                </form>
+                <form id="deleteselectedform" action="/delete-multiple-orders" method="get">              
                   <button id="deleteselected" class="massactionbutton" onclick="deleteSelected()" type="button">Delete Selected</button>
                 </form>
                 <form id="printselectedform" action="" method="get">
@@ -66,6 +70,8 @@
                       <th>Animal Type</th>
                       <th>Quantity</th>
                       <th>Email</th>
+                      <th>Account</th>
+                      <th>Delivery Week</th>
                       <th>Collection Name</th> 
                       <th>Collection Address 1</th>
                       <th>Collection Address 2</th>
@@ -85,7 +91,6 @@
                     </tr>
 
                     {{ orderdata|raw }}
-                  
 
                 </table>
               </div>     

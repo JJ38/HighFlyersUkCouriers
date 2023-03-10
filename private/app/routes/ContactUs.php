@@ -58,12 +58,12 @@ $app->post('/contact-us', function (Request $request, Response $response) use ($
   //if one of the parameters does not meet requirements
 
   if(empty($cleaned_parameters)){
-    return $response->withRedirect('/HighFlyersUkCouriers/public/contact-us?invalidform=true', 302);
+    return $response->withRedirect('/contact-us?invalidform=true', 302);
     
   }
 
   //if cleaned and ready to send emails and store
-
+  
  
 
   //store in database
@@ -76,14 +76,14 @@ $app->post('/contact-us', function (Request $request, Response $response) use ($
   //send email
 
   $mailer = $container->get('mailer');
-  $mailer_settings = $container->get('settings')['mailerSettings'];
+  $mailer_settings = $container->get('settings')['mailerContactUsSettings'];
   $mailer->setMailerSettings($mailer_settings);
   
   $mailer->setMailData($cleaned_parameters);
   $mailer->sendMailCustomerContactUs();
   $mailer->sendMailInternalContactUs();
 
-  return $response->withRedirect('/HighFlyersUkCouriers/public/contact-us?invalidform=false', 302);
+  return $response->withRedirect('/contact-us?invalidform=false', 302);
 
 
 })->setName('contact-us');

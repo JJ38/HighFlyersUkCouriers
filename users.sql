@@ -18,9 +18,15 @@ INSERT INTO `users` VALUES ('20', '0', 'newstaff', '$2y$10$93/qcZvAZWzfsB2BQCo7T
 -- C:\MAMP\bin\mysql\bin>mysql.exe
 
 
+INSERT INTO `users` VALUES ('20', 'admin', 'admin', '$2y$10$A1Bi/B0aNvO93GWiSVWGh.K5qJcJmPe.RHb2ZcXq8bCtOsHifCKbi', '2022-01-01 00:00:00');
+INSERT INTO `users` VALUES ('22', 'admin', 'James', '$2y$10$ixgQjDThEqjnN97xQVazYe9zwAaVAM.H9c9noJ.H89fpLtMt5Zg7K', '2022-01-01 00:00:00');
 
 
 
+
+CREATE DATABASE IF NOT EXISTS `highflyersukcouriers` COLLATE 'utf8_unicode_ci';
+CREATE USER 'anotheruser'@localhost IDENTIFIED BY 'password';
+GRANT SELECT, INSERT, UPDATE, DELETE ON highflyersukcouriers.* TO 'anotheruser'@'localhost';
 
 CREATE DATABASE IF NOT EXISTS `highflyersukcouriers` COLLATE 'utf8_unicode_ci';
 CREATE USER 'user'@localhost IDENTIFIED BY 'password';

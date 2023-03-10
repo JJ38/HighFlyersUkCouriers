@@ -99,7 +99,7 @@ $app->post('/customer-profile', function (Request $request, Response $response) 
         $customer_profile_model->cleanProfileForm($allPostVars);
 
         if(empty($customer_profile_model->getCleanedFormData())){
-            return $response->withRedirect('/HighFlyersUkCouriers/public/customer-profile?updated=false', 302);
+            return $response->withRedirect('/customer-profile?updated=false', 302);
         }
 
         // Get models + Wrappers
@@ -128,10 +128,10 @@ $app->post('/customer-profile', function (Request $request, Response $response) 
 
 
         if($update_result){
-            return $response->withRedirect('/HighFlyersUkCouriers/public/customer-order?updated=true', 302);
+            return $response->withRedirect('/customer-order?updated=true', 302);
         }
 
-        return $response->withRedirect('/HighFlyersUkCouriers/public/customer-profile?updated=false', 302);
+        return $response->withRedirect('/customer-profile?updated=false', 302);
     
         
     }

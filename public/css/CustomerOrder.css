@@ -395,4 +395,7 @@ i{
 #deliverypostcode{
     text-transform: uppercase;
 }
-
+.onelineaddress{
+    display: flex;
+    gap: 5px;
+}

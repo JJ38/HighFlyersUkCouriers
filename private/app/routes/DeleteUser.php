@@ -111,10 +111,10 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
 
     if($doctrine_wrapper->getQueryResult()){
         $doctrine_wrapper->deleteCustomer($username);
-        return $response->withRedirect('/HighFlyersUkCouriers/public/manage-accounts?deleted=true', 302);
+        return $response->withRedirect('/manage-accounts?deleted=true', 302);
     }
 
-    return $response->withRedirect('/HighFlyersUkCouriers/public/manage-accounts?deleted=false', 302);
+    return $response->withRedirect('/manage-accounts?deleted=false', 302);
 
 
   

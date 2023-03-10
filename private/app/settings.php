@@ -5,9 +5,9 @@ $app_title = 'HighFlyersUkCouriers';
 $app_path = '/app/';
 $template_path = __DIR__ . '/templates/';
 //$css_file_name = 'styles.css';
-$css_path = dirname($_SERVER['SCRIPT_NAME']) . '/css/';
-$asset_path = dirname($_SERVER['SCRIPT_NAME']) . '/assets/';
-$js_path = dirname($_SERVER['SCRIPT_NAME']) . '/js/';
+$css_path = '/css/';
+$asset_path = '/assets/';
+$js_path = '/js/';
 $log_path = '../logs/';
 $base_path = "/HighFlyersUkCouriers/public";
 
@@ -53,7 +53,13 @@ return array(
             'password' => 'password',
             'charset' => 'utf8'
         ),
-        'mailerSettings' => array(
+        'mailerBookingSettings' => array(
+            'username' => 'jamesjbrass@gmail.com',
+            'password' => 'cqktvkkjpxobcjcw',
+            'port' => 25,
+            'host' => 'smtp.gmail.com'
+        ),
+        'mailerContactUsSettings' => array(
             'username' => 'jamesjbrass@gmail.com',
             'password' => 'cqktvkkjpxobcjcw',
             'port' => 25,
