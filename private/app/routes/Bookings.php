@@ -31,7 +31,6 @@ $app->get('/bookings[/invalidform]', function (Request $request, Response $respo
           'css_nav_file' => CSS_PATH . "NavigationBar.css",
           'css_footer_file' => CSS_PATH . "Footer.css",
           'asset_path' => ASSET_PATH,
-          'js_file' => JS_PATH . "NewBooking.js",
           'landing_page' => __FILE__,
           'heading_1' => APP_TITLE,
           'links'=> array(

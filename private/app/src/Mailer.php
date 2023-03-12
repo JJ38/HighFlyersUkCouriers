@@ -161,7 +161,7 @@ class Mailer{
     ''.
     'div.orderdatawrapper{'.
     'overflow-x: scroll;'.
-    'max-width: 70vw;'.
+    'max-width: 60vw;'.
     '}'.
     'th{'.
     ''.
@@ -187,17 +187,13 @@ class Mailer{
     'tr:last-of-type{'.
     'border-bottom: none;'.
     '}'.
-    '.emailwrapper{'.
-    'width: 50vw;'.
-    '}'.
-    ''.
     '</style>'.
     '</head>'.
     '<body>'.
     ''.
     '<div class="orderdatawrapper">'.
     ''.
-    '<table>'.
+    '<center><table>'.
     '<thead>'.
     '<tr class="headerrow">'.
     '<th>Animal Type</th>'.
@@ -251,33 +247,8 @@ class Mailer{
     }
 
 
-
-
-// '<tr>'.
-// '<td>7</td>'.
-// '<td> graardg rds </td>'.
-// '<td>7</td>'.
-// '<td>jamesbrass@ymail.com</td>'.
-// '<td>admin</td>'.
-// '<td>61st</td>'.
-// '<td>Matthegrd rgd gargw</td>'.
-// '<td>waddwa</td>'.
-// '<td>aadw</td>'.
-// '<td>dawrwdawdadw</td>'.
-// '<td>LE1 6NU</td>'.
-// '<td>07842133519</td>'.
-// '<td>wadawdawd</td>'.
-// '<td>16 York Street Flat 7</td>'.
-// '<td>dawadwdaw</td>'.
-// '<td>dwadaw</td>'.
-// '<td>DADAWW</td>'.
-// '<td>07842133519</td>'.
-// '<td>Collection</td>'.
-// '<td>daawdawd</td>'.
-// '<td>2023-03-09 13:15:37</td>'.
-// '</tr>'.
     $message = $message . '</tbody>'.
-    '</table>'.
+    '</table></center>'.
     ''.
     '</div>'.
     ''.

@@ -1,5 +1,21 @@
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script><title>{{ page_title }}</title><link rel="stylesheet" href="/css/Footer.css" type="text/css"><link rel="stylesheet" href="/css/NavigationBar.css" type="text/css"><link rel="stylesheet" href="/css/NewBooking.css" type="text/css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" id="Inter"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto Slab" id="RobotoSlab"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway" id="Raleway"></head><body><header class="" contenteditable="false">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script><title>{{ page_title }}</title><link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css"><link rel="stylesheet" href="/css/Footer.css" type="text/css"><link rel="stylesheet" href="/css/NavigationBar.css" type="text/css"><link rel="stylesheet" href="/css/NewBooking.css" type="text/css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" id="Inter"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto Slab" id="RobotoSlab"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway" id="Raleway"></head><body><header class="" contenteditable="false">
+  <div id="mobilenavmenu"  class="hideMobileMenu">
+    <div id="mobilenavwrapper">
+      <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+        <a href="/">Home</a>
+        <a href="/prices">Prices</a>
+        <a class="currentpage" href="/bookings">Booking</a>
+        <a href="/f-a-q">FAQ</a>
+        <a href="/contact-us">Contact Us</a>
+    </div>
+  </div>
   <nav class="menu" contenteditable="false">
+    <div id="mobilenavtoggle">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    
     <div class="">
       <a class="navLinks" href="/">Home</a>
       <div class="underlineHome"></div> 
@@ -21,7 +37,8 @@
       <div class="underlineContactUs"></div>
     </div>
   </nav>
-</header><section class="maincontent" contenteditable="false">
+</header>
+<section class="maincontent" contenteditable="false">
         	<form id="contactUsForm" action="bookings" method="post" class="">
             <div class="" contenteditable="false">
               <h1 class="" contenteditable="false" style="background-color: rgba(255, 255, 255, 0); color: rgb(0, 0, 0); font-family: &quot;Roboto Slab&quot;;">
@@ -135,26 +152,35 @@
                 </section>
                 <section class="bookingInput">
                   <label for="message">Message </label>
-                  <textarea id="message" name="message" rows="6" wrap="soft" required=""></textarea>
+                  <textarea id="message" name="message" rows="6" wrap="soft"></textarea>
                 </section>
               </section>
-              <input id="submitButton" type="submit" value="Submit" aria-label="Submit">
+              <div id="submitbuttonwrapper">
+                <input id="submitButton" type="submit" value="Submit" aria-label="Submit">
+              </div>
             </div>
           </form>
-        </section><footer class="" contenteditable="false" style="background-color: rgb(222, 222, 222);">
-  <div class="footerlinkswrapper">
-    <a class="footerlinks" href="/">Home</a>
-    <a class="footerlinks" href="/prices">Prices</a>
-    <a class="footerlinks" href="/bookings">Booking</a>
-    <a class="footerlinks" href="/f-a-q">FAQ</a>
-    <a class="footerlinks" href="/contact-us">Contact Us</a>
-  </div>
-  <div class="facebookicon">
-    <a href="https://www.facebook.com/HighFlyersUKCourier">
-      <i class="fa-brands fa-facebook"></i>
-    </a>
-  </div>
-  <div class="copyright"><p style="margin: 0px; padding: 0px;">© High Flyers UK Couriers</p></div>
-  <a class="login" href="/loginpage">Login</a>
+        </section>
+    <footer class="" contenteditable="false" style="background-color: rgb(222, 222, 222);">
+      <div class="footerlinkswrapper">
+        <a class="footerlinks" href="/">Home</a>
+        <a class="footerlinks" href="/prices">Prices</a>
+        <a class="footerlinks" href="/bookings">Booking</a>
+        <a class="footerlinks" href="/f-a-q">FAQ</a>
+        <a class="footerlinks" href="/contact-us">Contact Us</a>
+      </div>
+      <div class="facebookicon">
+        <a href="https://www.facebook.com/HighFlyersUKCourier">
+          <i class="fa-brands fa-facebook"></i>
+        </a>
+      </div>
+      <div class="copyright">
+        <p id="copyright" style="margin: 0px; padding: 0px;">© High Flyers UK Couriers</p>
+      </div>
+      <a class="login" href="/loginpage">Login</a>
 
-</footer></body></html>
+    </footer>
+    <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+
+  </body>
+</html>

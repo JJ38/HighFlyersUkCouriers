@@ -150,13 +150,20 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
         $manage_order_model->setOrderData($cleaned_orders);
 
-    
-        // echo "<pre>";
-        // var_dump($cleaned_orders);
-        // echo "</pre>";
-        // return $response;
+      
+        //return $response;
 
         $store_result = $manage_order_model->storeMultipleOrders();
+        $confirmed_orders = $manage_order_model->getConfirmedOrders();
+
+        // echo "<pre>";
+        // var_dump($cleaned_orders);
+        // echo "</pre> cleaned orders";
+
+        // echo "<pre>";
+        // var_dump($confirmed_orders);
+        // echo "</pre> confirmed orders";
+        // return $response;
         $sanitizer = $container->get('sanitizer');
 
         //send email
@@ -167,7 +174,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $mailer_settings = $container->get('settings')['mailerBookingSettings'];
         $mailer->setMailerSettings($mailer_settings);
 
-        $mailer->setMailData($cleaned_orders);
+        $mailer->setMailData($confirmed_orders);
         $mailer->sendMultipleOrderEmail($cleaned_email);
         // $mailer->sendMailInternal();
 
@@ -176,10 +183,8 @@ $app->post('/customer-order', function (Request $request, Response $response) us
             return $response->withRedirect('/customer-order?success=true', 302);
         }
 
-
         return $response->withRedirect('/customer-order?partial=true', 302);
     
-        
     }
 
     return $response->withRedirect('loginpage', 302);

@@ -1,0 +1,101 @@
+#mobilenavtoggle{
+    display: none;
+}
+
+#mobilenavmenu{
+  display: none;
+}
+
+@media (max-width: 850px){
+
+  nav{
+    padding-left: 2em !important;
+  }
+
+  nav a{
+    display: none;
+  }
+
+  header a{
+    font-size: 30px !important;
+  }
+
+  #mobilenavtoggle{
+    display: block;
+    
+  }
+  
+  #mobilenavtoggle > div{
+    
+    background-color: black;
+    margin-bottom: 8px;
+    width: 30px;
+    height: 3px;
+
+  }
+
+  #mobilenavmenu{
+    display: block;
+    position: absolute;
+    background-color: white;
+    height: 100vh;
+    width: 100vw;
+    top:0;
+    left:0;
+    opacity: 1;
+    transition: left 0.3s ease-out, opacity 0.3s ease-out;
+    z-index: 3;
+  }
+
+  #mobilenavwrapper{
+    font-family: 'Inter';
+    font-style: normal;
+    text-decoration: none;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 30px;
+    padding-top: 70px;
+    text-align: center;
+    gap: 8px;
+
+  }
+
+  #mobilenavwrapper > a{
+    border-radius: 10px;
+  }
+
+  .hideMobileMenu{
+    left:-100% !important;
+    opacity: 0 !important;
+    transition: left 0.3s ease-in, opacity 0.3s ease-in;
+  }
+
+  #closemobilenavmenu{
+    
+    display: flex;
+    align-items: center;
+    position: absolute;
+    gap: 5px;
+    top: 0;
+    right: 0;
+    padding: 25px 35px;
+    
+    
+  }
+
+  #closemobilenavmenu > p{
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+    font-size: 25px;
+    margin: 0px;
+  }
+
+  .currentpage{
+    color: #2881FF !important;
+  }
+  
+}

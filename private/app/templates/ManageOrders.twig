@@ -2,7 +2,23 @@
     {% block content %}
       <div id="wrapper">
         <header>
+          <div id="mobilenavmenu"  class="hideMobileMenu">
+            <div id="mobilenavwrapper">
+              <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+                <a href="/logout">Logout</a>
+                <a href="/manage-orders">Manage Bookings</a>
+                {% if isAdmin == true %}
+                  <a href="/content-manager">Content Manager</a>
+                  <a href="/manage-accounts">Manage Accounts</a>
+                {% endif %}
+            </div>
+          </div>
           <nav id="menu">
+            <div id="mobilenavtoggle">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
             <a class="navLinks" href="/logout">Logout</a>
             <a class="navLinks" href="/manage-orders">Manage Bookings</a>
             {% if isAdmin == true %}
@@ -16,36 +32,41 @@
           <div class="orderviewcontainer">
             <div class="searchbar bubble">
               <div class="searchoption">Filter</div>
-              <form action="/manage-orders" method="get">
-                <select class="searchoption" name="field" id="filter">
-                  <option disabled selected value> -- select an option -- </option>
-                  <option value="id">ID</option>
-                  <option value="animal_type">Animal Type</option>
-                  <option value="quantity">Quantity</option>
-                  <option value="email">Email</option>
-                  <option value="username">Account</option>
-                  <option value="delivery_week">Delivery Week</option>
-                  <option value="collection_phone_number">Phone Number</option>
-                  <option value="collection_name">Collection Name</option>
-                  <option value="collection_address_1">Collection Address 1</option>
-                  <option value="collection_address_2">Collection Address 2</option>
-                  <option value="collection_address_3">Collection Address 3</option>
-                  <option value="collection_postcode">Collection Postcode</option>
-                  <option value="delivery_name">Delivery Name</option>
-                  <option value="delivery_address_1">Delivery Address 1</option>
-                  <option value="delivery_address_2">Delivery Address 2</option>
-                  <option value="delivery_address_3">Delivery Address 3</option>
-                  <option value="delivery_postcode">Delivery Postcode</option>
-                  <option value="delivery_phone_number">Delivery Phone Number</option>
-                  <option value="payment_option">Payment</option>
-                  <option value="message">Message</option>
-                </select>
-                <input class="searchoption" type="text" id="search" name="filter" placeholder="search value">
-
-                <button class="searchoption" type="submit">Search</button>
+              <form id="searchform" action="/manage-orders" method="get">
+                <div>
+                  <select class="searchoption" name="field" id="filter">
+                    <option disabled selected value> -- select an option -- </option>
+                    <option value="id">ID</option>
+                    <option value="animal_type">Animal Type</option>
+                    <option value="quantity">Quantity</option>
+                    <option value="email">Email</option>
+                    <option value="username">Account</option>
+                    <option value="delivery_week">Delivery Week</option>
+                    <option value="collection_phone_number">Phone Number</option>
+                    <option value="collection_name">Collection Name</option>
+                    <option value="collection_address_1">Collection Address 1</option>
+                    <option value="collection_address_2">Collection Address 2</option>
+                    <option value="collection_address_3">Collection Address 3</option>
+                    <option value="collection_postcode">Collection Postcode</option>
+                    <option value="delivery_name">Delivery Name</option>
+                    <option value="delivery_address_1">Delivery Address 1</option>
+                    <option value="delivery_address_2">Delivery Address 2</option>
+                    <option value="delivery_address_3">Delivery Address 3</option>
+                    <option value="delivery_postcode">Delivery Postcode</option>
+                    <option value="delivery_phone_number">Delivery Phone Number</option>
+                    <option value="payment_option">Payment</option>
+                    <option value="message">Message</option>
+                  </select>
+                </div>
+                <div>
+                  <input class="searchoption" type="text" id="search" name="filter" placeholder="search value">
+                </div>
+                <div>
+                  <button class="searchoption button" type="submit">Search</button>
+                </div>
               </form>
-              <a href="/add-order">
-                <button class="searchoption" type="button">Add</button>
+              <a class="button" href="/add-order">
+                Add
               </a>
             </div>
 
@@ -61,7 +82,8 @@
                 </form>
             </div>
 
-            <div class="bubble orderdatawrapper">         
+            <div class="bubble orderdatawrapper">     
+                 
               <div class="orderdata">
                 <table>
                     <tr class="headerrow">
@@ -87,7 +109,7 @@
                       <th>Payment</th>
                       <th>Message</th>
                       <th>Time</th>
-                      <th></th>
+                      <th id="topright"></th>
                     </tr>
 
                     {{ orderdata|raw }}

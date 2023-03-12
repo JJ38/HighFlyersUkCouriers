@@ -1,26 +1,41 @@
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script><title>{{ page_title }}</title><link rel="stylesheet" href="/css/NewPrices.css" type="text/css"><link rel="stylesheet" href="/css/NavigationBar.css" type="text/css"><link rel="stylesheet" href="/css/Footer.css" type="text/css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" id="Inter"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Times New Roman" id="TimesNew Roman"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway" id="Raleway"></head><body><header class="">
-            <nav class="menu">
-                <div>
-                    <a class="navLinks" href="/">Home</a>
-                    <div class="underlineHome"></div>
-                </div>
-                    <div>
-                    <a class="navLinks" href="/prices">Prices</a>
-                    <div class="underlinePrices"></div>
-                </div>
-                <div>
-                    <a class="navLinks" href="/bookings">Booking</a>
-                    <div class="underlineBooking"></div>
-                </div>
-                <div>
-                    <a class="navLinks" href="/f-a-q">FAQ</a>
-                    <div class="underlineFAQ"></div>
-                </div>
-                <div>
-                    <a class="navLinks" href="/contact-us">Contact Us</a>
-                    <div class="underlineContactUs"></div>
-                </div>
-            </nav>
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script><title>{{ page_title }}</title><link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css"><link rel="stylesheet" href="/css/NewPrices.css" type="text/css"><link rel="stylesheet" href="/css/NavigationBar.css" type="text/css"><link rel="stylesheet" href="/css/Footer.css" type="text/css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" id="Inter"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Times New Roman" id="TimesNew Roman"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway" id="Raleway"></head><body><header class="">
+<div id="mobilenavmenu"  class="hideMobileMenu">    
+    <div id="mobilenavwrapper">
+        <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+        <a href="/">Home</a>
+        <a class="currentpage" href="/prices">Prices</a>
+        <a href="/bookings">Booking</a>
+        <a href="/f-a-q">FAQ</a>
+        <a href="/contact-us">Contact Us</a>
+    </div>
+</div>  
+    <nav class="menu">
+        <div id="mobilenavtoggle">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div>
+            <a class="navLinks" href="/">Home</a>
+            <div class="underlineHome"></div>
+        </div>
+            <div>
+            <a class="navLinks" href="/prices">Prices</a>
+            <div class="underlinePrices"></div>
+        </div>
+        <div>
+            <a class="navLinks" href="/bookings">Booking</a>
+            <div class="underlineBooking"></div>
+        </div>
+        <div>
+            <a class="navLinks" href="/f-a-q">FAQ</a>
+            <div class="underlineFAQ"></div>
+        </div>
+        <div>
+            <a class="navLinks" href="/contact-us">Contact Us</a>
+            <div class="underlineContactUs"></div>
+        </div>
+    </nav>
         </header><div class="maincontent">
             <h1 class="" contenteditable="false">
                 Pricing
@@ -214,7 +229,9 @@
               <i class="fa-brands fa-facebook"></i>
             </a>
           </div>
-          <div class="copyright" contenteditable="false"><p style="margin: 0px; padding: 0px;">© High Flyers UK Couriers</p></div>
+          <div class="copyright" contenteditable="false"><p id="copyright" style="margin: 0px; padding: 0px;">© High Flyers UK Couriers</p></div>
           <a class="login" href="/loginpage" contenteditable="false">Login</a>
 
-        </footer></body></html>
+        </footer><script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+    </body>
+</html>

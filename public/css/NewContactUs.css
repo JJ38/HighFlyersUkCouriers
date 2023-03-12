@@ -11,15 +11,18 @@ div.underlineContactUs{
 
 div.maincontent{
     display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
     padding: 20px 0;
-    gap: 100px;
+    gap: 30px;
     background-color: #FAFAFA;
-    padding-left: 150px;
-    padding-right: 150px;
+    
 }
 
 div.leftcontainer{
-    width: 50%;
+  width: 95%;
+  max-width: 800px;
 }
 
 
@@ -27,7 +30,8 @@ div.rightcontainer{
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 50%;
+  width: 95%;
+
 }
 
 label{
@@ -36,129 +40,171 @@ label{
     font-weight: 500;
     font-size: 22px;
     color: black;
-  }
-  
-  input{
-    height: 35px;
-    border-radius: 6px;
-    border: 1px solid #000000;;
-    font-family: 'Raleway';
-    font-style: 300;
-    font-weight: 500;
-    font-size: 22px;
-    width: 100%;
-  }
-  
-  textarea{
-    width: 100% ;
-    font-family: 'Raleway';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 18px;
-    resize: vertical;
-  
-  }
+}
 
-  div.contactusinput{
-    display:flex;
-    gap: 10px;
-    flex-direction: column;
-    margin-bottom: 20px;
-  
-  }
+input{
+  height: 35px;
+  border-radius: 6px;
+  border: 1px solid #000000;;
+  font-family: 'Raleway';
+  font-style: 300;
+  font-weight: 500;
+  font-size: 22px;
+}
 
-  #submitButton{
-    margin: 0 50%;
-    transform: translateX(-50%);
-    font-family: 'Raleway';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 20px;
-    color: white;
-    width: 150px;
-    height: 40px;
-    background: #2881FF;
-    border-radius: 16px;
-    border: none;
-  }
+textarea{
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  resize: vertical;
 
-  h1{
-    margin: 0;
-    font-family: 'Roboto Slab';
-    font-style: normal;
-    font-weight: 600;
-    font-size: 40px;
-    padding-bottom: 20px;
-  }
+}
 
+div.contactusinput{
+  display:flex;
+  gap: 10px;
+  flex-direction: column;
+  margin-bottom: 20px;
 
-  div.googlemapsimagewrapper{
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    overflow-y: hidden;
-    overflow-x: hidden;
+}
+
+#submitButton{
  
-    border-radius: 16px;
-
-  }
-
-  .fa-location-pin, .fa-phone, .fa-envelope{
-    font-size: 40px;
-
-    color: transparent;
-    background-color: #00000000;
-
-    -webkit-text-stroke-width: 3px;
-    -webkit-text-stroke-color: #000000;
   
-  }
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  color: white;
+  width: 150px;
+  height: 40px;
+  background: #2881FF;
+  border-radius: 16px;
+  border: none;
+}
 
-  div.addressandphonenumberwrapper{
-    display: flex;
+.buttonwrapper{
+  display: flex;
+  justify-content: center;
+}
 
-  }
-  div.infocontainer{
-    margin: 0;
-    width: 50%;
-    text-align: center;
-    word-wrap: normal;
-    
-  }
+h1{
+  margin: 0;
+  font-family: 'Roboto Slab';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 40px;
+  padding-bottom: 20px;
+}
 
-  div.contactinfowrapper{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
 
-  div.icontitlecontainer{
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    justify-content: center;
-    
-  }
+div.googlemapsimagewrapper{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow-y: hidden;
+  overflow-x: hidden;
 
-  h2{
-    font-family: 'Roboto Slab';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 30px;
-  }
+  border-radius: 16px;
 
+}
+
+.fa-location-pin, .fa-phone, .fa-envelope{
+  font-size: 40px;
+
+  color: transparent;
+  background-color: #00000000;
+
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: #000000;
+
+}
+
+div.addressandphonenumberwrapper{
+  display: flex;
+
+}
+div.infocontainer{
+  margin: 0;
+  text-align: center;
+  word-wrap: normal;
+  
+}
+
+div.contactinfowrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+div.icontitlecontainer{
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+h2{
+  font-family: 'Roboto Slab';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 30px;
+}
+
+p{
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 22px;
+  margin: 0;
+}
+
+a:visited{
+  color: black;
+}
+
+@media (max-width: 380px){
   p{
-    font-family: 'Raleway';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 22px;
-    margin: 0;
+    font-size: 18px;
   }
+  
+}
 
-  div.emailwrapper{
+@media (max-width: 500px){
+  .addressandphonenumberwrapper{
+    flex-direction: column;
+  }
+  
+}
+
+@media (min-width: 1700px){
+  .emailwrapper{
     width: 75%;
   }
+  
+}
 
-  a:visited{
-    color: black;
+    
+@media (min-width: 1000px){
+  .maincontent{
+    padding-left: 10vw !important;
+    padding-right: 10vw !important;
+    flex-direction: row !important;
+    
   }
+
+  div.leftcontainer{
+    width: 50% !important;
+    /* max-width: none; */
+  }
+
+  div.rightcontainer{
+    width: 50% !important;
+  }
+
+}
+
+/* mobile nav bar style */
+

@@ -5,10 +5,9 @@ include '../private/bootstrap.php';
 // make responsive ui design
 // check for duplicate orders
 // automatically add delivery week - cut off sunday midnight
+// - customer normal and manually added orders.
 // add account field for manually added orders
 // different cut off for customer accounts 
-// store orders from customer page
-// validate orders server side for customer order
 
 
 // setup emails for contactus and booking

@@ -47,16 +47,14 @@ div.arrow:hover{
 }
 
 h1.carouselslidetext{
-  position: absolute;
-  width: 40%;
+ 
   font-family: 'Roboto Slab';
   font-style: normal;
   font-weight: 800;
   font-size: 3.5em;
   color: #FFFFFF;
   text-shadow: 0px 0px 13px #000000;
-  left: 200px;
-  top: 175px;
+
 }
 
 div.button{
@@ -109,7 +107,7 @@ div.buttonwrapper{
 }
 
 div.homepageinfo{
-  padding: 4em 20em;
+  padding: 4em 12vw;
   display:flex;
   flex-direction: column;
   align-items: center;
@@ -151,9 +149,9 @@ h4:last-child{
 
 hr{
   margin-top: 0;
-  transform: translateX(-10%);
+  transform: translateX(-5%);
   border: 0;
-  width: 120%;
+  width: 110%;
   background-color:#000000FF;
   height: 1px;
   margin-bottom: 30px;
@@ -165,6 +163,7 @@ div.carousel{
   height: 650px;
   width:100%;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 img.carouselimage{
@@ -210,4 +209,158 @@ div.rightarrowwrapper{
 
 a:visited{
   color: black;
+}
+
+div.carouseltextwrapper{
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top:80px;
+  left:200px;
+  height: 330px;
+  width: 40%;
+}
+
+@media (max-width: 1100px){
+  .carouselslidetext{
+    font-size: 50px !important;
+    margin-left: 20px;
+  }
+
+  .rightarrowwrapper, .leftarrowwrapper{
+    margin: 0px 20px !important;
+  }
+
+  .buttonwrapper,.carouseltextwrapper{
+    left: 100px !important;
+  }
+}
+
+@media (max-width: 950px){
+  
+ 
+}
+
+@media (max-width: 850px){
+  .buttonwrapper{
+    bottom: 100px !important;
+  }
+
+  .button{
+    font-size: 25px !important;
+  }
+
+  .carousel{
+    height: 500px !important;
+  }
+
+  .carouselslidetext{
+    font-size: 40px !important;
+    margin-left: 16px;
+  }
+  
+  .carouseltextwrapper{
+    top: 50px !important;
+    width: 55% !important;
+  }
+
+  h2{
+    font-size: 28px !important;
+  }
+
+  h3{
+    font-size: 26px !important;
+  }
+
+  h4{
+    font-size: 24px !important;
+  }
+
+}
+
+
+@media (max-width: 600px){
+
+  .rightarrowwrapper, .leftarrowwrapper{
+    margin: 0px 10px !important;
+    font-size: 50px !important;
+  }
+
+  .buttonwrapper,.carouseltextwrapper{
+    left: 70px !important;
+  }
+
+  .carouselslidetext{
+    font-size: 35px !important;
+    margin-left: 10px;
+  }
+
+  .carouseltextwrapper{
+    width: 60% !important;
+  }
+
+
+  .button{
+    font-size: 20px !important;
+  }
+
+  h2{
+    font-size: 26px !important;
+  }
+
+  h3{
+    font-size: 24px !important;
+  }
+
+  h4{
+    font-size: 22px !important;
+  }
+
+}
+
+@media (max-width: 475px){
+
+  .carousel{
+    height: 300px !important;
+  }
+
+  .button{
+    font-size: 14px !important;
+  }
+  .carouselslidetext{
+    font-size: 24px !important;
+    margin-left: 2px;
+  }
+
+  .rightarrowwrapper, .leftarrowwrapper{
+    margin: 0px 3px !important;
+    font-size: 24px !important;
+  }
+
+  .carouseltextwrapper{
+    top: 35px !important;
+    height: 200px !important;
+    width: 65% !important;
+  }
+
+  .buttonwrapper,.carouseltextwrapper{
+    left: 40px !important;
+  }
+
+  .buttonwrapper {
+    bottom: 55px !important;
+  }
+
+  h2{
+    font-size: 24px !important;
+  }
+
+  h3{
+    font-size: 22px !important;
+  }
+
+  h4{
+    font-size: 20px !important;
+  }
+
 }

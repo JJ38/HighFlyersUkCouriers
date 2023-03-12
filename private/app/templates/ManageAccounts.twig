@@ -2,7 +2,22 @@
     {% block content %}
       <div id="wrapper">
         <header>
+          <div id="mobilenavmenu"  class="hideMobileMenu">
+            <div id="mobilenavwrapper">
+              <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+                <a href="/logout">Logout</a>
+                <a href="/manage-orders">Manage Bookings</a>
+                <a href="/content-manager">Content Manager</a>
+                <a href="/manage-accounts">Manage Accounts</a>
+               
+            </div>
+          </div>
           <nav id="menu">
+            <div id="mobilenavtoggle">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
             <a class="navLinks" href="/logout">Logout</a>
             <a class="navLinks" href="/manage-orders">Manage Bookings</a>
             <a class="navLinks" href="/content-manager">Content Manager</a>

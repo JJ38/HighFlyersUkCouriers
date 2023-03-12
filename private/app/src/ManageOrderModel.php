@@ -290,6 +290,9 @@ class ManageOrderModel
     $this->confirmed_orders = [];
 
     for($i = 1; $i < count($this->order_data) + 1; $i++){ 
+
+      //get delivery week
+
       $this->doctrine_wrapper->storeOrderData($this->order_data[$i]);
       $store_result = $this->getQueryResult();
       if(!$store_result){

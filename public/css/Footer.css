@@ -18,7 +18,9 @@ footer{
 
 div.footerlinkswrapper{
   display: flex;
+  gap: 40px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 a.footerlinks{
@@ -26,7 +28,7 @@ a.footerlinks{
   font-style: normal;
   font-weight: 400;
   font-size: 24px;
-  padding: 0 1em;
+  
   color: black;
 }
 
@@ -46,12 +48,41 @@ i.fa-facebook{
 }
 
 div.copyright{
+  text-align: center;
+}
+
+
+#copyright{
   font-size: 20px;
+  font-weight: 500;
 }
 
 a.login{
   font-size: 20px;
   text-decoration: none;
   color: #393939;
+
+}
+
+
+@media (max-width: 570px){
+
+  div.footerlinkswrapper{
+    gap: 20px;
+  }
+
+  #copyright{
+    font-size: 16px !important;
+  }
+
+  footer{
+    padding: 2em;
+    gap: 20px;
+  }
+  
+
+  footer a{
+    font-size: 20px !important;
+  }
 
 }
