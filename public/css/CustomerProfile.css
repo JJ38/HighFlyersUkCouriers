@@ -21,7 +21,6 @@ nav{
     box-shadow: 0px 0px 15px #00000022;
 }
 
-
 h2{
     margin:0;
     font-family: 'Raleway';
@@ -39,7 +38,7 @@ hr{
     height: 1px;
 }
 
-section.formsection{
+.formsection{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -47,7 +46,7 @@ section.formsection{
     padding: 20px 0;
 }
 
-section.bookingInput{
+.bookingInput{
     display:flex;
     gap: 10px;
     flex-direction: column;
@@ -72,7 +71,7 @@ input{
 }
 
 .profileinfobubble{
-    margin: 50px 100px;
+    margin: 50px 6vw;
     padding: 50px;
     border-radius: 20px;
     background-color: white;
@@ -88,4 +87,10 @@ input{
 #updatebutton:hover{
     color:#2881FF;
     background-color: white;
+}
+
+@media(max-width: 800px){
+    .bookingInput{
+        width: 100%;
+    }
 }

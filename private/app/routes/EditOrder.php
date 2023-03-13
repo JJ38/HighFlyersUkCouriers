@@ -93,9 +93,13 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
   $container = $app->getContainer();
   $manage_order_model = $container->get('manageOrderModel');
 
-  $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
+  // echo '<pre>';
+  //   var_dump($tainted_parameters);
+  // echo '</pre>';
 
- 
+  // return $response;
+
+  $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
 
 
   //if one of the parameters does not meet requirements
@@ -111,6 +115,16 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
   $session_wrapper->unsetSessionVar('id');
 
   //if cleaned and ready to send emails and store
+
+  
+ //convert printed value to int
+
+  if($cleaned_parameters['printed'] == "Printed"){
+    $cleaned_parameters['printed'] = 1;
+  }else{
+    $cleaned_parameters['printed'] = 0;
+
+  }
 
 
   //store in database

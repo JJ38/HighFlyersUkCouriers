@@ -1,24 +1,40 @@
 <!DOCTYPE html>
 <html>
-    <header>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/css/NavigationBar.css" type="text/css">
+         <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
         <link rel="stylesheet" href="/css/CustomerOrder.css" type="text/css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-        
-    </header>
-    
+    </head>
     <body>
-        <nav class="menu" contenteditable="false">
-            <a class="navLinks" href="/logout">Logout</a>
-            <div>
-                <a class="navLinks" href="/customer-order">Order</a>
-                <div class="underlineOrder"></div>
+        <header>
+            <div id="mobilenavmenu"  class="hideMobileMenu">
+                <div id="mobilenavwrapper">
+                <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+                    <a href="/logout">Logout</a>
+                    <a class="currentpage" href="/customer-order">Order</a>
+                    <a href="/customer-profile">Profile</a>            
+                </div>
             </div>
-            <div>
-                <a class="navLinks" href="/customer-profile">Profile</a>
-                <div class="underlineProfile"></div>
-            </div>
-        </nav>
+            <nav class="menu" contenteditable="false">
+                 <div id="mobilenavtoggle">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <a class="navLinks" href="/logout">Logout</a>
+                <div>
+                    <a class="navLinks" href="/customer-order">Order</a>
+                    <div class="underlineOrder"></div>
+                </div>
+                <div>
+                    <a class="navLinks" href="/customer-profile">Profile</a>
+                    <div class="underlineProfile"></div>
+                </div>
+            </nav>
+        </header>
         <div id="maincontent">
             <div class="bubble orderwindow">
                 <section class="toprow">
@@ -49,7 +65,7 @@
                     <div id="quickaddress" class="quickcollectionaddresswrapper">
                         <p id="collectionaddressarrow"><</p>
                         <p id="quickAddressName">{{ collection_name|raw }}</p>
-                        <div class="flex"><p id="quickAddress1">{{ collection_address_1|raw }}</p><p class="comma">,</p><p id="quickAddress2">{{ collection_address_2|raw }}</p><p class="comma">,</p><p id="quickAddress3">{{ collection_address_3|raw }}</p><p class="comma">,</p><p id="quickAddressPostcode">{{ collection_postcode|raw }}</p></div>
+                        <div class="flex collectionaddressdetailswrapper"><p id="quickAddress1">{{ collection_address_1|raw }}</p><p class="comma">,</p><p id="quickAddress2">{{ collection_address_2|raw }}</p><p class="comma">,</p><p id="quickAddress3">{{ collection_address_3|raw }}</p><p class="comma">,</p><p id="quickAddressPostcode">{{ collection_postcode|raw }}</p></div>
                         <p id="quickAddressEmail">{{ email|raw }}</p>
                         <p id="quickAddressTelephone">{{ collection_phone_number|raw }}</p>
                     </div>
@@ -134,7 +150,7 @@
                 </section>
 
             </div>
-            <div id="basket" class="hidden">
+            <div id="basket" class="">
                 <h1>
                     Basket
                 </h1>
@@ -150,6 +166,7 @@
                         <h3></h3>
 
                     </div>
+                    <div class="tablerow"><div class="transportinfowrapper"><div class="collectiondeliveryicons transporticons hidden" style="height: 110px; top: 26px; right: 181px;"><i class="fa-solid fa-box-open" title="collection"></i><i class="fa-solid fa-ellipsis-vertical"></i><i class="fa-solid fa-truck" title="delivery"></i></div><div class="columns collectioninfomargin hidden"><p>Pigeon</p><p>11</p><p>James</p><div class="onelineaddress"><p>10 Kenilworth Road</p><p>Derby</p><p>Derbyshire</p><p>DE5 3GY</p></div><p>07842133519</p><p></p></div><div class="columns deliveryinfomargin"><p class="">Pigeon</p><p class="">11</p><p>James</p><div class="onelineaddress"><p>16 York Street Flat 7</p><p>Leicester</p><p>Leicestershire</p><p>DE5 3GY</p></div><p>07842133519</p><p class="">Collection</p><div class="expand" onclick="toggleExpand(this)"><p>V</p></div></div></div><div class="extrainfo hidden"><div><i class="fa-solid fa-at" title="email"></i><p>jamesbrass@ymail.com</p></div><div><i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i><p>Collection</p></div><div><i class="fa-solid fa-message" title="message"></i><p>Message</p></div></div><div class="deletewrapper hidden" onclick="deleteOrder(this)"><i class="fa-solid fa-trash-can"></i></div></div>
             
                 </div>
                 <button id="submitorders" type="button" onclick="submitOrders()">Submit Orders</button>
@@ -161,6 +178,7 @@
         </div>
         <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
         <script src="/js/CustomerOrder.js" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
 
     </body>
 </html>

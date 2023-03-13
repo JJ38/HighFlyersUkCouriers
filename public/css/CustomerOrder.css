@@ -34,7 +34,7 @@ nav{
 }
 
 #maincontent{
-    margin:50px 100px;
+    margin:50px 6vw;
 }
 
 h1{
@@ -92,19 +92,21 @@ label{
 .forminput{
     display: flex;
     margin: 15px 0px;
-    margin-right: 50px;
+    
     flex-direction: column;
 }
 
 .info{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 50px;
     
 }
 
 .paymentinfo{
     display: grid;
-    justify-content: flex-start;
+    justify-content: flex-start;  
+    column-gap: 50px;
     grid-template-columns: 1fr 2fr;
 }
 
@@ -134,7 +136,7 @@ select{
     background-color: #F5F4F4;
     height: 35px;
     border-radius: 6px;
-    border: 1px solid #000000;;
+    border: 1px solid #000000;
     font-family: 'Raleway';
     font-style: 300;
     font-size: 22px;
@@ -149,7 +151,6 @@ select{
     max-height: 200px;
     margin-top: 25px;
     margin-bottom: 20px;
-
     transition: max-height 0.5s ease-in-out;
     /* transition: margin-top 0.5s ease-in-out; */
     
@@ -180,7 +181,6 @@ h3{
 
 .headerrow{
     padding-top: 26px;
-    margin-bottom: 40px;
 }
 
 .space{
@@ -336,6 +336,7 @@ i{
 
 .quickcollectionaddresswrapper{
     display: flex;
+    flex-wrap: wrap;
     gap: 15px;
 }
 
@@ -350,6 +351,7 @@ i{
 
 .flex{
     display: flex;
+    align-items: center;
 }
 
 .hinttext{
@@ -397,5 +399,255 @@ i{
 }
 .onelineaddress{
     display: flex;
+    flex-wrap: wrap;
     gap: 5px;
+  
+}
+
+.onelineaddress > p{
+    white-space: nowrap;
+}
+
+@media(max-width: 1250px){
+    .expand, .deletewrapper{
+        right: 26px !important;
+    }
+
+    .tablerow{
+        padding-left: 30px !important; 
+        padding-right: 30px !important; 
+    }
+}
+
+@media(max-width: 1200px){
+    .columns{
+       gap: 10px; 
+    }
+    
+}
+
+@media (max-width: 1150px) {
+
+    .columns{
+        grid-template-columns: minmax(100px, 4fr) minmax(100px, 4fr) minmax(100px, 4fr) minmax(250px, 12fr) minmax(200px, 8fr) minmax(100px, 4fr) minmax(20px, 1fr) !important;
+    }
+
+    .tablerow{
+        margin-left: 6vw;
+        margin-right: 6vw;
+        width: fit-content;
+    }
+
+    .bubble{
+        margin-right: 6vw;
+        margin-left: 6vw;
+    }
+
+    #basket > h1{
+        margin-left: 6vw;
+    }
+
+    #table{
+        overflow-x: scroll;
+    }
+
+    #maincontent{
+        margin: 50px 0px;
+    }
+
+    .info{
+        grid-template-columns: 1fr 1fr;
+      
+    }
+
+    .quickcollectionaddresswrapper > p{
+        font-size: 15px !important;
+    }
+
+    .flex > p{
+        font-size: 13px ;
+    }
+
+    label{
+        font-size: 17px !important;
+    }
+
+    h1{
+        font-size: 23px !important;
+    }
+
+    h3{
+        font-size: 19px !important;
+    }
+
+    .forminput{
+        margin: 10px 0px !important;
+    }
+    .extrainfo{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 35px;
+        row-gap: 15px;
+
+    }
+
+    .expand, .deletewrapper{
+        right: 15px !important;
+    }
+
+    p{
+        font-size: 17px !important;
+    }
+
+}
+
+@media (max-width: 1000px){
+
+
+    .headerrow{
+        font-size: 17px !important;
+   
+    }
+
+    .transportinfowrapper > p{
+        font-size: 16px !important;
+    }
+
+
+}
+
+@media (max-width: 780px){
+
+    
+    /* .headerrow{
+        overflow-wrap: anywhere;
+    }
+
+    .transportinfowrapper > p{
+        overflow-wrap: anywhere;
+    }
+
+    .tablerow{
+        padding-left: 20px !important;
+    }
+
+    .onelineaddress > p{
+        overflow-wrap: break-word !important;
+    } */
+
+}
+
+
+@media (max-width: 740px){
+
+    label{
+        font-size: 15px !important;
+    }
+
+    h1{
+        font-size: 20px !important;
+    }
+
+    h3{
+        font-size: 17px !important;
+    }
+
+    p{
+        font-size: 15px !important;
+    }
+
+    .quickcollectionaddresswrapper > p{
+        font-size: 12px !important;
+    }
+
+    .collectionaddressdetailswrapper, #quickAddressName, #quickAddressEmail, #quickAddressTelephone{
+        display: none !important;
+    }
+
+    #collectionaddressarrow{
+        font-size: 15px !important;
+    }
+
+    .profiledata{
+        margin: 5px 0px !important;
+    }
+
+    hr{
+        margin: 5px 3px !important;
+    }
+
+
+    input, #payment{
+        height: 25px;
+        font-size: 16px;
+    }
+
+    textarea{
+        font-size: 16px;
+    }
+
+    .forminput{
+        margin: 7px 0px !important;
+    }
+
+    button{
+        font-size: 15px !important;
+        padding: 5px 10px !important;
+    }
+
+    .info{
+        column-gap: 20px !important;
+    }
+}
+
+@media (max-width: 600px){
+
+    .quickcollectionaddresswrapper{
+        gap: 5px !important;
+        font-size: 10px !important;
+        
+    }
+
+    
+
+    .bubble{
+        margin-top: 25px !important;
+        padding: 30px !important;
+
+    }
+
+    button{
+        font-size: 12px !important;
+        padding: 6px 10px !important;
+    }
+
+    .tablerow{
+        padding-bottom: 13px !important;
+    }
+
+    .headerrow{
+        padding-top: 13px !important;
+    }
+
+
+
+}
+
+@media (max-width: 510px){
+
+    h1{
+        font-size: 18px !important;
+    }
+
+    #textarea{
+        font-size: 12px;
+    }
+
+    .info{
+        grid-template-columns: 1fr !important;
+    }
+
+    .paymentinfo{
+        grid-template-columns: 1fr !important;
+    }
 }

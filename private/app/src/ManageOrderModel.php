@@ -50,6 +50,7 @@ class ManageOrderModel
 
     $this->doctrine_wrapper->fetchAllOrderData();
     $this->order_data = $this->doctrine_wrapper->getQueryResult();
+    $this->translateData();
   }
 
   public function fetchOrderDataByField(string $field_name, string $value) : void
@@ -57,6 +58,7 @@ class ManageOrderModel
 
     $this->doctrine_wrapper->fetchOrderDataByField($field_name, $value);
     $this->order_data = $this->doctrine_wrapper->getQueryResult();
+    $this->translateData();
   }
 
   public function fetchOrderDataByFieldAndMultipleValues(string $field_name, array $value) : void
@@ -64,11 +66,23 @@ class ManageOrderModel
 
     $this->doctrine_wrapper->fetchOrderDataByFieldAndMultipleValues($field_name, $value);
     $this->order_data = $this->doctrine_wrapper->getQueryResult();
+    $this->translateData();
+  }
+
+  private function translateData(){
+    $number_of_orders = count($this->order_data);
+    for ($i = 0; $i < $number_of_orders; $i++) {
+      if($this->order_data[$i]['printed'] == 0){
+        $this->order_data[$i]['printed'] = "Not Printed";
+      }else{
+        $this->order_data[$i]['printed'] = "Printed";
+      }
+    }
   }
 
   public function generateHTMLFromData() : void
   {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'printed', 'timestamp');
     
     $HTML = '';
     $number_of_orders = count($this->order_data);
@@ -81,7 +95,7 @@ class ManageOrderModel
         $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
       }
 
-      $HTML = $HTML . '<td class="orderbuttons"><a href="/edit-order?id=' . $this->order_data[$i]['id'] .'"><button>edit</button></a><a href="/delete-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">Delete</button></a><a class="print"><button type="button">Print</button></a></td>';
+      $HTML = $HTML . '<td class="orderbuttons"><a href="/edit-order?id=' . $this->order_data[$i]['id'] .'"><button>Edit</button></a><a href="/delete-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">Delete</button></a><a class="print"><button type="button">Print</button></a></td>';
       $HTML = $HTML . '</tr>';
     }
 
@@ -91,8 +105,8 @@ class ManageOrderModel
 
   public function generateHTMLForEditData() : void
   {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
-    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Account', 'Delivery Week','Collection Name', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Collection Phone Number','Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Timestamp');
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'printed', 'timestamp');
+    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Account', 'Delivery Week','Collection Name', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Collection Phone Number','Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Printed', 'Timestamp');
 
     $HTML = '';
     $number_of_fields = count($this->order_data[0]);
@@ -107,7 +121,23 @@ class ManageOrderModel
     for ($i = 1; $i < $number_of_fields - 1; $i++) {
       $HTML = $HTML . '<tr>';
       $HTML = $HTML . '<td>' . $form_fields[$i] . '</td>'; //<label for="fname">First name:</label>
-      $HTML = $HTML . '<td>' . "<input type=\"text\" id=\"" . $headers[$i] ."\"name=\"" . $headers[$i] . "\" value=\"" . $this->order_data[0][$headers[$i]] . "\"></td>";
+      if($form_fields[$i] == "Printed"){
+
+        $HTML = $HTML . '<td>' . '<select name="printed" id="printed" required="">';  
+
+        if($this->order_data[0][$headers[$i]] == "Printed"){
+          $HTML = $HTML . '<option value="Printed" selected>Printed</option><option value="Not Printed">Not Printed</option>';
+        }else{
+          $HTML = $HTML . '<option value="Printed">Printed</option><option value="Not Printed" selected>Not Printed</option>';
+
+        }
+
+        $HTML = $HTML . '</select>' . "</td>";
+
+      }else{
+        $HTML = $HTML . '<td>' . "<input type=\"text\" id=\"" . $headers[$i] ."\"name=\"" . $headers[$i] . "\" value=\"" . $this->order_data[0][$headers[$i]] . "\"></td>";
+      }
+
       $HTML = $HTML . '</tr>';
     }
 
@@ -200,8 +230,14 @@ class ManageOrderModel
       $cleaned_parameters = array();
       return $cleaned_parameters;
     }
+    
+    $sanitized_parameters['printed'] = $sanitizer->sanitizeString($tainted_parameters['printed']);
+    $cleaned_parameters['printed'] = $validator->validatePrinted($sanitized_parameters['printed']);
+    if(!$validator->getValidationResult()){
+      $cleaned_parameters = array();
+      return $cleaned_parameters;
+    }
 
-   
 
     $sanitized_parameters['delivery_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['delivery_phone_number']);
     $cleaned_parameters['delivery_phone_number'] = $validator->validatePhoneNumber($sanitized_parameters['delivery_phone_number']);
@@ -264,12 +300,14 @@ class ManageOrderModel
       $tainted_order['delivery_address_3'] = $tainted_parameters['delivery'][$i][3];
       $tainted_order['delivery_postcode'] = $tainted_parameters['delivery'][$i][4];
       $tainted_order['delivery_phone_number'] = $tainted_parameters['delivery'][$i][5];
-  
+      
       $tainted_order['email'] = $tainted_parameters['extra'][$i][0];
       $tainted_order['payment_option'] = $tainted_parameters['extra'][$i][1];
       $tainted_order['message'] = $tainted_parameters['extra'][$i][2];
 
       $tainted_order['username'] = $account_name;
+
+      $tainted_order['printed'] = "Not Printed";
   
       $cleaned_order = $this->cleanOrder($tainted_order, $app);
 
@@ -300,6 +338,26 @@ class ManageOrderModel
       }
       //add order data to confirmed orders
       $this->confirmed_orders[$i] = $this->order_data[$i];
+    }
+
+    return true;
+    
+  }
+
+  public function updatePrinted(){
+
+    for($i = 0; $i < count($this->order_data); $i++){ 
+
+      //get delivery week
+
+      $this->doctrine_wrapper->updatePrinted($this->order_data[$i]);
+
+      $store_result = $this->getQueryResult();
+      if(!$store_result){
+        return false;
+      }
+      //add order data to confirmed orders
+      // $this->confirmed_orders[$i] = $this->order_data[$i];
     }
 
     return true;

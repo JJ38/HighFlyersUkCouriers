@@ -19,14 +19,15 @@ div.orderdatawrapper{
 
 .bubble{
     margin-top: 1em;
-    margin-left: 2em;
-    margin-right: 2em;
+    margin-left: 3vw;
+    margin-right: 3vw;
     background-color: white;
-    border-radius: 2em;
+    border-radius: 8px;
     width: auto;
     height: auto;
+    overflow-x: scroll;
   
-}
+  }
 
   
 table{
@@ -90,7 +91,9 @@ tr:last-of-type{
 form{
     margin: 25px 0;
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    text-align: center;
 }
 
 button{
@@ -105,20 +108,74 @@ header {
     flex-shrink: 1,
     flex-basis: auto
     */
-  }
-  
-  nav {
+}
+
+nav {
     background-color: white;
     padding: 2.5em;
-  }
+}
+
+
+
+nav a {
+    display: block !important;
+    font-size: 1.5em;
+    font-style: normal;
+    text-decoration: none;
+    color: black;
+    text-align: left;
+
+}
+
+@media (max-width: 1000px){
+
+    td, th{
+        padding: 8px 10px !important;
+        font-size: 17px !important;
+    }
+
+
+
+
+}
+
+@media (max-width: 610px){
+
+    td, th{
+        padding: 6px 8px !important;
+        font-size: 15px !important;
+    }
+
+}
+
+@media(max-width: 700px){
+    
+    nav a{
+      padding-left: 0px;
+      
+    }
   
-  nav a {
-   font-size: 1.5em;
-   font-style: normal;
-   text-decoration: none;
-   color: black;
-   vertical-align: left;
-   text-align: left;
-   
-  }
+    .navLinks{
+      font-size: 20px !important;
+    }
+  
+    nav {
+      padding: 15px 2.5em !important;
+    }
+    
+}
+  
+@media(max-width: 550px){
+    
+    nav {
+        padding: 10px 2.5em !important;
+    }
+
+    td{
+        padding: 5px 10px;
+    }
+
+}
+
+  
   

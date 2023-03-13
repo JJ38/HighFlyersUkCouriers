@@ -20,11 +20,11 @@ header {
 }
 
 nav {
-
-  padding: 2.5em;
+  padding: 20px 2.5em;
 }
 
 nav a {
+ display: block !important;
  font-size: 1.5em;
  font-style: normal;
  text-decoration: none;
@@ -67,4 +67,32 @@ section.formSection{
 
 td{
   vertical-align: top;
+}
+
+@media(max-width: 700px){
+  td{
+    padding: 0 10px;
+  }
+
+  nav a{
+    padding-left: 0px;
+  }
+
+  .navLinks{
+    font-size: 20px !important;
+  }
+
+  nav {
+    padding: 15px 2.5em !important;
+  }
+  
+}
+
+@media(max-width: 550px){
+ 
+
+  td{
+    padding: 5px 10px;
+  }
+  
 }

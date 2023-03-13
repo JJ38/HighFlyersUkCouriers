@@ -57,14 +57,14 @@ a:hover{
 
 
 .bubble{
-  margin-top: 2em;
-  margin-left: 2em;
-  margin-right: 2em;
+  margin-top: 1em;
+  margin-left: 3vw;
+  margin-right: 3vw;
   background-color: white;
-  border-radius: 2em;
+  border-radius: 8px;
   width: auto;
   height: auto;
-  overflow: hidden;
+  overflow-x: scroll;
 
 }
 
@@ -118,12 +118,47 @@ tr:last-of-type{
 }
 
 div.searchbar{
-  padding: 2em;
-  display: inline-flex;
+  padding: 15px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 650px;
+  width: fit-content;
+  line-height: normal;
+  align-items: center;
 
 }
 
 .searchoption{
   margin-right: 1em;
 
+}
+
+@media (max-width: 1000px){
+
+  td, th{
+    padding: 8px 10px !important;
+    font-size: 17px !important;
+  }
+
+  .searchbar{
+    font-size: 15px !important;
+  }
+
+
+}
+
+@media (max-width: 610px){
+
+  td, th{
+    padding: 6px 8px !important;
+    font-size: 15px !important;
+  }
+
+}
+
+
+@media (max-width: 500px){
+  .searchoption{
+    font-size: 13px !important;
+  }
 }

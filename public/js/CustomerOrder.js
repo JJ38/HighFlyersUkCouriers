@@ -250,7 +250,7 @@ function addToBasket(){
                                         email.value +
                                     '</p>'+
                                 '</div>'+
-                                '<div class="paymentinfo">'+
+                                '<div>'+
                                     '<i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>'+
                                     '<p>'+
                                     paymentOption.value +

@@ -311,6 +311,7 @@ class DoctrineWrapper
                 ->set('o.delivery_address_2', ':delivery_address_2')
                 ->set('o.delivery_address_3', ':delivery_address_3')
                 ->set('o.delivery_postcode', ':delivery_postcode')
+                ->set('o.printed', ':printed')
                 ->set('o.message', ':message')
                 ->where('o.id = :id')
                 ->setParameter('email', $cleaned_parameters['email'])
@@ -331,6 +332,7 @@ class DoctrineWrapper
                 ->setParameter('delivery_address_2', $cleaned_parameters['delivery_address_2'])
                 ->setParameter('delivery_address_3', $cleaned_parameters['delivery_address_3'])
                 ->setParameter('delivery_postcode', $cleaned_parameters['delivery_postcode'])
+                ->setParameter('printed', $cleaned_parameters['printed'])
                 ->setParameter('message', $cleaned_parameters['message'])
                 ->setParameter('id', $cleaned_parameters['id']);
 
@@ -345,6 +347,30 @@ class DoctrineWrapper
         } finally {
             $this->query_result = $updated_order;
         }
+    }
+
+    public function updatePrinted($id) : void
+    {
+        $updated_order = false;
+
+        try {
+            $query_builder = $this->query_builder
+                ->update('orders', 'o')
+                ->set('o.printed', ':printed')         
+                ->where('o.id = :id')
+                ->setParameter('id', $id)
+                ->setParameter('printed', 1);
+            
+            $updated_order = $query_builder->execute();
+
+        } catch (\Exception $exception) {
+            if ($this->doctrine_logger !== null) {
+                $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+            }
+        } finally {
+            $this->query_result = $updated_order;
+        }
+        
     }
 
     /**

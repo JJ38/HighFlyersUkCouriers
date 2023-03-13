@@ -72,6 +72,22 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
               }
             }
           }
+        }else if(!empty($allGetVars['printerror'])){
+          $tainted_print_error = $allGetVars['printerror'];
+          if($tainted_print_error){
+            $sanitizer = $app->getContainer()->get('sanitizer');
+            $cleaned_print_error = $sanitizer->sanitizeBoolean($tainted_print_error);
+
+            if($cleaned_print_error != null){
+
+              if($cleaned_print_error === "false"){
+                echo "<script>alert('Orders marked as printed successfully!');</script>";
+
+              }else{
+                echo "<script>alert('Orders not marked as printed - Error');</script>";
+              }
+            }
+          }
         }
 
       }

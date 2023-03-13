@@ -32,6 +32,23 @@ class Validator
 
     }
 
+    public function validatePrinted(string $tainted_payment_option) : string
+    {
+
+      $cleaned_option = '';
+
+      if($tainted_payment_option == 'Not Printed' || $tainted_payment_option == 'Printed')
+      {
+        $cleaned_option = $tainted_payment_option;
+        $this->validateResult = true;
+      }else{
+        $this->validateResult = false;
+      }
+
+      return $cleaned_option;
+
+    }
+
 
     public function validatePositiveNumber(int $tainted_number) : int
     {

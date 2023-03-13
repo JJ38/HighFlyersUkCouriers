@@ -25,7 +25,7 @@ const midBox = contentManagerWindows[1];
 const rightBox = contentManagerWindows[2];
 
 let innerWidth = window.innerWidth;
-let sidebarWidth = 200;
+let sidebarWidth = screen.width * 0.12;
 
 
 draggableLeft.style.right = innerWidth - sidebarWidth + 'px';
@@ -49,6 +49,9 @@ let selectedFileLinks = [];
 let selectedElementRightClick;
 let selectedObjectTreeElementRightClick;
 
+let intitialDifferenceX = 0;
+let intialDifferenceY = 0;
+let initialDistanceDifference = 0;
 
 let leftWidth = sidebarWidth;
 let midWidth = innerWidth - (2 * sidebarWidth);
@@ -128,7 +131,7 @@ draggableLeft.addEventListener('pointerdown', (e) =>{
     leftHold = true;
 });
 
-draggableRight.addEventListener('pointerdown', e =>{
+draggableRight.addEventListener('touchstart', e =>{
    
     x = e.clientX;
     rightHold = true;
@@ -217,12 +220,46 @@ midBox.addEventListener('pointerdown', (e) => {
 
 });
 
+//mobile
+midBox.addEventListener('touchstart', (e) => {
+    console.log("touchstart");
+    
+    initialAbsoluteRight = midBox.getBoundingClientRect().right - content.getBoundingClientRect().right; 
+    initialAbsoluteTop = content.getBoundingClientRect().top - midBox.getBoundingClientRect().top; 
+    
+    initialXPos = e.touches[0].clientX;
+    initialYPos = e.touches[0].clientY;
+    midBoxLeftClick = true;
+
+
+});
+
 midBox.addEventListener('pointermove', (e) => {
     
     if(midBoxLeftClick){
     
         let differenceX = initialXPos - e.clientX;   
         let differenceY = e.clientY - initialYPos;
+
+        content.style.right = (initialAbsoluteRight + differenceX) +'px';
+        content.style.top = (initialAbsoluteTop + differenceY)  + 'px';
+
+    }
+    
+});
+
+midBox.addEventListener('touchmove', (e) => {
+    console.log("touchmove");
+    if(midBoxLeftClick){
+        console.log("true");
+        console.log(initialXPos);
+        console.log(e.touches[0].clientX);
+
+        let differenceX = initialXPos - e.touches[0].clientX;   
+        let differenceY = e.touches[0].clientY - initialYPos;
+
+        console.log(differenceX);
+        console.log(differenceY);
 
         content.style.right = (initialAbsoluteRight + differenceX) +'px';
         content.style.top = (initialAbsoluteTop + differenceY)  + 'px';
@@ -247,6 +284,49 @@ midBox.addEventListener('wheel', (e) =>{
     content.style.transform = matrix;
 
 });
+
+midBox.addEventListener('touchstart', e =>{
+
+    if(e.touches.length == 2){
+
+        intitialDifferenceX = e.touches[0].clientX - e.touches[1].clientX;
+        intialDifferenceY = e.touches[0].clientY - e.touches[1].clientY;
+        initialDistanceDifference = intialDifferenceY + intialDifferenceY;
+
+    }
+
+});
+
+midBox.addEventListener('touchmove', e =>{
+
+    if(e.touches.length == 2){
+        e.preventDefault()
+
+        const relativeDifferenceX = e.touches[0].clientX - e.touches[1].clientX;
+        const relativeDifferenceY = e.touches[0].clientY - e.touches[1].clientY;
+
+        const relativeDistance = relativeDifferenceX + relativeDifferenceY;
+
+        const changeInDistance = initialDistanceDifference - relativeDistance;
+        
+        
+        if(changeInDistance > 0){//mwheeldown
+            scaleAmount = -0.02;
+            
+        }else{//mwheelup
+            scaleAmount = 0.02;
+    
+        }
+
+        var matrix = "matrix(" + (contentScale + scaleAmount) + ",0,0," + (contentScale + scaleAmount) + ",0,0)";
+        contentScale = contentScale + scaleAmount;
+        content.style.transform = matrix;
+      
+
+    }
+
+});
+
 
 
 beforeText.addEventListener('click', e => {
@@ -278,7 +358,10 @@ for(let i = 0; i < rightClickMenuChildren.length; i++){
 }
 
 window.addEventListener('click', e => {
+    hideContextMenu();
+});
 
+function hideContextMenu(){
     rightClickMenu.classList.add("hidden");
     for(let i = 0; i < listwrappers.length; i++){
         if(!listwrappers[i].classList.contains("rootchild")){
@@ -286,7 +369,7 @@ window.addEventListener('click', e => {
         }
         
     }
-});
+}
 
 
 for(let i = 0; i < rightClickMenuChildren.length; i++){ 
@@ -299,8 +382,6 @@ for(let i = 0; i < rightClickMenuChildren.length; i++){
 
         
         }
-        
-
        
         var allSiblingElements = Array.from(rightClickMenuChildren[i].parentElement.children);
         
@@ -428,11 +509,6 @@ function savePage(){
 
     //remove style elements
 
-    // for(let i = 0; i < newHeadElements.length; i++){
-    //     if(newHeadElements[i].tagName == "STYLE"){
-    //         newHeadElements.removeChild(newHeadElements[i]);
-    //     }
-    // }
 
 
     const editableDocumentHead =  editableDocument.querySelector('head');
@@ -510,34 +586,6 @@ function moveLeftSlider(moveToX){
 }
 
 
-
-
-async function getFile(selectedFile){
-
-    
-
-    contentHTML = await getHTMLFile('/templates/' + selectedFile);
-   
-    //converts html file into dom element for manipulation later on
-    const parser = new DOMParser();
-    editableDocument = parser.parseFromString(contentHTML, "text/html");
-
-    //replace text directly in tag with p tag
-    wrapDivTextInPTag(editableDocument);
-
-
-    //get links from selectedpage and add into contentmanager
-    content.innerHTML = editableDocument.querySelector('body').innerHTML;
-
-    
-    //generate object tree for selected page
-    generateObjectTree();
-    
-    //gets css files
-    getCSSFiles();
-   
-}
-
 function wrapDivTextInPTag(editableDocument){
     
     getAllElements(editableDocument, allEditableDocumentElements);
@@ -568,15 +616,6 @@ function wrapDivTextInPTag(editableDocument){
     }
 }
 
-async function getHTMLFile(filePath){
-    //gets html file
-    return await fetch(filePath, {
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      }).then(response => response.text());
-
-}
 
 //Used to print out elements in console as console.log is pass by reference not value
 function getCopyOfElement(element){
@@ -635,63 +674,11 @@ function getCSSFiles(){
 
 }
 
-async function convertTwigToHTML(twigExpressionsUnfiltered){
-    //filter out known unwanted twig exressions
-    contentHTML = contentHTML.replaceAll("{% extends 'boilerplate.twig' %}", "");
-    contentHTML = contentHTML.replaceAll("{% block content %}", "");
-    contentHTML = contentHTML.replaceAll("{% endblock %}", "");
-
-    //remove block content and endblock expressions
-    var twigExpressionsFiltered = twigExpressionsUnfiltered.filter(function(value, index, arr){ 
-        return value != 'block content' && value != 'endblock';
-    });
-
-    console.log(twigExpressionsFiltered);
-
-    
-    var twigFileNames = [];
-    for(let i = 0; i < twigExpressionsFiltered.length; i++){
-        twigFileNames.push(twigExpressionsFiltered[i].substring(
-            twigExpressionsFiltered[i].indexOf("'") + 1, 
-            twigExpressionsFiltered[i].lastIndexOf("'")
-        ));
-    }
-
-
-    //get each file
-
-    var files = [];
-
-    for(let i = 0; i < twigFileNames.length; i++){
-        files[i] = await getHTMLFile('/HighFlyersUkCouriers/private/app/templates/' + twigFileNames[i]);
-    }
-   
-    // //replace twig expression with html
-
-    for(let i = 0; i < files.length; i++){
-      
-        contentHTML = contentHTML.replace(twigExpressionsFiltered[i], files[i]);
-    }
-    
-    //clean up left over {% and %}
-    contentHTML = contentHTML.replaceAll("{%", "");
-    contentHTML = contentHTML.replaceAll("%}", "");
-    
-   
-}
-
 function selectOnChange(){
 
     selectedFile = selectPage.value;
    
 }
-
-function selectResolutionOnChange(){
-    let selectedResolutionInPixels = selectedResolution.value
-    console.log(selectedResolutionInPixels);
-    content.style.width = selectedResolutionInPixels + "px";
-}
-
 
 function generateObjectTree(){
 
@@ -757,8 +744,10 @@ function addEventListenersToSelectedPage(objectTreeElement, selectedPageElement)
 
     });
 
-    selectedPageElement.addEventListener('dblclick', e => {
+    selectedPageElement.addEventListener('click', e => {
         e.stopPropagation(selectedPageElement);
+
+        hideContextMenu();
 
         labelDoubleClick(selectedPageElement);
 

@@ -67,35 +67,44 @@ div.searchbar{
   flex-wrap: wrap;
   max-width: 650px;
   width: fit-content;
+  line-height: normal;
+  align-items: center;
+
 }
 
 .searchoption{
   margin-right: 1em;
-  height: max-content;
   padding: 0px;
 }
 
 #searchform{
   display: flex;
   flex-wrap: wrap;
-  font-size: 20px
+  font-size: 20px;
 }
 
 .button{
   text-decoration: none;
   background-color: #f1f1f1;
-  font-size: 15px;
+  font-size: 15px !important;
   border: 1px solid grey;
   border-radius: 2px;
-  padding: 0px 5px;
+  padding: 0px 5px !important;
   font-weight: normal;
   color: rgb(34, 34, 34);
+
+}
+
+input, select{
+  height: 20px;
+  margin: 0px;
+  line-height: none;
 }
 
 .bubble{
   margin-top: 1em;
-  margin-left: 2em;
-  margin-right: 2em;
+  margin-left: 3vw;
+  margin-right: 3vw;
   background-color: white;
   border-radius: 8px;
   width: auto;
@@ -196,7 +205,7 @@ div.orderdatawrapper{
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 1em;
-  margin-left: 3em;
+  margin-left: 4vw;
 }
 
 .massactionbutton{
@@ -214,4 +223,57 @@ div.orderdatawrapper{
 .massactionbutton:hover{
   background: #F5F4F4;
   cursor: pointer;
+}
+
+@media (max-width: 1000px){
+
+  .massactionbutton{
+    font-size: 18px !important;
+  }
+
+  .massactionbuttons{
+    margin-top: 8px !important;
+  }
+
+  td, th{
+    padding: 8px 10px !important;
+    font-size: 17px !important;
+  }
+
+  .searchbar{
+    font-size: 15px !important;
+  }
+
+
+
+}
+
+@media (max-width: 610px){
+
+  .massactionbuttons{
+    font-size: 16px !important;
+    margin-top: 5px !important;
+  }
+
+  td, th{
+    padding: 6px 8px !important;
+    font-size: 15px !important;
+  }
+
+  .orderbuttons{
+    position: relative !important;
+  }
+
+  .bubble{
+    margin-top: 8px;
+  }
+
+
+}
+
+
+@media (max-width: 500px){
+  .massactionbutton, .searchoption{
+    font-size: 13px !important;
+  }
 }

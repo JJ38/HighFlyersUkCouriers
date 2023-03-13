@@ -6,7 +6,7 @@
             <div id="mobilenavwrapper">
               <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
                 <a href="/logout">Logout</a>
-                <a href="/manage-orders">Manage Bookings</a>
+                <a class="currentpage" href="/manage-orders">Manage Bookings</a>
                 {% if isAdmin == true %}
                   <a href="/content-manager">Content Manager</a>
                   <a href="/manage-accounts">Manage Accounts</a>
@@ -56,6 +56,7 @@
                     <option value="delivery_phone_number">Delivery Phone Number</option>
                     <option value="payment_option">Payment</option>
                     <option value="message">Message</option>
+                    <option value="printed">Printed</option>
                   </select>
                 </div>
                 <div>
@@ -108,6 +109,7 @@
                       <th>Delivery Phone Number</th>
                       <th>Payment</th>
                       <th>Message</th>
+                      <th>Printed</th>
                       <th>Time</th>
                       <th id="topright"></th>
                     </tr>
