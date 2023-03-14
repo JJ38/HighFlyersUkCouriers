@@ -2,6 +2,9 @@
 
 namespace HighFlyersUkCouriers;
 
+use Datetime;
+use DateTimeZone;
+
 class ManageOrderModel
 {
 
@@ -54,11 +57,22 @@ class ManageOrderModel
   }
 
   public function fetchOrderDataByField(string $field_name, string $value) : void
-  {
+  { 
+
+    if($field_name == "printed"){
+      if($value == "Not Printed"){
+        $value = 0;
+      }elseif($value == "Printed"){
+        $value = 1;
+      }
+    }
 
     $this->doctrine_wrapper->fetchOrderDataByField($field_name, $value);
     $this->order_data = $this->doctrine_wrapper->getQueryResult();
     $this->translateData();
+
+   
+
   }
 
   public function fetchOrderDataByFieldAndMultipleValues(string $field_name, array $value) : void
@@ -159,7 +173,7 @@ class ManageOrderModel
 
     //TODO: Accessibility
 
-    for ($i = 0; $i < $number_of_fields ; $i++) {
+    for ($i = 1; $i < $number_of_fields - 1; $i++) {
       $HTML = $HTML . '<tr>';
       $HTML = $HTML . '<td>' . $form_fields[$i] . '</td>'; //<label for="fname">First name:</label>
       $HTML = $HTML . '<td>' . $this->order_data[0][$headers[$i]];
@@ -178,7 +192,7 @@ class ManageOrderModel
     for ($i = 0; $i < $number_of_orders; $i++) {
       $HTML = $HTML . '<tr>';
 
-      for ($j = 0; $j < count($this->order_data[$i]); $j++) {
+      for ($j = 0; $j < count($this->order_data[$i]) - 1; $j++) { //-1 to account for not showing isprinted
         $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
       }
 
@@ -282,6 +296,8 @@ class ManageOrderModel
     $number_of_orders = count($tainted_parameters['collection']);
     $cleaned_orders = [];
 
+    $delivery_week = $this->getDeliveryWeek('CUSTOMER');
+
     for($i = 1; $i < $number_of_orders + 1; $i++){
       $tainted_order = [];
 
@@ -314,6 +330,8 @@ class ManageOrderModel
       if(empty($cleaned_order)){
         return [];
       }
+
+      $cleaned_order['delivery_week'] = $delivery_week;
 
       $cleaned_orders[$i] = $cleaned_order;
     }
@@ -348,8 +366,6 @@ class ManageOrderModel
 
     for($i = 0; $i < count($this->order_data); $i++){ 
 
-      //get delivery week
-
       $this->doctrine_wrapper->updatePrinted($this->order_data[$i]);
 
       $store_result = $this->getQueryResult();
@@ -362,6 +378,36 @@ class ManageOrderModel
 
     return true;
     
+  }
+
+
+  public function getDeliveryWeek($order_type){
+
+    $current_date = new DateTime();
+    $current_date->setTimezone(new DateTimeZone('Europe/London'));
+
+    // $current_date->setDate(2023, 03, 22);
+    // echo $current_date->format('D');
+
+    $delivery_date = new DateTime();
+    $delivery_date->setTimezone(new DateTimeZone('Europe/London'));
+
+    //normal cut off Friday
+    //customer cut off Sunday
+
+    if(($current_date->format('D') == "Sat" || $current_date->format('D') == "Sun") && $order_type == "PUBLIC"){ //if order came from public booking form and not customer account
+      $delivery_date->modify('next tuesday')->modify('next tuesday');
+    }else if($current_date->format('D') == "Mon"){ //if monday then not matter if customer or public account delivery is tuesday after next
+      $delivery_date->modify('next tuesday')->modify('next tuesday');
+    }else{ //if midweek delivery is always next tuesday
+      $delivery_date->modify('next tuesday');
+    }
+    
+
+    // echo $current_date->format('M-d');
+    //$current_date->modify('next tuesday');
+    return $delivery_date->format('M-d');
+
   }
 
 }

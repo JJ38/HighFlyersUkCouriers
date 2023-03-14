@@ -135,6 +135,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         }
 
 
+
         // Get models + Wrappers
         $container = $app->getContainer();
         $doctrine_wrapper = $container->get('doctrineWrapper');
@@ -151,19 +152,17 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $manage_order_model->setOrderData($cleaned_orders);
 
       
-        //return $response;
-
+       
         $store_result = $manage_order_model->storeMultipleOrders();
         $confirmed_orders = $manage_order_model->getConfirmedOrders();
 
-        // echo "<pre>";
-        // var_dump($cleaned_orders);
-        // echo "</pre> cleaned orders";
 
         // echo "<pre>";
         // var_dump($confirmed_orders);
-        // echo "</pre> confirmed orders";
+        // echo "</pre> cleaned orders";
+
         // return $response;
+       
         $sanitizer = $container->get('sanitizer');
 
         //send email
@@ -176,6 +175,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
 
         $mailer->setMailData($confirmed_orders);
         $mailer->sendMultipleOrderEmail($cleaned_email);
+        $mailer->sendMultipleOrderEmailInternal();
         // $mailer->sendMailInternal();
 
         if($store_result){

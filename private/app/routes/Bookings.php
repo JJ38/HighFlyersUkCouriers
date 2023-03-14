@@ -62,6 +62,14 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
 
   $container = $app->getContainer();
 
+  //get delivery week
+
+  $manage_order_model = $container->get('manageOrderModel');
+  $delivery_week = $manage_order_model->getDeliveryWeek('PUBLIC');
+
+  $cleaned_parameters['delivery_week'] = $delivery_week;
+
+
   //store in database
   $doctrine_wrapper = $container->get('doctrineWrapper');
   $logger = $container->get('logger');

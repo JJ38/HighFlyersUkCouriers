@@ -64,8 +64,12 @@ a:hover{
   border-radius: 8px;
   width: auto;
   height: auto;
-  overflow-x: scroll;
 
+
+}
+
+.userdata{
+  overflow-x: scroll;
 }
 
 table {

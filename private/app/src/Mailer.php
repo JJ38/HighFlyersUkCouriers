@@ -64,7 +64,7 @@ class Mailer{
   public function sendMailCustomer() : void
   {
     $email = $this->mailer_data['email'];
-    $subject = 'High Flyers Uk Couriers Booking Confirmation -NoReply';
+    $subject = 'High Flyers Uk Couriers Booking Confirmation - NoReply';
     $message = "
 
     This is a confirmation email for your order with High Flyers Uk Couriers. " . "<br>". "
@@ -145,11 +145,16 @@ class Mailer{
     $this->sendMail($email, $subject, $message);
   }
 
+  public function sendMultipleOrderEmailInternal(){
+    $email =  $this->mailer_settings['username'];
+    $subject = "Order from {$this->mailer_data[1]['username']}";
 
-  public function sendMultipleOrderEmail($email){
+    $message = $this->getMultipleOrderMessage();
 
-    $email =  $email;
-    $subject = "Order from testing";
+    $this->sendMail($email, $subject, $message);
+  }
+
+  private function getMultipleOrderMessage(){
 
     $message = '<html>'.
     '<head>'.
@@ -256,8 +261,19 @@ class Mailer{
     '</html>';
 
 
-    $this->sendMail($email, $subject, $message);
-}
+    return $message;
+  }
+
+
+  public function sendMultipleOrderEmail($email){
+
+      $email =  $email;
+      $subject = "High Flyers Uk Couriers Booking Confirmation -NoReply";
+
+      $message = $this->getMultipleOrderMessage();
+
+      $this->sendMail($email, $subject, $message);
+  }
 
 
 }

@@ -117,12 +117,6 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
       $manage_order_model->generateHTMLFromData();
       
 
-      // $response->getBody()->write('<pre>' . var_export($manage_order_model->getOrderData(), true) . '</pre>');
-      
- 
-
-
-
       return $this->view->render($response,'ManageOrders.twig', array(
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "ManageOrders.css",
@@ -132,16 +126,6 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
               'heading_1' => APP_TITLE,
               'orderdata' => $manage_order_model->getHTMLOrderData(),
               'isAdmin' => $account_type == "admin",
-              'links'=> array(
-                  'register' => 'registerform',
-                  'login' => 'loginform',
-                  'homepage' => '#',
-                  'send_initial_messages' => 'sendinitialtelemetrymessages',
-                  'present_telemetry' => 'presenttelemetrydata',
-                  'manage_users' => 'manageusersform',
-                  'send_telemetry' => 'sendtelemetrydata',
-                  'logout' => 'logout'
-              ),
           ));
     }
 

@@ -9,11 +9,34 @@ const body = document.querySelectorAll('body');
 
 let orderIDs = [];
 let hasPrinted = [];
+let printType = "";
+let orderID = -1;
+let isPrinted = "";
 
 for(let i = 0; i < printButtons.length; i++){
     printButtons[i].addEventListener('click', e => {
+        // orderElements[i + 1].children[21].textContent
+        printType = "SINGULARPRINT";
+        orderID = orderElements[i + 1].children[1].innerHTML;
+        isPrinted = orderElements[i + 1].children[21].textContent;
         printOrder(orderElements[i + 1].children[1].innerHTML);
+        
     });
+}
+
+function singularPrint(){
+
+  console.log("SINGULARPRINT");
+  console.log("SINGULARPRINT");
+
+
+  if(confirm("Would you like the selected orders as printed?")){
+    if(isPrinted == "Not Printed"){
+      markOrdersAsPrinted([orderID]);
+    }else{
+      alert('Order already marked printed');
+    }
+  }
 }
 
 
@@ -37,10 +60,11 @@ function deleteSelected(){
     deleteSelectedForm.submit();
   }
 
-
 }
 
 function printSelected(){
+
+  printType = "MULTIPLEPRINT";
 
   const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked');
   orderIDs = [];
@@ -61,7 +85,12 @@ function closePrint() {
 function setPrint() {
   this.contentWindow.__container__ = this;
   this.contentWindow.onbeforeunload = closePrint;
-  this.contentWindow.onafterprint = confirmPrint;
+  if(printType == "MULTIPLEPRINT"){
+    this.contentWindow.onafterprint = confirmPrint;
+  }else if(printType == "SINGULARPRINT"){
+    this.contentWindow.onafterprint = singularPrint;
+  }
+  
   this.contentWindow.focus(); // Required for IE
   this.contentWindow.print();
 }
@@ -73,19 +102,11 @@ function printOrder(orderNumber) {
 
 }
 
-// this.contentWindow.addEventListener('onafterprint', e =>{
-//   console.log("event listener print");
-// });
-
-console.log(orderElements[1].children[21].textContent);
-console.log(orderElements[1].children[2].textContent);
 
 function confirmPrint() {
+
   if(confirm("Would you like the selected orders as printed?")){
   
-    //get all order ids
-    console.log(orderIDs);
-
     //check if already marked as printed
 
     let notPrintedOrders = [];
@@ -99,40 +120,39 @@ function confirmPrint() {
       
     }
 
-    console.log(notPrintedOrders);
-
     if(notPrintedOrders.length > 0){
 
-      const form = document.createElement('form');
-      form.action = "/mark-orders-as-printed";
-      form.method = "post";
-      form.name = "printedordersform";
-      form.id = "printedordersform";    
-      //add ids as inputs
+      markOrdersAsPrinted(notPrintedOrders);  
 
-      for(let i = 0; i < notPrintedOrders.length; i++){
-        const input = document.createElement('input');
-        input.name = i;
-        input.id = i;
-        input.type = "hidden";
-        input.value = notPrintedOrders[i];
-        form.appendChild(input);
-      }
-
-      document.body.appendChild(form);
-
-      form.submit();
-
-      console.log(form);
     }else{
       alert('Orders already marked printed');
     }
 
-
-  }else{
-    console.log("Not printed");
   }
   
+}
+
+function markOrdersAsPrinted(notPrintedOrders){
+  
+  const form = document.createElement('form');
+  form.action = "/mark-orders-as-printed";
+  form.method = "post";
+  form.name = "printedordersform";
+  form.id = "printedordersform";    
+  //add ids as inputs
+
+  for(let i = 0; i < notPrintedOrders.length; i++){
+    const input = document.createElement('input');
+    input.name = i;
+    input.id = i;
+    input.type = "hidden";
+    input.value = notPrintedOrders[i];
+    form.appendChild(input);
+  }
+
+  document.body.appendChild(form);
+
+  form.submit();
 }
 
 
