@@ -176,6 +176,8 @@ a:visited{
   color: black;
 }
 
+
+
 @media (max-width: 850px) {
   .fa-flag, .fa-money-bill-wave, .fa-truck{
     font-size: 45px;

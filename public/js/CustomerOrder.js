@@ -46,8 +46,28 @@ const requiredFields = [collectionName, collectionAddress1, collectionAddress2,
 
 const table = document.getElementById('table');
 
+let animalTypeValue;
+let quantityValue ;
+let collectionNameValue;
+let collectionPostcodeValue;
+let collectionAddress1Value;
+let collectionAddress2Value;
+let collectionAddress3Value;
+let collectionTelephoneValue;
+let deliveryNameValue;
+let deliveryPostcodeValue;
+let deliveryAddress1Value;
+let deliveryAddress2Value;
+let deliveryAddress3Value;
+let deliveryTelephoneValue;
+let emailValue;
+let paymentOptionValue;
+let messageValue;
+let idBookmark = 0;
 
+// localStorage.clear();
 setProfileData();
+loadBasket();
 
 
 function setProfileData(){
@@ -138,7 +158,7 @@ function updateQuickAddressEmail(){
 
 }
 
-function validateOrder(){
+function validateOrder(){ 
 
     var isNumber = /^\d+$/;
     var isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -176,8 +196,63 @@ function validateOrder(){
 
 }
 
+function loadBasket(){
+
+    basketJSON = JSON.parse(localStorage.getItem("basket"));
+   
+
+    // console.log(localStorage.getItem('basket'));
+    if(localStorage.getItem('basket') != null){
+        idBookmark = basketJSON['id_bookmark'];
+        if(basketJSON['basket'].length > 0){ 
+            
+            
+            for(let i = 0; i < basketJSON['basket'].length; i++){
+            
+                animalTypeValue = basketJSON['basket'][i]['animal_type'];
+                quantityValue = basketJSON['basket'][i]['quantity'];
+                collectionNameValue = basketJSON['basket'][i]['collection_name'];
+                collectionPostcodeValue = basketJSON['basket'][i]['collection_postcode'];
+                collectionAddress1Value = basketJSON['basket'][i]['collection_address1'];
+                collectionAddress2Value = basketJSON['basket'][i]['collection_address2'];
+                collectionAddress3Value = basketJSON['basket'][i]['collection_address3'];
+                collectionTelephoneValue = basketJSON['basket'][i]['collection_telephone'];
+                deliveryNameValue = basketJSON['basket'][i]['delivery_name'];
+                deliveryPostcodeValue = basketJSON['basket'][i]['delivery_postcode'];
+                deliveryAddress1Value = basketJSON['basket'][i]['delivery_address1'];
+                deliveryAddress2Value = basketJSON['basket'][i]['delivery_address2'];
+                deliveryAddress3Value = basketJSON['basket'][i]['delivery_address3'];
+                deliveryTelephoneValue = basketJSON['basket'][i]['delivery_telephone'];
+                emailValue = basketJSON['basket'][i]['email'];
+                paymentOptionValue = basketJSON['basket'][i]['payment_option'];
+                messageValue = basketJSON['basket'][i]['message'];
+                addOrderHTML(basketJSON['basket'][i]['id']);
+            }
+
+            updateBasket();
+        
+        } 
+    }else{
+
+
+        console.log("BASKET EMPTY");
+
+        basketBoilerPlateJSON = '{"id_bookmark": 0,"basket": []}';
+        localStorage.setItem("basket", basketBoilerPlateJSON);
+    
+        
+    }
+
+    console.log(localStorage.getItem("basket"));
+
+    // console.log()
+
+}
 
 function addToBasket(){
+
+    console.log(localStorage.getItem('basket'));
+   
 
     //check if profile has email
     var isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -209,72 +284,132 @@ function addToBasket(){
         alert(validateResult);
         return;
     }
-    
 
-    //if required fields enetered add dom elements
+
+    //store in local storage
+
+    //create JSON of order
+
+    //get current basket
+
+    //add order to JSON
+
+    // if required fields entered add dom elements
 
     if(requiredFieldsMet){
 
-        const tableRow = document.createElement('div');
-        tableRow.classList = "tablerow";
+        //set order data
 
-        const orderHTML =   
-                            '<div class="transportinfowrapper">'+
-                                '<div class="hidden collectiondeliveryicons transporticons">'+
-                                    '<i class="fa-solid fa-box-open" title="collection"></i>'+
-                                    '<i class="fa-solid fa-ellipsis-vertical"></i>'+
-                                    '<i class="fa-solid fa-truck" title="delivery"></i>'+
-                                '</div>'+
-                                '<div class="columns hidden collectioninfomargin">'+
-                                    '<p>' + animalType.value + '</p>'+
-                                    '<p>' + quantity.value + '</p>'+
-                                    '<p>' + collectionName.value + '</p>'+
-                                    '<div class="onelineaddress"><p>' + collectionAddress1.value + '</p><p>' + collectionAddress2.value + '</p><p>' + collectionAddress3.value + '</p><p>' + collectionPostcode.value + '</p></div>'+
-                                    '<p>' + collectionTelephone.value + '</p>'+
-                                    '<p></p>'+
-                                '</div>'+
-                                '<div class="columns deliveryinfomargin">'+
-                                    '<p class="">' + animalType.value + '</p>'+
-                                    '<p>' + quantity.value + '</p>'+
-                                    '<p>' + deliveryName.value + '</p>'+
-                                    '<div class="onelineaddress"><p>' + deliveryAddress1.value + '</p><p>' + deliveryAddress2.value + '</p><p>' + deliveryAddress3.value + '</p><p>' + deliveryPostcode.value + '</p></div>'+
-                                    '<p>' + deliveryTelephone.value + '</p>'+
-                                    '<p class="">' + paymentOption.value + '</p>'+
-                                    '<div class="expand" onclick="toggleExpand(this)"><p>V</p></div>'+
-                                '</div>'+
+       
+        animalTypeValue = animalType.value;
+        quantityValue = quantity.value;
+        collectionNameValue = collectionName.value;
+        collectionPostcodeValue = collectionPostcode.value;
+        collectionAddress1Value = collectionAddress1.value;
+        collectionAddress2Value = collectionAddress2.value;
+        collectionAddress3Value = collectionAddress3.value;
+        collectionTelephoneValue = collectionTelephone.value;
+        deliveryNameValue = deliveryName.value;
+        deliveryPostcodeValue = deliveryPostcode.value;
+        deliveryAddress1Value = deliveryAddress1.value;
+        deliveryAddress2Value = deliveryAddress2.value;
+        deliveryAddress3Value = deliveryAddress3.value;
+        deliveryTelephoneValue = deliveryTelephone.value;
+        emailValue = email.value;
+        paymentOptionValue = paymentOption.value;
+        messageValue = message.value;
+        
+
+        //update local storage
+        
+        basketJSON = JSON.parse(localStorage.getItem("basket"));
+        basketJSON['basket'].push(orderToJSON());
+    
+        localStorage.setItem("basket", JSON.stringify(basketJSON));
+    
+        console.log(basketJSON = JSON.parse(localStorage.getItem("basket")));
+    
+
+        addOrderHTML(idBookmark);
+        
+        idBookmark ++;
+
+        //update localstorage id_bookmark
+        basketJSON = JSON.parse(localStorage.getItem("basket"));
+        console.log(basketJSON['id_bookmark']);
+        basketJSON['id_bookmark'] = idBookmark;
+
+        localStorage.setItem("basket", JSON.stringify(basketJSON));
+
+        console.log(JSON.parse(localStorage.getItem("basket")));
+        
+
+        updateBasket();
+    }
+
+}
+
+function addOrderHTML(id){
+
+    console.log("orderhtml");
+
+    const tableRow = document.createElement('div');
+    tableRow.classList = "tablerow";
+
+    const orderHTML =   
+                        '<div class="transportinfowrapper">'+
+                            '<div class="hidden collectiondeliveryicons transporticons">'+
+                                '<i class="fa-solid fa-box-open" title="collection"></i>'+
+                                '<i class="fa-solid fa-ellipsis-vertical"></i>'+
+                                '<i class="fa-solid fa-truck" title="delivery"></i>'+
                             '</div>'+
-                            '<div class="extrainfo hidden">'+
-                                '<div>'+
-                                    '<i class="fa-solid fa-at" title="email"></i>'+
-                                    '<p>'+
-                                        email.value +
-                                    '</p>'+
-                                '</div>'+
-                                '<div>'+
-                                    '<i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>'+
-                                    '<p>'+
-                                    paymentOption.value +
-                                    '</p>'+
-                                '</div>'+
-                                '<div>'+
-                                    '<i class="fa-solid fa-message" title="message"></i>'+
-                                    '<p>'+
-                                    message.value +
-                                    '</p>'+
-                                '</div>'+
+                            '<div class="columns hidden collectioninfomargin">'+
+                                '<p>' + animalTypeValue + '</p>'+
+                                '<p>' + quantityValue + '</p>'+
+                                '<p>' + collectionNameValue + '</p>'+
+                                '<div class="onelineaddress"><p>' + collectionAddress1Value + '</p><p>' + collectionAddress2Value + '</p><p>' + collectionAddress3Value + '</p><p>' + collectionPostcodeValue + '</p></div>'+
+                                '<p>' + collectionTelephoneValue + '</p>'+
+                                '<p></p>'+
                             '</div>'+
-                            '<div class="deletewrapper hidden" onclick="deleteOrder(this)">'+
-                                '<i class="fa-solid fa-trash-can"></i>'+
-                            '</div>';
+                            '<div class="columns deliveryinfomargin">'+
+                                '<p class="">' + animalTypeValue + '</p>'+
+                                '<p>' + quantityValue + '</p>'+
+                                '<p>' + deliveryNameValue + '</p>'+
+                                '<div class="onelineaddress"><p>' + deliveryAddress1Value + '</p><p>' + deliveryAddress2Value + '</p><p>' + deliveryAddress3Value + '</p><p>' + deliveryPostcodeValue + '</p></div>'+
+                                '<p>' + deliveryTelephoneValue + '</p>'+
+                                '<p class="">' + paymentOptionValue + '</p>'+
+                                '<div class="expand" onclick="toggleExpand(this)"><p>V</p></div>'+
+                            '</div>'+
+                        '</div>'+
+                        '<div class="extrainfo hidden">'+
+                            '<div>'+
+                                '<i class="fa-solid fa-at" title="email"></i>'+
+                                '<p>'+
+                                    emailValue +
+                                '</p>'+
+                            '</div>'+
+                            '<div>'+
+                                '<i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>'+
+                                '<p>'+
+                                    paymentOptionValue +
+                                '</p>'+
+                            '</div>'+
+                            '<div>'+
+                                '<i class="fa-solid fa-message" title="message"></i>'+
+                                '<p>'+
+                                    messageValue +
+                                '</p>'+
+                            '</div>'+
+                        '</div>'+
+                        '<div class="deletewrapper hidden" onclick="deleteOrder(this)">'+
+                            '<i class="fa-solid fa-trash-can"></i>'+
+                        '</div>' +
+                        '<input type=hidden name=id value=' + id + '>';
                         
         tableRow.innerHTML = orderHTML;
-
         table.appendChild(tableRow);
 
-        //save to client storage
-
         //reset deliverinfo form values
-
         deliveryName.value = "";
         deliveryAddress1.value = "";
         deliveryAddress2.value = "";
@@ -288,24 +423,77 @@ function addToBasket(){
         quantity.value = "";
 
 
-        updateBasket();
-    }
+}
 
+function orderToJSON(){
+
+    const orderJson = 
+    "{" +
+        '"id": ' + '"' + idBookmark + '"' + "," +
+        '"animal_type": ' + '"' + animalType.value + '"' + "," +
+        '"quantity": ' + '"' + quantity.value + '"' + "," +
+        '"collection_name": ' + '"' + collectionName.value + '"' + "," +
+        '"collection_postcode": ' + '"' + collectionPostcode.value + '"' + "," +
+        '"collection_address1": ' + '"' + collectionAddress1.value + '"' + "," +
+        '"collection_address2": ' + '"' + collectionAddress2.value + '"' + "," +
+        '"collection_address3": ' + '"' + collectionAddress3.value + '"' + "," +
+        '"collection_telephone": ' + '"' + collectionTelephone.value + '"' + "," +
+        '"delivery_name": ' + '"' + deliveryName.value + '"' + "," +
+        '"delivery_postcode": ' + '"' + deliveryPostcode.value + '"' + "," +
+        '"delivery_address1": ' + '"' + deliveryAddress1.value + '"' + "," +
+        '"delivery_address2": ' + '"' + deliveryAddress2.value + '"' + "," +
+        '"delivery_address3": ' + '"' + deliveryAddress3.value + '"' + "," +
+        '"delivery_telephone": ' + '"' + deliveryTelephone.value + '"' + "," +
+        '"email": ' + '"' + email.value + '"' + "," +
+        '"payment_option": ' + '"' + paymentOption.value + '"' + "," +
+        '"message": ' + '"' + message.value + '"' +
+    "}";
+
+    
+
+    return JSON.parse(orderJson);
 }
 
 function updateBasket(){
-
-    if(basket.children[1].children[1].children.length == 1){
+    basketJSON = JSON.parse(localStorage.getItem("basket"));
+    if(basketJSON['basket'].length == 0){
         basket.classList= "hidden";
     }else{
         basket.classList = "";
     }
 
+    
+
 }
 
 function deleteOrder(element){
 
+    console.log(element.parentElement);
     element.parentElement.parentElement.removeChild(element.parentElement);
+
+    idToDelete = element.parentElement.children[3].value;
+
+    console.log(element.parentElement.children[3].value);
+    //delete order from localstorage
+
+    basketJSON = JSON.parse(localStorage.getItem("basket"));
+    orders = basketJSON["basket"];
+
+    for(let i = 0; i < orders.length; i++){
+        console.log(orders[i]['id']);
+        if(orders[i]['id'] == idToDelete.toString()){
+            console.log("found order to delete");
+            orders.splice(i, 1);
+        }
+    }
+
+    basketJSON['basket'] = orders;
+
+    console.log(basketJSON);
+
+    localStorage.setItem("basket", JSON.stringify(basketJSON));
+    console.log(JSON.parse(localStorage.getItem('basket')));
+
 
     updateBasket();
 
@@ -405,6 +593,8 @@ function submitOrders(){
     //submit form
 
 
+    //clear localstorage basket 
+    localStorage.clear();
 
     form.submit();
 }

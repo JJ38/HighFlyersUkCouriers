@@ -165,6 +165,16 @@ a:visited{
   color: black;
 }
 
+#mobiletitle{
+  display: inline;
+}
+
+
+#desktoptitle{
+  display: none;
+}
+
+
 @media (max-width: 380px){
   p{
     font-size: 18px;
@@ -202,6 +212,15 @@ a:visited{
 
   div.rightcontainer{
     width: 50% !important;
+  }
+
+  #mobiletitle{
+    display: none;
+  }
+  
+  
+  #desktoptitle{
+    display: inline;
   }
 
 }

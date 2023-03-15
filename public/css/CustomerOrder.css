@@ -516,27 +516,6 @@ i{
 
 }
 
-@media (max-width: 780px){
-
-    
-    /* .headerrow{
-        overflow-wrap: anywhere;
-    }
-
-    .transportinfowrapper > p{
-        overflow-wrap: anywhere;
-    }
-
-    .tablerow{
-        padding-left: 20px !important;
-    }
-
-    .onelineaddress > p{
-        overflow-wrap: break-word !important;
-    } */
-
-}
-
 
 @media (max-width: 740px){
 
@@ -605,15 +584,20 @@ i{
     .quickcollectionaddresswrapper{
         gap: 5px !important;
         font-size: 10px !important;
-        
     }
 
-    
+    .expand, .deletewrapper{
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .expand{
+        top: 12px !important;
+    }
 
     .bubble{
         margin-top: 25px !important;
         padding: 30px !important;
-
     }
 
     button{
@@ -628,8 +612,6 @@ i{
     .headerrow{
         padding-top: 13px !important;
     }
-
-
 
 }
 
