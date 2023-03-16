@@ -50,6 +50,7 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
 {
 
   $tainted_parameters = $request->getParsedBody();
+
   $cleaned_parameters = cleanBookingForm($app, $tainted_parameters);
   //if one of the parameters does not meet requirements
 

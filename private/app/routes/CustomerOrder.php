@@ -86,16 +86,6 @@ $app->get('/customer-order', function (Request $request, Response $response) use
                 'collection_postcode' => $customer_details[0]['collection_postcode'],
                 'landing_page' => __FILE__,
                 'heading_1' => APP_TITLE,
-                'links'=> array(
-                    'register' => 'registerform',
-                    'login' => 'loginform',
-                    'homepage' => '#',
-                    'send_initial_messages' => 'sendinitialtelemetrymessages',
-                    'present_telemetry' => 'presenttelemetrydata',
-                    'manage_users' => 'manageusersform',
-                    'send_telemetry' => 'sendtelemetrydata',
-                    'logout' => 'logout'
-                ),
             ));
         }
     
@@ -134,7 +124,14 @@ $app->post('/customer-order', function (Request $request, Response $response) us
             return $response->withRedirect('/customer-order?error=true', 302);
         }
 
+        // $file = tmpfile();
+           
+        // fwrite($file, 'wawdaadawd');
+        // echo stream_get_meta_data($file)['uri'];
+        // fclose($file);
 
+
+        //return $response;
 
         // Get models + Wrappers
         $container = $app->getContainer();

@@ -56,9 +56,9 @@ $app->get('/add-user[/usernameavailable]', function (Request $request, Response 
 
 $app->post('/add-user', function (Request $request, Response $response) use ($app) : Response
 {   
-    $account_type = $request->getAttribute('isAdmin');
+    $account_type = $request->getAttribute('accountType');
 
-    if(1 == 1){
+    if($account_type == "admin"){
         $container = $app->getContainer();
 
         $tainted_parameters = $request->getParsedBody();

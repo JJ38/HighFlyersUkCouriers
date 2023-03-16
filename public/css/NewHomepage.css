@@ -44,6 +44,7 @@ div.arrow{
 
 div.arrow:hover{
   text-shadow: 0px 0px 25px #000000;
+  cursor: pointer;
 }
 
 h1.carouselslidetext{

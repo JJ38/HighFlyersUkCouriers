@@ -70,7 +70,6 @@ div.contactusinput{
 }
 
 #submitButton{
- 
   
   font-family: 'Raleway';
   font-style: normal;
@@ -82,6 +81,10 @@ div.contactusinput{
   background: #2881FF;
   border-radius: 16px;
   border: none;
+}
+
+#submitButton:hover{
+  cursor: pointer;
 }
 
 .buttonwrapper{

@@ -121,6 +121,10 @@ tr:last-of-type{
   right: 0;
 }
 
+button:hover{
+  cursor: pointer;
+}
+
 div.searchbar{
   padding: 15px 20px;
   display: flex;
@@ -135,6 +139,26 @@ div.searchbar{
 .searchoption{
   margin-right: 1em;
 
+}
+
+::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: none;
+	background-color: #ffffff00;
+}
+
+::-webkit-scrollbar
+{
+	width: 10px;
+  height: 10px;
+	
+}
+
+::-webkit-scrollbar-thumb
+{
+  border-radius: 5px;
+	background-color: lightgrey;
+	border: none;
 }
 
 @media (max-width: 1000px){

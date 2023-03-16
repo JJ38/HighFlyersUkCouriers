@@ -45,6 +45,8 @@ const requiredFields = [collectionName, collectionAddress1, collectionAddress2,
     animalType];
 
 const table = document.getElementById('table');
+const loadingSymbol = document.getElementById('loadingsymbol');
+const submitOrdersButton = document.getElementById('submitorders');
 
 let animalTypeValue;
 let quantityValue ;
@@ -65,7 +67,6 @@ let paymentOptionValue;
 let messageValue;
 let idBookmark = 0;
 
-// localStorage.clear();
 setProfileData();
 loadBasket();
 
@@ -157,6 +158,7 @@ function updateQuickAddressEmail(){
     quickAddressEmail.innerHTML = email.value;
 
 }
+
 
 function validateOrder(){ 
 
@@ -536,6 +538,10 @@ function getAllPTagsOfParent(element){
 
 
 function submitOrders(){
+
+    //loading symbol
+    submitOrdersButton.classList = 'hidesubmitbutton';
+    loadingSymbol.classList = 'loader';
 
     //get all orders
 

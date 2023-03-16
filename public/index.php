@@ -3,9 +3,13 @@ include '../private/bootstrap.php';
 
 //TODO: 
 // check for duplicate orders
-// client side storage customer page
 // edit all
-// content manager make text editable on phone
+// content manager zoom
 // fix email for customer orders
+
+//linked phone number and email
+
+
+
 
 // setup emails for contactus and booking

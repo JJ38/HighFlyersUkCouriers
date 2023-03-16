@@ -2,16 +2,15 @@
 
 namespace HighFlyersUkCouriers;
 
-//Import PHPMailer classes into the global namespace
-//These must be at the top of your script, not inside a function
+
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 class Mailer{
 
   private $mailer_settings;
   private $mailer_data;
+  private $file;
 
   public function setMailerSettings(array $mailer_settings) : void
   {
@@ -25,7 +24,7 @@ class Mailer{
 
   }
 
-  public function sendMail($email, $subject, $message) : void
+  public function sendMail($email, $subject, $message, $attachment) : void
   {
     $mail = new PHPMailer(true);
 
@@ -52,13 +51,23 @@ class Mailer{
         $mail->isHTML(true);                                  //Set email format to HTML
         $mail->Subject = $subject;
         $mail->Body    = $message;
-
+        if($attachment != false){
+          $file = tmpfile();
+           
+          fwrite($file, $attachment);
+          $mail->AddAttachment(stream_get_meta_data($file)['uri'], 'YourOrder.html');
+        
+        }
 
         $mail->send();
-    } catch (Exception $e) {
+        fclose($file);
 
+        
+    } catch (Exception $e) {
+        fclose($file);
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
+
   }
 
   public function sendMailCustomer() : void
@@ -92,7 +101,7 @@ class Mailer{
     Please contact us at 07887781089 if there is a problem regarding your order.
 
     ";
-    $this->sendMail($email, $subject, $message);
+    $this->sendMail($email, $subject, $message, false);
   }
 
   public function sendMailInternal() : void
@@ -120,7 +129,7 @@ class Mailer{
     Message: {$this->mailer_data['message']}" . "<br>". "
 
     ";
-    $this->sendMail($email, $subject, $message);
+    $this->sendMail($email, $subject, $message, false);
   }
 
   public function sendMailCustomerContactUs() : void
@@ -129,7 +138,7 @@ class Mailer{
     $subject = 'High Flyers Uk Couriers Inquiry Confirmation - NoReply';
     $message = "Thankyou for contacting High Flyers UK Couriers. <br> <br> We have recieved your email and will get back to you shortly";
 
-    $this->sendMail($email, $subject, $message);
+    $this->sendMail($email, $subject, $message, false);
   }
 
   public function sendMailInternalContactUs() : void
@@ -142,19 +151,19 @@ class Mailer{
     "Email: {$this->mailer_data['email']}" . "<br> <br>" . 
     $this->mailer_data['message'];
 
-    $this->sendMail($email, $subject, $message);
+    $this->sendMail($email, $subject, $message, false);
   }
 
   public function sendMultipleOrderEmailInternal(){
     $email =  $this->mailer_settings['username'];
     $subject = "Order from {$this->mailer_data[1]['username']}";
 
-    $message = $this->getMultipleOrderMessage();
+    $message = $this->getMultipleOrderAttachment();
 
-    $this->sendMail($email, $subject, $message);
+    $this->sendMail($email, $subject, $message, true);
   }
 
-  private function getMultipleOrderMessage(){
+  private function getMultipleOrderAttachment(){
 
     $message = '<html>'.
     '<head>'.
@@ -225,7 +234,7 @@ class Mailer{
 
     for($i = 1; $i < count($this->mailer_data) + 1; $i++){
 
-      echo $this->mailer_data[$i]['animal_type'];
+      // echo $this->mailer_data[$i]['animal_type'];
 
       $message = $message . 
       '<tr>'.
@@ -260,6 +269,106 @@ class Mailer{
     '</body>'.
     '</html>';
 
+ 
+
+
+    //return $message;
+
+
+    $message = '"<html lang="en">'.
+    '<head>'.
+    
+    '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'.
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">'.
+    '<script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>'.
+    
+    '<link rel="stylesheet" href="http://localhost/css/CustomerOrder.css" type="text/css">'.
+    '<link rel="stylesheet" href="http://localhost/css/ViewCustomerOrder.css" type="text/css">'.
+
+    
+    '</head>'.
+    '<body>';
+
+
+    $message = $message . '<div id="table">'.
+        '<div class="columns tablerow headerrow">'.
+        
+        '<h3>Animal</h3>'.
+        '<h3>Quantity</h3>'.
+        '<h3>Name</h3>'.
+        '<h3>Delivery address</h3>'.
+        '<h3>Delivery telephone</h3>'.
+        '<h3>Payment</h3>'.
+        '<h3></h3>';
+
+    for($i = 1; $i < count($this->mailer_data) + 1; $i++){
+    
+        
+      $message = $message .'</div>'.
+      '<div class="tablerow">
+      <div class="transportinfowrapper">
+      <div class="hidden collectiondeliveryicons transporticons">
+      <i class="fa-solid fa-box-open" title="collection"></i>
+      <i class="fa-solid fa-ellipsis-vertical"></i>
+      <i class="fa-solid fa-truck" title="delivery"></i>
+      </div>
+      <div class="columns hidden collectioninfomargin">
+      <p>' . $this->mailer_data[$i]['animal_type'] . '</p>
+      <p>' . $this->mailer_data[$i]['quantity'] . '</p>
+      <p>' . $this->mailer_data[$i]['collection_name'] . '</p>
+      <div class="onelineaddress">
+      <p>' . $this->mailer_data[$i]['collection_address_1'] . '</p>
+      <p>' . $this->mailer_data[$i]['collection_address_2'] . '</p>
+      <p>' . $this->mailer_data[$i]['collection_address_3'] . '</p>
+      <p>' . $this->mailer_data[$i]['collection_postcode'] . '</p>
+      </div><p>' . $this->mailer_data[$i]['collection_phone_number'] . '</p>
+      <p></p>
+      </div>
+      <div class="columns deliveryinfomargin">
+      <p class="">' . $this->mailer_data[$i]['animal_type'] . '</p>
+      <p>' . $this->mailer_data[$i]['quantity'] . '</p>
+      <p>' . $this->mailer_data[$i]['delivery_name'] . '</p>
+      <div class="onelineaddress">
+      <p>' . $this->mailer_data[$i]['delivery_address_1'] . '</p>
+      <p>' . $this->mailer_data[$i]['delivery_address_2'] . '</p>
+      <p>' . $this->mailer_data[$i]['delivery_address_3'] . '</p>
+      <p>' . $this->mailer_data[$i]['delivery_postcode'] . '</p>
+      </div>
+      <p>' . $this->mailer_data[$i]['delivery_phone_number'] . '</p>
+      <p class="">' . $this->mailer_data[$i]['payment_option'] . '</p>
+      <div class="expand" onclick="toggleExpand(this)">
+      <p>V</p>
+      </div></div></div>
+      <div class="extrainfo hidden">
+      <div><i class="fa-solid fa-at" title="email">
+      </i>
+      <p>' . $this->mailer_data[$i]['email'] . '</p>
+      </div><div>
+      <i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>
+      <p>' . $this->mailer_data[$i]['payment_option'] . '</p>
+      </div><div>
+      <i class="fa-solid fa-message" title="message"></i>
+      <p>' . $this->mailer_data[$i]['message'] . '</p>
+      </div></div>
+      <input type="hidden" name="id" value="0">
+      </div>'.
+      ''.
+      '</div>'
+      ;
+    }
+
+
+
+    $message = $message . 
+        '<script type="text/javascript" src="http://localhost/js/CustomerOrder.js"></script>' .
+      '</head>'.
+    '<body>'.
+    '</hmtl>';
+
+    
+    
+
+
 
     return $message;
   }
@@ -270,9 +379,10 @@ class Mailer{
       $email =  $email;
       $subject = "High Flyers Uk Couriers Booking Confirmation -NoReply";
 
-      $message = $this->getMultipleOrderMessage();
+      $attachment = $this->getMultipleOrderAttachment();
+      $message = "Thankyou for your order. Below is a file comfirming you orders.";
 
-      $this->sendMail($email, $subject, $message);
+      $this->sendMail($email, $subject, $message, $attachment);
   }
 
 

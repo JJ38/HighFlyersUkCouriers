@@ -95,6 +95,10 @@ div.searchbar{
 
 }
 
+button:hover{
+  cursor: pointer;
+}
+
 input, select{
   height: 20px;
   margin: 0px;
