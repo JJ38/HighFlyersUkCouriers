@@ -5,9 +5,9 @@ include '../private/bootstrap.php';
 // check for duplicate orders
 // edit all
 // content manager zoom
-// fix email for customer orders
+// customer order collection and delivery icons 
 
-//linked phone number and email
+// linked phone number
 
 
 

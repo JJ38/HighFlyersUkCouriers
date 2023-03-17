@@ -1,10 +1,13 @@
 <?php
 
-namespace HighFlyersUkCouriers;
 
+namespace HighFlyersUkCouriers;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use Dompdf\Dompdf; 
+
+
 
 class Mailer{
 
@@ -56,15 +59,18 @@ class Mailer{
            
           fwrite($file, $attachment);
           $mail->AddAttachment(stream_get_meta_data($file)['uri'], 'YourOrder.html');
+          // $mail->AddAttachment($attachment, 'YourOrder.pdf');
         
         }
 
         $mail->send();
-        fclose($file);
+        if($attachment != false){
+          //fclose($file);
+        }
 
         
     } catch (Exception $e) {
-        fclose($file);
+        //fclose($file);
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
 
@@ -136,7 +142,7 @@ class Mailer{
   {
     $email = $this->mailer_data['email'];
     $subject = 'High Flyers Uk Couriers Inquiry Confirmation - NoReply';
-    $message = "Thankyou for contacting High Flyers UK Couriers. <br> <br> We have recieved your email and will get back to you shortly";
+    $message = "Thank you for contacting High Flyers UK Couriers. <br> <br> We have recieved your email and will get back to you shortly";
 
     $this->sendMail($email, $subject, $message, false);
   }
@@ -158,9 +164,10 @@ class Mailer{
     $email =  $this->mailer_settings['username'];
     $subject = "Order from {$this->mailer_data[1]['username']}";
 
-    $message = $this->getMultipleOrderAttachment();
+    $attachment = $this->getMultipleOrderAttachment();
+    $message = "Order from {$this->mailer_data[1]['username']}";
 
-    $this->sendMail($email, $subject, $message, true);
+    $this->sendMail($email, $subject, $message, $attachment);
   }
 
   private function getMultipleOrderAttachment(){
@@ -168,46 +175,46 @@ class Mailer{
     $message = '<html>'.
     '<head>'.
     '<style>'.
-    'table{'.
-    'border-collapse: collapse;'.
-    'table-layout: fixed;'.
-    '}'.
-    ''.
-    'div.orderdatawrapper{'.
-    'overflow-x: scroll;'.
-    'max-width: 60vw;'.
-    '}'.
-    'th{'.
-    ''.
-    'font-weight: 500;'.
-    'padding-top: 1em;'.
-    'padding-left: 1em;'.
-    'padding-bottom: 1em;'.
-    'text-align: left;'.
-    'white-space: nowrap;'.
-    ''.
-    '}'.
-    ''.
-    'td{'.
-    'padding: 1em;'.
-    'font-weight: 100;'.
-    'vertical-align: top;'.
-    '}'.
-    ''.
-    'tr{'.
-    'border-bottom: 1px solid black;'.
-    '}'.
-    ''.
-    'tr:last-of-type{'.
-    'border-bottom: none;'.
-    '}'.
+    // 'table{'.
+    // 'border-collapse: collapse;'.
+    // 'table-layout: fixed;'.
+    // '}'.
+    // ''.
+    // 'div.orderdatawrapper{'.
+    // 'overflow-x: scroll;'.
+    // 'max-width: 100vw;'.
+    // '}'.
+    // 'th{'.
+    // ''.
+    // 'font-weight: 500;'.
+    // 'padding-top: 1em;'.
+    // 'padding-left: 1em;'.
+    // 'padding-bottom: 1em;'.
+    // 'text-align: left;'.
+    // 'white-space: nowrap;'.
+    // ''.
+    // '}'.
+    // ''.
+    // 'td{'.
+    // 'padding: 1em;'.
+    // 'font-weight: 100;'.
+    // 'vertical-align: top;'.
+    // '}'.
+    // ''.
+    // 'tr{'.
+    // 'border-bottom: 1px solid black;'.
+    // '}'.
+    // ''.
+    // 'tr:last-of-type{'.
+    // 'border-bottom: none;'.
+    // '}'.
     '</style>'.
     '</head>'.
     '<body>'.
     ''.
     '<div class="orderdatawrapper">'.
     ''.
-    '<center><table>'.
+    '<table>'.
     '<thead>'.
     '<tr class="headerrow">'.
     '<th>Animal Type</th>'.
@@ -262,115 +269,300 @@ class Mailer{
 
 
     $message = $message . '</tbody>'.
-    '</table></center>'.
+    '</table>'.
     ''.
     '</div>'.
     ''.
     '</body>'.
     '</html>';
 
- 
 
-
-    //return $message;
-
-
-    $message = '"<html lang="en">'.
+    $attachment = '<html>'.
     '<head>'.
-    
     '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'.
     '<meta name="viewport" content="width=device-width, initial-scale=1.0">'.
-    '<script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>'.
-    
-    '<link rel="stylesheet" href="http://localhost/css/CustomerOrder.css" type="text/css">'.
-    '<link rel="stylesheet" href="http://localhost/css/ViewCustomerOrder.css" type="text/css">'.
-
-    
+    '<style>'.
+    '@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@600&display=swap\');'.
+'@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap\');'.
+'@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap\');'.
+'html,body{'.
+'margin:0;'.
+'}'.
+'body{'.
+'background: #f9f9f9;'.
+'padding-bottom: 250px;'.
+'}'.
+''.
+'div.columns{'.
+'display: grid;'.
+'grid-template-columns: 4fr 1fr 4fr 12fr 6fr 2fr;'.
+'gap: 20px;'.
+'height: auto;'.
+'margin-top: 25px;'.
+'margin-bottom: 20px;'.
+'transition: max-height 0.5s ease-in-out;'.
+'}'.
+'div.tablerow{'.
+'position: relative;'.
+'font-family: \'Raleway\';'.
+'font-style: 500;'.
+'font-size: 18px;'.
+'padding-top: 1px;'.
+'padding-bottom: 26px;'.
+'background-color: white;'.
+'border-bottom: 1px solid grey;'.
+'margin-bottom: 10px;'.
+'padding-left: 30px !important;'.
+'}'.
+'div.headerrow{'.
+'padding-top: 26px;'.
+'}'.
+'p{'.
+'font-weight: 500;'.
+'font-size: 18px;'.
+'margin:0;'.
+'padding: 0;'.
+'overflow-wrap: anywhere;'.
+'}'.
+'div.collectioninfomargin{'.
+'margin-top: 25px !important;'.
+'}'.
+'div.deliveryinfomargin{'.
+'margin-top: -25px;'.
+'margin-bottom: 0px;'.
+'transition: margin-top 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;'.
+'}'.
+'i{'.
+'width: 20px;'.
+'height: 20px;'.
+'font-size: 20px;'.
+'margin: 1px 0px;'.
+'margin-right: 10px;'.
+'}'.
+'div.extrainfo{'.
+'display: grid;'.
+'grid-template-columns: 12fr 6fr 18fr 1fr;'.
+'max-height: 200px;'.
+'transition: max-height 0.5s ease-in-out;'.
+'}'.
+'div.extrainfo > div{'.
+'display: flex;'.
+'}'.
+'div.onelineaddress{'.
+'display: flex;'.
+'flex-wrap: wrap;'.
+'gap: 5px;'.
+''.
+'}'.
+'@media(max-width: 1250px){'.
+'div.tablerow{'.
+'padding-left: 30px !important;'.
+''.
+'}'.
+'}'.
+''.
+'@media(max-width: 1200px){'.
+'div.columns{'.
+'gap: 10px;'.
+'}'.
+'}'.
+''.
+'@media (max-width: 1150px) {'.
+''.
+'div.extrainfo{'.
+'display: flex;'.
+'flex-wrap: wrap;'.
+'gap: 35px;'.
+'row-gap: 15px;'.
+'}'.
+'p{'.
+'font-size: 17px !important;'.
+'}'.
+'}'.
+'@media (max-width: 1000px){'.
+'div.headerrow{'.
+'font-size: 17px !important;'.
+''.
+'}'.
+'}'.
+'@media (max-width: 740px){'.
+'p{'.
+'font-size: 15px !important;'.
+'}'.
+'input, #payment{'.
+'height: 25px;'.
+'font-size: 16px;'.
+'}'.
+'}'.
+'@media (max-width: 600px){'.
+'div.tablerow{'.
+'padding-bottom: 13px !important;'.
+'}'.
+'div.headerrow{'.
+'padding-top: 13px !important;'.
+'}'.
+'}'.
+'@media (max-width: 510px){'.
+'div.info{'.
+'grid-template-columns: 1fr !important;'.
+'}'.
+'}'.
+    '@media(max-width: 1250px){'.
+    '.tablerow{'.
+    'padding-left: 30px !important;'.
+    ''.
+    '}'.
+    '}'.
+    ''.
+    '@media(max-width: 1200px){'.
+    '.columns{'.
+    'gap: 10px;'.
+    '}'.
+    '}'.
+    ''.
+    '@media (max-width: 1150px) {'.
+    '.info{'.
+    'grid-template-columns: 1fr 1fr;'.
+    '}'.
+    '.quickcollectionaddresswrapper > p{'.
+    'font-size: 15px !important;'.
+    '}'.
+    '.flex > p{'.
+    'font-size: 13px ;'.
+    '}'.
+    '.forminput{'.
+    'margin: 10px 0px !important;'.
+    '}'.
+    '.extrainfo{'.
+    'display: flex;'.
+    'flex-wrap: wrap;'.
+    'gap: 35px;'.
+    'row-gap: 15px;'.
+    ''.
+    '}'.
+    'p{'.
+    'font-size: 17px !important;'.
+    '}'.
+    '}'.
+    '@media (max-width: 1000px){'.
+    '.headerrow{'.
+    'font-size: 17px !important;'.
+    ''.
+    '}'.
+    '}'.
+    '@media (max-width: 740px){'.
+    'p{'.
+    'font-size: 15px !important;'.
+    '}'.
+    'input, #payment{'.
+    'height: 25px;'.
+    'font-size: 16px;'.
+    '}'.
+    '.info{'.
+    'column-gap: 20px !important;'.
+    '}'.
+    '}'.
+    '@media (max-width: 600px){'.
+    '.tablerow{'.
+    'padding-bottom: 13px !important;'.
+    '}'.
+    '.headerrow{'.
+    'padding-top: 13px !important;'.
+    '}'.
+    '}'.
+    '@media (max-width: 510px){'.
+    '.info{'.
+    'grid-template-columns: 1fr !important;'.
+    '}'.
+    '.paymentinfo{'.
+    'grid-template-columns: 1fr !important;'.
+    '}'.
+    '}'.
+    '</style>'.
+    ''.
     '</head>'.
-    '<body>';
-
-
-    $message = $message . '<div id="table">'.
-        '<div class="columns tablerow headerrow">'.
-        
-        '<h3>Animal</h3>'.
-        '<h3>Quantity</h3>'.
-        '<h3>Name</h3>'.
-        '<h3>Delivery address</h3>'.
-        '<h3>Delivery telephone</h3>'.
-        '<h3>Payment</h3>'.
-        '<h3></h3>';
+    '<body>'.
+    ''.
+    '<div id="table">';
 
     for($i = 1; $i < count($this->mailer_data) + 1; $i++){
+
+      // echo $this->mailer_data[$i]['animal_type'];
+
+      $attachment = $attachment . '<div class="tablerow">'.
+      '<div class="transportinfowrapper">'.
+      '<div class="columns collectioninfomargin">'.
+      '<p>' . $this->mailer_data[$i]['animal_type'] . '</p>'.
+      '<p>' . $this->mailer_data[$i]['quantity'] . '</p>'.
+      '<p>' . $this->mailer_data[$i]['collection_name'] . '</p>'.
+      '<div class="onelineaddress">'.
+      '<p>' . $this->mailer_data[$i]['collection_address_1'] . '</p>'.
+      '<p>' . $this->mailer_data[$i]['collection_address_2'] . '</p>'.
+      '<p>' . $this->mailer_data[$i]['collection_address_3'] . '</p>'.
+      '<p>' . $this->mailer_data[$i]['collection_postcode'] . '</p>'.
+      '</div>'.
+      '<p>' . $this->mailer_data[$i]['collection_phone_number'] . '</p>'.
+      '<i class="fa-solid fa-box-open" title="collection"></i>'.
+      '</div>'.
+      '<div class="columns ">'.
+      '<p class="">' . $this->mailer_data[$i]['animal_type'] . '</p>'.
+      '<p>' . $this->mailer_data[$i]['quantity'] . '</p>'.
+      '<p>' . $this->mailer_data[$i]['delivery_name'] . '</p>'.
+      '<div class="onelineaddress">'.
+      '<p>' . $this->mailer_data[$i]['delivery_address_1'] . '</p>'.
+      '<p>' . $this->mailer_data[$i]['delivery_address_2'] . '</p>'.
+      '<p>' . $this->mailer_data[$i]['delivery_address_3'] . '</p>'.
+      '<p>' . $this->mailer_data[$i]['delivery_postcode'] . '</p>'.
+      '</div>'.
+      '<p>' . $this->mailer_data[$i]['delivery_phone_number'] . '</p>'.
+      '<i class="fa-solid fa-truck" title="delivery"></i>'.
+      '</div>'.
+      '</div>'.
+      '<div class="extrainfo ">'.
+      '<div>'.
+      '<i class="fa-solid fa-at" title="email"></i>'.
+      '<p>' . $this->mailer_data[$i]['email'] . '</p>'.
+      '</div>'.
+      '<div>'.
+      '<i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>'.
+      '<p>' . $this->mailer_data[$i]['payment_option'] . '</p>'.
+      '</div>'.
+      '<div>'.
+      '<i class="fa-solid fa-message" title="message"></i>'.
+      '<p>' . $this->mailer_data[$i]['message'] . '</p>'.
+      '</div>'.
+      '</div>'.
+      '</div>';
+ 
+}
+
+$attachment = $attachment . '</tbody>'.
+'</table>'.
+'</div>'.
+'<script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>'.
+'</body>'.
+'</html>';
+
+
+    //$attachment = $message;
+
+
+    // $dompdf = new Dompdf();
+
+    //     // Load HTML content 
+    // $dompdf->loadHtml($attachment, 'UTF-8'); 
     
-        
-      $message = $message .'</div>'.
-      '<div class="tablerow">
-      <div class="transportinfowrapper">
-      <div class="hidden collectiondeliveryicons transporticons">
-      <i class="fa-solid fa-box-open" title="collection"></i>
-      <i class="fa-solid fa-ellipsis-vertical"></i>
-      <i class="fa-solid fa-truck" title="delivery"></i>
-      </div>
-      <div class="columns hidden collectioninfomargin">
-      <p>' . $this->mailer_data[$i]['animal_type'] . '</p>
-      <p>' . $this->mailer_data[$i]['quantity'] . '</p>
-      <p>' . $this->mailer_data[$i]['collection_name'] . '</p>
-      <div class="onelineaddress">
-      <p>' . $this->mailer_data[$i]['collection_address_1'] . '</p>
-      <p>' . $this->mailer_data[$i]['collection_address_2'] . '</p>
-      <p>' . $this->mailer_data[$i]['collection_address_3'] . '</p>
-      <p>' . $this->mailer_data[$i]['collection_postcode'] . '</p>
-      </div><p>' . $this->mailer_data[$i]['collection_phone_number'] . '</p>
-      <p></p>
-      </div>
-      <div class="columns deliveryinfomargin">
-      <p class="">' . $this->mailer_data[$i]['animal_type'] . '</p>
-      <p>' . $this->mailer_data[$i]['quantity'] . '</p>
-      <p>' . $this->mailer_data[$i]['delivery_name'] . '</p>
-      <div class="onelineaddress">
-      <p>' . $this->mailer_data[$i]['delivery_address_1'] . '</p>
-      <p>' . $this->mailer_data[$i]['delivery_address_2'] . '</p>
-      <p>' . $this->mailer_data[$i]['delivery_address_3'] . '</p>
-      <p>' . $this->mailer_data[$i]['delivery_postcode'] . '</p>
-      </div>
-      <p>' . $this->mailer_data[$i]['delivery_phone_number'] . '</p>
-      <p class="">' . $this->mailer_data[$i]['payment_option'] . '</p>
-      <div class="expand" onclick="toggleExpand(this)">
-      <p>V</p>
-      </div></div></div>
-      <div class="extrainfo hidden">
-      <div><i class="fa-solid fa-at" title="email">
-      </i>
-      <p>' . $this->mailer_data[$i]['email'] . '</p>
-      </div><div>
-      <i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>
-      <p>' . $this->mailer_data[$i]['payment_option'] . '</p>
-      </div><div>
-      <i class="fa-solid fa-message" title="message"></i>
-      <p>' . $this->mailer_data[$i]['message'] . '</p>
-      </div></div>
-      <input type="hidden" name="id" value="0">
-      </div>'.
-      ''.
-      '</div>'
-      ;
-    }
-
-
-
-    $message = $message . 
-        '<script type="text/javascript" src="http://localhost/js/CustomerOrder.js"></script>' .
-      '</head>'.
-    '<body>'.
-    '</hmtl>';
-
+    // $dompdf->setPaper('A4', 'landscape'); 
     
-    
+    // // Render the HTML as PDF 
+    // $dompdf->render();
+
+    // $attachment = $dompdf->output();
 
 
 
-    return $message;
+    return $attachment;
+
   }
 
 
@@ -380,8 +572,8 @@ class Mailer{
       $subject = "High Flyers Uk Couriers Booking Confirmation -NoReply";
 
       $attachment = $this->getMultipleOrderAttachment();
-      $message = "Thankyou for your order. Below is a file comfirming you orders.";
-
+      $message = "Thank you for your order. Below is a file confirming you orders.";
+   
       $this->sendMail($email, $subject, $message, $attachment);
   }
 

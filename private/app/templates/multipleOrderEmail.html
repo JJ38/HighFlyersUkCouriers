@@ -1,105 +1,182 @@
 <html>
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        table{
-            border-collapse: collapse;
-            table-layout: fixed;
-            width: fit-content;
+        @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap');
+        html,body{
+            margin:0;
         }
-        
-        div.orderdatawrapper{
-            overflow-x: scroll;
-            max-width: 70vw;
+        body{
+            background: #f9f9f9;
+            padding-bottom: 250px;
         }
-        th{
 
+        div.columns{
+            display: grid;
+            grid-template-columns: 4fr 1fr 4fr 12fr 6fr 2fr;
+            gap: 20px;
+            height: auto;
+            margin-top: 25px;
+            margin-bottom: 20px;
+            transition: max-height 0.5s ease-in-out; 
+        }
+        div.tablerow{
+            position: relative;
+            font-family: 'Raleway';
+            font-style: 500;
+            font-size: 18px;
+            padding-top: 1px;
+            padding-bottom: 26px;
+            background-color: white;
+            border-bottom: 1px solid grey;
+            margin-bottom: 10px;
+            padding-left: 30px; 
+        }
+        div.headerrow{
+            padding-top: 26px;
+        }
+        p{
             font-weight: 500;
-            padding-top: 1em;
-            padding-left: 1em;
-            padding-bottom: 1em;
-            text-align: left;       
-            white-space: nowrap;
+            font-size: 18px;
+            margin:0;
+            padding: 0;
+            overflow-wrap: anywhere;
+        }
+        div.collectioninfomargin{   
+            margin-top: 25px !important;
+        }
+        div.deliveryinfomargin{
+            margin-top: -25px;
+            margin-bottom: 0px;
+            transition: margin-top 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;
+        }
+        i{  
+            width: 20px;
+            height: 20px;
+            font-size: 20px;
+            margin: 1px 0px;
+            margin-right: 10px;
+        }
+        div.extrainfo{
+            display: grid;
+            grid-template-columns: 12fr 6fr 18fr 1fr;
+            max-height: 200px;
+            transition: max-height 0.5s ease-in-out;
+        }
+        div.extrainfo > div{
+            display: flex;
+        }
+        div.onelineaddress{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
         
         }
+       
 
-        td{
-            padding: 1em;
-            font-weight: 100;
-            vertical-align: top;
-        }
-
-        tr{
-            border-bottom: 1px solid black;
+        @media(max-width: 1200px){
+            div.columns{
+            gap: 10px; 
+            }
         }
 
-        tr:last-of-type{
-            border-bottom: none;
-        }
-        .emailwrapper{
-            width: 50vw;
-        }
+        @media (max-width: 1150px) {
         
+            div.extrainfo{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 35px;
+                row-gap: 15px;
+            }
+            p{
+                font-size: 17px !important;
+            }
+        }
+        @media (max-width: 1000px){
+            div.headerrow{
+                font-size: 17px !important;
+        
+            }
+        }
+        @media (max-width: 740px){
+            p{
+                font-size: 15px !important;
+            }
+            input, #payment{
+                height: 25px;
+                font-size: 16px;
+            }
+        }
+        @media (max-width: 600px){
+            div.tablerow{
+                padding-bottom: 13px !important;
+            }
+            div.headerrow{
+                padding-top: 13px !important;
+            }
+        }
+        @media (max-width: 510px){
+            div.info{
+                grid-template-columns: 1fr !important;
+            }
+        }
     </style>
+
   </head>
   <body>
   
-    <div class="orderdatawrapper">
-      
-        <table>
-            <thead>
-                <tr class="headerrow">
-                    <th>ID</th>
-                    <th>Animal Type</th>
-                    <th>Quantity</th>
-                    <th>Email</th>
-                    <th>Account</th>
-                    <th>Delivery Week</th>
-                    <th>Collection Name</th> 
-                    <th>Collection Address 1</th>
-                    <th>Collection Address 2</th>
-                    <th>Collection Address 3</th>
-                    <th>Collection Postcode</th>
-                    <th>Collection Phone Number</th>
-                    <th>Delivery Name</th>
-                    <th>Delivery Address 1</th>
-                    <th>Delivery Address 2</th>
-                    <th>Delivery Address 3</th>
-                    <th>Delivery Postcode</th>
-                    <th>Delivery Phone Number</th>
-                    <th>Payment</th>
-                    <th>Message</th>
-                    <th>Time</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>7</td>
-                    <td> graardg rds </td>
-                    <td>7</td>
-                    <td>jamesbrass@ymail.com</td>
-                    <td>admin</td>
-                    <td>61st</td>
-                    <td>Matthegrd rgd gargw</td>
-                    <td>waddwa</td>
-                    <td>aadw</td>
-                    <td>dawrwdawdadw</td>
-                    <td>LE1 6NU</td>
-                    <td>07842133519</td>
-                    <td>wadawdawd</td>
-                    <td>16 York Street Flat 7</td>
-                    <td>dawadwdaw</td>
-                    <td>dwadaw</td>
-                    <td>DADAWW</td>
-                    <td>07842133519</td>
-                    <td>Collection</td>
-                    <td>daawdawd</td>
-                    <td>2023-03-09 13:15:37</td>
-                </tr>
-            </tbody>
-        </table>
-
-    </div>
-  
+    <div id="table">
+        <div class="tablerow">
+            <div class="transportinfowrapper">
+                <div class="columns collectioninfomargin">
+                    <p>awddwawad</p>
+                    <p>2</p>
+                    <p>James</p>
+                    <div class="onelineaddress">
+                        <p>10 Kenilworth Road</p>
+                        <p>Derby</p>
+                        <p>Derbyshire</p>
+                        <p>DE5 3GY</p>
+                    </div>
+                    <p>07842133519</p>
+                    <i class="fa-solid fa-box-open" title="collection"></i>
+                </div>
+                <div class="columns ">
+                    <p class="">awddwawad</p>
+                    <p>2</p>
+                    <p>dwdwadaw</p>
+                    <div class="onelineaddress">
+                        <p>16 York Street Flat 7</p>
+                        <p>awdawddwa</p>
+                        <p>dawawd</p>
+                        <p>LE1 6NU</p>
+                    </div>
+                    <p>07842133519</p>
+                    <i class="fa-solid fa-truck" title="delivery"></i>
+                </div>
+            </div>
+            <div class="extrainfo">
+                <div>
+                    <i class="fa-solid fa-at" title="email"></i>
+                    <p>jamesbrass@ymail.com</p>
+                </div>
+                <div>
+                    <i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>
+                    <p>Collection</p>
+                </div>
+                <div>
+                    <i class="fa-solid fa-message" title="message"></i>
+                    <p>awdawdwad</p>
+                </div>
+            </div>
+            
+            <input type="hidden" name="id" value="1">
+        </div>
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
   </body>
 </html>
+
+

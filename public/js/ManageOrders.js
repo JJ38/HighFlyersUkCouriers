@@ -141,6 +141,8 @@ function markOrdersAsPrinted(notPrintedOrders){
   form.id = "printedordersform";    
   //add ids as inputs
 
+  console.log("markOrdersAsPrinted");
+
   for(let i = 0; i < notPrintedOrders.length; i++){
     const input = document.createElement('input');
     input.name = i;

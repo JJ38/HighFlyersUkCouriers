@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap');
+
+
+html,body{
+    margin:0;
+}
+
+body{
+    background: #f9f9f9;
+    padding-bottom: 250px;
+}
+
+
+.info{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 50px;
+    
+}
+
+.paymentinfo{
+    display: grid;
+    justify-content: flex-start;  
+    column-gap: 50px;
+    grid-template-columns: 1fr 2fr;
+}
+
+
+.columns{
+    display: grid;
+    grid-template-columns: 4fr 1fr 4fr 12fr 6fr 2fr;
+    gap: 20px;
+    height: auto;
+    margin-top: 25px;
+    margin-bottom: 20px;
+    transition: max-height 0.5s ease-in-out;
+    
+}
+
+
+.tablerow{
+
+    position: relative;
+    font-family: 'Raleway';
+    font-style: 500;
+    font-size: 18px;
+    padding-top: 1px;
+    padding-bottom: 26px;
+    background-color: white;
+    border-bottom: 1px solid grey;
+    margin-bottom: 10px;
+    padding-left: 30px; 
+
+}
+
+.headerrow{
+    padding-top: 26px;
+}
+
+
+p{
+   
+    font-weight: 500;
+    font-size: 18px;
+    margin:0;
+    padding: 0;
+    overflow-wrap: anywhere;
+
+}
+
+.collectioninfomargin{   
+    margin-top: 25px !important;
+}
+
+.deliveryinfomargin{
+    margin-top: -25px;
+    margin-bottom: 0px;
+    transition: margin-top 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;
+
+}
+
+i{  
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    margin: 1px 0px;
+    margin-right: 10px;
+}
+
+.extrainfo{
+    display: grid;
+    grid-template-columns: 12fr 6fr 18fr 1fr;
+    max-height: 200px;
+    transition: max-height 0.5s ease-in-out;
+
+}
+
+.extrainfo > div{
+    display: flex;
+}
+
+.onelineaddress{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  
+}
+
+
+@media(max-width: 1250px){
+ 
+    .tablerow{
+        padding-left: 30px !important; 
+        
+    }
+}
+
+@media(max-width: 1200px){
+    .columns{
+       gap: 10px; 
+    }
+    
+}
+
+@media (max-width: 1150px) {
+
+    .info{
+        grid-template-columns: 1fr 1fr;
+      
+    }
+
+    .quickcollectionaddresswrapper > p{
+        font-size: 15px !important;
+    }
+
+    .flex > p{
+        font-size: 13px ;
+    }
+
+    .forminput{
+        margin: 10px 0px !important;
+    }
+    .extrainfo{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 35px;
+        row-gap: 15px;
+
+    }
+
+    p{
+        font-size: 17px !important;
+    }
+
+}
+
+@media (max-width: 1000px){
+
+
+    .headerrow{
+        font-size: 17px !important;
+   
+    }
+
+}
+
+
+@media (max-width: 740px){
+
+
+    p{
+        font-size: 15px !important;
+    }
+
+    input, #payment{
+        height: 25px;
+        font-size: 16px;
+    }
+
+    .info{
+        column-gap: 20px !important;
+    }
+}
+
+@media (max-width: 600px){
+
+    .tablerow{
+        padding-bottom: 13px !important;
+    }
+
+    .headerrow{
+        padding-top: 13px !important;
+    }
+
+}
+
+@media (max-width: 510px){
+
+
+    .info{
+        grid-template-columns: 1fr !important;
+    }
+
+    .paymentinfo{
+        grid-template-columns: 1fr !important;
+    }
+
+}
+

@@ -148,7 +148,6 @@ select{
     grid-template-columns: 4fr 4fr 4fr 12fr 8fr 4fr 1fr;
     gap: 20px;
     height: auto;
-    max-height: 200px;
     margin-top: 25px;
     margin-bottom: 20px;
     transition: max-height 0.5s ease-in-out;
@@ -236,7 +235,8 @@ p{
     font-size: 18px;
     margin:0;
     padding: 0;
-    height: fit-content;
+    overflow-wrap: anywhere;
+
 }
 
 .hidden{
@@ -351,6 +351,7 @@ i{
 
 .flex{
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
 }
 
@@ -404,9 +405,6 @@ i{
   
 }
 
-.onelineaddress > p{
-    white-space: nowrap;
-}
 
 @media(max-width: 1250px){
     .expand, .deletewrapper{
@@ -631,6 +629,10 @@ i{
 
     .paymentinfo{
         grid-template-columns: 1fr !important;
+    }
+
+    #maincontent{
+        margin: 0px 0px;
     }
 }
 

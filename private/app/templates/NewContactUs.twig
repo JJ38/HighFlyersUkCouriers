@@ -64,7 +64,8 @@
                 <label for="message">Message </label>
                 <textarea id="message" name="message" rows="13" wrap="soft" required=""></textarea>
               </div>
-              <div class="buttonwrapper">
+              <div id="submitbuttonwrapper" class="buttonwrapper" onclick="submitorders()">
+                <div id="loadingsymbol"></div>
                 <input id="submitButton" type="submit" value="Submit" aria-label="Submit">
               </div>
             </form>
@@ -75,8 +76,9 @@
               Contact Us
             </h1>
             <div class="googlemapsimagewrapper" contenteditable="false">
-          
-              <img id="googlemapsimage" data-src="https://maps.googleapis.com/maps/api/staticmap?channel=mws-visit&amp;language=en_GB&amp;center=53.1655728%2C-2.2041472999999&amp;zoom=14&amp;size=760x400&amp;maptype=roadmap&amp;client=gme-11internet&amp;markers=53.165573,-2.204147&amp;signature=Q2bVxN5oN6gemzS8vBUAFoUUpQo=" src="https://maps.googleapis.com/maps/api/staticmap?channel=mws-visit&amp;language=en_GB&amp;center=53.1655728%2C-2.2041472999999&amp;zoom=14&amp;size=760x400&amp;maptype=roadmap&amp;client=gme-11internet&amp;markers=53.165573,-2.204147&amp;signature=Q2bVxN5oN6gemzS8vBUAFoUUpQo=" alt="" class="" contenteditable="false">
+              <a href="https://www.google.com/maps/place/53%C2%B009'56.1%22N+2%C2%B012'14.9%22W/@53.1655833,-2.2041389,17z/data=!3m1!4b1!4m4!3m3!8m2!3d53.1655833!4d-2.2041389">
+                <img id="googlemapsimage" data-src="https://maps.googleapis.com/maps/api/staticmap?channel=mws-visit&amp;language=en_GB&amp;center=53.1655728%2C-2.2041472999999&amp;zoom=14&amp;size=760x400&amp;maptype=roadmap&amp;client=gme-11internet&amp;markers=53.165573,-2.204147&amp;signature=Q2bVxN5oN6gemzS8vBUAFoUUpQo=" src="https://maps.googleapis.com/maps/api/staticmap?channel=mws-visit&amp;language=en_GB&amp;center=53.1655728%2C-2.2041472999999&amp;zoom=14&amp;size=760x400&amp;maptype=roadmap&amp;client=gme-11internet&amp;markers=53.165573,-2.204147&amp;signature=Q2bVxN5oN6gemzS8vBUAFoUUpQo=" alt="" class="" contenteditable="false">
+              </a>
             </div>
             <div class="contactinfowrapper">
               <div class="addressandphonenumberwrapper" contenteditable="false">
@@ -116,11 +118,17 @@
                     Email
                   </h2>
                 </div>
-                <p>
-                  highflyersukcouriers@hotmail.co.uk 
-                  or
-                  highflyerscouriers@gmail.com
-                </p>
+                <a href="mailto:highflyersukcouriers@hotmail.co.uk">
+                  <p>
+                    highflyersukcouriers@hotmail.co.uk 
+                  </p>
+                </a>
+                <p>or</p>
+                <a href="mailto:highflyerscouriers@gmail.com.co.uk">
+                  <p>
+                    highflyerscouriers@gmail.com
+                  </p>
+                </a>
               </div>
             </div>
           </div>
@@ -140,7 +148,9 @@
       <div class="copyright"><p id="copyright" style="margin: 0px; padding: 0px;">© High Flyers UK Couriers</p></div>
       <a class="login" href="/loginpage">Login</a>
 
-    </footer><script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+    </footer>
+    <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+    <script type="text/javascript" src="/js/NewContactUs.js"></script>
   </body>
 </html>
  

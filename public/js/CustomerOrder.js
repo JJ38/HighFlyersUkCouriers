@@ -89,7 +89,8 @@ function setProfileData(){
 // updateTransportIconsPositon();
 
 onresize = (event) => {
-    // updateTransportIconsPositon(transporticons); //reworking for multiple expanded orders
+    document.querySelectorAll('')
+    updateTransportIconsPositions(transporticons); //reworking for multiple expanded orders
 }
 
 quickCollectionAddress.addEventListener('click', (e) => {
@@ -100,9 +101,12 @@ quickCollectionAddress.addEventListener('click', (e) => {
 });
 
 
-function updateTransportIconsPositon(transporticons, transportinfowrapper){
-    transporticons.style.height = transportinfowrapper.offsetHeight -20 + 'px';
-    transporticons.style.top = '26px';
+function updateTransportIconsPositions(transporticons, collectioninfo, deliveryinfo){
+    var deliveryinfoStyle = window.getComputedStyle(deliveryinfo);
+    console.log(collectioninfo.offsetHeight);
+    console.log(parseInt(deliveryinfoStyle.marginTop));
+    transporticons.style.height = collectioninfo.offsetHeight + parseInt(deliveryinfoStyle.marginTop) + 20 + 'px';
+    transporticons.style.top = '30px';
     transporticons.style.right = headers.children[headers.children.length-1].offsetWidth + headers.children[headers.children.length-2].offsetWidth + 20 - 30 + 50 + 'px';
 }
 
@@ -125,7 +129,9 @@ function toggleExpand(element){
     element.classList.toggle('hide')// button animation
 
     transporticons = transportinfowrapper.children[0];
-    updateTransportIconsPositon(transporticons, transportinfowrapper);
+    collectioninfo = transportinfowrapper.children[1];
+    deliveryinfo = transportinfowrapper.children[2];
+    updateTransportIconsPositions(transporticons, collectioninfo, deliveryinfo);
 
 }
 
@@ -236,12 +242,8 @@ function loadBasket(){
         } 
     }else{
 
-
-        console.log("BASKET EMPTY");
-
         basketBoilerPlateJSON = '{"id_bookmark": 0,"basket": []}';
         localStorage.setItem("basket", basketBoilerPlateJSON);
-    
         
     }
 

@@ -10,7 +10,8 @@
       "slim/twig-view": "^2.4",
       "monolog/monolog": "^2",
       "doctrine/orm": "^2.6",
-    "phpmailer/phpmailer": "^6.7"
+      "phpmailer/phpmailer": "^6.7",
+      "dompdf/dompdf": "^2.0"
 
     },
     "config": {
