@@ -51,7 +51,7 @@ class Mailer{
         $mail->addAddress($email, '');     //Add a recipient
 
         //Content
-        $mail->isHTML(true);                                  //Set email format to HTML
+        $mail->isHTML(true);        //Set email format to HTML
         $mail->Subject = $subject;
         $mail->Body    = $message;
         if($attachment != false){
@@ -59,7 +59,6 @@ class Mailer{
            
           fwrite($file, $attachment);
           $mail->AddAttachment(stream_get_meta_data($file)['uri'], 'YourOrder.html');
-          // $mail->AddAttachment($attachment, 'YourOrder.pdf');
         
         }
 
@@ -542,22 +541,6 @@ $attachment = $attachment . '</tbody>'.
 '<script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>'.
 '</body>'.
 '</html>';
-
-
-    //$attachment = $message;
-
-
-    // $dompdf = new Dompdf();
-
-    //     // Load HTML content 
-    // $dompdf->loadHtml($attachment, 'UTF-8'); 
-    
-    // $dompdf->setPaper('A4', 'landscape'); 
-    
-    // // Render the HTML as PDF 
-    // $dompdf->render();
-
-    // $attachment = $dompdf->output();
 
 
 

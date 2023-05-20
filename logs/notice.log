@@ -675,3 +675,7 @@
 [2023-03-17T11:24:34.171433+01:00] logger.NOTICE: User Authentication ["customer"] []
 [2023-03-17T15:51:39.074552+01:00] logger.NOTICE: User Authentication ["admin"] []
 [2023-03-17T16:53:21.379798+01:00] logger.NOTICE: User Authentication ["admin"] []
+[2023-04-30T21:49:51.372124+02:00] logger.NOTICE: User Authentication ["admin"] []
+[2023-04-30T21:50:26.193358+02:00] logger.NOTICE: User Authentication ["admin"] []
+[2023-04-30T22:04:41.940422+02:00] logger.NOTICE: User Authentication ["admin"] []
+[2023-04-30T22:08:04.562747+02:00] logger.NOTICE: User Authentication ["admin"] []
