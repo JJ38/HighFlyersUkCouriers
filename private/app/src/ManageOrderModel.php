@@ -245,12 +245,12 @@ class ManageOrderModel
       return $cleaned_parameters;
     }
     
-    $sanitized_parameters['printed'] = $sanitizer->sanitizeString($tainted_parameters['printed']);
-    $cleaned_parameters['printed'] = $validator->validatePrinted($sanitized_parameters['printed']);
-    if(!$validator->getValidationResult()){
-      $cleaned_parameters = array();
-      return $cleaned_parameters;
-    }
+    // $sanitized_parameters['printed'] = $sanitizer->sanitizeString($tainted_parameters['printed']);
+    // $cleaned_parameters['printed'] = $validator->validatePrinted($sanitized_parameters['printed']);
+    // if(!$validator->getValidationResult()){
+    //   $cleaned_parameters = array();
+    //   return $cleaned_parameters;
+    // }
 
 
     $sanitized_parameters['delivery_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['delivery_phone_number']);
@@ -395,15 +395,56 @@ class ManageOrderModel
     //normal cut off Friday
     //customer cut off Sunday
 
-    if(($current_date->format('D') == "Sat" || $current_date->format('D') == "Sun") && $order_type == "PUBLIC"){ //if order came from public booking form and not customer account
-      $delivery_date->modify('next tuesday')->modify('next tuesday');
-    }else if($current_date->format('D') == "Mon"){ //if monday then not matter if customer or public account delivery is tuesday after next
-      $delivery_date->modify('next tuesday')->modify('next tuesday');
-    }else{ //if midweek delivery is always next tuesday
+    // if(($current_date->format('D') == "Sat" || $current_date->format('D') == "Sun") && $order_type == "PUBLIC"){ //if order came from public booking form and not customer account
+    //   $delivery_date->modify('next tuesday')->modify('next tuesday');
+    // }else if($current_date->format('D') == "Mon"){ //if monday then not matter if customer or public account delivery is tuesday after next
+    //   $delivery_date->modify('next tuesday')->modify('next tuesday');
+    // }else{ //if midweek delivery is always next tuesday
+    //   $delivery_date->modify('next tuesday');
+    // }
+
+    //public cutoff sunday 4pm
+    //customer cutoff monday 12pm
+
+    //is it sunday or monday?
+    if(($current_date->format('D') == "Sun" || $current_date->format('D') == "Mon")){
+    
+      //is it after 4pm sunday and a public order
+      if($order_type == "PUBLIC"){ //$current_date->format('H')
+        //public order
+        
+        //is it after 4pm on sunday
+        if($current_date->format('D') == "Sun" && $current_date->format('H') >= 16){
+          //delivery tuesday after next
+          $delivery_date->modify('next tuesday')->modify('next tuesday');
+        }else{
+
+          //delivery next tuesday
+          $delivery_date->modify('next tuesday');
+        }
+        
+      }else{
+        //customer order
+
+        //is it after 12pm on Monday
+        if($current_date->format('D') == "Mon" && $current_date->format('H') >= 12){
+          //delivery tuesday after next
+          $delivery_date->modify('next tuesday')->modify('next tuesday');
+        }else{
+
+          //delivery next tuesday
+          $delivery_date->modify('next tuesday');
+        }
+
+      }
+
+    }else{
+      //else delivery next tuesday
       $delivery_date->modify('next tuesday');
     }
-    
 
+    
+    
     // echo $current_date->format('M-d');
     //$current_date->modify('next tuesday');
     return $delivery_date->format('M-d');

@@ -59,9 +59,11 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
     $account_type = $request->getAttribute('accountType');
 
     if($account_type == "admin"){
+    
         $container = $app->getContainer();
 
         $tainted_parameters = $request->getParsedBody();
+    
         $cleaned_parameters = cleanUserData($container, $tainted_parameters);
         //if one of the parameters does not meet requirements
         
@@ -114,7 +116,7 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
             return $response->withRedirect('/add-user?usernameavailable=false', 302);
         }
 
-        //store data
+
         return $response->withRedirect('/manage-accounts', 302);
 
     }

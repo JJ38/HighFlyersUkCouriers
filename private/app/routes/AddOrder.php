@@ -5,12 +5,14 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 
+
 $app->get('/add-order', function (Request $request, Response $response, $args) use ($app) : Response{
 
   
   $account_type = $request->getAttribute('accountType');
 
   if($account_type == "admin" || $account_type == "staff"){
+
 
     return $this->view->render($response,'AddOrder.twig', array(
             'page_title' => APP_TITLE,
@@ -41,6 +43,8 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 {
 
   $tainted_parameters = $request->getParsedBody();
+  //$tainted_parameters["printed"] = "0"; //default not printed value for newly added orders
+
 
   $container = $app->getContainer();
   $manage_order_model = $container->get('manageOrderModel');
@@ -52,7 +56,8 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   // var_dump($tainted_parameters);
 
   if(empty($cleaned_parameters)){
-    
+
+
     return $response->withRedirect('/manage-orders?addorder=false', 302);
   }
 
@@ -73,7 +78,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $doctrine_wrapper->setDoctrineLogger($logger);
 
   //check for duplicate orders
-  //$doctrine_wrapper->
+
 
   //store data
   $doctrine_wrapper->storeOrderData($cleaned_parameters);

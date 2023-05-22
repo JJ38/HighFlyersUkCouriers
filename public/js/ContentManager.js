@@ -839,6 +839,7 @@ function highlightSelectedElementEditableWindow(element){
     //make element editable
     if(editableElements.includes(element.tagName)){
         element.contentEditable = true;
+        element.focus();
     }
 }
 

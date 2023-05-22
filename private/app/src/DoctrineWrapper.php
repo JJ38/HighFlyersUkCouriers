@@ -470,6 +470,7 @@ class DoctrineWrapper
         } catch (\Exception $exception) {
             if ($this->doctrine_logger !== null) {
                 $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+                echo $exception->getMessage();
             }
         } finally {
             $this->query_result = $is_available;

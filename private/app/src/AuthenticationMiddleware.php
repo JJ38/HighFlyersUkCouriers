@@ -61,7 +61,8 @@ class AuthenticationMiddleware
 
         if (!empty($username)) {
             $is_authenticated = true;
-            $request = $request->withAttribute('isAuthenticated', $is_authenticated); //If has username set as var then add authenticated attribut to request.
+            $request = $request->withAttribute('username', $username);
+            $request = $request->withAttribute('isAuthenticated', $is_authenticated); //If has username set as var then add authenticated attribute to request.
             $request = $request->withAttribute('accountType', $account_type); //If has username set as var then add authenticated attribute to request.
 
         }
