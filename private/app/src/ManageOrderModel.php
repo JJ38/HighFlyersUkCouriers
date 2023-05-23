@@ -12,6 +12,7 @@ class ManageOrderModel
   private $order_data;
   private $HTML_order_data;
   private $confirmed_orders;
+  
 
   public function getOrderData() : array|null //for testing purposes
   {
@@ -77,7 +78,6 @@ class ManageOrderModel
 
   public function fetchOrderDataByFieldAndMultipleValues(string $field_name, array $value) : void
   {
-
     $this->doctrine_wrapper->fetchOrderDataByFieldAndMultipleValues($field_name, $value);
     $this->order_data = $this->doctrine_wrapper->getQueryResult();
     $this->translateData();
@@ -96,7 +96,7 @@ class ManageOrderModel
 
   public function generateHTMLFromData() : void
   {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'printed', 'timestamp');
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'code', 'added_by', 'printed', 'timestamp');
     
     $HTML = '';
     $number_of_orders = count($this->order_data);
@@ -119,8 +119,8 @@ class ManageOrderModel
 
   public function generateHTMLForEditData() : void
   {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'printed', 'timestamp');
-    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Account', 'Delivery Week','Collection Name', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Collection Phone Number','Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Printed', 'Timestamp');
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'code', 'added_by', 'printed', 'timestamp');
+    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Account', 'Delivery Week','Collection Name', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Collection Phone Number','Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Code', 'Added By', 'Printed', 'Timestamp');
 
     $HTML = '';
     $number_of_fields = count($this->order_data[0]);
@@ -166,8 +166,8 @@ class ManageOrderModel
 
   public function generateHTMLForDeleteData() : void
   {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
-    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Account', 'Delivery Week','Collection Name', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Collection Phone Number','Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Timestamp');
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'code', 'added_by', 'timestamp');
+    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Account', 'Delivery Week','Collection Name', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Collection Phone Number','Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Code', 'Added By', 'Timestamp');
     $HTML = '';
     $number_of_fields = count($this->order_data[0]);
 
@@ -185,7 +185,7 @@ class ManageOrderModel
 
   public function generateHTMLForMultipleDelete() : void
   {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'timestamp');
+    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'code', 'added_by', 'timestamp');
     
     $HTML = '';
     $number_of_orders = count($this->order_data);
@@ -283,7 +283,11 @@ class ManageOrderModel
     $cleaned_parameters['delivery_address_2'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_2']);
     $cleaned_parameters['delivery_address_3'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_3']);
     $cleaned_parameters['delivery_postcode'] = $sanitizer->sanitizeString($tainted_parameters['delivery_postcode']);
+    $cleaned_parameters['code'] = $sanitizer->sanitizeString($tainted_parameters['code']);
+    $cleaned_parameters['added_by'] = $sanitizer->sanitizeString($tainted_parameters['added_by']);
     $cleaned_parameters['message'] = $sanitizer->sanitizeString($tainted_parameters['message']);
+    $cleaned_parameters['printed'] = $sanitizer->sanitizeString($tainted_parameters['printed']);
+    
 
     return $cleaned_parameters;
   }
@@ -319,7 +323,9 @@ class ManageOrderModel
       
       $tainted_order['email'] = $tainted_parameters['extra'][$i][0];
       $tainted_order['payment_option'] = $tainted_parameters['extra'][$i][1];
-      $tainted_order['message'] = $tainted_parameters['extra'][$i][2];
+      $tainted_order['code'] = $tainted_parameters['extra'][$i][2];
+      $tainted_order['message'] = $tainted_parameters['extra'][$i][3];
+
 
       $tainted_order['username'] = $account_name;
 
@@ -351,6 +357,9 @@ class ManageOrderModel
 
       $this->doctrine_wrapper->storeOrderData($this->order_data[$i]);
       $store_result = $this->getQueryResult();
+
+      $this->order_data[$i]['ID'] = $this->doctrine_wrapper->getLastInsertID();
+
       if(!$store_result){
         return false;
       }
@@ -392,17 +401,6 @@ class ManageOrderModel
     $delivery_date = new DateTime();
     $delivery_date->setTimezone(new DateTimeZone('Europe/London'));
 
-    //normal cut off Friday
-    //customer cut off Sunday
-
-    // if(($current_date->format('D') == "Sat" || $current_date->format('D') == "Sun") && $order_type == "PUBLIC"){ //if order came from public booking form and not customer account
-    //   $delivery_date->modify('next tuesday')->modify('next tuesday');
-    // }else if($current_date->format('D') == "Mon"){ //if monday then not matter if customer or public account delivery is tuesday after next
-    //   $delivery_date->modify('next tuesday')->modify('next tuesday');
-    // }else{ //if midweek delivery is always next tuesday
-    //   $delivery_date->modify('next tuesday');
-    // }
-
     //public cutoff sunday 4pm
     //customer cutoff monday 12pm
 
@@ -416,6 +414,8 @@ class ManageOrderModel
         //is it after 4pm on sunday
         if($current_date->format('D') == "Sun" && $current_date->format('H') >= 16){
           //delivery tuesday after next
+          $delivery_date->modify('next tuesday')->modify('next tuesday');
+        }else if($current_date->format('D') == "Mon"){
           $delivery_date->modify('next tuesday')->modify('next tuesday');
         }else{
 

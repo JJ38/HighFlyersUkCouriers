@@ -6,7 +6,7 @@ body {
   font-family: 'inter', sans-serif;
   font-style: normal;
   font-weight: 400;
-  font-size: 1.1em;
+  font-size: 1.25em;
   line-height: 2em;
 
 }
@@ -35,12 +35,20 @@ div.h3{
   width: 40%;
 }
 
+.bold{
+  font-weight: bold;
+}
+
 div.wrapper{
   margin: 0 20px;
-  display: grid;
-  grid-template-columns: 5fr 7fr;
   flex: 1;
 
+}
+
+.grid{
+  margin: 0 20px;
+  display: grid;
+  grid-template-columns: 4fr 8fr;
 }
 
 
@@ -56,6 +64,10 @@ div.formwrapper{
   display: flex;
   flex-direction: column;
   flex:1;
+}
+
+.flex{
+  display: flex;
 }
 
 .page{

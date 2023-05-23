@@ -5,7 +5,6 @@ namespace HighFlyersUkCouriers;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-use Dompdf\Dompdf; 
 
 
 
@@ -13,7 +12,6 @@ class Mailer{
 
   private $mailer_settings;
   private $mailer_data;
-  private $file;
 
   public function setMailerSettings(array $mailer_settings) : void
   {
@@ -85,6 +83,7 @@ class Mailer{
     " . "<br>". "
     Below are the details for you order: " . "<br>". "
     " . "<br>". "
+    Order ID: {$this->mailer_data['ID']}" . "<br>". "
     Bird/Animal type: {$this->mailer_data['animal_type']}" . "<br>". "
     Quantity: {$this->mailer_data['quantity']}" . "<br>". "
     Collection Telephone Number: {$this->mailer_data['collection_phone_number']}" . "<br>". "
@@ -114,7 +113,7 @@ class Mailer{
     $email =  $this->mailer_settings['username'];
     $subject = "Order from {$this->mailer_data['email']}";
     $message = "
-
+    Order ID: {$this->mailer_data['ID']}" . "<br>". "
     Bird/Animal type: {$this->mailer_data['animal_type']}" . "<br>". "
     Quantity: {$this->mailer_data['quantity']}" . "<br>". "
     Collection Telephone Number: {$this->mailer_data['collection_phone_number']}" . "<br>". "
@@ -171,110 +170,6 @@ class Mailer{
 
   private function getMultipleOrderAttachment(){
 
-    $message = '<html>'.
-    '<head>'.
-    '<style>'.
-    // 'table{'.
-    // 'border-collapse: collapse;'.
-    // 'table-layout: fixed;'.
-    // '}'.
-    // ''.
-    // 'div.orderdatawrapper{'.
-    // 'overflow-x: scroll;'.
-    // 'max-width: 100vw;'.
-    // '}'.
-    // 'th{'.
-    // ''.
-    // 'font-weight: 500;'.
-    // 'padding-top: 1em;'.
-    // 'padding-left: 1em;'.
-    // 'padding-bottom: 1em;'.
-    // 'text-align: left;'.
-    // 'white-space: nowrap;'.
-    // ''.
-    // '}'.
-    // ''.
-    // 'td{'.
-    // 'padding: 1em;'.
-    // 'font-weight: 100;'.
-    // 'vertical-align: top;'.
-    // '}'.
-    // ''.
-    // 'tr{'.
-    // 'border-bottom: 1px solid black;'.
-    // '}'.
-    // ''.
-    // 'tr:last-of-type{'.
-    // 'border-bottom: none;'.
-    // '}'.
-    '</style>'.
-    '</head>'.
-    '<body>'.
-    ''.
-    '<div class="orderdatawrapper">'.
-    ''.
-    '<table>'.
-    '<thead>'.
-    '<tr class="headerrow">'.
-    '<th>Animal Type</th>'.
-    '<th>Quantity</th>'.
-    '<th>Email</th>'.
-    '<th>Delivery Week</th>'.
-    '<th>Collection Name</th>'.
-    '<th>Collection Address 1</th>'.
-    '<th>Collection Address 2</th>'.
-    '<th>Collection Address 3</th>'.
-    '<th>Collection Postcode</th>'.
-    '<th>Collection Phone Number</th>'.
-    '<th>Delivery Name</th>'.
-    '<th>Delivery Address 1</th>'.
-    '<th>Delivery Address 2</th>'.
-    '<th>Delivery Address 3</th>'.
-    '<th>Delivery Postcode</th>'.
-    '<th>Delivery Phone Number</th>'.
-    '<th>Payment</th>'.
-    '<th>Message</th>'.
-    '</tr>'.
-    '</thead>'.
-    '<tbody>';
-
-    for($i = 1; $i < count($this->mailer_data) + 1; $i++){
-
-      // echo $this->mailer_data[$i]['animal_type'];
-
-      $message = $message . 
-      '<tr>'.
-
-        '<td>' . $this->mailer_data[$i]['animal_type'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['quantity'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['email'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['delivery_week'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['collection_name'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['collection_address_1'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['collection_address_2'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['collection_address_3'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['collection_postcode'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['collection_phone_number'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['delivery_name'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['delivery_address_1'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['delivery_address_2'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['delivery_address_3'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['delivery_postcode'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['delivery_phone_number'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['payment_option'] . '</td>'.
-        '<td>' . $this->mailer_data[$i]['message'] . '</td>'.
-      '</tr>';
-    }
-
-
-    $message = $message . '</tbody>'.
-    '</table>'.
-    ''.
-    '</div>'.
-    ''.
-    '</body>'.
-    '</html>';
-
 
     $attachment = '<html>'.
     '<head>'.
@@ -285,84 +180,86 @@ class Mailer{
 '@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap\');'.
 '@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap\');'.
 'html,body{'.
-'margin:0;'.
+  'margin:0;'.
 '}'.
 'body{'.
-'background: #f9f9f9;'.
-'padding-bottom: 250px;'.
+  'background: #f9f9f9;'.
+  'padding-bottom: 250px;'.
 '}'.
-''.
+'.flex{'.
+  'display: flex;'.
+'}'.
 'div.columns{'.
-'display: grid;'.
-'grid-template-columns: 4fr 1fr 4fr 12fr 6fr 2fr;'.
-'gap: 20px;'.
-'height: auto;'.
-'margin-top: 25px;'.
-'margin-bottom: 20px;'.
-'transition: max-height 0.5s ease-in-out;'.
+  'display: grid;'.
+  'grid-template-columns: 4fr 1fr 4fr 12fr 6fr 2fr;'.
+  'gap: 20px;'.
+  'height: auto;'.
+  'margin-top: 25px;'.
+  'margin-bottom: 20px;'.
+  'transition: max-height 0.5s ease-in-out;'.
 '}'.
 'div.tablerow{'.
-'position: relative;'.
-'font-family: \'Raleway\';'.
-'font-style: 500;'.
-'font-size: 18px;'.
-'padding-top: 1px;'.
-'padding-bottom: 26px;'.
-'background-color: white;'.
-'border-bottom: 1px solid grey;'.
-'margin-bottom: 10px;'.
-'padding-left: 30px !important;'.
+  'position: relative;'.
+  'font-family: \'Raleway\';'.
+  'font-style: 500;'.
+  'font-size: 18px;'.
+  'padding-top: 1px;'.
+  'padding-bottom: 26px;'.
+  'background-color: white;'.
+  'border-bottom: 1px solid grey;'.
+  'margin-bottom: 10px;'.
+  'padding-left: 30px !important;'.
 '}'.
 'div.headerrow{'.
-'padding-top: 26px;'.
+  'padding-top: 26px;'.
 '}'.
 'p{'.
-'font-weight: 500;'.
-'font-size: 18px;'.
-'margin:0;'.
-'padding: 0;'.
-'overflow-wrap: anywhere;'.
+  'font-weight: 500;'.
+  'font-size: 18px;'.
+  'margin:0;'.
+  'padding: 0;'.
+  'overflow-wrap: anywhere;'.
 '}'.
 'div.collectioninfomargin{'.
-'margin-top: 25px !important;'.
+  'margin-top: 25px !important;'.
 '}'.
 'div.deliveryinfomargin{'.
-'margin-top: -25px;'.
-'margin-bottom: 0px;'.
-'transition: margin-top 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;'.
+  'margin-top: -25px;'.
+  'margin-bottom: 0px;'.
+  'transition: margin-top 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;'.
 '}'.
 'i{'.
-'width: 20px;'.
-'height: 20px;'.
-'font-size: 20px;'.
-'margin: 1px 0px;'.
-'margin-right: 10px;'.
+  'width: 20px;'.
+  'height: 20px;'.
+  'font-size: 20px;'.
+  'margin: 1px 0px;'.
+  'margin-right: 10px;'.
 '}'.
 'div.extrainfo{'.
-'display: grid;'.
-'grid-template-columns: 12fr 6fr 18fr 1fr;'.
-'max-height: 200px;'.
-'transition: max-height 0.5s ease-in-out;'.
+  'display: grid;'.
+  'grid-template-columns: 9fr 5fr 5fr 14fr 1fr;'.
+  'max-height: 200px;'.
+  'transition: max-height 0.5s ease-in-out;'.
 '}'.
 'div.extrainfo > div{'.
-'display: flex;'.
+  'display: flex;'.
 '}'.
 'div.onelineaddress{'.
-'display: flex;'.
-'flex-wrap: wrap;'.
-'gap: 5px;'.
+  'display: flex;'.
+  'flex-wrap: wrap;'.
+  'gap: 5px;'.
 ''.
 '}'.
 '@media(max-width: 1250px){'.
-'div.tablerow{'.
-'padding-left: 30px !important;'.
-''.
+  'div.tablerow{'.
+  'padding-left: 30px !important;'.
+  ''.
 '}'.
 '}'.
 ''.
 '@media(max-width: 1200px){'.
 'div.columns{'.
-'gap: 10px;'.
+  'gap: 10px;'.
 '}'.
 '}'.
 ''.
@@ -489,6 +386,10 @@ class Mailer{
       // echo $this->mailer_data[$i]['animal_type'];
 
       $attachment = $attachment . '<div class="tablerow">'.
+      '<div class="flex collectioninfomargin">'.
+        '<i class="fa-solid fa-hashtag" title="ID"></i>'.
+        '<p>'. $this->mailer_data[$i]['ID'] .'</p>'.
+      '</div>'.
       '<div class="transportinfowrapper">'.
       '<div class="columns collectioninfomargin">'.
       '<p>' . $this->mailer_data[$i]['animal_type'] . '</p>'.
@@ -525,6 +426,10 @@ class Mailer{
       '<div>'.
       '<i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>'.
       '<p>' . $this->mailer_data[$i]['payment_option'] . '</p>'.
+      '</div>'.
+      '<div>'.
+      '<i class="fa-solid fa-ticket-simple" title="code"></i>'.
+      '<p>' . $this->mailer_data[$i]['code'] . '</p>'.
       '</div>'.
       '<div>'.
       '<i class="fa-solid fa-message" title="message"></i>'.

@@ -9,6 +9,7 @@ const basket = document.getElementById('basket');
 
 //inputform elements
 const animalType = document.getElementById('animal');
+const code = document.getElementById('code');
 const quantity = document.getElementById('quantity');
 const quickAddress = document.getElementById('quickaddress');
 
@@ -39,9 +40,8 @@ const deliveryTelephone = document.getElementById('deliverytelephone');
 const paymentOption = document.getElementById('payment');
 const message = document.getElementById('message');
 
-const requiredFields = [collectionName, collectionAddress1, collectionAddress2, 
-    collectionAddress3, collectionPostcode, collectionTelephone, email, deliveryName, deliveryAddress1,
-    deliveryAddress2, deliveryAddress3, deliveryPostcode, deliveryTelephone, paymentOption, quantity, 
+const requiredFields = [collectionName, collectionAddress1, collectionPostcode, collectionTelephone, email, deliveryName, deliveryAddress1, 
+    deliveryPostcode, deliveryTelephone, paymentOption, quantity, 
     animalType];
 
 const table = document.getElementById('table');
@@ -49,7 +49,8 @@ const loadingSymbol = document.getElementById('loadingsymbol');
 const submitOrdersButton = document.getElementById('submitorders');
 
 let animalTypeValue;
-let quantityValue ;
+let quantityValue;
+let codeValue = "N/A";
 let collectionNameValue;
 let collectionPostcodeValue;
 let collectionAddress1Value;
@@ -219,6 +220,7 @@ function loadBasket(){
             
                 animalTypeValue = basketJSON['basket'][i]['animal_type'];
                 quantityValue = basketJSON['basket'][i]['quantity'];
+                codeValue = basketJSON['basket'][i]['code'];
                 collectionNameValue = basketJSON['basket'][i]['collection_name'];
                 collectionPostcodeValue = basketJSON['basket'][i]['collection_postcode'];
                 collectionAddress1Value = basketJSON['basket'][i]['collection_address1'];
@@ -307,6 +309,7 @@ function addToBasket(){
        
         animalTypeValue = animalType.value;
         quantityValue = quantity.value;
+        codeValue = code.value;
         collectionNameValue = collectionName.value;
         collectionPostcodeValue = collectionPostcode.value;
         collectionAddress1Value = collectionAddress1.value;
@@ -399,6 +402,12 @@ function addOrderHTML(id){
                                 '</p>'+
                             '</div>'+
                             '<div>'+
+                                '<i class="fa-solid fa-ticket-simple" title="code"></i>'+
+                                '<p>'+
+                                    codeValue +
+                                '</p>'+
+                            '</div>'+
+                            '<div>'+
                                 '<i class="fa-solid fa-message" title="message"></i>'+
                                 '<p>'+
                                     messageValue +
@@ -425,6 +434,7 @@ function addOrderHTML(id){
 
         animalType.value = "";
         quantity.value = "";
+        code.value = ""
 
 
 }
@@ -436,6 +446,7 @@ function orderToJSON(){
         '"id": ' + '"' + idBookmark + '"' + "," +
         '"animal_type": ' + '"' + animalType.value + '"' + "," +
         '"quantity": ' + '"' + quantity.value + '"' + "," +
+        '"code": ' + '"' + code.value + '"' + "," +
         '"collection_name": ' + '"' + collectionName.value + '"' + "," +
         '"collection_postcode": ' + '"' + collectionPostcode.value + '"' + "," +
         '"collection_address1": ' + '"' + collectionAddress1.value + '"' + "," +

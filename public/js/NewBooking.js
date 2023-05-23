@@ -22,10 +22,8 @@ const animalType = document.getElementById('animalType');
 const quantity = document.getElementById('quantity');
 
 
-const requiredFields = [collectionName, collectionAddress1, collectionAddress2, 
-    collectionAddress3, collectionPostcode, collectionTelephone, email, deliveryName, deliveryAddress1,
-    deliveryAddress2, deliveryAddress3, deliveryPostcode, deliveryTelephone, paymentOption, quantity, 
-    animalType];
+const requiredFields = [collectionName, collectionAddress1, collectionPostcode, collectionTelephone, email, deliveryName, deliveryAddress1, 
+    deliveryPostcode, deliveryTelephone, paymentOption, quantity, animalType];
 
     
 

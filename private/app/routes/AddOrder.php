@@ -76,6 +76,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $query_builder = $database_connection->createQueryBuilder();
   $doctrine_wrapper->setQueryBuilder($query_builder);
   $doctrine_wrapper->setDoctrineLogger($logger);
+  $doctrine_wrapper->setDatabaseConnection($database_connection);
 
   //check for duplicate orders
 

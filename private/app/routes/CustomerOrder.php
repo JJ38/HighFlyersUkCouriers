@@ -144,7 +144,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
 
         // $file = tmpfile();
            
-        // fwrite($file, 'wawdaadawd');
+        // fwrite($file, 'wawdaadawd');7
         // echo stream_get_meta_data($file)['uri'];
         // fclose($file);
 
@@ -162,11 +162,12 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $query_builder = $database_connection->createQueryBuilder();
         $doctrine_wrapper->setQueryBuilder($query_builder);
         $doctrine_wrapper->setDoctrineLogger($logger);
+        $doctrine_wrapper->setDatabaseConnection($database_connection);
+
 
         $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
         $manage_order_model->setOrderData($cleaned_orders);
 
-      
        
         $store_result = $manage_order_model->storeMultipleOrders();
         $confirmed_orders = $manage_order_model->getConfirmedOrders();

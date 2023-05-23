@@ -60,8 +60,8 @@ return array(
             'host' => 'smtp.gmail.com'
         ),
         'mailerContactUsSettings' => array(
-            'username' => 'jamesjbrass@gmail.com',
-            'password' => 'cqktvkkjpxobcjcw',
+            'username' => 'highflyerscourierscontactus@gmail.com',
+            'password' => 'kwqfnjaedfmgdfrt',
             'port' => 25,
             'host' => 'smtp.gmail.com'
         )

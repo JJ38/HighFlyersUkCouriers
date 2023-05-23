@@ -231,6 +231,10 @@ div.orderdatawrapper{
   cursor: pointer;
 }
 
+button{
+  margin: 0 5px;
+}
+
 @media (max-width: 1000px){
 
   .massactionbutton{

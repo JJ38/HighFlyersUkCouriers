@@ -82,9 +82,11 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   $query_builder = $database_connection->createQueryBuilder();
   $doctrine_wrapper->setQueryBuilder($query_builder);
   $doctrine_wrapper->setDoctrineLogger($logger);
+  $doctrine_wrapper->setDatabaseConnection($database_connection);
 
   $doctrine_wrapper->storeOrderData($cleaned_parameters);
   $doctrine_wrapper->getQueryResult();
+  $cleaned_parameters['ID'] = $doctrine_wrapper->getLastInsertID();
 
   //TODO: popups for database error
 

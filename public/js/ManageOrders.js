@@ -18,17 +18,13 @@ for(let i = 0; i < printButtons.length; i++){
         // orderElements[i + 1].children[21].textContent
         printType = "SINGULARPRINT";
         orderID = orderElements[i + 1].children[1].innerHTML;
-        isPrinted = orderElements[i + 1].children[21].textContent;
+        isPrinted = orderElements[i + 1].children[23].textContent;
         printOrder(orderElements[i + 1].children[1].innerHTML);
         
     });
 }
 
 function singularPrint(){
-
-  console.log("SINGULARPRINT");
-  console.log("SINGULARPRINT");
-
 
   if(confirm("Would you like the selected orders as printed?")){
     if(isPrinted == "Not Printed"){
@@ -71,7 +67,7 @@ function printSelected(){
   hasPrinted = [];
   for(let i = 0; i < selectedCheckBoxes.length; i++){
     orderIDs.push(selectedCheckBoxes[i].value);
-    hasPrinted.push(selectedCheckBoxes[i].parentElement.parentElement.children[21].textContent);
+    hasPrinted.push(selectedCheckBoxes[i].parentElement.parentElement.children[23].textContent);
   }
 
   print(generateForms(orderIDs));
@@ -218,6 +214,8 @@ function generateForms(orderIDs){
 
 function getOrderHTML(tableData){
 
+  console.log(tableData);
+
   let order =  
   '<div class="page">'+
     '<h1>'+
@@ -226,8 +224,19 @@ function getOrderHTML(tableData){
     '<h2>'+
       'Telephone: 07887 781089'+
     '</h2>'+
+    '<div class="grid">'+
+      '<label class="bold">OrderId: </label>'+
+      '<p>' + tableData[1].innerHTML + '</p>'+
+      ''+
+      '<label class="bold">Animal Type: </label>'+
+      '<p>' + tableData[2].innerHTML + '</p>'+
+      ''+
+      '<label class="bold">Payment Method: </label>'+
+      '<p> Cash On ' + tableData[19].innerHTML + '</p>'+
+    '</div>'+
+    
       '<div class="formwrapper">'+
-        '<div class="wrapper">'+
+        '<div class="wrapper grid">'+
           '<h3>'+
             'Pick up from:'+
           '</h3>'+
@@ -248,7 +257,7 @@ function getOrderHTML(tableData){
         
           '</div>'+
         '</div>'+
-        '<div class="wrapper">'+
+        '<div class="wrapper grid">'+
           '<h3>'+
            'Deliver to:'+
           '</h3>'+
@@ -277,8 +286,18 @@ function getOrderHTML(tableData){
     '<h2>'+
       'Telephone: 07887 781089'+
     '</h2>'+
+    '<div class="grid">'+
+      '<label class="bold">OrderId: </label>'+
+      '<p>' + tableData[1].innerHTML + '</p>'+
+      ''+
+      '<label class="bold">Animal Type: </label>'+
+      '<p>' + tableData[2].innerHTML + '</p>'+
+      ''+
+      '<label class="bold">Payment Method: </label>'+
+      '<p> Cash On ' + tableData[19].innerHTML + '</p>'+
+    '</div>'+
     '<div class="formwrapper">'+
-      '<div class="wrapper">'+
+      '<div class="wrapper grid">'+
         '<h3>'+
           'Pick up from:'+
         '</h3>'+
@@ -299,7 +318,7 @@ function getOrderHTML(tableData){
       
         '</div>'+ 
       '</div>'+
-      '<div class="wrapper">'+
+      '<div class="wrapper grid">'+
         '<h3>'+
         'Deliver to:'+
         '</h3>'+

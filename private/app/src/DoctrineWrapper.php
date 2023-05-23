@@ -25,6 +25,11 @@ class DoctrineWrapper
     /** @var mixed $query_result Stores the result of an executed SQL query. */
     private $query_result;
 
+    private $database_connection;
+
+    private $lastInsertID;
+
+
     public function __construct()
     {
         $this->doctrine_logger = null;
@@ -54,6 +59,11 @@ class DoctrineWrapper
         $this->query_builder = $query_builder;
     }
 
+    public function setDatabaseConnection($database_connection){
+        $this->database_connection = $database_connection;
+    }
+    
+
     /**
      * Returns result from executed SQL queries.
      *
@@ -62,6 +72,11 @@ class DoctrineWrapper
     public function getQueryResult()
     {
         return $this->query_result;
+    }
+
+    public function getLastInsertID()
+    {
+        return $this->lastInsertID;
     }
 
 
@@ -78,6 +93,7 @@ class DoctrineWrapper
                   'animal_type' => ':animal_type',
                   'quantity' => ':quantity',
                   'email' => ':email',
+                  'code' => ':code',
                   'username' => ':username',
                   'delivery_week' => ':delivery_week',
                   'collection_name' => ':collection_name',
@@ -101,6 +117,7 @@ class DoctrineWrapper
                 'animal_type' => $cleaned_parameters['animal_type'],
                 'quantity' => $cleaned_parameters['quantity'],
                 'email' => $cleaned_parameters['email'],
+                'code' => $cleaned_parameters['code'],
                 'username' => $cleaned_parameters['username'],
                 'delivery_week' => $cleaned_parameters['delivery_week'],
                 'collection_name' => $cleaned_parameters['collection_name'],
@@ -130,6 +147,7 @@ class DoctrineWrapper
           }
       } finally {
           $this->query_result = $store_result;
+          $this->lastInsertID = $this->database_connection->lastInsertID();
       }
 
 
@@ -313,6 +331,8 @@ class DoctrineWrapper
                 ->set('o.delivery_postcode', ':delivery_postcode')
                 ->set('o.printed', ':printed')
                 ->set('o.message', ':message')
+                ->set('o.code', ':code')
+                ->set('o.added_by', ':added_by')
                 ->where('o.id = :id')
                 ->setParameter('email', $cleaned_parameters['email'])
                 ->setParameter('quantity', $cleaned_parameters['quantity'])
@@ -334,6 +354,8 @@ class DoctrineWrapper
                 ->setParameter('delivery_postcode', $cleaned_parameters['delivery_postcode'])
                 ->setParameter('printed', $cleaned_parameters['printed'])
                 ->setParameter('message', $cleaned_parameters['message'])
+                ->setParameter('code', $cleaned_parameters['code'])
+                ->setParameter('added_by', $cleaned_parameters['added_by'])
                 ->setParameter('id', $cleaned_parameters['id']);
 
 

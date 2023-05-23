@@ -48,12 +48,16 @@
                 <hr>
                 <section id="orderinfo" class="info">
                     <div class="forminput">
-                        <label for="" class="">Animal</label>
+                        <label for="" class="">Animal*</label>
                         <input id="animal" name="" type="text" required="">
                     </div>
                     <div class="forminput">
-                        <label for="" class="flex">Quantity <p class="hinttext">(number of birds/boxes)</p></label>
+                        <label for="" class="flex">Quantity*<p class="hinttext">(number of birds/boxes)</p></label>
                         <input id="quantity" name="" type="number" required="">
+                    </div>
+                     <div class="forminput">
+                        <label for="" class="flex">Code <p class="hinttext">(optional)</p></label>
+                        <input id="code" name="" type="text">
                     </div>
                 </section>            
                 <h1>
@@ -71,31 +75,31 @@
                     </div>
                     <section id="collectioninfo" class="info hidden">
                         <div class="forminput">
-                            <label for="" class="">Collection Name</label>
+                            <label for="" class="">Collection Name*</label>
                             <input id="collectionname" name="" type="text" onchange="updateQuickAddressName()" required="">
                         </div>
                         <div class="forminput">
-                            <label for="" class="">Collection Postcode</label>
+                            <label for="" class="">Collection Postcode*</label>
                             <input id="collectionpostcode" name="" type="text" onchange="updateQuickAddressPostcode()" required="">
                         </div>
                         <div class="forminput">
-                            <label for="" class="">Collection Telephone</label>
+                            <label for="" class="">Collection Telephone*</label>
                             <input id="collectiontelephone" name="" type="text" onchange="updateQuickAddressTelephone()" required="">
                         </div>
                         <div class="forminput">
-                            <label for="" class="">Collection Address 1</label>
+                            <label for="" class="">Collection Address 1*</label>
                             <input id="collectionaddress1" name="" type="text" onchange="updateQuickAddress1()" required="">
                         </div>
                         <div class="forminput">
                             <label for="" class="">Collection Address 2</label>
-                            <input id="collectionaddress2" name="" type="text" onchange="updateQuickAddress2()" required="">
+                            <input id="collectionaddress2" name="" type="text" onchange="updateQuickAddress2()">
                         </div>
                         <div class="forminput">
                             <label for="" class="">Collection Address 3</label>
-                            <input id="collectionaddress3" name="" type="text" onchange="updateQuickAddress3()" required="">
+                            <input id="collectionaddress3" name="" type="text" onchange="updateQuickAddress3()">
                         </div>
                         <div class="forminput">
-                            <label for="" class="">Email</label>
+                            <label for="" class="">Email *</label>
                             <input id="email" name="" type="text" onchange="updateQuickAddressEmail()" required="">
                         </div>
                     </section>
@@ -106,28 +110,28 @@
                 <hr>
                 <section class="info">
                     <div class="forminput">
-                        <label for="" class="">Delivery Name</label>
+                        <label for="" class="">Delivery Name*</label>
                         <input id="deliveryname" name="" type="text" required="">
                     </div>
                     <div class="forminput">
-                        <label for="" class="">Delivery Postcode</label>
+                        <label for="" class="">Delivery Postcode*</label>
                         <input id="deliverypostcode" name="" type="text" required="">
                     </div>
                     <div class="forminput">
-                        <label for="" class="">Delivery Telephone</label>
+                        <label for="" class="">Delivery Telephone*</label>
                         <input id="deliverytelephone" name="" type="text" required="">
                     </div>
                     <div class="forminput">
-                        <label for="" class="">Delivery Address 1</label>
+                        <label for="" class="">Delivery Address 1*</label>
                         <input id="deliveryaddress1" name="" type="text" required="">
                     </div>
                     <div class="forminput">
                         <label for="" class="">Delivery Address 2</label>
-                        <input id="deliveryaddress2" name="" type="text" required="">
+                        <input id="deliveryaddress2" name="" type="text">
                     </div>
                     <div class="forminput">
                         <label for="" class="">Delivery Address 3</label>
-                        <input id="deliveryaddress3" name="" type="text" required="">
+                        <input id="deliveryaddress3" name="" type="text">
                     </div>
                 </section>
                 <h1>
@@ -136,7 +140,7 @@
                 <hr>
                 <section class="paymentinfo">
                     <div class="forminput">
-                        <label for="payment">Payment on Delivery or Collection?</label>
+                        <label for="payment">Payment on Delivery or Collection?*</label>
                         <select name="payment" id="payment" required="">
                             <option value=""> </option>
                             <option value="Collection">Collection</option>
@@ -145,7 +149,7 @@
                     </div>
                     <div class="forminput">
                         <label class="flex" for="message">Message <p class="hinttext">(optional)</p></label>
-                        <textarea id="message" name="message" rows="4" wrap="soft" required=""></textarea>
+                        <textarea id="message" name="message" rows="4" wrap="soft"></textarea>
                     </div>
                 </section>
 

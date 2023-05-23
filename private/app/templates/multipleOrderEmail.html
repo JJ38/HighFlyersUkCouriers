@@ -14,6 +14,10 @@
             padding-bottom: 250px;
         }
 
+        .flex{
+            display: flex;
+        }
+
         div.columns{
             display: grid;
             grid-template-columns: 4fr 1fr 4fr 12fr 6fr 2fr;
@@ -62,7 +66,7 @@
         }
         div.extrainfo{
             display: grid;
-            grid-template-columns: 12fr 6fr 18fr 1fr;
+            grid-template-columns: 9fr 5fr 5fr 14fr 1fr;
             max-height: 200px;
             transition: max-height 0.5s ease-in-out;
         }
@@ -130,6 +134,10 @@
   
     <div id="table">
         <div class="tablerow">
+            <div class="flex collectioninfomargin">
+                <i class="fa-solid fa-hashtag" title="ID"></i>
+                <p> 1 </p>
+            </div>
             <div class="transportinfowrapper">
                 <div class="columns collectioninfomargin">
                     <p>awddwawad</p>
@@ -166,6 +174,10 @@
                 <div>
                     <i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>
                     <p>Collection</p>
+                </div>
+                <div>
+                    <i class="fa-solid fa-ticket-simple" title="code"></i>
+                    <p>GSA12783621</p>
                 </div>
                 <div>
                     <i class="fa-solid fa-message" title="message"></i>

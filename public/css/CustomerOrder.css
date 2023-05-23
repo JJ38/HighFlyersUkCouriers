@@ -275,7 +275,7 @@ i{
 
 .extrainfo{
     display: grid;
-    grid-template-columns: 12fr 6fr 18fr 1fr;
+    grid-template-columns: 9fr 5fr 5fr 14fr 1fr;
     /* margin-top: 20px; */
     max-height: 200px;
     transition: max-height 0.5s ease-in-out;
