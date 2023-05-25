@@ -148,8 +148,14 @@ class ManageOrderModel
 
         $HTML = $HTML . '</select>' . "</td>";
 
+      }else if($form_fields[$i] == "Added By"){
+      
+        $HTML = $HTML . '<td>' . $this->order_data[0]['added_by'] . "</td>";
+        
       }else{
+
         $HTML = $HTML . '<td>' . "<input type=\"text\" id=\"" . $headers[$i] ."\"name=\"" . $headers[$i] . "\" value=\"" . $this->order_data[0][$headers[$i]] . "\"></td>";
+      
       }
 
       $HTML = $HTML . '</tr>';

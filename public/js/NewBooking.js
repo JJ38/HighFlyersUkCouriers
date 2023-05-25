@@ -41,6 +41,16 @@ function submitorders(){
         }
     }
 
+    if(collectionTelephone.value.length < 11 && collectionTelephone.value.length > 12){
+
+        requiredFieldsMet = false;
+
+    }else if(deliveryTelephone.value.length < 11 && deliveryTelephone.value.length > 12){
+
+        requiredFieldsMet = false;
+
+    }
+
     if(requiredFieldsMet){
         
         submitOrdersButton.classList = 'hidden';

@@ -32,6 +32,8 @@ h1{
 }
 
 .priceboxwrapper{
+
+    margin-top: 50px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -141,4 +143,14 @@ a:visited{
 
 .text{
     margin: 50px;
+}
+
+.imageWrapper{
+    
+    width: 100%;
+}
+
+img{
+    width: 100%;
+    object-fit: contain;
 }

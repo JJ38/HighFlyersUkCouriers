@@ -760,3 +760,8 @@
 [2023-05-24T00:22:56.261516+02:00] logger.NOTICE: User Authentication ["customer"] []
 [2023-05-24T00:54:23.200369+02:00] logger.NOTICE: User Authentication ["customer"] []
 [2023-05-24T01:15:11.259041+02:00] logger.NOTICE: User Authentication ["admin"] []
+[2023-05-24T03:09:46.385396+02:00] logger.NOTICE: User Authentication ["staff"] []
+[2023-05-24T03:18:31.958219+02:00] logger.NOTICE: User Authentication ["admin"] []
+[2023-05-24T03:19:39.392883+02:00] logger.NOTICE: User Authentication ["admin"] []
+[2023-05-24T03:19:57.643206+02:00] logger.NOTICE: User Authentication ["customer"] []
+[2023-05-24T03:21:05.556485+02:00] logger.NOTICE: User Authentication ["admin"] []

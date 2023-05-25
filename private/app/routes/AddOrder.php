@@ -61,11 +61,15 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
     return $response->withRedirect('/manage-orders?addorder=false', 302);
   }
 
-  //if cleaned and ready to send emails and store
+  
+  $username = $request->getAttribute('username');
+  $cleaned_parameters['added_by'] = $username;
 
   $container = $app->getContainer();
 
   //store in database
+
+  
   $doctrine_wrapper = $container->get('doctrineWrapper');
   $logger = $container->get('logger');
 

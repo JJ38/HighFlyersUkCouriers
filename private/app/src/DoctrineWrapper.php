@@ -109,7 +109,9 @@ class DoctrineWrapper
                   'delivery_postcode' => ':delivery_postcode',
                   'delivery_phone_number' => ':delivery_phone_number',
                   'payment_option' => ':payment_option',
-                  'message' => ':message',
+                  'message' => ':message',                  
+                  'added_by' => ':added_by',
+
                   
 
               ))
@@ -134,6 +136,7 @@ class DoctrineWrapper
                 'delivery_phone_number' => $cleaned_parameters['delivery_phone_number'],
                 'payment_option' => $cleaned_parameters['payment_option'],
                 'message' => $cleaned_parameters['message'],
+                'added_by' => $cleaned_parameters['added_by'],
                 
               ));
 
