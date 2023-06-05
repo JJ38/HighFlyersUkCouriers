@@ -88,6 +88,20 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
               }
             }
           }
+        }else if(!empty($allGetVars['permission'])){
+          $tainted_permission = $allGetVars['permission'];
+          if($tainted_permission){
+            $sanitizer = $app->getContainer()->get('sanitizer');
+            $cleaned_permission = $sanitizer->sanitizeString($tainted_permission);
+
+            if($cleaned_permission != null){
+
+              if($cleaned_permission === "denied"){
+                echo "<script>alert('You do not have permission to edit this order!');</script>";
+
+              }
+            }
+          }
         }
 
       }
@@ -107,6 +121,7 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
 
       $manage_order_model = $container->get('manageOrderModel');
       $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
+      $manage_order_model->setIsAdmin($account_type == "admin");
 
       if($cleaned_field == null || $cleaned_filter == null){
         $manage_order_model->fetchALLOrderData();

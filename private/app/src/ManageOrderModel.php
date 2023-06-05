@@ -12,7 +12,8 @@ class ManageOrderModel
   private $order_data;
   private $HTML_order_data;
   private $confirmed_orders;
-  
+  private $is_admin;
+
 
   public function getOrderData() : array|null //for testing purposes
   {
@@ -41,6 +42,10 @@ class ManageOrderModel
   public function setOrderData($order_data) : void
   {
     $this->order_data = $order_data;
+  }
+
+  public function setIsAdmin($is_admin){
+    $this->is_admin = $is_admin;
   }
 
   public function deleteOrderById(string $id) : void
@@ -109,8 +114,21 @@ class ManageOrderModel
         $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
       }
 
-      $HTML = $HTML . '<td class="orderbuttons"><a href="/edit-order?id=' . $this->order_data[$i]['id'] .'"><button>Edit</button></a><a href="/delete-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">Delete</button></a><a class="print"><button type="button">Print</button></a></td>';
-      $HTML = $HTML . '</tr>';
+      $HTML = $HTML . '<td class="orderbuttons">';
+      
+
+      $HTML = $HTML . '<a class="print"><button type="button">Print</button></a>';
+
+      if($this->is_admin || empty($this->order_data[$i]['username'])){
+        $HTML = $HTML . '<a href="/edit-order?id=' . $this->order_data[$i]['id'] .'"><button>Edit</button></a>';
+      }
+     
+
+      if($this->is_admin){
+        $HTML = $HTML . '<a href="/delete-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">Delete</button></a>';
+      }
+
+      $HTML = $HTML . '</TD></tr>';
     }
 
     $this->HTML_order_data = $HTML;
@@ -152,7 +170,27 @@ class ManageOrderModel
       
         $HTML = $HTML . '<td>' . $this->order_data[0]['added_by'] . "</td>";
         
-      }else{
+
+      }else if($form_fields[$i] == "Delivery Week" && !$this->is_admin){  //if staff member
+      
+        $HTML = $HTML . '<td>' . $this->order_data[0]['delivery_week'] . "</td>";
+        
+      }
+
+      else if($form_fields[$i] == "Account" && !$this->is_admin){  //if staff member
+        
+        $HTML = $HTML . '<td>' . $this->order_data[0]['account'] . "</td>";
+        
+      }
+
+      
+      else if($form_fields[$i] == "Delivery Week"){ 
+        
+        $HTML = $HTML . '<td>' . "<input type=\"number\" id=\"" . $headers[$i] ."\"name=\"" . $headers[$i] . "\" value=\"" . $this->order_data[0][$headers[$i]] . "\" min=\"1\" max=\"53\"></td>";
+
+      }
+      
+      else{
 
         $HTML = $HTML . '<td>' . "<input type=\"text\" id=\"" . $headers[$i] ."\"name=\"" . $headers[$i] . "\" value=\"" . $this->order_data[0][$headers[$i]] . "\"></td>";
       
@@ -401,11 +439,10 @@ class ManageOrderModel
     $current_date = new DateTime();
     $current_date->setTimezone(new DateTimeZone('Europe/London'));
 
-    // $current_date->setDate(2023, 03, 22);
-    // echo $current_date->format('D');
 
     $delivery_date = new DateTime();
     $delivery_date->setTimezone(new DateTimeZone('Europe/London'));
+
 
     //public cutoff sunday 4pm
     //customer cutoff monday 12pm
@@ -416,17 +453,19 @@ class ManageOrderModel
       //is it after 4pm sunday and a public order
       if($order_type == "PUBLIC"){ //$current_date->format('H')
         //public order
+
+    
         
         //is it after 4pm on sunday
         if($current_date->format('D') == "Sun" && $current_date->format('H') >= 16){
           //delivery tuesday after next
-          $delivery_date->modify('next tuesday')->modify('next tuesday');
+          $delivery_date->modify('next monday')->modify('next monday');
         }else if($current_date->format('D') == "Mon"){
-          $delivery_date->modify('next tuesday')->modify('next tuesday');
+          $delivery_date->modify('next monday');
         }else{
 
           //delivery next tuesday
-          $delivery_date->modify('next tuesday');
+          $delivery_date->modify('next monday');
         }
         
       }else{
@@ -435,25 +474,26 @@ class ManageOrderModel
         //is it after 12pm on Monday
         if($current_date->format('D') == "Mon" && $current_date->format('H') >= 12){
           //delivery tuesday after next
-          $delivery_date->modify('next tuesday')->modify('next tuesday');
-        }else{
+          $delivery_date->modify('next monday');
+        
+        }else if($current_date->format('D') == "Sun"){
 
           //delivery next tuesday
-          $delivery_date->modify('next tuesday');
+          $delivery_date->modify('next monday');
         }
 
       }
 
     }else{
       //else delivery next tuesday
-      $delivery_date->modify('next tuesday');
+      $delivery_date->modify('next monday');
     }
 
     
     
     // echo $current_date->format('M-d');
     //$current_date->modify('next tuesday');
-    return $delivery_date->format('M-d');
+    return $delivery_date->format('W');
 
   }
 

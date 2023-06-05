@@ -77,9 +77,11 @@
                 <form>
                   <button id="selectall" class="massactionbutton" onclick="selectAll()" type="button">Select all</button> 
                 </form>
-                <form id="deleteselectedform" action="/delete-multiple-orders" method="get">              
-                  <button id="deleteselected" class="massactionbutton" onclick="deleteSelected()" type="button">Delete Selected</button>
-                </form>
+                {% if isAdmin == true %}
+                  <form id="deleteselectedform" action="/delete-multiple-orders" method="get">              
+                    <button id="deleteselected" class="massactionbutton" onclick="deleteSelected()" type="button">Delete Selected</button>
+                  </form>
+                {% endif %}
                 <form id="printselectedform" action="" method="get">
                   <button id="printselected" class="massactionbutton" onclick="printSelected()" type="button">Print Selected</button>
                 </form>

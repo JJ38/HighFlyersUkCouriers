@@ -57,7 +57,17 @@ td{
   
 }
 
+input{
+  width: 100%;
+}
+
+input[type=submit]{
+  width: auto;
+}
+
+
 #savebuttonwrapper{
+  width: auto;
   display: flex;
   justify-content: center;
 }

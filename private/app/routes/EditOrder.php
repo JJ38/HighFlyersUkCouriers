@@ -40,12 +40,24 @@ $app->get('/edit-order[/id]', function (Request $request, Response $response) us
 
         $manage_order_model = $container->get('manageOrderModel');
         $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
+        $manage_order_model->setIsAdmin($account_type == "admin");
         $manage_order_model->fetchOrderDataByField('id', $cleaned_order_id);
         if(empty($manage_order_model->getOrderData())){
           return $response->withRedirect('manage-orders', 302);
         }
-        $manage_order_model->generateHTMLForEditData();
+
         $order_data = $manage_order_model->getOrderData();
+  
+        //check if a staff member is trying ot edit a customer order
+
+        $iscustomer =  !empty($order_data[0]['username']);
+        
+        if($account_type == "staff" && $iscustomer){
+          return  $response->withRedirect('manage-orders?permission=denied', 302);
+        }
+
+        $manage_order_model->generateHTMLForEditData();
+        
 
         $session_wrapper = $app->getContainer()->get('sessionWrapper');
 
@@ -57,7 +69,7 @@ $app->get('/edit-order[/id]', function (Request $request, Response $response) us
 
       //var_export($HTML_order_data);
 
-      //echo '<pre>' . var_export($order_data,true) . '</pre>';
+    
 
       return $this->view->render($response,'EditOrders.twig', array(
               'page_title' => APP_TITLE,
@@ -87,63 +99,69 @@ $app->get('/edit-order[/id]', function (Request $request, Response $response) us
 
 $app->post('/edit-order', function (Request $request, Response $response) use ($app) : Response
 {
+  $account_type = $request->getAttribute('accountType');
+    
+    if($account_type == "admin" || $account_type == "staff"){
 
-  $tainted_parameters = $request->getParsedBody();
+      $tainted_parameters = $request->getParsedBody();
 
-  $container = $app->getContainer();
-  $manage_order_model = $container->get('manageOrderModel');
+      $container = $app->getContainer();
+      $manage_order_model = $container->get('manageOrderModel');
 
-  // echo '<pre>';
-  //   var_dump($tainted_parameters);
-  // echo '</pre>';
+      // echo '<pre>';
+      //   var_dump($tainted_parameters);
+      // echo '</pre>';
 
-  // return $response;
+      // return $response;
 
-  $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
-
-
-  //if one of the parameters does not meet requirements
-
-  if(empty($cleaned_parameters)){
-    //TODO: popup saying invalid form did not update form
-
-    return $response->withRedirect('/manage-orders?updated=false', 302);
-  }
-
-  $session_wrapper = $app->getContainer()->get('sessionWrapper');
-  $cleaned_parameters['id'] = $session_wrapper->getSessionVar('id');
-  $session_wrapper->unsetSessionVar('id');
-
-  //if cleaned and ready to send emails and store
-
-  
- //convert printed value to int
-
-  if($cleaned_parameters['printed'] == "Printed"){
-    $cleaned_parameters['printed'] = 1;
-  }else{
-    $cleaned_parameters['printed'] = 0;
-
-  }
+      $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
 
 
-  //store in database
-  $doctrine_wrapper = $container->get('doctrineWrapper');
-  $logger = $container->get('logger');
+      //if one of the parameters does not meet requirements
+
+      if(empty($cleaned_parameters)){
+        //TODO: popup saying invalid form did not update form
+
+        return $response->withRedirect('/manage-orders?updated=false', 302);
+      }
+
+      $session_wrapper = $app->getContainer()->get('sessionWrapper');
+      $cleaned_parameters['id'] = $session_wrapper->getSessionVar('id');
+      $session_wrapper->unsetSessionVar('id');
+
+      //if cleaned and ready to send emails and store
+
+      
+     //convert printed value to int
+
+      if($cleaned_parameters['printed'] == "Printed"){
+        $cleaned_parameters['printed'] = 1;
+      }else{
+        $cleaned_parameters['printed'] = 0;
+
+      }
 
 
-  // // Doctrine wrapper setup
-  $database_connection_settings = $container->get('settings')['doctrineSettings'];
-  $database_connection = DriverManager::getConnection($database_connection_settings);
-  $query_builder = $database_connection->createQueryBuilder();
-  $doctrine_wrapper->setQueryBuilder($query_builder);
-  $doctrine_wrapper->setDoctrineLogger($logger);
+      //store in database
+      $doctrine_wrapper = $container->get('doctrineWrapper');
+      $logger = $container->get('logger');
 
-  
-  $doctrine_wrapper->updateOrderDataById($cleaned_parameters);
-  $doctrine_wrapper->getQueryResult();
 
-  return $response->withRedirect('/manage-orders?updated=true', 302);
+      // // Doctrine wrapper setup
+      $database_connection_settings = $container->get('settings')['doctrineSettings'];
+      $database_connection = DriverManager::getConnection($database_connection_settings);
+      $query_builder = $database_connection->createQueryBuilder();
+      $doctrine_wrapper->setQueryBuilder($query_builder);
+      $doctrine_wrapper->setDoctrineLogger($logger);
+
+      
+      $doctrine_wrapper->updateOrderDataById($cleaned_parameters);
+      $doctrine_wrapper->getQueryResult();
+
+      return $response->withRedirect('/manage-orders?updated=true', 302);
+    }
+
+  return $response->withRedirect('/loginpage', 302);
 
 
 })->setName('edit-orders');

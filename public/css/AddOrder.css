@@ -63,6 +63,13 @@ td{
   vertical-align: top;
 }
 
+input, select, textarea{
+  width: 100%;
+}
+
+input[type=submit]{
+  width: auto;
+}
 
 @media(max-width: 700px){
   td{

@@ -8,7 +8,7 @@ $app->get('/delete-multiple-orders', function (Request $request, Response $respo
 
     $account_type = $request->getAttribute('accountType');
 
-    if($account_type == "admin" || $account_type == "staff"){
+    if($account_type == "admin"){
 
         $container = $app->getContainer();
 

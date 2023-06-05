@@ -28,3 +28,4 @@ require "routes/CustomerProfile.php";
 require "routes/DeleteMultipleOrders.php";
 require "routes/MarkOrdersAsPrinted.php";
 require "routes/ViewCustomerOrder.php";
+require "routes/AboutUs.php";

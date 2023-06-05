@@ -54,8 +54,8 @@ return array(
             'charset' => 'utf8'
         ),
         'mailerBookingSettings' => array(
-            'username' => 'jamesjbrass@gmail.com',
-            'password' => 'cqktvkkjpxobcjcw',
+            'username' => 'jamesjbrass@gmail.com', //highflyerscouriers@gmail.com
+            'password' => 'cqktvkkjpxobcjcw', //tgslhgadszechaqg
             'port' => 25,
             'host' => 'smtp.gmail.com'
         ),

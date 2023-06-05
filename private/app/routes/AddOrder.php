@@ -65,6 +65,17 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $username = $request->getAttribute('username');
   $cleaned_parameters['added_by'] = $username;
 
+
+  
+
+  if(empty($cleaned_parameters['delivery_week'])){//if delivery week empty
+    //add delivery week in
+
+    $cleaned_parameters['delivery_week'] = $manage_order_model->getDeliveryWeek("CUSTOMER");
+
+  }
+
+
   $container = $app->getContainer();
 
   //store in database

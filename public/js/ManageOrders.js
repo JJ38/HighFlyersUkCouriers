@@ -180,6 +180,7 @@ function generateForms(orderIDs){
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
         '<script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>'+
         '<link rel="stylesheet" href="css/PrintableForm.css" type="text/css">'+
+        // '<link rel="stylesheet" href=" S:/xampp/htdocs/HighFlyersUkCouriers/public/css/PrintableForm.css" type="text/css"></link>'+
         ''+
       '</head>'+
         '<body>';
@@ -234,9 +235,19 @@ function getOrderHTML(tableData){
       '<label class="bold">Payment Method: </label>'+
       '<p> Cash On ' + tableData[19].innerHTML + '</p>'+
     '</div>'+
-    
+      '<div class="noteswrapper">'+
+        '<label class="bold">Notes: </label>'+
+        '<br>'+
+        '<br>'+
+        '<br>'+
+        '<br>'+
+        '<br>'+
+        '<br>'+
+        '<br>'+
+  
+      '</div>'+
       '<div class="formwrapper">'+
-        '<div class="wrapper grid">'+
+        '<div class="wrapper grid delivery">'+
           '<h3>'+
             'Pick up from:'+
           '</h3>'+
@@ -257,7 +268,7 @@ function getOrderHTML(tableData){
         
           '</div>'+
         '</div>'+
-        '<div class="wrapper grid">'+
+        '<div class="wrapper grid deliverytextcolour">'+
           '<h3>'+
            'Deliver to:'+
           '</h3>'+
@@ -296,8 +307,19 @@ function getOrderHTML(tableData){
       '<label class="bold">Payment Method: </label>'+
       '<p> Cash On ' + tableData[19].innerHTML + '</p>'+
     '</div>'+
+    '<div class="noteswrapper">'+
+      '<label class="bold">Notes: </label>'+
+      '<br>'+
+      '<br>'+
+      '<br>'+
+      '<br>'+
+      '<br>'+
+      '<br>'+
+      '<br>'+
+  
+    '</div>'+
     '<div class="formwrapper">'+
-      '<div class="wrapper grid">'+
+      '<div class="wrapper grid collectiontextcolour">'+
         '<h3>'+
           'Pick up from:'+
         '</h3>'+
@@ -318,7 +340,7 @@ function getOrderHTML(tableData){
       
         '</div>'+ 
       '</div>'+
-      '<div class="wrapper grid">'+
+      '<div class="wrapper grid collection collection">'+
         '<h3>'+
         'Deliver to:'+
         '</h3>'+
