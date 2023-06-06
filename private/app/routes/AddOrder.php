@@ -21,6 +21,7 @@ $app->get('/add-order', function (Request $request, Response $response, $args) u
             'js_path' => JS_PATH . "",
             'landing_page' => __FILE__,
             'heading_1' => APP_TITLE,
+            'isAdmin' => $account_type == "admin",
             'links'=> array(
                 'register' => 'registerform',
                 'login' => 'loginform',

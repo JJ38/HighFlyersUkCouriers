@@ -11,17 +11,8 @@ include '../private/bootstrap.php';
 
 
 
- 
-// extra charges pigeons
 
 // opening hour FAQ days and time being in line
-
-// auto delivery week on manually added order
-
-// coloured weeks
-
-// 8 cycling colours 
-
 
 
 

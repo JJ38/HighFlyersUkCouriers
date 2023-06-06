@@ -111,7 +111,54 @@ class ManageOrderModel
       $HTML = $HTML . '<td><input type="checkbox" id="' . $this->order_data[$i]['id'] . '" name="' . $this->order_data[$i]['id'] . '" value="' . $this->order_data[$i]['id'] . '"></td>';
 
       for ($j = 0; $j < count($this->order_data[$i]); $j++) {
-        $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
+        if($headers[$j] == "delivery_week"){
+
+          $week_colour = "white";
+
+          $week_number = intval($this->order_data[$i][$headers[$j]]);
+
+          switch ($week_number % 8) {
+            case 0:
+              $week_colour = "red";
+              break;
+
+            case 1:
+              $week_colour = "green";
+              break;
+
+            case 2:
+              $week_colour = "yellow";
+              break;
+
+            case 3:
+              $week_colour = "blue";
+              break;
+
+            case 4:
+              $week_colour = "#B5651D";
+              break;
+
+            case 5:
+              $week_colour = "#CBC3E3";
+              break;
+
+            case 6:
+              $week_colour = "pink";
+              break;
+
+            case 7:
+              $week_colour = "orange";
+              break;
+
+            default:
+              $week_colour = "white";
+
+        }
+
+          $HTML = $HTML . "<td style=\"background-color: {$week_colour}\">{$this->order_data[$i][$headers[$j]]}</td>";
+        }else{
+          $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
+        }
       }
 
       $HTML = $HTML . '<td class="orderbuttons">';
@@ -179,7 +226,7 @@ class ManageOrderModel
 
       else if($form_fields[$i] == "Account" && !$this->is_admin){  //if staff member
         
-        $HTML = $HTML . '<td>' . $this->order_data[0]['account'] . "</td>";
+        $HTML = $HTML . '<td>' . $this->order_data[0]['username'] . "</td>";
         
       }
 

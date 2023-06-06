@@ -58,6 +58,8 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
 {   
     $account_type = $request->getAttribute('accountType');
 
+    return  $response;
+
     if($account_type == "admin"){
     
         $container = $app->getContainer();
