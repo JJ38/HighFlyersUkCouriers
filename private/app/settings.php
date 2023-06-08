@@ -61,7 +61,7 @@ return array(
         ),
         'mailerContactUsSettings' => array(
             'username' => 'highflyerscourierscontactus@gmail.com',
-            'password' => 'kwqfnjaedfmgdfrt',
+            'password' => 'cpmmeumthmmmjynr',
             'port' => 25,
             'host' => 'smtp.gmail.com'
         )

@@ -58,7 +58,6 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
 {   
     $account_type = $request->getAttribute('accountType');
 
-    return  $response;
 
     if($account_type == "admin"){
     
@@ -94,11 +93,6 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
 
         if($is_username_available){
             //store username
-
-            // var_dump($cleaned_parameters);
-            // echo "username is available";
-
-            // return $response;
 
             //hash password
             $bcryptWrapper = $container->get('bcryptWrapper');

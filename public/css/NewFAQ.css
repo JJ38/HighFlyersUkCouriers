@@ -37,6 +37,41 @@ div.quicklinkswrapper{
 }
 
 
+.blueText{
+  color:blue;
+}
+
+.greenText{
+  color:green;
+}
+
+.redText{
+  color:red;
+}
+
+.blue > td{
+  color: blue;
+}
+
+.green > td{
+  color: green;
+}
+
+.red > td{
+  color: red;
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+td{
+  padding: 2px 15px;
+}
+
+
+
 div.quicklinkcontainer{
   font-family: 'Raleway';
   font-style: normal;

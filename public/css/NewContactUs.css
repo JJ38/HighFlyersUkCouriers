@@ -11,6 +11,7 @@ div.underlineContactUs{
 
 div.maincontent{
     display: flex;
+    min-height: 80vh;
     flex-direction: column-reverse;
     justify-content: center;
     align-items: center;

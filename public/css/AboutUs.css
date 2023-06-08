@@ -3,6 +3,7 @@
 
 
 html,body{
+    
     padding: 0;
     margin: 0;
 }
@@ -17,6 +18,8 @@ div.underlineAboutUs{
 }
 
 .maincontent{
+    
+    min-height: 80vh;
     background-color: #FAFAFA;
     padding: 10px 12vw;
 }

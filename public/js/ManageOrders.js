@@ -232,64 +232,62 @@ function getOrderHTML(tableData){
       '<label class="bold">Animal Type: </label>'+
       '<p>' + tableData[2].innerHTML + '</p>'+
       ''+
+      '<label class="bold">Quantity: </label>'+
+      '<p>' + tableData[3].innerHTML + '</p>'+
+      ''+
       '<label class="bold">Payment Method: </label>'+
       '<p> Cash On ' + tableData[19].innerHTML + '</p>'+
+      ''+
+      '<label class="bold">Code: </label>'+
+      '<p>' + tableData[21].innerHTML + '</p>'+
+      '<label class="bold">Notes: </label>'+
+      '<p>' + tableData[20].innerHTML + '</p>'+
     '</div>'+
-      '<div class="noteswrapper">'+
-        '<label class="bold">Notes: </label>'+
-        '<br>'+
-        '<br>'+
-        '<br>'+
-        '<br>'+
-        '<br>'+
-        '<br>'+
-        '<br>'+
-  
-      '</div>'+
-      '<div class="formwrapper">'+
-        '<div class="wrapper grid delivery">'+
-          '<h3>'+
-            'Pick up from:'+
-          '</h3>'+
-          '<div class="infowrapper">'+
-            '<label>Name:</label>'+
-            '<p>' + tableData[7].innerHTML + '</p>'+
+     
+    '<div class="formwrapper">'+
+      '<div class="wrapper grid delivery">'+
+        '<h3>'+
+          'Pick up from:'+
+        '</h3>'+
+        '<div class="infowrapper">'+
+          '<label>Name:</label>'+
+          '<p>' + tableData[7].innerHTML + '</p>'+
 
-            '<label>Address:</label>'+
-            '<address>' + 
-              '<p>' + tableData[8].innerHTML + '</p>'+
-              '<p>' + tableData[9].innerHTML + '</p>'+
-              '<p>' + tableData[10].innerHTML + '</p>'+
-              '<p>' + tableData[11].innerHTML + '</p>'+
-            '</address>' +
-        
+          '<label>Address:</label>'+
+          '<address>' + 
+            '<p>' + tableData[8].innerHTML + '</p>'+
+            '<p>' + tableData[9].innerHTML + '</p>'+
+            '<p>' + tableData[10].innerHTML + '</p>'+
+            '<p>' + tableData[11].innerHTML + '</p>'+
+          '</address>' +
+      
           '<label>Telephone:</label>'+
           '<p>' + tableData[12].innerHTML + '</p>'+          
-        
-          '</div>'+
-        '</div>'+
-        '<div class="wrapper grid deliverytextcolour">'+
-          '<h3>'+
-           'Deliver to:'+
-          '</h3>'+
-            '<div class="infowrapper">'+
-              '<label>Name:</label>'+
-              '<p>' + tableData[13].innerHTML + '</p>'+
-          
-              '<label>Address:</label>'+
-              '<address>' + 
-                '<p>' + tableData[14].innerHTML + '</p>'+
-                '<p>' + tableData[15].innerHTML + '</p>'+
-                '<p>' + tableData[16].innerHTML + '</p>'+
-                '<p>' + tableData[17].innerHTML + '</p>'+
-              '</address>' +
-                            
-              '<label>Telephone:</label>'+
-              '<p>' + tableData[18].innerHTML + '</p>'+
-          '</div>'+
+      
         '</div>'+
       '</div>'+
+      '<div class="wrapper grid deliverytextcolour">'+
+        '<h3>'+
+          'Deliver to:'+
+        '</h3>'+
+          '<div class="infowrapper">'+
+            '<label>Name:</label>'+
+            '<p>' + tableData[13].innerHTML + '</p>'+
+        
+            '<label>Address:</label>'+
+            '<address>' + 
+              '<p>' + tableData[14].innerHTML + '</p>'+
+              '<p>' + tableData[15].innerHTML + '</p>'+
+              '<p>' + tableData[16].innerHTML + '</p>'+
+              '<p>' + tableData[17].innerHTML + '</p>'+
+            '</address>' +
+                          
+            '<label>Telephone:</label>'+
+            '<p>' + tableData[18].innerHTML + '</p>'+
+          '</div>'+
+      '</div>'+
     '</div>'+
+  '</div>'+
   '<div class="page">'+
     '<h1>'+
       'High Flyers'+
@@ -304,19 +302,17 @@ function getOrderHTML(tableData){
       '<label class="bold">Animal Type: </label>'+
       '<p>' + tableData[2].innerHTML + '</p>'+
       ''+
+      '<label class="bold">Quantity: </label>'+
+      '<p>' + tableData[3].innerHTML + '</p>'+
+      ''+
       '<label class="bold">Payment Method: </label>'+
       '<p> Cash On ' + tableData[19].innerHTML + '</p>'+
-    '</div>'+
-    '<div class="noteswrapper">'+
+      ''+
+      '<label class="bold">Code: </label>'+
+      '<p>' + tableData[21].innerHTML + '</p>'+
+      ''+
       '<label class="bold">Notes: </label>'+
-      '<br>'+
-      '<br>'+
-      '<br>'+
-      '<br>'+
-      '<br>'+
-      '<br>'+
-      '<br>'+
-  
+      '<p>' + tableData[20].innerHTML + '</p>'+
     '</div>'+
     '<div class="formwrapper">'+
       '<div class="wrapper grid collectiontextcolour">'+
@@ -360,8 +356,9 @@ function getOrderHTML(tableData){
           '<p>' + tableData[18].innerHTML + '</p>'+
         '</div>'+
       '</div>'+
-  '</div>'+
-'</div>'    
+      '<br>'+
+    '</div>'+
+  '</div>'    
 
 return order;
 

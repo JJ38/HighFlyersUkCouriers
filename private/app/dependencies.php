@@ -76,3 +76,9 @@ $container['manageAccountsModel'] = function () {
 $container['customerProfileModel'] = function () {
   return new \HighFlyersUkCouriers\CustomerProfileModel();
 };
+
+$container['notFoundHandler'] = function ($container) {
+  return function ($request, $response) use ($container) {
+      return  $response->withRedirect('/', 302);
+  };
+};

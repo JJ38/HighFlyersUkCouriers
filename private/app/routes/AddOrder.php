@@ -35,7 +35,7 @@ $app->get('/add-order', function (Request $request, Response $response, $args) u
         ));
     }
 
-    return $response->withRedirect('loginpage', 302);
+    return $response->withRedirect('loginpage', 301);
     
 });
 
@@ -59,7 +59,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   if(empty($cleaned_parameters)){
 
 
-    return $response->withRedirect('/manage-orders?addorder=false', 302);
+    return $response->withRedirect('/manage-orders?addorder=false', 301);
   }
 
   
@@ -104,11 +104,11 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   if($query_result){    
 
-    return $response->withRedirect('/manage-orders?addorder=true', 302);
+    return $response->withRedirect('/manage-orders?addorder=true', 301);
 
   }
 
-  return $response->withRedirect('/manage-orders?addorder=false', 302);
+  return $response->withRedirect('/manage-orders?addorder=false', 301);
 
 
 })->setName('add-orders');
