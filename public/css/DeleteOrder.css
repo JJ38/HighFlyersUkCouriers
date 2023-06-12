@@ -12,11 +12,6 @@ body {
 
 header {
   flex: 0 1 auto;
-  /* The above is shorthand for:
-  flex-grow: 0,
-  flex-shrink: 1,
-  flex-basis: auto
-  */
 }
 
 nav {
@@ -39,11 +34,6 @@ nav a {
 #maincontent {
 
   flex: 0 1 auto;
-  /* The above is shorthand for:
-  flex-grow: 1, this is about ratio this works because header is 0
-  flex-shrink: 1,
-  flex-basis: auto
-  */
   background-color: #D9D9D9;
 
 }
@@ -58,6 +48,17 @@ td{
   width: auto;
   padding: 0 3em;
   white-space:nowrap;
+}
+
+tr{
+  vertical-align: top;
+}
+
+.message{
+  margin: 0px;
+  white-space: pre-wrap !important;
+  word-wrap: break-word;
+  max-width: 40ch;
 }
 
 form{

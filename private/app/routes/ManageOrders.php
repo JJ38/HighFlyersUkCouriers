@@ -19,15 +19,21 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
           $tainted_invalid_form = $allGetVars['updated'];
           if($tainted_invalid_form){
             $sanitizer = $app->getContainer()->get('sanitizer');
-            $cleaned_invalid_form = $sanitizer->sanitizeBoolean($tainted_invalid_form);
+            $cleaned_invalid_form = $sanitizer->sanitizeString($tainted_invalid_form);
 
             if($cleaned_invalid_form != null){
 
               if($cleaned_invalid_form === "true"){
                 echo "<script>alert('Order Updated');</script>";
 
+              }else if($cleaned_invalid_form === "dberror"){
+
+                echo "<script>alert('Order Not Added - Database Error');</script>";
+
               }else{
+
                 echo "<script>alert('Order Not Updated - Error');</script>";
+
               }
             }
           }
@@ -35,19 +41,44 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
           $tainted_add_order = $allGetVars['addorder'];
           if($tainted_add_order){
             $sanitizer = $app->getContainer()->get('sanitizer');
-            $cleaned_add_order = $sanitizer->sanitizeBoolean($tainted_add_order);
+            $cleaned_add_order = $sanitizer->sanitizeString($tainted_add_order);
 
             if($cleaned_add_order != null){
 
               if($cleaned_add_order === "true"){
                 echo "<script>alert('Order Added successfully!');</script>";
 
-              }else{
-                echo "<script>alert('Order Not Added - Error');</script>";
+              }
+              else if($cleaned_add_order === "dberror"){
+                echo "<script>alert('Order Not Added - Database Error');</script>";
+              }
+              
+              else{
+                echo "<script>alert('Order Not Added - Error (most likely invalid order parameters)');</script>";
               }
             }
           }
-        }else if(!empty($allGetVars['field'])){
+        }
+
+
+        else if(!empty($allGetVars['error'])){
+          $tainted_error = $allGetVars['error'];
+          if($tainted_error){
+            $sanitizer = $app->getContainer()->get('sanitizer');
+            $cleaned_error = $sanitizer->sanitizeString($tainted_error);
+
+            if($cleaned_error != null){
+
+              if($cleaned_error === "dbconnection"){
+                echo "<script>alert('Error connecting to database!');</script>";
+
+              }
+            }
+          }
+        }
+
+
+        else if(!empty($allGetVars['field'])){
           if(!empty($allGetVars['filter'])){
             $tainted_field = $allGetVars['field'];
             $tainted_filter = $allGetVars['filter'];
@@ -113,7 +144,16 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
 
       // // Doctrine wrapper setup
       $database_connection_settings = $container->get('settings')['doctrineSettings'];
-      $database_connection = DriverManager::getConnection($database_connection_settings);
+      try{
+
+        $database_connection = DriverManager::getConnection($database_connection_settings);
+
+      }catch(Exception $e){
+       
+      }
+        
+      
+      
       $query_builder = $database_connection->createQueryBuilder();
       $doctrine_wrapper->setQueryBuilder($query_builder);
       $doctrine_wrapper->setDoctrineLogger($logger);
@@ -144,6 +184,6 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
           ));
     }
 
-    return $response->withRedirect('loginpage', 302);
+    return $response->withRedirect('loginpage', 301);
     
 });

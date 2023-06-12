@@ -144,13 +144,15 @@ class DoctrineWrapper
 
           $store_result = $store_result == 1;
 
+          $this->lastInsertID = $this->database_connection->lastInsertID();
+
       } catch (\Exception $exception) {
           if ($this->doctrine_logger !== null) {
               $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
           }
       } finally {
           $this->query_result = $store_result;
-          $this->lastInsertID = $this->database_connection->lastInsertID();
+          
       }
 
 

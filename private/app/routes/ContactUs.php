@@ -9,21 +9,22 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 $app->get('/contact-us[/invalidform]', function (Request $request, Response $response) use ($app) : Response{
 
   $allGetVars = $_GET;
-
   if(!empty($allGetVars)){
-    $tainted_invalid_form = $allGetVars['invalidform'];
-    $sanitizer = $app->getContainer()->get('sanitizer');
-    $cleaned_invalid_form = $sanitizer->sanitizeBoolean($tainted_invalid_form);
+    if(!empty($allGetVars['invalidform'])){
+      $tainted_invalid_form = $allGetVars['invalidform'];
+      $sanitizer = $app->getContainer()->get('sanitizer');
+      $cleaned_invalid_form = $sanitizer->sanitizeBoolean($tainted_invalid_form);
 
-    if($cleaned_invalid_form != null){
+      if($cleaned_invalid_form != null){
 
-      if($cleaned_invalid_form === "false"){
-        echo "<script>alert('Email sent - You should recieve an email shortly confirming your email has been sent');</script>";
-      }else{
-        echo "<script>alert('invalid form - please submit a valid form');</script>";
+        if($cleaned_invalid_form === "false"){
+          echo "<script>alert('Email sent - You should recieve an email shortly confirming your email has been sent');</script>";
+        }else{
+          echo "<script>alert('Invalid form - Please submit a valid form');</script>";
+        }
       }
     }
-  };
+  }
 
   return $this->view->render($response,'NewContactUs.twig', array(
           'page_title' => APP_TITLE,

@@ -97,6 +97,12 @@ div.noteswrapper{
   display: flex;
 }
 
+.grideven{
+  margin: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
 .page{
   display: flex;
   flex-direction: column;

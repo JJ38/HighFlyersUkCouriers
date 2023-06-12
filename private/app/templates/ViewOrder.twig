@@ -1,0 +1,17 @@
+{% extends 'BoilerPlate.twig' %}
+    {% block content %}
+      <div id="wrapper">
+        <header>
+          <nav id="menu">
+            <a class="navLinks" href="/manage-orders">Back</a>
+          </nav>
+        </header>
+        <div id="maincontent">
+          <div class="form">
+            <table>
+              {{orderdata|raw}}
+            </table>
+          </div>
+        </div>
+      </div>
+    {% endblock %}

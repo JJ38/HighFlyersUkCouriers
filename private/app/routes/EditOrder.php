@@ -78,17 +78,7 @@ $app->get('/edit-order[/id]', function (Request $request, Response $response) us
               'js_path' => JS_PATH . "",
               'landing_page' => __FILE__,
               'heading_1' => APP_TITLE,
-              'orderdata' => $manage_order_model->getHTMLOrderData(),
-              'links'=> array(
-                  'register' => 'registerform',
-                  'login' => 'loginform',
-                  'homepage' => '#',
-                  'send_initial_messages' => 'sendinitialtelemetrymessages',
-                  'present_telemetry' => 'presenttelemetrydata',
-                  'manage_users' => 'manageusersform',
-                  'send_telemetry' => 'sendtelemetrydata',
-                  'logout' => 'logout'
-              ),
+              'orderdata' => $manage_order_model->getHTMLOrderData() 
           ));
     }else{
 
@@ -108,21 +98,14 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
       $container = $app->getContainer();
       $manage_order_model = $container->get('manageOrderModel');
 
-      // echo '<pre>';
-      //   var_dump($tainted_parameters);
-      // echo '</pre>';
-
-      // return $response;
-
       $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
 
 
       //if one of the parameters does not meet requirements
 
       if(empty($cleaned_parameters)){
-        //TODO: popup saying invalid form did not update form
 
-        return $response->withRedirect('/manage-orders?updated=false', 302);
+        return $response->withRedirect('/manage-orders?updated=false', 301);
       }
 
       $session_wrapper = $app->getContainer()->get('sessionWrapper');
@@ -149,19 +132,31 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
 
       // // Doctrine wrapper setup
       $database_connection_settings = $container->get('settings')['doctrineSettings'];
-      $database_connection = DriverManager::getConnection($database_connection_settings);
+      try{
+        $database_connection = DriverManager::getConnection($database_connection_settings);
+      }catch(Exception $e){
+        return $response->withRedirect('/manage-orders?error=dbconnection', 301);
+      }
       $query_builder = $database_connection->createQueryBuilder();
       $doctrine_wrapper->setQueryBuilder($query_builder);
       $doctrine_wrapper->setDoctrineLogger($logger);
 
       
       $doctrine_wrapper->updateOrderDataById($cleaned_parameters);
-      $doctrine_wrapper->getQueryResult();
+      $query_result = $doctrine_wrapper->getQueryResult();
 
-      return $response->withRedirect('/manage-orders?updated=true', 302);
+      if($query_result){    
+
+        return $response->withRedirect('/manage-orders?updated=true', 301);
+
+      }
+
+      return $response->withRedirect('/manage-orders?updated=dberror', 301);
+
+
     }
 
-  return $response->withRedirect('/loginpage', 302);
+  return $response->withRedirect('/loginpage', 301);
 
 
 })->setName('edit-orders');

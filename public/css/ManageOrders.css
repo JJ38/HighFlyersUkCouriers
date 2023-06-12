@@ -154,8 +154,20 @@ tr{
   border-bottom: 1px solid black;
 }
 
+tr:hover{
+  background-color: rgb(196, 233, 245);
+}
+
+.highlightorder{
+  background-color: rgb(213, 243, 254);
+}
+
 tr:last-of-type{
   border-bottom: none;
+}
+
+.headerrow:hover{
+  background-color: white !important;
 }
 
 .headerrow{
@@ -202,7 +214,7 @@ div.orderdatawrapper{
 ::-webkit-scrollbar-thumb
 {
   border-radius: 5px;
-	background-color: lightgrey;
+	background-color: black;
 	border: none;
 }
 

@@ -24,6 +24,14 @@ for(let i = 0; i < printButtons.length; i++){
     });
 }
 
+function highlightorder(orderCheckBox){
+
+  console.log("highlighorder");
+
+  orderCheckBox.parentElement.parentElement.classList.toggle("highlightorder");
+
+}
+
 function singularPrint(){
 
   if(confirm("Would you like the selected orders as printed?")){
@@ -39,6 +47,8 @@ function singularPrint(){
 function selectAll(){
   for(let i = 0; i < allCheckBoxes.length; i++){
     allCheckBoxes[i].checked = true;
+    allCheckBoxes[i].parentElement.parentElement.classList.add("highlightorder");
+
   }
   
 }
@@ -180,7 +190,6 @@ function generateForms(orderIDs){
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
         '<script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>'+
         '<link rel="stylesheet" href="css/PrintableForm.css" type="text/css">'+
-        // '<link rel="stylesheet" href=" S:/xampp/htdocs/HighFlyersUkCouriers/public/css/PrintableForm.css" type="text/css"></link>'+
         ''+
       '</head>'+
         '<body>';
@@ -287,6 +296,8 @@ function getOrderHTML(tableData){
           '</div>'+
       '</div>'+
     '</div>'+
+    '<div class="grideven "><b>Signature:</b><b>Time:</b></div>'+
+    '<br>'+
   '</div>'+
   '<div class="page">'+
     '<h1>'+
@@ -358,7 +369,9 @@ function getOrderHTML(tableData){
       '</div>'+
       '<br>'+
     '</div>'+
-  '</div>'    
+    '<div class="grideven "><b>Signature:</b><b>Time:</b></div>'+
+    '<br>'+
+ '</div>'    
 
 return order;
 

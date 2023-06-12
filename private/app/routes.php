@@ -21,3 +21,4 @@ require "routes/CustomerProfile.php";
 require "routes/DeleteMultipleOrders.php";
 require "routes/MarkOrdersAsPrinted.php";
 require "routes/AboutUs.php";
+require "routes/ViewOrder.php";

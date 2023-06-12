@@ -77,7 +77,6 @@ class ManageOrderModel
     $this->order_data = $this->doctrine_wrapper->getQueryResult();
     $this->translateData();
 
-   
 
   }
 
@@ -108,7 +107,7 @@ class ManageOrderModel
     for ($i = 0; $i < $number_of_orders; $i++) {
       $HTML = $HTML . '<tr>';
 
-      $HTML = $HTML . '<td><input type="checkbox" id="' . $this->order_data[$i]['id'] . '" name="' . $this->order_data[$i]['id'] . '" value="' . $this->order_data[$i]['id'] . '"></td>';
+      $HTML = $HTML . '<td><input type="checkbox" id="' . $this->order_data[$i]['id'] . '" name="' . $this->order_data[$i]['id'] . '" value="' . $this->order_data[$i]['id'] . '" onclick="highlightorder(this)"></td>';
 
       for ($j = 0; $j < count($this->order_data[$i]); $j++) {
         if($headers[$j] == "delivery_week"){
@@ -165,6 +164,7 @@ class ManageOrderModel
       
 
       $HTML = $HTML . '<a class="print"><button type="button">Print</button></a>';
+      $HTML = $HTML . '<a href="/view-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">View</button></a>';
 
       if($this->is_admin || empty($this->order_data[$i]['username'])){
         $HTML = $HTML . '<a href="/edit-order?id=' . $this->order_data[$i]['id'] .'"><button>Edit</button></a>';
@@ -236,6 +236,14 @@ class ManageOrderModel
         $HTML = $HTML . '<td>' . "<input type=\"number\" id=\"" . $headers[$i] ."\"name=\"" . $headers[$i] . "\" value=\"" . $this->order_data[0][$headers[$i]] . "\" min=\"1\" max=\"53\"></td>";
 
       }
+
+    
+
+      else if($form_fields[$i] == "Message"){ 
+        
+        $HTML = $HTML . '<td>' . "<textarea id=\"message\" name=\"message\" rows=\"8\" wrap=\"soft\">" . $this->order_data[0][$headers[$i]] . "</textarea></td>";
+
+      }
       
       else{
 
@@ -264,11 +272,20 @@ class ManageOrderModel
 
     //TODO: Accessibility
 
-    for ($i = 1; $i < $number_of_fields - 1; $i++) {
+    for ($i = 0; $i < $number_of_fields - 1; $i++) {
+
       $HTML = $HTML . '<tr>';
-      $HTML = $HTML . '<td>' . $form_fields[$i] . '</td>'; //<label for="fname">First name:</label>
-      $HTML = $HTML . '<td>' . $this->order_data[0][$headers[$i]];
-      $HTML = $HTML . '</tr>';
+      $HTML = $HTML . '<td>' . $form_fields[$i] . '</td>';
+
+      if($form_fields[$i] == "Message"){
+        $HTML = $HTML . '<td><p class="message">' . $this->order_data[0][$headers[$i]] . '</p>';
+      }else{
+         //<label for="fname">First name:</label>
+        $HTML = $HTML . '<td>' . $this->order_data[0][$headers[$i]];
+      }
+
+     
+      $HTML = $HTML . '</td></tr>';
     }
 
     $this->HTML_order_data = $HTML;
@@ -335,14 +352,6 @@ class ManageOrderModel
       $cleaned_parameters = array();
       return $cleaned_parameters;
     }
-    
-    // $sanitized_parameters['printed'] = $sanitizer->sanitizeString($tainted_parameters['printed']);
-    // $cleaned_parameters['printed'] = $validator->validatePrinted($sanitized_parameters['printed']);
-    // if(!$validator->getValidationResult()){
-    //   $cleaned_parameters = array();
-    //   return $cleaned_parameters;
-    // }
-
 
     $sanitized_parameters['delivery_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['delivery_phone_number']);
     $cleaned_parameters['delivery_phone_number'] = $validator->validatePhoneNumber($sanitized_parameters['delivery_phone_number']);

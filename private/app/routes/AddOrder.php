@@ -85,10 +85,13 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $doctrine_wrapper = $container->get('doctrineWrapper');
   $logger = $container->get('logger');
 
-
   // // Doctrine wrapper setup
   $database_connection_settings = $container->get('settings')['doctrineSettings'];
-  $database_connection = DriverManager::getConnection($database_connection_settings);
+  try{
+    $database_connection = DriverManager::getConnection($database_connection_settings);
+  }catch(Exception $e){
+    return $response->withRedirect('/manage-orders?error=dbconnection', 301);
+  }
   $query_builder = $database_connection->createQueryBuilder();
   $doctrine_wrapper->setQueryBuilder($query_builder);
   $doctrine_wrapper->setDoctrineLogger($logger);
@@ -108,7 +111,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   }
 
-  return $response->withRedirect('/manage-orders?addorder=false', 301);
+  return $response->withRedirect('/manage-orders?addorder=dberror', 301);
 
 
 })->setName('add-orders');

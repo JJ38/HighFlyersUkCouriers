@@ -9,21 +9,34 @@ $app->get('/bookings[/invalidform]', function (Request $request, Response $respo
 
   $allGetVars = $_GET;
 
-
   if(!empty($allGetVars)){
-    $tainted_invalid_form = $allGetVars['invalidform'];
-    $sanitizer = $app->getContainer()->get('sanitizer');
-    $cleaned_invalid_form = $sanitizer->sanitizeBoolean($tainted_invalid_form);
+    if(!empty($allGetVars['invalidform'])){
+      $tainted_invalid_form = $allGetVars['invalidform'];
+      $sanitizer = $app->getContainer()->get('sanitizer');
+      $cleaned_invalid_form = $sanitizer->sanitizeBoolean($tainted_invalid_form);
 
-    if($cleaned_invalid_form != null){
+      if($cleaned_invalid_form != null){
 
-      if($cleaned_invalid_form === "false"){
-        echo "<script>alert('Booking confirmed - You should recieve an email shortly confirming your booking');</script>";
-      }else{
-        echo "<script>alert('invalid form - please submit a valid form');</script>";
+        if($cleaned_invalid_form === "false"){
+          echo "<script>alert('Booking confirmed - You should recieve an email shortly confirming your booking');</script>";
+        }else{
+          echo "<script>alert('invalid form - please submit a valid form');</script>";
+        }
       }
     }
-  };
+    else if(!empty($allGetVars['error'])){
+      $tainted_error = $allGetVars['error'];
+      $sanitizer = $app->getContainer()->get('sanitizer');
+      $cleaned_error = $sanitizer->sanitizeString($tainted_error);
+
+      if($cleaned_error != null){
+
+        if($cleaned_error === "true"){
+          echo "<script>alert('Unable to book currently - Please try again later');</script>";
+        }
+      }
+    }
+}
 
   return $this->view->render($response,'NewBooking.twig', array(
           'page_title' => APP_TITLE,
@@ -55,7 +68,7 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   //if one of the parameters does not meet requirements
 
   if(empty($cleaned_parameters)){
-    return $response->withRedirect('/bookings?invalidform=true', 302);
+    return $response->withRedirect('/bookings?invalidform=true', 301);
     
   }
 
@@ -83,9 +96,16 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   $doctrine_wrapper->setQueryBuilder($query_builder);
   $doctrine_wrapper->setDoctrineLogger($logger);
   $doctrine_wrapper->setDatabaseConnection($database_connection);
-
+  
   $doctrine_wrapper->storeOrderData($cleaned_parameters);
-  $doctrine_wrapper->getQueryResult();
+  
+
+  $query_result =  $doctrine_wrapper->getQueryResult();
+
+  if(!$query_result){   
+    return $response->withRedirect('/bookings?error=true', 301);
+  }
+
   $cleaned_parameters['ID'] = $doctrine_wrapper->getLastInsertID();
 
   //TODO: popups for database error

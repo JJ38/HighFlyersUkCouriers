@@ -6,9 +6,7 @@ include '../private/bootstrap.php';
 // content manager zoom
 
 
-
-// add id to delete order page
-
+//different error message for id db connection times out on add order page / edit order page
 
 
 // look into google sheets upload to then show expected delivery times
