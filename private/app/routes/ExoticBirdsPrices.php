@@ -4,17 +4,13 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 
-$app->get('/', function (Request $request, Response $response) use ($app) : Response{
+$app->get('/exotic-birds-prices', function (Request $request, Response $response) use ($app) : Response{
 
-    
-
-    return $this->view->render($response,'NewHomepage.twig', array(
+    return $this->view->render($response,'ExoticBirdsPrices.twig', array(
             'page_title' => APP_TITLE,
-            'css_file' => CSS_PATH . "NewHomepage.css",
-            'css_nav_file' => CSS_PATH . "NavigationBar.css",
-            'css_footer_file' => CSS_PATH . "Footer.css",
+            'css_file' => CSS_PATH . "avents.css",
             'asset_path' => ASSET_PATH,
-            'js_file' => JS_PATH . "NewHomepage.js",
+            'js_path' => JS_PATH . "avents.js",
             'landing_page' => __FILE__,
             'heading_1' => APP_TITLE,
             'links'=> array(
@@ -28,4 +24,4 @@ $app->get('/', function (Request $request, Response $response) use ($app) : Resp
                 'logout' => 'logout'
             ),
         ));
-})->setName('');
+});

@@ -47,29 +47,50 @@ $app->get('/edit-order[/id]', function (Request $request, Response $response) us
         }
 
         $order_data = $manage_order_model->getOrderData();
+
+        
   
         //check if a staff member is trying ot edit a customer order
 
-        $iscustomer =  !empty($order_data[0]['username']);
+        $iscustomer = !empty($order_data[0]['username']);
         
         if($account_type == "staff" && $iscustomer){
           return  $response->withRedirect('manage-orders?permission=denied', 302);
         }
 
         $manage_order_model->generateHTMLForEditData();
-        
 
         $session_wrapper = $app->getContainer()->get('sessionWrapper');
 
         $session_wrapper->setSessionVar('id', $order_data[0]['id']);
 
+        $added_by = $order_data[0]['added_by'];
+
+
+        if(empty($added_by)){
+          $added_by = "";
+        }
+
+        $session_wrapper->setSessionVar('added_by', $added_by);
+
+
+        //set delivery week if staff member as wont be submitted in form as staff members shouldnt be able to change delivery week
+        if($account_type == "staff"){ 
+          if(array_key_exists('delivery_week', $order_data[0])){
+
+           if(empty($order_data[0]['delivery_week'])){
+              $delivery_week = "";          
+           }else{
+              $delivery_week = $order_data[0]['delivery_week'];
+           }
+            $session_wrapper->setSessionVar('delivery_week', $delivery_week);
+          }
+
+        }
+
       }else{
         return  $response->withRedirect('manage-orders', 302);
       }
-
-      //var_export($HTML_order_data);
-
-    
 
       return $this->view->render($response,'EditOrders.twig', array(
               'page_title' => APP_TITLE,
@@ -93,14 +114,26 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
     
     if($account_type == "admin" || $account_type == "staff"){
 
+
       $tainted_parameters = $request->getParsedBody();
 
       $container = $app->getContainer();
-      $manage_order_model = $container->get('manageOrderModel');
+      
+      
+      $session_wrapper = $app->getContainer()->get('sessionWrapper');
 
+      $tainted_parameters['added_by'] = $session_wrapper->getSessionVar('added_by');
+      $session_wrapper->unsetSessionVar('added_by');
+
+      if($account_type == "staff"){ 
+        $tainted_parameters['delivery_week'] = $session_wrapper->getSessionVar('delivery_week');
+        $session_wrapper->unsetSessionVar('delivery_week');
+      }
+     
+      $manage_order_model = $container->get('manageOrderModel');
       $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
 
-
+     
       //if one of the parameters does not meet requirements
 
       if(empty($cleaned_parameters)){
@@ -108,13 +141,9 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
         return $response->withRedirect('/manage-orders?updated=false', 301);
       }
 
-      $session_wrapper = $app->getContainer()->get('sessionWrapper');
       $cleaned_parameters['id'] = $session_wrapper->getSessionVar('id');
       $session_wrapper->unsetSessionVar('id');
 
-      //if cleaned and ready to send emails and store
-
-      
      //convert printed value to int
 
       if($cleaned_parameters['printed'] == "Printed"){
@@ -145,13 +174,17 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
       $doctrine_wrapper->updateOrderDataById($cleaned_parameters);
       $query_result = $doctrine_wrapper->getQueryResult();
 
+     
       if($query_result){    
 
         return $response->withRedirect('/manage-orders?updated=true', 301);
 
+      }else if($query_result === false){
+
+        return $response->withRedirect('/manage-orders?updated=dberror', 301);
       }
 
-      return $response->withRedirect('/manage-orders?updated=dberror', 301);
+      return $response->withRedirect('/manage-orders?updated=false', 301);
 
 
     }

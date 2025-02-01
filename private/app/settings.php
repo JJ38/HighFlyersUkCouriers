@@ -26,10 +26,10 @@ define ('BCRYPT_ALGO', PASSWORD_DEFAULT);
 define ('BCRYPT_COST', PASSWORD_BCRYPT_DEFAULT_COST); //10
 
 // Should be set to 0 in production
-error_reporting(E_ALL);
+error_reporting(0);
 
 // Should be set to '0' in production
-ini_set('display_errors', '1');
+ini_set('display_errors', '0');
 
 // Settings
 return array(
@@ -55,15 +55,29 @@ return array(
         ),
         'mailerBookingSettings' => array(
             'username' => 'jamesjbrass@gmail.com', //highflyerscouriers@gmail.com
-            'password' => 'cqktvkkjpxobcjcw', //tgslhgadszechaqg
+            'password' => 'zmcjwpccozwufjsb
+            ', //tgslhgadszechaqg           xsto iklf tdle gqgp
             'port' => 25,
             'host' => 'smtp.gmail.com'
         ),
+        // 'mailerBookingSettings' => array(
+        //     'username' => 'highflyerscouriers@gmail.com', //highflyerscouriers@gmail.com
+        //     'password' => 'fymxupxcbshjjnht', //tgslhgadszechaqg           xsto iklf tdle gqgp
+        //     'port' => 25,
+        //     'host' => 'smtp.gmail.com'
+        // ),
         'mailerContactUsSettings' => array(
-            'username' => 'highflyerscourierscontactus@gmail.com',
-            'password' => 'cpmmeumthmmmjynr',
+            'username' => 'jamesjbrass@gmail.com', //highflyerscouriers@gmail.com
+            'password' => 'zmcjwpccozwufjsb
+            ', //tgslhgadszechaqg           xsto iklf tdle gqgp
             'port' => 25,
             'host' => 'smtp.gmail.com'
-        )
+        ),
+        // 'mailerContactUsSettings' => array(
+        //     'username' => 'highflyerscourierscontactus@gmail.com',
+        //     'password' => 'cpmmeumthmmmjynr',
+        //     'port' => 25,
+        //     'host' => 'smtp.gmail.com'
+        // )
     )
 );

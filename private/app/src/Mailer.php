@@ -12,6 +12,7 @@ class Mailer{
 
   private $mailer_settings;
   private $mailer_data;
+  private $logger;
 
   public function setMailerSettings(array $mailer_settings) : void
   {
@@ -22,6 +23,13 @@ class Mailer{
   {
 
     $this->mailer_data = $mailer_data;
+
+  }
+
+  public function setLogger($logger) : void
+  {
+
+    $this->logger = $logger;
 
   }
 
@@ -68,7 +76,10 @@ class Mailer{
         
     } catch (Exception $e) {
         //fclose($file);
-        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        $error_message = array($mail->ErrorInfo);
+        $this->logger->error("MAILER-ERROR", $error_message);
+        //echo "Message could not be sent. Mailer Error: {$error_message}";
+
     }
 
   }
@@ -77,8 +88,35 @@ class Mailer{
   {
     $email = $this->mailer_data['email'];
     $subject = 'High Flyers Uk Couriers Booking Confirmation';
-    $message = "
+   
 
+    $message =
+
+    '<!DOCTYPE html>'.
+    ''.
+    '<html>'.
+    '<head>'.
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway" id="Raleway">'.
+    ''.
+    '<style>'.
+    ''.
+    '@import url(\'https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@800&display=swap\');'.
+    '@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap\');'.
+    ''.
+    'body{'.
+    'font-family: \'Raleway\';'.
+    'font-style: normal;'.
+    'font-weight: 400;'.
+    'font-size: 1.1em;'.
+    '}'.
+    ''.
+    '</style>'.
+    '</head>'.
+    '<body>';
+
+    $message = $message .
+    "
+    
     This is a confirmation email for your order with High Flyers Uk Couriers. " . "<br>". "
     " . "<br>". "
     Below are the details for you order: " . "<br>". "
@@ -104,269 +142,31 @@ class Mailer{
     " . "<br>"
     ;
 
-    $message = $message . '<html>'.
-'<head>'.
-'<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway" id="Raleway">'.
-''.
-'<style>'.
-''.
-'body{'.
-'font-family: \'Raleway\';'.
-'font-style: normal;'.
-'font-weight: 400;'.
-'font-size: 1.1em;'.
-'}'.
-''.
-'.blueText{'.
-'color:blue;'.
-'}'.
-''.
-'.greenText{'.
-'color:green;'.
-'}'.
-''.
-'.redText{'.
-'color:red;'.
-'}'.
-''.
-'.blue > td{'.
-'color: blue;'.
-'}'.
-''.
-'.green > td{'.
-'color: green;'.
-'}'.
-''.
-'.red > td{'.
-'color: red;'.
-'}'.
-''.
-'table, th, td {'.
-'border: 1px solid black;'.
-'border-collapse: collapse;'.
-'}'.
-''.
-''.
-''.
-'</style>'.
-'</head>'.
-'<body>'.
-'<p>Hello,</p>'.
-'<p>Thank you for booking with Highflyers. Your order has been received and being processed.</p>'.
-'<p>We will contact you and the other party on your booking the day before your collection or delivery takes place, this is to confirm an estimated two-hour time slot.</p>'.
-''.
-'<p>To check for prices, please follow the link <a style="text-decoration: underline;" href="https://www.highflyersukcouriers.com/prices">here</a></p>'.
-''.
-'<p>If you have any queries, you can call us on 07887781089 or 07760242729</p>'.
-''.
-'<p>Email: <a style="text-decoration: underline;" href="mailto: highflyerscouriers@gmail.com">highflyerscouriers@gmail.com</a> or use the contact page <a style="text-decoration: underline;" href="https://www.highflyersukcouriers.com/contact-us">here</a></p>'.
-''.
-'<p>Opening hours 10am - 4pm 7 days a week.</p>'.
-''.
-'<p>To contact for anything urgent out of hours please call 07707889868 (no bookings are taken on this number)</p>'.
-''.
-'<p>To check which days your collection or delivery day is taking place please see below.</p>'.
-''.
-''.
-'<p><b class="blueText">Tuesday</b> collections are from the following postcodes:</p>'.
-'<br>'.
-''.
-'<table>'.
-'<tr class="blue">'.
-'<td>AL</td><td>DA</td><td>IG</td><td>NN</td><td>SG</td><td>TN</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>BH</td><td>DT</td><td>IP</td><td>NR</td><td>SL</td><td>TW</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>BR</td><td>E</td><td>KT</td><td>NW</td><td>SM</td><td>UB</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>CB</td><td>EC</td><td>LL</td><td>OX</td><td>SN</td><td>W</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>CM</td><td>EN</td><td>LU</td><td>PO</td><td>SO</td><td>WC</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>CO</td><td>GU</td><td>ME</td><td>RH</td><td>SP</td><td>WD</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>CR</td><td>HA</td><td>MK</td><td>RM</td><td>SS</td><td> </td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>CT</td><td>HP</td><td>N</td><td>SE</td><td>SW</td><td> </td>'.
-'</tr>'.
-'</table>'.
-''.
-'<br>'.
-''.
-'<table>'.
-'<tr class="blue">'.
-'<td>PE2</td><td>PE27</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>PE5</td><td>PE28</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>PE7</td><td>PE29</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>PE8</td><td>PE31</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>PE14</td><td>PE32</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>PE15</td><td>PE33</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>PE16</td><td>PE36</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>PE19</td><td>PE37</td>'.
-'</tr>'.
-'<tr class="blue">'.
-'<td>PE26</td><td>PE38</td>'.
-'</tr>'.
-'</table>'.
-''.
-'<br>'.
-'<p><b>Tuesday</b> collections will be delivered on a <b>Wednesday*</b></p>'.
-'<p>*With exception to some areas which will be a two-day service, please see the Two-Day Services Areas section below.</p>'.
-'<p><b class="greenText">Wednesday</b> collections are from the following postcodes:</p>'.
-'<br>'.
-''.
-'<table>'.
-'<tr class="green">'.
-'<td>B</td><td>CH</td><td>EH</td><td>HU</td><td>LS</td><td>PR</td><td>TD</td><td>WV</td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>BA</td><td>CV</td><td>EX</td><td>HX</td><td>M</td><td>S</td><td>TF</td><td>YO</td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>BB</td><td>DD</td><td>FK</td><td>KA</td><td>ML</td><td>SA</td><td>TR</td><td></td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>BD</td><td>DE</td><td>FY</td><td>L</td><td>NE</td><td>SK</td><td>TS</td><td></td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>BL</td><td>DL</td><td>G</td><td>LA</td><td>NG</td><td>SR</td><td>TQ</td><td></td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>BS</td><td>DN</td><td>GL</td><td>LD</td><td>NP</td><td>ST</td><td>WA</td><td></td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>CA</td><td>DN</td><td>HD</td><td>LE</td><td>OL</td><td>SY</td><td>WF</td><td></td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>CF</td><td>DY</td><td>HG</td><td>LN</td><td>PL</td><td>TA</td><td>WN</td><td></td>'.
-'</tr>'.
-'</table>'.
-'<br>'.
-'<table>'.
-'<tr class="green">'.
-'<td>PE1</td><td>PE20</td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>PE3</td><td>PE21</td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>PE4</td><td>PE22</td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>PE6</td><td>PE23</td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>PE9</td><td>PE24</td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>PE10</td><td>PE25</td>'.
-'</tr>'.
-'<tr class="green">'.
-'<td>PE11</td><td></td>'.
-'</tr>'.
-'</table>'.
-''.
-'<br>'.
-'<p>Your <b>Wednesday</b> collection will be delivered on a <b>Thursday.</b></p>'.
-
-'<p><b class="redText">*Two-day service areas</b> only applies to some Tuesday collections:</p>'.
-''.
-'<p>If your collection is on a <b>Tuesday</b>, and the delivery postcode is listed below, the delivery will be a <b>Thursday.</b></p>'.
-'<br>'.
-''.
-''.
-'<table>'.
-'<tr class="red">'.
-'<td>AL</td><td>DA</td><td>IP</td><td>NW</td><td>SM</td><td>TQ</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>BA</td><td>DT</td><td>KT</td><td>OX</td><td>SN</td><td>UB</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>BH</td><td>E</td><td>LD</td><td>PL</td><td>SO</td><td>W</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>BR</td><td>EX</td><td>LL</td><td>PO</td><td>SP</td><td>WC</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>BS</td><td>EC</td><td>LU</td><td>RH</td><td>SS</td><td>WD</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>CB</td><td>EN</td><td>ME</td><td>RM</td><td>SW</td><td></td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>CM</td><td>GU</td><td>MK</td><td>SA</td><td>TA</td><td> </td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>CO</td><td>HA</td><td>N</td><td>SE</td><td>TN</td><td> </td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>CR</td><td>HP</td><td>NN</td><td>SG</td><td>TR</td><td> </td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>CT</td><td>IG</td><td>NR</td><td>SL</td><td>TW</td><td> </td>'.
-'</tr>'.
-'</table>'.
-''.
-'<br>'.
-''.
-'<table>'.
-'<tr class="red">'.
-'<td>PE2</td><td>PE27</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>PE5</td><td>PE28</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>PE7</td><td>PE29</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>PE8</td><td>PE31</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>PE14</td><td>PE32</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>PE15</td><td>PE33</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>PE16</td><td>PE36</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>PE19</td><td>PE37</td>'.
-'</tr>'.
-'<tr class="red">'.
-'<td>PE26</td><td>PE38</td>'.
-'</tr>'.
-'</table>'.
-'<p>Please note that last bookings need to be sent in by each Sunday 4pm for collections the following week, if you have sent this after Sunday 4pm, your order will be automatically booked into the week after. However, if we can fit your booking in sooner, we will contact you.</p>'.
-'<p>Many thanks for your custom</p>'.
-''.
-'</body>'.
-''.
-'</html>'.
-'';
+    $message = $message .
+    
+    '<p>Thank you for booking with Highflyers. Your order has been received and being processed.</p>'.
+    ''.
+    '<p>We will contact you and the other party included on your booking the days before your collection or delivery takes place.</p>'.
+    ''.
+    '<p>This is to confirm when to expect the driver within an estimated 2 hour time slot.</p>'.
+    ''.
+    '<p>Collections are Wednesdays and deliveries are Thursdays each week for all areas.</p>'.
+    ''.
+    '<p>To check for prices, please follow the link <a href="https://www.highflyersukcouriers.com/prices">here</a></p>'.
+    ''.
+    '<p>If you have any queries, you can call us on 07887781089 or 07760242729</p>'.
+    '<p>Email: <a href= "mailto: highflyerscouriers@gmail.com">highflyerscouriers@gmail.com</a> or use the contact page <a href="https://www.highflyersukcouriers.com/contact-us">here</a></p>'.
+    ''.
+    '<p>Opening hours 10am - 4pm 7 days a week.</p>'.
+    ''.
+    '<p>To contact for anything urgent out of hours please call 07707889868 (no bookings are taken on this number)</p>'.
+    ''.
+    '<p>Please note that last bookings need to be sent in by each Sunday 4pm for collections the following week, if you have sent this after Sunday 4pm, your order will be automatically booked into the week after. However, if we can fit your booking in sooner, we will contact you.</p>'.
+    ''.
+    '<p>Many thanks for your custom</p>'.
+    ''.
+    '</body>';
+ 
     $this->sendMail($email, $subject, $message, false);
   }
 
@@ -439,132 +239,132 @@ class Mailer{
     '<meta name="viewport" content="width=device-width, initial-scale=1.0">'.
     '<style>'.
     '@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@600&display=swap\');'.
-'@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap\');'.
-'@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap\');'.
-'html,body{'.
-  'margin:0;'.
-'}'.
-'body{'.
-  'background: #f9f9f9;'.
-  'padding-bottom: 250px;'.
-'}'.
-'.flex{'.
-  'display: flex;'.
-'}'.
-'div.columns{'.
-  'display: grid;'.
-  'grid-template-columns: 4fr 1fr 4fr 12fr 6fr 2fr;'.
-  'gap: 20px;'.
-  'height: auto;'.
-  'margin-top: 25px;'.
-  'margin-bottom: 20px;'.
-  'transition: max-height 0.5s ease-in-out;'.
-'}'.
-'div.tablerow{'.
-  'position: relative;'.
-  'font-family: \'Raleway\';'.
-  'font-style: 500;'.
-  'font-size: 18px;'.
-  'padding-top: 1px;'.
-  'padding-bottom: 26px;'.
-  'background-color: white;'.
-  'border-bottom: 1px solid grey;'.
-  'margin-bottom: 10px;'.
-  'padding-left: 30px !important;'.
-'}'.
-'div.headerrow{'.
-  'padding-top: 26px;'.
-'}'.
-'p{'.
-  'font-weight: 500;'.
-  'font-size: 18px;'.
-  'margin:0;'.
-  'padding: 0;'.
-  'overflow-wrap: anywhere;'.
-'}'.
-'div.collectioninfomargin{'.
-  'margin-top: 25px !important;'.
-'}'.
-'div.deliveryinfomargin{'.
-  'margin-top: -25px;'.
-  'margin-bottom: 0px;'.
-  'transition: margin-top 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;'.
-'}'.
-'i{'.
-  'width: 20px;'.
-  'height: 20px;'.
-  'font-size: 20px;'.
-  'margin: 1px 0px;'.
-  'margin-right: 10px;'.
-'}'.
-'div.extrainfo{'.
-  'display: grid;'.
-  'grid-template-columns: 9fr 5fr 5fr 14fr 1fr;'.
-  'max-height: 200px;'.
-  'transition: max-height 0.5s ease-in-out;'.
-'}'.
-'div.extrainfo > div{'.
-  'display: flex;'.
-'}'.
-'div.onelineaddress{'.
-  'display: flex;'.
-  'flex-wrap: wrap;'.
-  'gap: 5px;'.
-''.
-'}'.
-'@media(max-width: 1250px){'.
-  'div.tablerow{'.
-  'padding-left: 30px !important;'.
-  ''.
-'}'.
-'}'.
-''.
-'@media(max-width: 1200px){'.
-'div.columns{'.
-  'gap: 10px;'.
-'}'.
-'}'.
-''.
-'@media (max-width: 1150px) {'.
-''.
-'div.extrainfo{'.
-'display: flex;'.
-'flex-wrap: wrap;'.
-'gap: 35px;'.
-'row-gap: 15px;'.
-'}'.
-'p{'.
-'font-size: 17px !important;'.
-'}'.
-'}'.
-'@media (max-width: 1000px){'.
-'div.headerrow{'.
-'font-size: 17px !important;'.
-''.
-'}'.
-'}'.
-'@media (max-width: 740px){'.
-'p{'.
-'font-size: 15px !important;'.
-'}'.
-'input, #payment{'.
-'height: 25px;'.
-'font-size: 16px;'.
-'}'.
-'}'.
-'@media (max-width: 600px){'.
-'div.tablerow{'.
-'padding-bottom: 13px !important;'.
-'}'.
-'div.headerrow{'.
-'padding-top: 13px !important;'.
-'}'.
-'}'.
-'@media (max-width: 510px){'.
-'div.info{'.
-'grid-template-columns: 1fr !important;'.
-'}'.
-'}'.
+    '@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap\');'.
+    '@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap\');'.
+    'html,body{'.
+      'margin:0;'.
+    '}'.
+    'body{'.
+      'background: #f9f9f9;'.
+      'padding-bottom: 250px;'.
+    '}'.
+    '.flex{'.
+      'display: flex;'.
+    '}'.
+    'div.columns{'.
+      'display: grid;'.
+      'grid-template-columns: 4fr 1fr 4fr 12fr 6fr 2fr;'.
+      'gap: 20px;'.
+      'height: auto;'.
+      'margin-top: 25px;'.
+      'margin-bottom: 20px;'.
+      'transition: max-height 0.5s ease-in-out;'.
+    '}'.
+    'div.tablerow{'.
+      'position: relative;'.
+      'font-family: \'Raleway\';'.
+      'font-style: 500;'.
+      'font-size: 18px;'.
+      'padding-top: 1px;'.
+      'padding-bottom: 26px;'.
+      'background-color: white;'.
+      'border-bottom: 1px solid grey;'.
+      'margin-bottom: 10px;'.
+      'padding-left: 30px !important;'.
+    '}'.
+    'div.headerrow{'.
+      'padding-top: 26px;'.
+    '}'.
+    'p{'.
+      'font-weight: 500;'.
+      'font-size: 18px;'.
+      'margin:0;'.
+      'padding: 0;'.
+      'overflow-wrap: anywhere;'.
+    '}'.
+    'div.collectioninfomargin{'.
+      'margin-top: 25px !important;'.
+    '}'.
+    'div.deliveryinfomargin{'.
+      'margin-top: -25px;'.
+      'margin-bottom: 0px;'.
+      'transition: margin-top 0.5s ease-in-out, margin-bottom 0.5s ease-in-out;'.
+    '}'.
+    'i{'.
+      'width: 20px;'.
+      'height: 20px;'.
+      'font-size: 20px;'.
+      'margin: 1px 0px;'.
+      'margin-right: 10px;'.
+    '}'.
+    'div.extrainfo{'.
+      'display: grid;'.
+      'grid-template-columns: 9fr 5fr 5fr 14fr 1fr;'.
+      'max-height: 200px;'.
+      'transition: max-height 0.5s ease-in-out;'.
+    '}'.
+    'div.extrainfo > div{'.
+      'display: flex;'.
+    '}'.
+    'div.onelineaddress{'.
+      'display: flex;'.
+      'flex-wrap: wrap;'.
+      'gap: 5px;'.
+    ''.
+    '}'.
+    '@media(max-width: 1250px){'.
+      'div.tablerow{'.
+      'padding-left: 30px !important;'.
+      ''.
+    '}'.
+    '}'.
+    ''.
+    '@media(max-width: 1200px){'.
+    'div.columns{'.
+      'gap: 10px;'.
+    '}'.
+    '}'.
+    ''.
+    '@media (max-width: 1150px) {'.
+    ''.
+    'div.extrainfo{'.
+    'display: flex;'.
+    'flex-wrap: wrap;'.
+    'gap: 35px;'.
+    'row-gap: 15px;'.
+    '}'.
+    'p{'.
+    'font-size: 17px !important;'.
+    '}'.
+    '}'.
+    '@media (max-width: 1000px){'.
+    'div.headerrow{'.
+    'font-size: 17px !important;'.
+    ''.
+    '}'.
+    '}'.
+    '@media (max-width: 740px){'.
+    'p{'.
+    'font-size: 15px !important;'.
+    '}'.
+    'input, #payment{'.
+    'height: 25px;'.
+    'font-size: 16px;'.
+    '}'.
+    '}'.
+    '@media (max-width: 600px){'.
+    'div.tablerow{'.
+    'padding-bottom: 13px !important;'.
+    '}'.
+    'div.headerrow{'.
+    'padding-top: 13px !important;'.
+    '}'.
+    '}'.
+    '@media (max-width: 510px){'.
+    'div.info{'.
+    'grid-template-columns: 1fr !important;'.
+    '}'.
+    '}'.
     '@media(max-width: 1250px){'.
     '.tablerow{'.
     'padding-left: 30px !important;'.
@@ -643,7 +443,7 @@ class Mailer{
     ''.
     '<div id="table">';
 
-    for($i = 1; $i < count($this->mailer_data) . 1; $i++){
+    for($i = 1; $i < count($this->mailer_data) + 1; $i++){
 
       // echo $this->mailer_data[$i]['animal_type'];
 
@@ -719,10 +519,55 @@ $attachment = $attachment . '</tbody>'.
   public function sendMultipleOrderEmail($email){
 
       $email =  $email;
-      $subject = "High Flyers Uk Couriers Booking Confirmation -NoReply";
+      $subject = "High Flyers Uk Couriers Booking Confirmation - NoReply";
 
       $attachment = $this->getMultipleOrderAttachment();
-      $message = "Thank you for your order. Below is a file confirming you orders.";
+      $message = 
+      
+      '<!DOCTYPE html>'.
+      ''.
+      '<html>'.
+      '<head>'.
+      '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway" id="Raleway">'.
+      ''.
+      '<style>'.
+      ''.
+      '@import url(\'https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@800&display=swap\');'.
+      '@import url(\'https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap\');'.
+      ''.
+      'body{'.
+      'font-family: \'Raleway\';'.
+      'font-style: normal;'.
+      'font-weight: 400;'.
+      'font-size: 1.1em;'.
+      '}'.
+      ''.
+      '</style>'.
+      '</head>'.
+      '<body>'.
+      ''.
+      '<p>Thank you for booking with Highflyers. Your order has been received and being processed.</p>'.
+      ''.
+      '<p>We will contact you and the other party included on your booking the days before your collection or delivery takes place.</p>'.
+      ''.
+      '<p>This is to confirm when to expect the driver within an estimated 2 hour time slot.</p>'.
+      ''.
+      '<p>Collections are Wednesdays and deliveries are Thursdays each week for all areas.</p>'.
+      ''.
+      '<p>To check for prices, please follow the link <a href="https://www.highflyersukcouriers.com/prices">here</a></p>'.
+      ''.
+      '<p>If you have any queries, you can call us on 07887781089 or 07760242729</p>'.
+      '<p>Email: <a href= "mailto: highflyerscouriers@gmail.com">highflyerscouriers@gmail.com</a> or use the contact page <a href="https://www.highflyersukcouriers.com/contact-us">here</a></p>'.
+      ''.
+      '<p>Opening hours 10am - 4pm 7 days a week.</p>'.
+      ''.
+      '<p>To contact for anything urgent out of hours please call 07707889868 (no bookings are taken on this number)</p>'.
+      ''.
+      '<p>Please note that last bookings need to be sent in by each Sunday 4pm for collections the following week, if you have sent this after Sunday 4pm, your order will be automatically booked into the week after. However, if we can fit your booking in sooner, we will contact you.</p>'.
+      ''.
+      '<p>Many thanks for your custom</p>'.
+      ''.
+      '</body>';
    
       $this->sendMail($email, $subject, $message, $attachment);
   }

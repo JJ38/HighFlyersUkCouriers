@@ -235,7 +235,7 @@ function getOrderHTML(tableData){
       'Telephone: 07887 781089'+
     '</h2>'+
     '<div class="grid">'+
-      '<label class="bold">OrderId: </label>'+
+      '<label class="bold">Order ID: </label>'+
       '<p>' + tableData[1].innerHTML + '</p>'+
       ''+
       '<label class="bold">Animal Type: </label>'+
@@ -307,7 +307,7 @@ function getOrderHTML(tableData){
       'Telephone: 07887 781089'+
     '</h2>'+
     '<div class="grid">'+
-      '<label class="bold">OrderId: </label>'+
+      '<label class="bold">Order ID: </label>'+
       '<p>' + tableData[1].innerHTML + '</p>'+
       ''+
       '<label class="bold">Animal Type: </label>'+

@@ -7,26 +7,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/loginpage', function (Request $request, Response $response) use ($app) : Response{
 
-    $allGetVars = $_GET;
-
-    if(!empty($allGetVars)){
-      if(!empty($allGetVars['error'])){
-        $tainted_error = $allGetVars['error'];
-        if($tainted_error){
-          $sanitizer = $app->getContainer()->get('sanitizer');
-          $cleaned_error = $sanitizer->sanitizeString($tainted_error);
-
-          if($cleaned_error != null){
-
-            if($cleaned_error === "dbconnection"){
-              echo "<script>alert('Unable to log in currently - Please try again later');</script>";
-
-            }
-          }
-        }
-      }
-    }
-
     return $this->view->render($response,'LoginPage.twig', array(
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "LoginPage.css",
@@ -65,46 +45,34 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
 
   // // Doctrine wrapper setup
   $database_connection_settings = $container->get('settings')['doctrineSettings'];
-  try{
-    $database_connection = DriverManager::getConnection($database_connection_settings);
+  $database_connection = DriverManager::getConnection($database_connection_settings);
+  $query_builder = $database_connection->createQueryBuilder();
+  $doctrine_wrapper->setQueryBuilder($query_builder);
+  $doctrine_wrapper->setDoctrineLogger($logger);
 
-    $query_builder = $database_connection->createQueryBuilder();
-    $doctrine_wrapper->setQueryBuilder($query_builder);
-    $doctrine_wrapper->setDoctrineLogger($logger);
+  // LoginModel setup
+  $login_model->setDoctrineWrapper($doctrine_wrapper);
+  $login_model->setBcryptWrapper($bcrypt_wrapper);
+  $login_model->setSessionWrapper($session_wrapper);
+  $login_model->setUserCredentials($cleaned_parameters);
+  $login_model->setLoggerHandle($logger);
 
-    // LoginModel setup
-    $login_model->setDoctrineWrapper($doctrine_wrapper);
-    $login_model->setBcryptWrapper($bcrypt_wrapper);
-    $login_model->setSessionWrapper($session_wrapper);
-    $login_model->setUserCredentials($cleaned_parameters);
-    $login_model->setLoggerHandle($logger);
+  $login_model->login();
+  $login_result = $login_model->getResult(); //If result is successful $login_result is true
 
-    $login_model->login();
-    $login_result = $login_model->getResult(); //If result is successful $login_result is true
+  if($login_result) {
+      $account_type = $session_wrapper->getSessionVar('accountType');
 
-    if($login_result) {
-        $account_type = $session_wrapper->getSessionVar('accountType');
+      if($account_type == "admin" || $account_type == "staff"){
+       
+        return $response->withRedirect('/manage-orders', 302);
+      }
 
-        if($account_type == "admin" || $account_type == "staff"){
-        
-          return $response->withRedirect('/manage-orders', 301);
-        }
+      return $response->withRedirect('/customer-order', 302);
+    
+  } 
 
-        return $response->withRedirect('/customer-order', 301);
-      
-    } 
-
-
-
-    return $response->withRedirect('loginpage', 301);
-
-  }catch(Exception $e){
-
-    return $response->withRedirect('loginpage?error=dbconnection', 301);
-  }
-  
-
-  
+  return $response->withRedirect('loginpage', 302);
 
 })->setName('loginpage');
 

@@ -99,8 +99,10 @@ tr{
   border-bottom: 1px solid black;
 }
 
-tr:hover{
-  background-color: rgb(196, 233, 245);
+@media (hover: hover) {
+  tr:hover{
+    background-color: rgb(196, 233, 245);
+  }
 }
 
 tr:last-of-type{

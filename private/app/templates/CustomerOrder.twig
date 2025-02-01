@@ -84,7 +84,7 @@
                         </div>
                         <div class="forminput">
                             <label for="" class="">Collection Telephone*</label>
-                            <input id="collectiontelephone" name="" type="text" onchange="updateQuickAddressTelephone()" required="">
+                            <input id="collectiontelephone" name="" type="text" onchange="updateQuickAddressTelephone()" minlength="11" maxlength="11" required="">
                         </div>
                         <div class="forminput">
                             <label for="" class="">Collection Address 1*</label>
@@ -119,7 +119,7 @@
                     </div>
                     <div class="forminput">
                         <label for="" class="">Delivery Telephone*</label>
-                        <input id="deliverytelephone" name="" type="text" required="">
+                        <input id="deliverytelephone" name="" type="text" minlength="11" maxlength="11" required="">
                     </div>
                     <div class="forminput">
                         <label for="" class="">Delivery Address 1*</label>
@@ -145,6 +145,7 @@
                             <option value=""> </option>
                             <option value="Collection">Collection</option>
                             <option value="Delivery">Delivery</option>
+                            <option value="Account">Account</option>
                         </select>
                     </div>
                     <div class="forminput">

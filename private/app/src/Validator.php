@@ -20,7 +20,7 @@ class Validator
 
       $cleaned_option = '';
 
-      if($tainted_payment_option == 'Delivery' || $tainted_payment_option == 'Collection')
+      if($tainted_payment_option == 'Delivery' || $tainted_payment_option == 'Collection' || $tainted_payment_option == 'Account')
       {
         $cleaned_option = $tainted_payment_option;
         $this->validateResult = true;
@@ -69,7 +69,6 @@ class Validator
 
       $cleaned_number = '';
       if(strlen($tainted_number > 0)){
-        //$cleaned_number = filter_var($tainted_number, FILTER_SANITIZE_NUMBER_INT);
         $cleaned_number = $tainted_number;
         $this->validateResult = true;
 
@@ -84,8 +83,7 @@ class Validator
     {
 
       $cleaned_number = '';
-      if(strlen($tainted_number) > 10 && strlen($tainted_number) < 13){
-        //$cleaned_number = filter_var($tainted_number, FILTER_SANITIZE_NUMBER_INT);
+      if(strlen($tainted_number) > 10 && strlen($tainted_number) < 12){
         $cleaned_number = $tainted_number;
         $this->validateResult = true;
 

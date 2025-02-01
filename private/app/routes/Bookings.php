@@ -62,23 +62,39 @@ $app->get('/bookings[/invalidform]', function (Request $request, Response $respo
 $app->post('/bookings', function (Request $request, Response $response) use ($app) : Response
 {
 
+  $container = $app->getContainer();
+  $manage_order_model = $container->get('manageOrderModel');
+
   $tainted_parameters = $request->getParsedBody();
 
-  $cleaned_parameters = cleanBookingForm($app, $tainted_parameters);
+  //$cleaned_parameters = cleanBookingForm($app, $tainted_parameters);
+
+  $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
+
+
+
   //if one of the parameters does not meet requirements
 
   if(empty($cleaned_parameters)){
-    return $response->withRedirect('/bookings?invalidform=true', 301);
+    
+    $error_message = $manage_order_model->getErrorMessage();
+    $error_input_value = $manage_order_model->getErrorInputValue();
+
+    // return $response;
+
+    $logger = $container->get("logger");
+    $logger->error("BOOKING-FORM-ERROR", $tainted_parameters);
+
+    return $response->withRedirect('/bookings?invalidform=true&errormessage=' . $error_message . '&inputvalue=' . $error_input_value, 301);
     
   }
 
   //if cleaned and ready to send emails and store
 
-  $container = $app->getContainer();
 
   //get delivery week
 
-  $manage_order_model = $container->get('manageOrderModel');
+ 
   $delivery_week = $manage_order_model->getDeliveryWeek('PUBLIC');
 
   $cleaned_parameters['delivery_week'] = $delivery_week;
@@ -115,7 +131,8 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   $mailer = $container->get('mailer');
   $mailer_settings = $container->get('settings')['mailerBookingSettings'];
   $mailer->setMailerSettings($mailer_settings);
-  
+  $mailer->setLogger($logger);
+
   $mailer->setMailData($cleaned_parameters);
   $mailer->sendMailCustomer();
   $mailer->sendMailInternal();
@@ -175,6 +192,10 @@ function cleanBookingForm($app, array $tainted_parameters) : array
       return $cleaned_parameters;
     }
 
+  
+    $cleaned_parameters['username'] = "";
+    $cleaned_parameters['code'] = "";
+    $cleaned_parameters['added_by'] = "";
 
     $cleaned_parameters['animal_type'] = $sanitizer->sanitizeString($tainted_parameters['animalType']);
     $cleaned_parameters['collection_name'] = $sanitizer->sanitizeString($tainted_parameters['collectionName']);

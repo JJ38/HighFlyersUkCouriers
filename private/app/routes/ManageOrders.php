@@ -4,8 +4,17 @@ use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+use Datetime;
+use DateTimeZone;
+
 $app->get('/manage-orders[/updated]', function (Request $request, Response $response, $updated="null") use ($app) : Response{
-  
+
+
+    $current_date = new DateTime();
+    $current_date->setTimezone(new DateTimeZone('Europe/London'));
+
+    echo $current_date->format("Y-m-d H:i:s P T");
+
     $account_type = $request->getAttribute('accountType');
 
     if($account_type == "admin" || $account_type == "staff"){
@@ -54,7 +63,7 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
               }
               
               else{
-                echo "<script>alert('Order Not Added - Error (most likely invalid order parameters)');</script>";
+                echo "<script>alert('Order Not Added - Error ($cleaned_add_order)');</script>";
               }
             }
           }
@@ -183,6 +192,10 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
               'isAdmin' => $account_type == "admin",
           ));
     }
+
+    // echo "<pre>" . var_dump($account_type) . "</pre>";
+
+    // return $response;
 
     return $response->withRedirect('loginpage', 301);
     

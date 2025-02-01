@@ -45,7 +45,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   $tainted_parameters = $request->getParsedBody();
   //$tainted_parameters["printed"] = "0"; //default not printed value for newly added orders
-
+ 
 
   $container = $app->getContainer();
   $manage_order_model = $container->get('manageOrderModel');
@@ -54,20 +54,22 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   //if one of the parameters does not meet requirements
 
-  // var_dump($tainted_parameters);
+
 
   if(empty($cleaned_parameters)){
 
+    $error_message = "Error (No parameters where posted - connection error)"; //default error message
 
-    return $response->withRedirect('/manage-orders?addorder=false', 301);
+    $error_message = $manage_order_model->getErrorMessage();
+
+
+    return $response->withRedirect("/manage-orders?addorder=$error_message", 301);
   }
 
   
   $username = $request->getAttribute('username');
   $cleaned_parameters['added_by'] = $username;
 
-
-  
 
   if(empty($cleaned_parameters['delivery_week'])){//if delivery week empty
     //add delivery week in

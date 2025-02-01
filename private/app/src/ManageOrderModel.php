@@ -13,6 +13,8 @@ class ManageOrderModel
   private $HTML_order_data;
   private $confirmed_orders;
   private $is_admin;
+  private $error_message;
+  private $error_input_value;
 
 
   public function getOrderData() : array|null //for testing purposes
@@ -32,6 +34,16 @@ class ManageOrderModel
   public function getHTMLOrderData() : string
   {
     return $this->HTML_order_data;
+  }
+
+  public function getErrorMessage() : string
+  {
+    return $this->error_message;
+  }
+
+  public function getErrorInputValue() : string
+  {
+    return $this->error_input_value;
   }
 
   public function setDoctrineWrapper($doctrine_wrapper) : void
@@ -173,6 +185,7 @@ class ManageOrderModel
 
       if($this->is_admin){
         $HTML = $HTML . '<a href="/delete-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">Delete</button></a>';
+       
       }
 
       $HTML = $HTML . '</TD></tr>';
@@ -320,6 +333,8 @@ class ManageOrderModel
     $sanitizer = $app->getContainer()->get('sanitizer');
     $validator = $app->getContainer()->get('validator');
 
+    $this->error_message = "error";
+
     //convert postcodes to uppercase
     $tainted_parameters['collection_postcode'] = strtoupper($tainted_parameters['collection_postcode']);
     $tainted_parameters['delivery_postcode'] = strtoupper($tainted_parameters['delivery_postcode']);
@@ -336,6 +351,8 @@ class ManageOrderModel
     $cleaned_parameters['quantity'] = $validator->validatePositiveNumber($sanitized_parameters['quantity']);
     if(!$validator->getValidationResult()){
       $cleaned_parameters = array();
+      $this->error_message = "invalid quantity";
+      $this->error_input_value = $tainted_parameters['quantity'];
       return $cleaned_parameters;
     }
 
@@ -343,6 +360,9 @@ class ManageOrderModel
     $cleaned_parameters['email'] = $validator->validateEmail($sanitized_parameters['email']);
     if(!$validator->getValidationResult()){
       $cleaned_parameters = array();
+      $this->error_message = "invalid email";
+      $this->error_input_value = $tainted_parameters['email'];
+
       return $cleaned_parameters;
     }
 
@@ -350,6 +370,8 @@ class ManageOrderModel
     $cleaned_parameters['payment_option'] = $validator->validatePaymentOption($sanitized_parameters['payment_option']);
     if(!$validator->getValidationResult()){
       $cleaned_parameters = array();
+      $this->error_message = "invalid payment option";
+      $this->error_input_value = $tainted_parameters['payment_option'];
       return $cleaned_parameters;
     }
 
@@ -358,6 +380,8 @@ class ManageOrderModel
 
     if(!$validator->getValidationResult()){
       $cleaned_parameters = array();
+      $this->error_message = "invalid delivery phone number";
+      $this->error_input_value = $tainted_parameters['delivery_phone_number'];
       return $cleaned_parameters;
     }
 
@@ -365,13 +389,42 @@ class ManageOrderModel
     $cleaned_parameters['collection_phone_number'] = $validator->validatePhoneNumber($sanitized_parameters['collection_phone_number']);
     if(!$validator->getValidationResult()){
       $cleaned_parameters = array();
+      $this->error_message = "invalid collection phone number";
+      $this->error_input_value = $tainted_parameters['collection_phone_number'];
       return $cleaned_parameters;
     }
 
-    
+    if(array_key_exists('code', $tainted_parameters)){
+      $cleaned_parameters['code'] = $sanitizer->sanitizeString($tainted_parameters['code']);
+    }else{
+      $cleaned_parameters['code'] = "";
+    }
 
-    $cleaned_parameters['username'] = $sanitizer->sanitizeString($tainted_parameters['username']);
-    $cleaned_parameters['delivery_week'] = $sanitizer->sanitizeString($tainted_parameters['delivery_week']);
+    if(array_key_exists('username', $tainted_parameters)){
+      $cleaned_parameters['username'] = $sanitizer->sanitizeString($tainted_parameters['username']);
+    }else{
+      $cleaned_parameters['username'] = "";
+    }
+      
+    if(array_key_exists('added_by', $tainted_parameters)){
+      $cleaned_parameters['added_by'] = $sanitizer->sanitizeString($tainted_parameters['added_by']);
+    }else{
+      $cleaned_parameters['added_by'] = "";
+    }
+      
+    if(array_key_exists('delivery_week', $tainted_parameters)){
+      $cleaned_parameters['delivery_week'] = $sanitizer->sanitizeString($tainted_parameters['delivery_week']);
+    }else{
+      $cleaned_parameters['delivery_week'] = null;
+    }
+
+    if(array_key_exists('printed', $tainted_parameters)){
+      $cleaned_parameters['printed'] = $sanitizer->sanitizeString($tainted_parameters['printed']);
+    }else{
+      $cleaned_parameters['printed'] = "Not Printed";
+    }
+
+
     $cleaned_parameters['animal_type'] = $sanitizer->sanitizeString($tainted_parameters['animal_type']);
     $cleaned_parameters['collection_name'] = $sanitizer->sanitizeString($tainted_parameters['collection_name']);
     $cleaned_parameters['collection_address_1'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_1']);
@@ -383,10 +436,8 @@ class ManageOrderModel
     $cleaned_parameters['delivery_address_2'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_2']);
     $cleaned_parameters['delivery_address_3'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_3']);
     $cleaned_parameters['delivery_postcode'] = $sanitizer->sanitizeString($tainted_parameters['delivery_postcode']);
-    $cleaned_parameters['code'] = $sanitizer->sanitizeString($tainted_parameters['code']);
-    $cleaned_parameters['added_by'] = $sanitizer->sanitizeString($tainted_parameters['added_by']);
     $cleaned_parameters['message'] = $sanitizer->sanitizeString($tainted_parameters['message']);
-    $cleaned_parameters['printed'] = $sanitizer->sanitizeString($tainted_parameters['printed']);
+    
     
 
     return $cleaned_parameters;

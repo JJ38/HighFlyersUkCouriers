@@ -66,6 +66,7 @@ let deliveryTelephoneValue;
 let emailValue;
 let paymentOptionValue;
 let messageValue;
+let addedToBasket = false;
 let idBookmark = 0;
 
 setProfileData();
@@ -174,11 +175,11 @@ function validateOrder(){
 
     //validate phone numbers
     
-    if((!deliveryTelephone.value.match(isNumber)) || !(deliveryTelephone.value.length > 10 && deliveryTelephone.value.length < 13)){
+    if((!deliveryTelephone.value.match(isNumber)) || !(deliveryTelephone.value.length > 10 && deliveryTelephone.value.length < 12)){
         return "Delivery Telephone is not a valid phone number";
     }
 
-    if((!collectionTelephone.value.match(isNumber)) || !(collectionTelephone.value.length > 10 && collectionTelephone.value.length < 13)){
+    if((!collectionTelephone.value.match(isNumber)) || !(collectionTelephone.value.length > 10 && collectionTelephone.value.length < 12)){
         return "Collection Telephone is not a valid phone number";
     }
 
@@ -196,7 +197,7 @@ function validateOrder(){
 
     //validate payment method
 
-    if(paymentOption.value != "Collection" && paymentOption.value != "Delivery"){
+    if(paymentOption.value != "Collection" && paymentOption.value != "Delivery" && paymentOption.value != "Account"){
         return "Payment method is not valid";
     }
 
@@ -206,46 +207,54 @@ function validateOrder(){
 }
 
 function loadBasket(){
-
-    basketJSON = JSON.parse(localStorage.getItem("basket"));
    
+    try{
+        // console.log(localStorage.getItem('basket'));
+        if(localStorage.getItem('basket') != null){
+            idBookmark = basketJSON['id_bookmark'];
+            if(basketJSON['basket'].length > 0){ 
+                
+                
+                for(let i = 0; i < basketJSON['basket'].length; i++){
+                
+                    animalTypeValue = basketJSON['basket'][i]['animal_type'];
+                    quantityValue = basketJSON['basket'][i]['quantity'];
+                    codeValue = basketJSON['basket'][i]['code'];
+                    collectionNameValue = basketJSON['basket'][i]['collection_name'];
+                    collectionPostcodeValue = basketJSON['basket'][i]['collection_postcode'];
+                    collectionAddress1Value = basketJSON['basket'][i]['collection_address1'];
+                    collectionAddress2Value = basketJSON['basket'][i]['collection_address2'];
+                    collectionAddress3Value = basketJSON['basket'][i]['collection_address3'];
+                    collectionTelephoneValue = basketJSON['basket'][i]['collection_telephone'];
+                    deliveryNameValue = basketJSON['basket'][i]['delivery_name'];
+                    deliveryPostcodeValue = basketJSON['basket'][i]['delivery_postcode'];
+                    deliveryAddress1Value = basketJSON['basket'][i]['delivery_address1'];
+                    deliveryAddress2Value = basketJSON['basket'][i]['delivery_address2'];
+                    deliveryAddress3Value = basketJSON['basket'][i]['delivery_address3'];
+                    deliveryTelephoneValue = basketJSON['basket'][i]['delivery_telephone'];
+                    emailValue = basketJSON['basket'][i]['email'];
+                    paymentOptionValue = basketJSON['basket'][i]['payment_option'];
+                    messageValue = basketJSON['basket'][i]['message'];
+                    addOrderHTML(basketJSON['basket'][i]['id']);
+                }
 
-    // console.log(localStorage.getItem('basket'));
-    if(localStorage.getItem('basket') != null){
-        idBookmark = basketJSON['id_bookmark'];
-        if(basketJSON['basket'].length > 0){ 
+                updateBasket();
             
-            
-            for(let i = 0; i < basketJSON['basket'].length; i++){
-            
-                animalTypeValue = basketJSON['basket'][i]['animal_type'];
-                quantityValue = basketJSON['basket'][i]['quantity'];
-                codeValue = basketJSON['basket'][i]['code'];
-                collectionNameValue = basketJSON['basket'][i]['collection_name'];
-                collectionPostcodeValue = basketJSON['basket'][i]['collection_postcode'];
-                collectionAddress1Value = basketJSON['basket'][i]['collection_address1'];
-                collectionAddress2Value = basketJSON['basket'][i]['collection_address2'];
-                collectionAddress3Value = basketJSON['basket'][i]['collection_address3'];
-                collectionTelephoneValue = basketJSON['basket'][i]['collection_telephone'];
-                deliveryNameValue = basketJSON['basket'][i]['delivery_name'];
-                deliveryPostcodeValue = basketJSON['basket'][i]['delivery_postcode'];
-                deliveryAddress1Value = basketJSON['basket'][i]['delivery_address1'];
-                deliveryAddress2Value = basketJSON['basket'][i]['delivery_address2'];
-                deliveryAddress3Value = basketJSON['basket'][i]['delivery_address3'];
-                deliveryTelephoneValue = basketJSON['basket'][i]['delivery_telephone'];
-                emailValue = basketJSON['basket'][i]['email'];
-                paymentOptionValue = basketJSON['basket'][i]['payment_option'];
-                messageValue = basketJSON['basket'][i]['message'];
-                addOrderHTML(basketJSON['basket'][i]['id']);
-            }
+            } 
+        }else{
 
-            updateBasket();
-        
-        } 
-    }else{
+            basketBoilerPlateJSON = '{"id_bookmark": 0,"basket": []}';
+            localStorage.setItem("basket", basketBoilerPlateJSON);
+            
+        }
+    }catch(e){
 
         basketBoilerPlateJSON = '{"id_bookmark": 0,"basket": []}';
-        localStorage.setItem("basket", basketBoilerPlateJSON);
+        try{
+            localStorage.setItem("basket", basketBoilerPlateJSON);
+        }catch(e){
+            console.log(e);
+        }
         
     }
 
@@ -256,9 +265,6 @@ function loadBasket(){
 }
 
 function addToBasket(){
-
-    console.log(localStorage.getItem('basket'));
-   
 
     //check if profile has email
     var isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -302,43 +308,45 @@ function addToBasket(){
 
     // if required fields entered add dom elements
 
-    if(requiredFieldsMet){
+    
 
-        //set order data
+    //set order data
 
-       
-        animalTypeValue = animalType.value;
-        quantityValue = quantity.value;
-        codeValue = code.value;
-        collectionNameValue = collectionName.value;
-        collectionPostcodeValue = collectionPostcode.value;
-        collectionAddress1Value = collectionAddress1.value;
-        collectionAddress2Value = collectionAddress2.value;
-        collectionAddress3Value = collectionAddress3.value;
-        collectionTelephoneValue = collectionTelephone.value;
-        deliveryNameValue = deliveryName.value;
-        deliveryPostcodeValue = deliveryPostcode.value;
-        deliveryAddress1Value = deliveryAddress1.value;
-        deliveryAddress2Value = deliveryAddress2.value;
-        deliveryAddress3Value = deliveryAddress3.value;
-        deliveryTelephoneValue = deliveryTelephone.value;
-        emailValue = email.value;
-        paymentOptionValue = paymentOption.value;
-        messageValue = message.value;
-        
+    
+    animalTypeValue = animalType.value;
+    quantityValue = quantity.value;
+    codeValue = code.value;
+    collectionNameValue = collectionName.value;
+    collectionPostcodeValue = collectionPostcode.value;
+    collectionAddress1Value = collectionAddress1.value;
+    collectionAddress2Value = collectionAddress2.value;
+    collectionAddress3Value = collectionAddress3.value;
+    collectionTelephoneValue = collectionTelephone.value;
+    deliveryNameValue = deliveryName.value;
+    deliveryPostcodeValue = deliveryPostcode.value;
+    deliveryAddress1Value = deliveryAddress1.value;
+    deliveryAddress2Value = deliveryAddress2.value;
+    deliveryAddress3Value = deliveryAddress3.value;
+    deliveryTelephoneValue = deliveryTelephone.value;
+    emailValue = email.value;
+    paymentOptionValue = paymentOption.value;
+    messageValue = message.value;
+    
 
-        //update local storage
-        
+    //update local storage
+
+    addOrderHTML(idBookmark);
+    
+    try{
+    
         basketJSON = JSON.parse(localStorage.getItem("basket"));
         basketJSON['basket'].push(orderToJSON());
-    
-        localStorage.setItem("basket", JSON.stringify(basketJSON));
-    
-        console.log(basketJSON = JSON.parse(localStorage.getItem("basket")));
-    
 
-        addOrderHTML(idBookmark);
-        
+        localStorage.setItem("basket", JSON.stringify(basketJSON));
+
+        console.log(basketJSON = JSON.parse(localStorage.getItem("basket")));
+
+
         idBookmark ++;
 
         //update localstorage id_bookmark
@@ -350,9 +358,17 @@ function addToBasket(){
 
         console.log(JSON.parse(localStorage.getItem("basket")));
         
-
+    }catch(e){
+        console.log(e);
         updateBasket();
+
     }
+
+    resetFormValues();
+
+
+    updateBasket();
+    
 
 }
 
@@ -419,24 +435,27 @@ function addOrderHTML(id){
                         '</div>' +
                         '<input type=hidden name=id value=' + id + '>';
                         
-        tableRow.innerHTML = orderHTML;
-        table.appendChild(tableRow);
+    tableRow.innerHTML = orderHTML;
+    table.appendChild(tableRow);
 
-        //reset deliverinfo form values
-        deliveryName.value = "";
-        deliveryAddress1.value = "";
-        deliveryAddress2.value = "";
-        deliveryAddress3.value = "";
-        deliveryPostcode.value = "";
-        deliveryTelephone.value = "";
-        paymentOption.value = "";
-        message.value = "";
+    addedToBasket = true;
 
-        animalType.value = "";
-        quantity.value = "";
-        code.value = ""
+}
 
+function resetFormValues(){
 
+    deliveryName.value = "";
+    deliveryAddress1.value = "";
+    deliveryAddress2.value = "";
+    deliveryAddress3.value = "";
+    deliveryPostcode.value = "";
+    deliveryTelephone.value = "";
+    paymentOption.value = "";
+    message.value = "";
+
+    animalType.value = "";
+    quantity.value = "";
+    code.value = ""
 }
 
 function orderToJSON(){
@@ -470,12 +489,19 @@ function orderToJSON(){
 }
 
 function updateBasket(){
-    basketJSON = JSON.parse(localStorage.getItem("basket"));
-    if(basketJSON['basket'].length == 0){
-        basket.classList= "hidden";
-    }else{
+
+    console.log(addedToBasket);
+   
+    try{
+        if(table.children.length == 1){
+            basket.classList= "hidden";
+        }else{
+            basket.classList = "";
+        }
+    }catch(e){
         basket.classList = "";
     }
+
 
     
 

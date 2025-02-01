@@ -148,7 +148,9 @@ class DoctrineWrapper
 
       } catch (\Exception $exception) {
           if ($this->doctrine_logger !== null) {
-              $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+              $this->logDoctrineError('Doctrine Error Add', array($exception->getMessage()));
+              $this->logDoctrineError($cleaned_parameters);
+
           }
       } finally {
           $this->query_result = $store_result;
@@ -369,7 +371,9 @@ class DoctrineWrapper
 
         } catch (\Exception $exception) {
             if ($this->doctrine_logger !== null) {
-                $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+                $this->logDoctrineError('Doctrine Error Update', array($exception->getMessage()));
+                $this->logDoctrineError($cleaned_parameters);
+
             }
         } finally {
             $this->query_result = $updated_order;
@@ -728,6 +732,7 @@ class DoctrineWrapper
         } catch (\Exception $exception) {
             if ($this->doctrine_logger !== null) {
                 $this->logDoctrineError('Doctrine Error', array($exception->getMessage()));
+                $this->logDoctrineError(implode(",", $cleaned_parameters));
             }
         } finally {
             $this->query_result = $updated_order;

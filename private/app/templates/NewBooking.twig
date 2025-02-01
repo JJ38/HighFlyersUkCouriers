@@ -44,7 +44,7 @@
   </nav>
 </header>
 <section class="maincontent" contenteditable="false">
-        	<form id="contactUsForm" action="bookings" method="post" class="">
+        	<form id="bookingForm" action="bookings" method="post" class="">
             <div class="" contenteditable="false">
               <h1 class="" contenteditable="false" style="background-color: rgba(255, 255, 255, 0); color: rgb(0, 0, 0); font-family: &quot;Roboto Slab&quot;;">
                 Booking</h1>
@@ -55,7 +55,12 @@
                   <label for="email" class="" contenteditable="false" style="font-family: Raleway;">Email</label>
                   <input id="email" name="email" type="email" required="">
                 </section>
+                <section class="bookingInput" contenteditable="false" style="background-color: rgba(255, 255, 255, 0);">
+                  <label for="confirmEmail" class="" contenteditable="false" style="font-family: Raleway;">Confirm Email</label>
+                  <input id="confirmEmail" name="confirmEmail" type="email" required="">
+                </section>
               </section>
+               
               <h2 class="" contenteditable="false" style="font-family: Raleway;">
                 Order info
               </h2>
@@ -63,7 +68,7 @@
               <section class="formsection">
                 <section class="bookingInput">
                   <label for="animalType" class="" contenteditable="false">Bird/Animal type</label>
-                  <input id="animalType" name="animalType" type="text" required="">
+                  <input id="animalType" name="animal_type" type="text" required="">
                 </section>
 
                 <section class="bookingInput">
@@ -78,34 +83,34 @@
               <section class="formsection" contenteditable="false">
                 <section class="bookingInput">
                   <label for="collectionName">Collection Name </label>
-                  <input id="collectionName" name="collectionName" type="text" required="">
+                  <input id="collectionName" name="collection_name" type="text" required="">
                 </section>
                 
                 <section class="bookingInput"></section>
 
                 <section class="bookingInput">
-                  <label for="collectionAddress1">Collection Address 1 </label>
-                  <input id="collectionAddress1" name="collectionAddress1" type="text" required="">
+                  <label for="collectionAddress1">Collection Address Line 1 </label>
+                  <input id="collectionAddress1" name="collection_address_1" type="text" required="">
                 </section>
 
                 <section class="bookingInput">
-                  <label for="collectionAddress2">Collection Address 2 </label>
-                  <input id="collectionAddress2" name="collectionAddress2" type="text">
+                  <label for="collectionAddress2">Collection Address Line 2 </label>
+                  <input id="collectionAddress2" name="collection_address_2" type="text">
                 </section>
 
                 <section class="bookingInput">
-                  <label for="collectionAddress3">Collection Address 3 </label>
-                  <input id="collectionAddress3" name="collectionAddress3" type="text">
+                  <label for="collectionAddress3">Collection Address Line 3 </label>
+                  <input id="collectionAddress3" name="collection_address_3" type="text">
                 </section>
 
                 <section class="bookingInput">
                   <label for="collectionPostcode">Collection Postcode</label>
-                  <input id="collectionPostcode" name="collectionPostcode" type="text" required="">
+                  <input id="collectionPostcode" name="collection_postcode" type="text" required="">
                 </section>
 
                 <section class="bookingInput">
                   <label for="email">Collection Telephone Number</label>
-                  <input id="collectionTelephone" name="collectionTelephone" type="text" minlength="11" maxlength="12" required="">
+                  <input id="collectionTelephone" name="collection_phone_number" type="text" minlength="11" maxlength="12" required="">
                 </section>
               </section>
               <h2>
@@ -115,34 +120,34 @@
               <section class="formsection" contenteditable="false" style="background-color: rgba(0, 0, 0, 0);">
                 <section class="bookingInput">
                   <label for="deliveryName">Delivery Name </label>
-                  <input id="deliveryName" name="deliveryName" type="text" required="">
+                  <input id="deliveryName" name="delivery_name" type="text" required="">
                 </section>
 
                 <section class="bookingInput"></section>
 
                 <section class="bookingInput">
                   <label for="deliveryAddress1" class="" contenteditable="false" style="color: rgb(0, 0, 0);">Delivery Address Line 1 </label>
-                  <input id="deliveryAddress1" name="deliveryAddress1" type="text" required="">
+                  <input id="deliveryAddress1" name="delivery_address_1" type="text" required="">
                 </section>
 
                 <section class="bookingInput">
                   <label for="deliveryAddress2">Delivery Address Line 2 </label>
-                  <input id="deliveryAddress2" name="deliveryAddress2" type="text">
+                  <input id="deliveryAddress2" name="delivery_address_2" type="text">
                 </section>
 
                 <section class="bookingInput">
                   <label for="deliveryAddress3">Delivery Address Line 3 </label>
-                  <input id="deliveryAddress3" name="deliveryAddress3" type="text">
+                  <input id="deliveryAddress3" name="delivery_address_3" type="text">
                 </section>
 
                 <section class="bookingInput">
                   <label for="deliveryPostcode">Delivery Postcode </label>
-                  <input id="deliveryPostcode" name="deliveryPostcode" type="text" required="">
+                  <input id="deliveryPostcode" name="delivery_postcode" type="text" required="">
                 </section>
 
                 <section class="bookingInput">
                   <label for="deliveryTelephone">Delivery Telephone Number </label>
-                  <input id="deliveryTelephone" name="deliveryTelephone" type="text" minlength="11" maxlength="12" required="">
+                  <input id="deliveryTelephone" name="delivery_phone_number" type="text" minlength="11" maxlength="12" required="">
                 </section>
               </section>
 
@@ -153,7 +158,7 @@
               <section class="formsection" contenteditable="false">
                 <section class="bookingInput">
                   <label for="payment">Payment on Delivery or Collection? </label>
-                  <select name="payment" id="payment" required="">
+                  <select name="payment_option" id="payment" required="">
                     <option value=""> </option>
                     <option value="Collection">Collection</option>
                     <option value="Delivery">Delivery</option>
@@ -166,7 +171,7 @@
               </section>
               <div id="submitbuttonwrapper" onclick="submitorders()">
                 <div id="loadingsymbol"></div>
-                <input id="submitButton" type="submit" value="Submit" aria-label="Submit">
+                <input id="submitButton" type="button" value="Submit" aria-label="Submit">
               </div>
             </div>
           </form>

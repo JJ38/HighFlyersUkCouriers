@@ -138,6 +138,11 @@ p{
 
 }
 
+.rabbits{
+    background-color: #39dfea;
+
+}
+
 a:visited{
     color: black;
 }
@@ -154,4 +159,10 @@ a:visited{
 img{
     width: 100%;
     object-fit: contain;
+}
+
+#pigeonPrices{
+    font-size: 34px;
+    text-align: left;
+    padding: 10px 0px;
 }

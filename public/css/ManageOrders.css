@@ -94,9 +94,18 @@ div.searchbar{
   color: rgb(34, 34, 34);
 
 }
+@media (hover: hover) {
+  button:hover{
+    cursor: pointer;
+  }
 
-button:hover{
-  cursor: pointer;
+  .headerrow:hover{
+    background-color: white !important;
+  }
+  
+  tr:hover{
+    background-color: rgb(196, 233, 245);
+  }
 }
 
 input, select{
@@ -154,9 +163,6 @@ tr{
   border-bottom: 1px solid black;
 }
 
-tr:hover{
-  background-color: rgb(196, 233, 245);
-}
 
 .highlightorder{
   background-color: rgb(213, 243, 254);
@@ -166,9 +172,7 @@ tr:last-of-type{
   border-bottom: none;
 }
 
-.headerrow:hover{
-  background-color: white !important;
-}
+
 
 .headerrow{
   position: sticky;
