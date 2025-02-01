@@ -1,18 +1,5 @@
 <?php
-/**
- * AuthenticationMiddleware.php
- *
- * Provides middleware to check if a user is authenticated.
- *
- * @package telemetry_processing
- * @\TelemProc
- *
- * @author James Brass
- * @author Mo Aziz
- * @author Ryan Instrell
- */
 
-//This is simply an abstraction to check whether a user is authenticated by checking whether the user variable is set for the given session. This allows in the route to request an attribute from a request rather than have to manually check if the user variable is set everytime. Over engineering really
 
 namespace HighFlyersUkCouriers;
 
@@ -21,7 +8,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 class AuthenticationMiddleware
 {
-    /** @var resource $session_wrapper Contains the handle to <SessionWrapper>. */
+    /** @var object */
     private $session_wrapper;
 
     public function __construct()

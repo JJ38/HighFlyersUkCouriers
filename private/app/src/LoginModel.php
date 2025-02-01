@@ -4,22 +4,15 @@ namespace HighFlyersUkCouriers;
 
 class LoginModel
 {
-    /** @var resource $bcrypt_wrapper Contains the handle to <Bcrypt>. */
+    /** @var object */
     private $bcrypt_wrapper;
-
-    /** @var resource $doctrine_wrapper Contains the handle to <Doctrine>.*/
-    private $doctrine_wrapper;
-
-    /** @var resource $logger_handle Contains handle to <Monolog>. */
+    /** @var object */
+    private $doctrine_wrapper; 
+    /** @var object */
     private $logger_handle;
-
-    /** @var resource $session_wrapper Contains the handle to <SessionWrapper>. */
+    /** @var object */
     private $session_wrapper;
-
-    /** @var array $user_credentials Contains user-entered credentials. */
     private $user_credentials;
-
-    /** @var bool $login_result Contains the result from authentication. */
     private $login_result;
 
     public function __construct()
@@ -123,7 +116,7 @@ class LoginModel
 
 
         if (!empty($username)) {
-
+            
             $this->doctrine_wrapper->fetchUserPassword($username);
             $query_result = $this->doctrine_wrapper->getQueryResult();
 

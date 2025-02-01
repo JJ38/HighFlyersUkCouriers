@@ -1,32 +1,16 @@
 <?php
-/**
- * DoctrineWrapper.php
- *
- * Provides a wrapper for Doctrine functionalities.
- *
- * @package telemetry_processing
- * @\TelemProc
- *
- * @author James Brass
- * @author Mo Aziz
- * @author Ryan Instrell
- */
+
 
 namespace HighFlyersUkCouriers;
 
 class DoctrineWrapper
 {
-    /** @var resource $doctrine_logger Contains handle to <telemetryLogger>. */
+    /** @var object */
     private $doctrine_logger;
-
-    /** @var resource $query_builder Stores Doctrine's QueryBuilder Object. */
+    /** @var object */
     private $query_builder;
-
-    /** @var mixed $query_result Stores the result of an executed SQL query. */
     private $query_result;
-
     private $database_connection;
-
     private $lastInsertID;
 
 
