@@ -52,22 +52,8 @@ $app->get('/customer-order', function (Request $request, Response $response) use
             }
         }
 
-                // instantiate and use the dompdf class
-               
-        // $dompdf = new Dompdf();
-        // $dompdf->loadHtml('hello world');
-
-        // // (Optional) Setup the paper size and orientation
-        // $dompdf->setPaper('A4', 'landscape');
-
-        // // Render the HTML as PDF
-        // $dompdf->render();
-
-        // $pdf = $dompdf->output();
-
-        // Output the generated PDF to Browser
-        //$dompdf->stream();
-        //return $response;
+        
+        
 
         // Get models + Wrappers
         $container = $app->getContainer();
@@ -142,15 +128,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
             return $response->withRedirect('/customer-order?error=true', 302);
         }
 
-        // $file = tmpfile();
-           
-        // fwrite($file, 'wawdaadawd');7
-        // echo stream_get_meta_data($file)['uri'];
-        // fclose($file);
-
-
-        //return $response;
-
+       
         // Get models + Wrappers
         $container = $app->getContainer();
         $doctrine_wrapper = $container->get('doctrineWrapper');
@@ -171,13 +149,6 @@ $app->post('/customer-order', function (Request $request, Response $response) us
        
         $store_result = $manage_order_model->storeMultipleOrders();
         $confirmed_orders = $manage_order_model->getConfirmedOrders();
-
-
-        // echo "<pre>";
-        // var_dump($confirmed_orders);
-        // echo "</pre> cleaned orders";
-
-        // return $response;
        
         $sanitizer = $container->get('sanitizer');
 
@@ -192,8 +163,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $mailer->setMailData($confirmed_orders);
         $mailer->sendMultipleOrderEmail($cleaned_email);
         $mailer->sendMultipleOrderEmailInternal();
-        // $mailer->sendMailInternal();
-
+        
         if($store_result){
 
             return $response->withRedirect('/customer-order?success=true', 302);

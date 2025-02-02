@@ -33,6 +33,7 @@ class Mailer{
 
   }
 
+
   public function sendMail($email, $subject, $message, $attachment) : void
   {
     $mail = new PHPMailer(true);
@@ -64,10 +65,11 @@ class Mailer{
           $file = tmpfile();
            
           fwrite($file, $attachment);
-          $mail->AddAttachment(stream_get_meta_data($file)['uri'], 'YourOrder.html');
+          $mail->addAttachment(stream_get_meta_data($file)['uri'], 'YourOrder.html');
         
         }
 
+       
         $mail->send();
         if($attachment != false){
           //fclose($file);
@@ -88,7 +90,6 @@ class Mailer{
   {
     $email = $this->mailer_data['email'];
     $subject = 'High Flyers Uk Couriers Booking Confirmation';
-   
 
     $message =
 
@@ -137,7 +138,7 @@ class Mailer{
     Delivery Address Line 3: {$this->mailer_data['delivery_address_3']}" . "<br>". "
     Delivery Postcode: {$this->mailer_data['delivery_postcode']}" . "<br>". "
     Delivery telephone Number: {$this->mailer_data['delivery_phone_number']}" . "<br>". "
-    Payment on Delivery or Collection: {$this->mailer_data['payment_option']}" . "<br>". "
+    Payment on Pickup or Delivery: {$this->mailer_data['payment_option']}" . "<br>". "
     Message: {$this->mailer_data['message']}" . "<br>". "
     " . "<br>"
     ;
@@ -231,7 +232,6 @@ class Mailer{
   }
 
   private function getMultipleOrderAttachment(){
-
 
     $attachment = '<html>'.
     '<head>'.
@@ -486,7 +486,7 @@ class Mailer{
       '<p>' . $this->mailer_data[$i]['email'] . '</p>'.
       '</div>'.
       '<div>'.
-      '<i class="fa-solid fa-credit-card" title="payment on delivery or collection"></i>'.
+      '<i class="fa-solid fa-credit-card" title="payment on pick up or delivery"></i>'.
       '<p>' . $this->mailer_data[$i]['payment_option'] . '</p>'.
       '</div>'.
       '<div>'.

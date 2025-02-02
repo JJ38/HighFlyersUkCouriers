@@ -105,8 +105,6 @@ quickCollectionAddress.addEventListener('click', (e) => {
 
 function updateTransportIconsPositions(transporticons, collectioninfo, deliveryinfo){
     var deliveryinfoStyle = window.getComputedStyle(deliveryinfo);
-    console.log(collectioninfo.offsetHeight);
-    console.log(parseInt(deliveryinfoStyle.marginTop));
     transporticons.style.height = collectioninfo.offsetHeight + parseInt(deliveryinfoStyle.marginTop) + 20 + 'px';
     transporticons.style.top = '30px';
     transporticons.style.right = headers.children[headers.children.length-1].offsetWidth + headers.children[headers.children.length-2].offsetWidth + 20 - 30 + 50 + 'px';
@@ -197,7 +195,7 @@ function validateOrder(){
 
     //validate payment method
 
-    if(paymentOption.value != "Collection" && paymentOption.value != "Delivery" && paymentOption.value != "Account"){
+    if(paymentOption.value != "Pickup" && paymentOption.value != "Delivery" && paymentOption.value != "Account"){
         return "Payment method is not valid";
     }
 
@@ -209,6 +207,7 @@ function validateOrder(){
 function loadBasket(){
    
     try{
+        console.log(localStorage.getItem('basket'));
         // console.log(localStorage.getItem('basket'));
         if(localStorage.getItem('basket') != null){
             idBookmark = basketJSON['id_bookmark'];
@@ -242,12 +241,14 @@ function loadBasket(){
             
             } 
         }else{
-
+            
             basketBoilerPlateJSON = '{"id_bookmark": 0,"basket": []}';
             localStorage.setItem("basket", basketBoilerPlateJSON);
             
         }
     }catch(e){
+
+        console.log("local storage not loaded");
 
         basketBoilerPlateJSON = '{"id_bookmark": 0,"basket": []}';
         try{
@@ -332,7 +333,6 @@ function addToBasket(){
     paymentOptionValue = paymentOption.value;
     messageValue = message.value;
     
-
     //update local storage
 
     addOrderHTML(idBookmark);
