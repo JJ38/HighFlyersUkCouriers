@@ -1,4 +1,21 @@
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script><title>{{ page_title }}</title><link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css"><link rel="stylesheet" href="/css/Footer.css" type="text/css"><link rel="stylesheet" href="/css/NavigationBar.css" type="text/css"><link rel="stylesheet" href="/css/NewBooking.css" type="text/css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" id="Inter"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto Slab" id="RobotoSlab"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway" id="Raleway"></head><body><header class="" contenteditable="false">
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
+    <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&callback=init&libraries=places&v=weekly"}} defer></script>
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
+    <link rel="stylesheet" href="/css/Footer.css" type="text/css">
+    <link rel="stylesheet" href="/css/NavigationBar.css" type="text/css">
+    <link rel="stylesheet" href="/css/NewBooking.css" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" id="Inter">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto Slab" id="RobotoSlab">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway" id="Raleway">
+  </head>
+  <body>
+  <header class="" contenteditable="false">
   <div id="mobilenavmenu"  class="hideMobileMenu">
     <div id="mobilenavwrapper">
       <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
@@ -79,13 +96,28 @@
               <h2>
                 Collection info
               </h2>
-                <hr class="" contenteditable="false">
+              <hr class="" contenteditable="false">
               <section class="formsection" contenteditable="false">
                 <section class="bookingInput">
                   <label for="collectionName">Collection Name </label>
                   <input id="collectionName" name="collection_name" type="text" required="">
                 </section>
                 
+                <section class="bookingInput"></section>
+
+                <section id="collectionAddressAutocomplete" class="bookingInput">
+                  <label for="collectionName">Find Collection Address </label>
+                  
+                  <input id="collectionAddressAutocompleteInput" type="text" placeholder="Search for a place..." />
+                  <div id="autocompleteResultsAnchor">
+                    <div id="autocompleteResultsWrapper">
+                      <div id="autocompleteTitleCollection" class="autocompleteTitle"></div>
+                      <ul id="autocompleteResultsCollection"></ul>                   
+                    </div>
+                  </div>
+              
+                </section>
+
                 <section class="bookingInput"></section>
 
                 <section class="bookingInput">
@@ -124,6 +156,23 @@
                 </section>
 
                 <section class="bookingInput"></section>
+
+
+                <section id="deliveryAddressAutocomplete" class="bookingInput">
+                  <label for="deliveryName">Find Delivery Address </label>
+                  
+                  <input id="deliveryAddressAutocompleteInput" type="text" placeholder="Search for a place..." />
+                  <div id="autocompleteResultsAnchor">
+                    <div id="autocompleteResultsWrapper">
+                      <div id="autocompleteTitleDelivery" class="autocompleteTitle"></div>
+                      <ul id="autocompleteResultsDelivery"></ul>                   
+                    </div>
+                  </div>
+              
+                </section>
+
+                <section class="bookingInput"></section>
+
 
                 <section class="bookingInput">
                   <label for="deliveryAddress1" class="" contenteditable="false" style="color: rgb(0, 0, 0);">Delivery Address Line 1 </label>

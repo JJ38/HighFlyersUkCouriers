@@ -36,9 +36,15 @@ $app->get('/bookings[/invalidform]', function (Request $request, Response $respo
         }
       }
     }
-}
+  }
 
+  $env = parse_ini_file(realpath('../.env'));
+
+  $api_key = $env['MAPS_JAVASCRIPT_API_KEY'];
+
+  echo $api_key;
   return $this->view->render($response,'NewBooking.twig', array(
+          'places_api_key' => $api_key,
           'page_title' => APP_TITLE,
           'css_file' => CSS_PATH . "NewBooking.css",
           'css_nav_file' => CSS_PATH . "NavigationBar.css",

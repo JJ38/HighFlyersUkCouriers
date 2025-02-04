@@ -20,7 +20,7 @@ class Validator
 
       $cleaned_option = '';
 
-      if($tainted_payment_option == 'Delivery' || $tainted_payment_option == 'Pickup' || $tainted_payment_option == 'Account')
+      if($tainted_payment_option == 'Delivery' || $tainted_payment_option == 'Pickup' || $tainted_payment_option == 'Account' || $tainted_payment_option == 'Collection')
       {
         $cleaned_option = $tainted_payment_option;
         $this->validateResult = true;
