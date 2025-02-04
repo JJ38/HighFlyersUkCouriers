@@ -55,12 +55,17 @@ async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, 
     request.includedPrimaryTypes = ["street_address", "premise", "establishment"];
     request.includedRegionCodes = ["uk", "ie"];
 
-    console.log(request);
-    console.log(request.input);
-
     // Fetch autocomplete suggestions and show them in a list.
     // @ts-ignore
     const { suggestions } = await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+
+
+    //check if input has change or not. If input has changed dont display results as this could lead to incorrect results being shown
+
+    if(request.input != inputField.value){
+        return;
+    }
+
 
     title.innerText = 'Query predictions for "' + request.input + '"';
     // Clear the list first.
