@@ -14,7 +14,12 @@ $app->get('/add-order', function (Request $request, Response $response, $args) u
   if($account_type == "admin" || $account_type == "staff"){
 
 
+    $env = parse_ini_file(realpath('../.env'));
+
+    $api_key = $env['MAPS_JAVASCRIPT_API_KEY'];
+
     return $this->view->render($response,'AddOrder.twig', array(
+            'places_api_key' => $api_key,
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "AddOrder.css",
             'asset_path' => ASSET_PATH,

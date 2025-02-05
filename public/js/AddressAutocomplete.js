@@ -1,6 +1,15 @@
 const deliveryAddressAutocomplete = document.getElementById('deliveryAddressAutocomplete');
 const collectionAddressAutocomplete = document.getElementById('collectionAddressAutocomplete');
 
+const collectionAddress1 = document.getElementById('collection_address_1');
+const collectionAddress2 = document.getElementById('collection_address_2');
+const collectionAddress3 = document.getElementById('collection_address_3');
+const collectionPostcode= document.getElementById('collection_postcode');
+
+const deliveryAddress1 = document.getElementById('delivery_address_1');
+const deliveryAddress2 = document.getElementById('delivery_address_2');
+const deliveryAddress3 = document.getElementById('delivery_address_3');
+const deliveryPostcode= document.getElementById('delivery_postcode');
 
 let titleCollection;
 let resultsCollection;
@@ -25,6 +34,10 @@ let requestCollection = {
 };
 
 async function initAC() {
+
+    console.log(deliveryAddress1);
+    console.log(collectionAddress1);
+
     tokenCollection = new google.maps.places.AutocompleteSessionToken();
     titleCollection = document.getElementById("autocompleteTitleCollection");
     resultsCollection = document.getElementById("autocompleteResultsCollection");
@@ -144,6 +157,10 @@ async function onPlaceSelected(place, streetAddressInput, cityInput, countyInput
 
         }
     }
+
+    console.log(streetAddress);
+    console.log(streetAddressInput)
+    console.log(streetAddressInput.value);
 
     streetAddressInput.value = streetAddress;
     cityInput.value = city;

@@ -1,5 +1,18 @@
-{% extends 'BoilerPlate.twig' %}
-    {% block content %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="{{ css_footer_file }}" type="text/css">
+        <link rel="stylesheet" href="{{ css_nav_file }}" type="text/css">
+        <link rel="stylesheet" href="{{ css_file }}" type="text/css">
+        <link rel="stylesheet" href="/css/AutoComplete.css" type="text/css">   
+        <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">   
+        <title>{{ page_title }}</title>
+    </head>
+    <body>
   
       <header>
         <nav id="menu">
@@ -68,8 +81,22 @@
                   <input id="collection_name" name="collection_name" type="text" required>
                 </td>
               </tr>
+            </table>
 
+            <section id="collectionAddressAutocomplete" class="bookingInput">
+              <label for="collectionName">Find Collection Address </label>
+              
+              <input id="collectionAddressAutocompleteInput" type="text" placeholder="Search for a place..." />
+              <div id="autocompleteResultsAnchor">
+                <div id="autocompleteResultsWrapper">
+                  <div id="autocompleteTitleCollection" class="autocompleteTitle"></div>
+                  <ul id="autocompleteResultsCollection"></ul>                   
+                </div>
+              </div>
+          
+            </section>
 
+            <table>
               <tr>
                 <td>
                   <label for="collection_address_1">Collection Address 1: </label>
@@ -125,6 +152,22 @@
                 </td>
               </tr>
 
+            </table>
+            <div id="deliveryAddressAutocomplete" class="bookingInput">
+              
+                <label for="deliveryName">Find Delivery Address </label>
+              
+                <input id="deliveryAddressAutocompleteInput" type="text" placeholder="Search for a place..." />
+                <div id="autocompleteResultsAnchor">
+                  <div id="autocompleteResultsWrapper">
+                    <div id="autocompleteTitleDelivery" class="autocompleteTitle"></div>
+                    <ul id="autocompleteResultsDelivery"></ul>                   
+                  </div>
+                </div>
+              
+          
+            </div>
+            <table>
               <tr>
                 <td>
                   <label for="delivery_address_1">Delivery Address Line 1: </label>
@@ -207,6 +250,12 @@
           </form>
         </section>
       </div>
-  
 
-    {% endblock %}
+
+  </body>
+  <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&callback=init&libraries=places&v=weekly"}} defer></script>
+  <script src="js/AddressAutocomplete.js" ></script>
+  <script type="text/javascript" src="{{js_file}}"></script>
+  <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+</html>
+

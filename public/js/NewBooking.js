@@ -1,24 +1,15 @@
 const submitOrdersButton = document.getElementById('submitButton');
 
-
 const loadingSymbol = document.getElementById('loadingsymbol');
 const form = document.getElementById('bookingForm');
 
 const collectionName = document.getElementById('collectionName');
-const collectionAddress1 = document.getElementById('collectionAddress1');
-const collectionAddress2 = document.getElementById('collectionAddress2');
-const collectionAddress3 = document.getElementById('collectionAddress3');
-const collectionPostcode= document.getElementById('collectionPostcode');
 const collectionTelephone = document.getElementById('collectionTelephone');
 const email = document.getElementById('email');
 const confirmEmail = document.getElementById('confirmEmail');
 
 
 const deliveryName = document.getElementById('deliveryName');
-const deliveryAddress1 = document.getElementById('deliveryAddress1');
-const deliveryAddress2 = document.getElementById('deliveryAddress2');
-const deliveryAddress3 = document.getElementById('deliveryAddress3');
-const deliveryPostcode= document.getElementById('deliveryPostcode');
 const deliveryTelephone = document.getElementById('deliveryTelephone');
 const paymentOption = document.getElementById('payment');
 

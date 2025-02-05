@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
     <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&callback=init&libraries=places&v=weekly"}} defer></script>
-    <script src="js/AddressAutocomplete.js" ></script>
     <title>{{ page_title }}</title>
     <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
     <link rel="stylesheet" href="/css/Footer.css" type="text/css">
+    <link rel="stylesheet" href="/css/AutoComplete.css" type="text/css">
     <link rel="stylesheet" href="/css/NavigationBar.css" type="text/css">
     <link rel="stylesheet" href="/css/NewBooking.css" type="text/css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter" id="Inter">
@@ -112,7 +112,9 @@
                   <input id="collectionAddressAutocompleteInput" type="text" placeholder="Search for a place..." />
                   <div id="autocompleteResultsAnchor">
                     <div id="autocompleteResultsWrapper">
-                      <div id="autocompleteTitleCollection" class="autocompleteTitle"></div>
+                      <div class="autocompleteTitleWrapper">
+                        <div id="autocompleteTitleCollection" class="autocompleteTitle"></div>
+                      </div>
                       <ul id="autocompleteResultsCollection"></ul>                   
                     </div>
                   </div>
@@ -123,22 +125,22 @@
 
                 <section class="bookingInput">
                   <label for="collectionAddress1">Collection Address Line 1 </label>
-                  <input id="collectionAddress1" name="collection_address_1" type="text" required="">
+                  <input id="collection_address_1" name="collection_address_1" type="text" required="">
                 </section>
 
                 <section class="bookingInput">
                   <label for="collectionAddress2">Collection Address Line 2 </label>
-                  <input id="collectionAddress2" name="collection_address_2" type="text">
+                  <input id="collection_address_2" name="collection_address_2" type="text">
                 </section>
 
                 <section class="bookingInput">
                   <label for="collectionAddress3">Collection Address Line 3 </label>
-                  <input id="collectionAddress3" name="collection_address_3" type="text">
+                  <input id="collection_address_3" name="collection_address_3" type="text">
                 </section>
 
                 <section class="bookingInput">
                   <label for="collectionPostcode">Collection Postcode</label>
-                  <input id="collectionPostcode" name="collection_postcode" type="text" required="">
+                  <input id="collection_postcode" name="collection_postcode" type="text" required="">
                 </section>
 
                 <section class="bookingInput">
@@ -165,7 +167,9 @@
                   <input id="deliveryAddressAutocompleteInput" type="text" placeholder="Search for a place..." />
                   <div id="autocompleteResultsAnchor">
                     <div id="autocompleteResultsWrapper">
-                      <div id="autocompleteTitleDelivery" class="autocompleteTitle"></div>
+                      <div class="autocompleteTitleWrapper">
+                        <div id="autocompleteTitleDelivery" class="autocompleteTitle"></div>
+                      </div>
                       <ul id="autocompleteResultsDelivery"></ul>                   
                     </div>
                   </div>
@@ -177,22 +181,22 @@
 
                 <section class="bookingInput">
                   <label for="deliveryAddress1" class="" contenteditable="false" style="color: rgb(0, 0, 0);">Delivery Address Line 1 </label>
-                  <input id="deliveryAddress1" name="delivery_address_1" type="text" required="">
+                  <input id="delivery_address_1" name="delivery_address_1" type="text" required="">
                 </section>
 
                 <section class="bookingInput">
                   <label for="deliveryAddress2">Delivery Address Line 2 </label>
-                  <input id="deliveryAddress2" name="delivery_address_2" type="text">
+                  <input id="delivery_address_2" name="delivery_address_2" type="text">
                 </section>
 
                 <section class="bookingInput">
                   <label for="deliveryAddress3">Delivery Address Line 3 </label>
-                  <input id="deliveryAddress3" name="delivery_address_3" type="text">
+                  <input id="delivery_address_3" name="delivery_address_3" type="text">
                 </section>
 
                 <section class="bookingInput">
                   <label for="deliveryPostcode">Delivery Postcode </label>
-                  <input id="deliveryPostcode" name="delivery_postcode" type="text" required="">
+                  <input id="delivery_postcode" name="delivery_postcode" type="text" required="">
                 </section>
 
                 <section class="bookingInput">
@@ -247,9 +251,10 @@
       <a class="login" href="/loginpage">Login</a>
 
     </footer>
+  
+    <script type="text/javascript" src="/js/AddressAutocomplete.js"></script>
     <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
     <script type="text/javascript" src="/js/NewBooking.js"></script>
-
 
   </body>
 </html>

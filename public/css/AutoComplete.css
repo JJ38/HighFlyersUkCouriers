@@ -1,0 +1,41 @@
+#autocompleteResultsAnchor{
+    position: relative;  
+}
+
+#autocompleteResultsWrapper{
+  
+    font-family:'Raleway';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    position: absolute;
+    z-index: 1;
+    background-color: rgb(255, 255, 255);
+    border: #000000;
+}
+.autocompleteTitleWrapper{
+   
+    margin: 1em 0em 0em 0em;
+    font-weight: 700;
+}
+
+.autocompleteTitle{
+   
+    margin: 0em 0em 0em 1em;
+    font-weight: 700;
+}
+
+ul{
+    padding-inline-start: 0px;
+    margin: 0px;
+}
+
+li{
+    border-top: 1px solid lightgray;
+    margin: 0em 1em;
+    list-style-type: none;
+}
+
+li:hover{
+    background-color: rgb(173, 232, 248);
+}
