@@ -1,7 +1,7 @@
 // const transportinfowrapper = document.querySelector('.transportinfowrapper');
 // const addressDataRow = transportinfowrapper.querySelectorAll('.columns');
 const quickCollectionAddress = document.querySelector('.quickcollectionaddresswrapper');
-const collectionAddressInfo = document.getElementById('collectioninfo');
+const collectionAddressInfo = document.getElementById('collectioninfoFormWrapper');
 var transporticons;
 // var exandButtons = document.querySelectorAll('.expand');
 const headers = document.querySelector('.headerrow');
@@ -22,20 +22,12 @@ const quickAddressEmail = document.getElementById('quickAddressEmail');
 const quickAddressTelephone = document.getElementById('quickAddressTelephone');
 
 const collectionName = document.getElementById('collectionname');
-const collectionAddress1 = document.getElementById('collectionaddress1');
-const collectionAddress2 = document.getElementById('collectionaddress2');
-const collectionAddress3 = document.getElementById('collectionaddress3');
-const collectionPostcode= document.getElementById('collectionpostcode');
 const collectionTelephone = document.getElementById('collectiontelephone');
 const email = document.getElementById('email');
 const profileEmail = document.getElementById('profileemail');
 
 
 const deliveryName = document.getElementById('deliveryname');
-const deliveryAddress1 = document.getElementById('deliveryaddress1');
-const deliveryAddress2 = document.getElementById('deliveryaddress2');
-const deliveryAddress3 = document.getElementById('deliveryaddress3');
-const deliveryPostcode= document.getElementById('deliverypostcode');
 const deliveryTelephone = document.getElementById('deliverytelephone');
 const paymentOption = document.getElementById('payment');
 const message = document.getElementById('message');

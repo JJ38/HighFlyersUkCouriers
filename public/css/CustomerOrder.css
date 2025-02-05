@@ -89,6 +89,10 @@ label{
     font-weight: 500;
 }
 
+#collectioninfoFormWrapper{
+    margin-top: 10px;
+}
+
 .forminput{
     display: flex;
     margin: 15px 0px;
@@ -171,7 +175,7 @@ h3{
     padding-top: 1px;
     padding-bottom: 26px;
     border-radius: 15px;
-    background-color: white;
+    background-color: rgb(255, 1, 1);
     box-shadow: 0px 0px 10px #00000022;
 
     margin-bottom: 10px;

@@ -2,7 +2,7 @@
     position: relative;  
 }
 
-#autocompleteResultsWrapper{
+.autocompleteResultsWrapper{
   
     font-family:'Raleway';
     font-style: normal;
@@ -11,7 +11,8 @@
     position: absolute;
     z-index: 1;
     background-color: rgb(255, 255, 255);
-    border: #000000;
+    border-radius: 5px;
+    border: 1px solid #000000;
 }
 .autocompleteTitleWrapper{
    
@@ -23,6 +24,11 @@
    
     margin: 0em 0em 0em 1em;
     font-weight: 700;
+}
+
+.column{
+    display: flex;
+    flex-direction: column;
 }
 
 ul{
@@ -38,4 +44,10 @@ li{
 
 li:hover{
     background-color: rgb(173, 232, 248);
+}
+
+.hidden{
+  
+    display: none;
+    border: 0px solid #000000 !important;
 }

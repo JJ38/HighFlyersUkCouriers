@@ -20,6 +20,8 @@ let titleDelivery;
 let resultsDelivery;
 let inputDelivery;
 let tokenDelivery;
+let resultsWrapperCollection;
+let resultsWrapperDelivery;
 // Add an initial request body.
 let requestDelivery = {
    
@@ -42,47 +44,60 @@ async function initAC() {
     titleCollection = document.getElementById("autocompleteTitleCollection");
     resultsCollection = document.getElementById("autocompleteResultsCollection");
     inputCollection = document.getElementById("collectionAddressAutocompleteInput");
-    inputCollection.addEventListener("input", (input) => makeAcRequest(input, collectionAddress1, collectionAddress2, collectionAddress3, collectionPostcode, requestCollection, resultsCollection, titleCollection, inputCollection));
+    resultsWrapperCollection = document.getElementById("autocompleteResultsWrapperCollection");
+
+    inputCollection.addEventListener("input", (input) => makeAcRequest(input, collectionAddress1, collectionAddress2, collectionAddress3, collectionPostcode, requestCollection, resultsCollection, titleCollection, inputCollection, resultsWrapperCollection));
     requestCollection = refreshToken(requestCollection);
 
     tokenDelivery = new google.maps.places.AutocompleteSessionToken();
     titleDelivery = document.getElementById("autocompleteTitleDelivery");
     resultsDelivery = document.getElementById("autocompleteResultsDelivery");
     inputDelivery = document.getElementById("deliveryAddressAutocompleteInput");
-    inputDelivery.addEventListener("input", async (input) => makeAcRequest(input, deliveryAddress1, deliveryAddress2, deliveryAddress3, deliveryPostcode, requestDelivery, resultsDelivery, titleDelivery, inputDelivery));
+    resultsWrapperDelivery = document.getElementById("autocompleteResultsWrapperDelivery");
+
+    inputDelivery.addEventListener("input", async (input) => makeAcRequest(input, deliveryAddress1, deliveryAddress2, deliveryAddress3, deliveryPostcode, requestDelivery, resultsDelivery, titleDelivery, inputDelivery, resultsWrapperDelivery));
     
     requestDelivery = refreshToken(requestDelivery);
 
+
 }
 
-async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, postcodeInput, request, results, title, inputField) {
+async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, postcodeInput, request, results, title, inputField, resultsWrapper) {
     // Reset elements and exit if an empty string is received.
     if (input.target.value == "") {
         title.innerText = "";
         results.replaceChildren();
+        resultsWrapper.classList.add('hidden');
         return;
     }
+
+
+    resultsWrapper.classList.remove('hidden');
+
 
     // Add the latest char sequence to the request.
     request.input = input.target.value;
     request.includedPrimaryTypes = ["street_address", "premise", "establishment"];
     request.includedRegionCodes = ["uk", "ie"];
+    
+    title.innerText = 'Query predictions for "' + request.input + '"';
 
     // Fetch autocomplete suggestions and show them in a list.
     // @ts-ignore
     const { suggestions } = await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
 
-
     //check if input has change or not. If input has changed dont display results as this could lead to incorrect results being shown
 
     if(request.input != inputField.value){
+        
         return;
     }
 
-
-    title.innerText = 'Query predictions for "' + request.input + '"';
+    
     // Clear the list first.
     results.replaceChildren();
+
+    
 
     for (const suggestion of suggestions) {
         const placePrediction = suggestion.placePrediction;
@@ -91,6 +106,8 @@ async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, 
 
         a.addEventListener("click", () => {
             onPlaceSelected(placePrediction.toPlace(), streetAddressInput, cityInput, countyInput, postcodeInput, results, title, inputField);
+            resultsWrapper.classList.add('hidden');
+
         });
         a.innerText = placePrediction.text.toString();
 
