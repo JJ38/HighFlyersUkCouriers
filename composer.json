@@ -10,8 +10,8 @@
       "slim/twig-view": "^2.4",
       "monolog/monolog": "^2",
       "doctrine/orm": "^2.6",
-      "phpmailer/phpmailer": "^6.7"
-      
+      "phpmailer/phpmailer": "^6.7",
+      "kreait/firebase-php":"^7.0" 
     },
     "config": {
         "platform": {

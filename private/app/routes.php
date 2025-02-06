@@ -22,3 +22,4 @@ require "routes/DeleteMultipleOrders.php";
 require "routes/MarkOrdersAsPrinted.php";
 require "routes/AboutUs.php";
 require "routes/ViewOrder.php";
+require "routes/ManageLogistics.php";

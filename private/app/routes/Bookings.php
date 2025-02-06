@@ -51,16 +51,7 @@ $app->get('/bookings[/invalidform]', function (Request $request, Response $respo
           'asset_path' => ASSET_PATH,
           'landing_page' => __FILE__,
           'heading_1' => APP_TITLE,
-          'links'=> array(
-              'register' => 'registerform',
-              'login' => 'loginform',
-              'homepage' => '#',
-              'send_initial_messages' => 'sendinitialtelemetrymessages',
-              'present_telemetry' => 'presenttelemetrydata',
-              'manage_users' => 'manageusersform',
-              'send_telemetry' => 'sendtelemetrydata',
-              'logout' => 'logout'
-          ),
+          
       ));
 });
 
