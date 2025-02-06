@@ -22,7 +22,7 @@ class AuthenticationMiddleware
      * @param $session_wrapper
      */
     public function setSessionWrapper($session_wrapper) : void
-    {
+    {   
         $this->session_wrapper = $session_wrapper;
     }
 
@@ -39,9 +39,10 @@ class AuthenticationMiddleware
      * @throws \Doctrine\DBAL\Exception
      */
 
-     //This is invoked before every request
+     //This is istnvoked before every reque
     public function __invoke(Request $request, Response $response, callable $next) : Response
     {
+        // session_start();
         $is_authenticated = false;
         $username = $this->session_wrapper->getSessionVar('user');
         $account_type = $this->session_wrapper->getSessionVar('accountType');

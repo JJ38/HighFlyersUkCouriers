@@ -29,6 +29,7 @@ class SessionWrapper
     public function setSessionVar(string $session_var, string $session_value) : bool
     {
         $set_session = false;
+        session_start();
 
         if (isset($session_var) && !empty($session_value)) {
             $_SESSION[$session_var] = $session_value;
@@ -46,6 +47,7 @@ class SessionWrapper
     public function getSessionVar(string $session_var)
     {
         $returned_var = '';
+        session_start();
 
         if (isset($_SESSION[$session_var])) {
             $returned_var = $_SESSION[$session_var];
@@ -61,6 +63,7 @@ class SessionWrapper
      */
     public function unsetSessionVar(string $session_var) : bool
     {
+        session_start();
         $unset_session = false;
 
         if (isset($_SESSION[$session_var])) {

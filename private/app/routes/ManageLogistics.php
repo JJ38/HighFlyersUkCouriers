@@ -9,20 +9,27 @@ $app->get('/manage-logistics', function (Request $request, Response $response) u
 
     
     $account_type = $request->getAttribute('accountType');
+   
 
     if($account_type == "admin"){
+   
   
         return $this->view->render($response,'ManageLogistics.twig', array(
                 'page_title' => APP_TITLE,
                 'css_file' => CSS_PATH . "ManageLogistics.css",
                 'css_nav_file' => CSS_PATH . "NavigationBar.css",
+                'css_admin_panel' => CSS_PATH . "AdminPanel.css",
                 'asset_path' => ASSET_PATH,
                 'js_file' => JS_PATH . "ManageLogistics.js",
                 'landing_page' => __FILE__,
                 'heading_1' => APP_TITLE,
             ));
     }else{
-    
+
+        echo var_dump($_GET);
+        echo var_dump($_SESSION);
+        echo"unauthenticated";
+        return $response;
         return $response->withRedirect('loginpage', 302);
     }
   });

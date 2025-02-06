@@ -1,14 +1,32 @@
-{% extends 'BoilerPlate.twig' %}
-    {% block content %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
+        {% if css_footer_file != null %}
+            <link rel="stylesheet" href="{{ css_footer_file }}" type="text/css">
+        {% endif %}
+        {% if css_nav_file != null %}
+            <link rel="stylesheet" href="{{ css_nav_file }}" type="text/css">
+        {% endif %}
+        <link rel="stylesheet" href="{{ css_file }}" type="text/css">
+        <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">  
+        <link rel="stylesheet" href="/css/LiveLogisticsManager.css" type="text/css">  
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0&icon_names=package_2,share_location" />
+        <title>{{ page_title }}</title>
+    </head>
+    <body>
       <div id="wrapper">
         <header>
           <div id="mobilenavmenu"  class="hideMobileMenu">
             <div id="mobilenavwrapper">
               <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
                 <a href="/logout">Logout</a>
-                <a class="currentpage" href="/manage-orders">Manage Bookings</a>
+                <a class="currentpage" href="/manage-orders">Bookings</a>
                 <a href="/content-manager">Content Manager</a>
-                <a href="/manage-accounts">Manage Accounts</a>
+                <a href="/manage-accounts">Accounts</a>
                 <a class="navLinks" href="/manage-logistics">Logistics</a>
 
             </div>
@@ -20,16 +38,30 @@
               <div></div>
             </div>
             <a class="navLinks" href="/logout">Logout</a>
-            <a class="navLinks" href="/manage-orders">Manage Bookings</a>
+            <a class="navLinks" href="/manage-orders">Bookings</a>
             <a class="navLinks" href="/content-manager">Content Manager</a>
-            <a class="navLinks" href="/manage-accounts">Manage Accounts</a>
+            <a class="navLinks" href="/manage-accounts">Accounts</a>
             <a class="navLinks" href="/manage-logistics">Logistics</a>
-        
+          </nav>
      
         </header>
-        <Section>
-            Logistics
+        <Section id="navbarMainContentWrapper">
+          <nav id="logisticsVerticalNavbar">
+            <span class="material-symbols-rounded selectedIconColour">
+              share_location
+            </span>
+            <span class="material-symbols-rounded">
+              package_2
+            </span>
+          </nav>
+          <Section id="mainContent">
+            <div id="driversWindow">
+             
+            </div>
+          </Section>
         </Section>
+    </body>
+    <script type="text/javascript" src="{{js_file}}"></script>
+    <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+</html>
 
-          
-    {% endblock %}

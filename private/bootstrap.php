@@ -9,7 +9,7 @@ use Slim\Factory\AppFactory;
 session_start();
 
 /** Regenerates Session ID at each page within application. */
-session_regenerate_id(true);
+// session_regenerate_id(true);
 
 /** <PSR-4> Autoloading using <Composer>. */
 require '../vendor/autoload.php';
