@@ -17,7 +17,6 @@ body {
 
 header {
     flex: 0 1 auto;
-
 }
 
 nav {
@@ -43,13 +42,17 @@ a:hover{
     color: grey;
 }
 
+a.verticalNavbarLink{
+    line-height: 0px;
+}
+
 #navbarMainContentWrapper{
     display:flex;
     flex-direction: row;
     height: 100%;
 }
 
-#logisticsVerticalNavbar{
+.logisticsVerticalNavbar{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -59,7 +62,11 @@ a:hover{
     width: 80px;
     background-color: white;
     border-right: solid 1px rgb(192, 192, 192);
+}
 
+#logisticsVerticalNavbar > a{
+    padding: 0px;
+    margin:0px;
 
 }
 

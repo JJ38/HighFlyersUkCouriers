@@ -12,11 +12,14 @@
             <link rel="stylesheet" href="{{ css_nav_file }}" type="text/css">
         {% endif %}
         <link rel="stylesheet" href="{{ css_file }}" type="text/css">
-        <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">  
-        <link rel="stylesheet" href="/css/LiveLogisticsManager.css" type="text/css">  
+        <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">    
+        <link rel="stylesheet" href="/css/ManageLogistics.css" type="text/css">  
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0&icon_names=package_2,share_location" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=circle" />
-
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=arrow_drop_down_circle,local_gas_station,location_on,calendar_today" />
+        {# <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=local_gas_station" />
+        {#  #}
+        {# <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=location_on" />  #}
+        {# <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=calendar_month" /> #}
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
@@ -53,47 +56,60 @@
         </header>
         <Section id="navbarMainContentWrapper">
           <nav class="logisticsVerticalNavbar">
-            <span id="liveLogisticsManagerButton" class="material-symbols-rounded selectedIconColour">
-              share_location
-            </span>
-            <a class="verticalNavbarLink" href="/shipments-logistics-manager">
-              <span id="shipmentLogisticsManagerButton" class="material-symbols-rounded" >
-                package_2
-              </span>
+            <a class="verticalNavbarLink" href="/manage-logistics">
+                <span id="liveLogisticsManagerButton" class="material-symbols-rounded">
+                share_location
+                </span>
             </a>
+            <span id="shipmentLogisticsManagerButton" class="material-symbols-rounded selectedIconColour">
+              package_2
+            </span>
           </nav>
           <Section id="mainContent">
-            <Section id="liveLogisticsManagerWrapper">
-              <div id="driversWindow">
-                <h1 class="windowTitle">Drivers</h1>
-                <div class="driverInfoCard">
+            <Section id="shipmentsLogisticsManagerWrapper">
+              <Section id="shipmentsWindow">
+                <h1 class="windowTitle">Shipments</h1>
+                <div class="selectWrapper" >
+                  <label for="shipmentGroups" hidden="hidden">Shipment</label>
+                  <select id="shipmentGroups" name="shipmentGroups">
+                    <option value="wednesdaycollections">Wednesday Collections</option>
+                    <option value="thursdaydeliverys">Thursday Deliverys</option>
+                  </select>
+                  <span class="material-symbols-outlined dropDownIcon">
+                    arrow_drop_down_circle
+                  </span>
+                </div>
+
+                <div class="shipmentInfoCard">
+                  <p class="shipmentName">Cumbria</p>
                   <div class="row">
-                    <div class="row flexOne noGap alignItemsCenter">
-                      <span class="material-symbols-outlined green">
-                        circle
+                    <div class="row">
+                      {# <span class="material-symbols-outlined">
+                        calendar_today
+                      </span> #}
+                      <p>32</p>
+                    </div>
+                    <div class="row">
+                      <span class="material-symbols-outlined">
+                        location_on
                       </span>
-                      <p class="driverStatus">En Route</p>
-                    </div>   
-                    <p class="driverName flexTwo">Alexander</p>    
+                      <p>19</p>
+                    </div>
+                    <div class="row">
+                      <span class="material-symbols-outlined">
+                        local_gas_station
+                      </span>
+                      <p>£85</p>
+                    </div>
                   </div>
-                  <p class="runName">North East Scotland</p>
                   <div class="row">
-                    <div class="column flexOne">
-                      <p class="runInfoTitle">Stops Remaining</p>
-                      <p class="runInfo">7</p>
-                    </div>
-                    <div class="column flexTwo">
-                      <p class="runInfoTitle">Next Stop</p>
-                      <p class="runInfo">10 Downing Street</p>
-                    </div>
+                    <p class="shipmentInfoTitle"></p>
+                    <p class="shipmentInfo"></p>
                   </div>
                 </div>
-              </div>
+                              
+              </Section>
             </Section>
-            <Section id="shipmentLogisticsManagerWrapper">
-              
-            </Section>
-    
             <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map>
             
           </Section>
@@ -105,6 +121,6 @@
     ></script>
     <script type="text/javascript" src="{{js_file}}"></script>
     <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
-    <script type="text/javascript" src="/js/LiveLogisticsManager.js"></script>
+    <script type="text/javascript" src="/js/ShipmentsLogisticsManager.js"></script>
 </html>
 

@@ -1,15 +1,14 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap'); */
 
 #driversWindow{
     z-index: 1;
     padding: 30px;
     height: 100%;
     box-sizing: border-box;
+    background-color: white;
 }
 
 gmp-map{
     flex: 1;
-    width: 600px;
     /* min-width: 0; */
 }
 
