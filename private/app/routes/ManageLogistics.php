@@ -12,9 +12,13 @@ $app->get('/manage-logistics', function (Request $request, Response $response) u
    
 
     if($account_type == "admin"){
-   
+        
+        $env = parse_ini_file(realpath('../.env'));
+
+        $api_key = $env['MAPS_JAVASCRIPT_API_KEY'];
   
         return $this->view->render($response,'ManageLogistics.twig', array(
+                'places_api_key' => $api_key,
                 'page_title' => APP_TITLE,
                 'css_file' => CSS_PATH . "ManageLogistics.css",
                 'css_nav_file' => CSS_PATH . "NavigationBar.css",
