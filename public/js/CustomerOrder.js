@@ -83,14 +83,14 @@ function setProfileData(){
 // updateTransportIconsPositon();
 
 onresize = (event) => {
-    document.querySelectorAll('')
-    updateTransportIconsPositions(transporticons); //reworking for multiple expanded orders
+    // document.querySelectorAll('')
+    //updateTransportIconsPositions(transporticons); //reworking for multiple expanded orders
 }
 
 quickCollectionAddress.addEventListener('click', (e) => {
 
     quickCollectionAddress.children[0].classList.toggle('rotate90anticlockwise');
-    collectionAddressInfo.classList.toggle('hidden');
+    collectionAddressInfo.classList.toggle('hideInfo');
 
 });
 
@@ -107,13 +107,13 @@ function toggleExpand(element){
     const transportinfowrapper = element.parentElement.parentElement;
     const tablerow = transportinfowrapper.parentElement;
 
-    transportinfowrapper.children[0].classList.toggle('hidden'); //transport icons 
-    transportinfowrapper.children[1].classList.toggle('hidden'); //collection info
+    transportinfowrapper.children[0].classList.toggle('hideInfo'); //transport icons 
+    transportinfowrapper.children[1].classList.toggle('hideInfo'); //collection info
     transportinfowrapper.children[2].classList.toggle('deliveryinfomargin');
-    transportinfowrapper.children[2].children[5].classList.toggle('hidden'); //payment info
+    transportinfowrapper.children[2].children[5].classList.toggle('hideInfo'); //payment info
 
-    tablerow.children[1].classList.toggle('hidden'); //extra info
-    tablerow.children[2].classList.toggle('hidden'); //delete button
+    tablerow.children[1].classList.toggle('hideInfo'); //extra info
+    tablerow.children[2].classList.toggle('hideInfo'); //delete button
     
     element.parentElement.children[0].classList.toggle('hidefont'); //animal name
     element.parentElement.children[1].classList.toggle('hidefont'); //animal name
@@ -373,12 +373,12 @@ function addOrderHTML(id){
 
     const orderHTML =   
                         '<div class="transportinfowrapper">'+
-                            '<div class="hidden collectiondeliveryicons transporticons">'+
+                            '<div class="hideInfo collectiondeliveryicons transporticons">'+
                                 '<i class="fa-solid fa-box-open" title="collection"></i>'+
                                 '<i class="fa-solid fa-ellipsis-vertical"></i>'+
                                 '<i class="fa-solid fa-truck" title="delivery"></i>'+
                             '</div>'+
-                            '<div class="columns hidden collectioninfomargin">'+
+                            '<div class="columns hideInfo collectioninfomargin">'+
                                 '<p>' + animalTypeValue + '</p>'+
                                 '<p>' + quantityValue + '</p>'+
                                 '<p>' + collectionNameValue + '</p>'+
@@ -396,7 +396,7 @@ function addOrderHTML(id){
                                 '<div class="expand" onclick="toggleExpand(this)"><p>V</p></div>'+
                             '</div>'+
                         '</div>'+
-                        '<div class="extrainfo hidden">'+
+                        '<div class="extrainfo hideInfo">'+
                             '<div>'+
                                 '<i class="fa-solid fa-at" title="email"></i>'+
                                 '<p>'+
@@ -422,7 +422,7 @@ function addOrderHTML(id){
                                 '</p>'+
                             '</div>'+
                         '</div>'+
-                        '<div class="deletewrapper hidden" onclick="deleteOrder(this)">'+
+                        '<div class="deletewrapper hideInfo" onclick="deleteOrder(this)">'+
                             '<i class="fa-solid fa-trash-can"></i>'+
                         '</div>' +
                         '<input type=hidden name=id value=' + id + '>';
@@ -486,7 +486,7 @@ function updateBasket(){
    
     try{
         if(table.children.length == 1){
-            basket.classList= "hidden";
+            basket.classList= "hideInfo";
         }else{
             basket.classList = "";
         }

@@ -74,7 +74,7 @@
                         <p id="quickAddressEmail">{{ email|raw }}</p>
                         <p id="quickAddressTelephone">{{ collection_phone_number|raw }}</p>
                     </div>
-                    <section id="collectioninfoFormWrapper" class="hidden">
+                    <section id="collectioninfoFormWrapper" class="hideInfo">
                         <section id="collectionAddressAutocomplete" class="bookingInput column">
                             <label for="collectionName">Find Collection Address </label>
                             
@@ -191,7 +191,7 @@
                 </section>
 
             </div>
-            <div id="basket" class="hidden">
+            <div id="basket" class="hideInfo">
                 <h1>
                     Basket
                 </h1>
@@ -224,7 +224,5 @@
         <script src="/js/CustomerOrder.js" crossorigin="anonymous"></script>
         <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
         <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&callback=init&libraries=places&v=weekly"}} defer></script>
-        
-
     </body>
 </html>
