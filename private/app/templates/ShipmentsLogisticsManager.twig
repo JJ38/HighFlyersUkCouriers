@@ -14,12 +14,10 @@
         <link rel="stylesheet" href="{{ css_file }}" type="text/css">
         <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">    
         <link rel="stylesheet" href="/css/ManageLogistics.css" type="text/css">  
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0&icon_names=package_2,share_location" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=arrow_drop_down_circle,local_gas_station,location_on,calendar_today" />
-        {# <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=local_gas_station" />
-        {#  #}
-        {# <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=location_on" />  #}
-        {# <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=calendar_month" /> #}
+        {# <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0&icon_names=package_2,share_location" /> #}
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
@@ -57,11 +55,11 @@
         <Section id="navbarMainContentWrapper">
           <nav class="logisticsVerticalNavbar">
             <a class="verticalNavbarLink" href="/manage-logistics">
-                <span id="liveLogisticsManagerButton" class="material-symbols-rounded">
+                <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon">
                 share_location
                 </span>
             </a>
-            <span id="shipmentLogisticsManagerButton" class="material-symbols-rounded selectedIconColour">
+            <span id="shipmentLogisticsManagerButton" class="material-symbols-outlined navbarIcon selectedIconColour">
               package_2
             </span>
           </nav>
@@ -75,36 +73,36 @@
                     <option value="wednesdaycollections">Wednesday Collections</option>
                     <option value="thursdaydeliverys">Thursday Deliverys</option>
                   </select>
-                  <span class="material-symbols-outlined dropDownIcon">
+                  <span class="material-symbols-rounded dropDownIcon">
                     arrow_drop_down_circle
                   </span>
                 </div>
 
                 <div class="shipmentInfoCard">
                   <p class="shipmentName">Cumbria</p>
-                  <div class="row">
+                  <div class="row shipmentInfoWrapper">
                     <div class="row">
-                      {# <span class="material-symbols-outlined">
-                        calendar_today
-                      </span> #}
+                      <span class="material-symbols-rounded shipmentInfoIcon">
+                        calendar_month
+                      </span>
                       <p>32</p>
                     </div>
                     <div class="row">
-                      <span class="material-symbols-outlined">
+                      <span class="material-symbols-rounded shipmentInfoIcon">
                         location_on
                       </span>
                       <p>19</p>
                     </div>
                     <div class="row">
-                      <span class="material-symbols-outlined">
+                      <span class="material-symbols-rounded shipmentInfoIcon">
                         local_gas_station
                       </span>
                       <p>£85</p>
                     </div>
                   </div>
-                  <div class="row">
-                    <p class="shipmentInfoTitle"></p>
-                    <p class="shipmentInfo"></p>
+                  <div class="row shipmentInfoWrapper">
+                    <p class="shipmentInfoTitle">AssignedDriver: </p>
+                    <p class="shipmentInfo">Stephen</p>
                   </div>
                 </div>
                               
