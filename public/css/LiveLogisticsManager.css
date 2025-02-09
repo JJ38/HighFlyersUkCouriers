@@ -26,6 +26,11 @@ gmp-map{
     line-height: 1em;
 }
 
+.selectedDriverInfoCard{
+    background-color: #D9FCFF;
+}
+    
+
 .windowTitle{
     color: #000000;
     text-align: left;
