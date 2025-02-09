@@ -5,7 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 
 
-$app->get('/manage-logistics', function (Request $request, Response $response) use ($app) : Response{
+$app->get('/live-logistics-manager', function (Request $request, Response $response) use ($app) : Response{
 
     
     $account_type = $request->getAttribute('accountType');
@@ -17,7 +17,7 @@ $app->get('/manage-logistics', function (Request $request, Response $response) u
 
         $api_key = $env['MAPS_JAVASCRIPT_API_KEY'];
   
-        return $this->view->render($response,'ManageLogistics.twig', array(
+        return $this->view->render($response,'LiveLogisticsManager.twig', array(
                 'places_api_key' => $api_key,
                 'page_title' => APP_TITLE,
                 'css_file' => CSS_PATH . "ManageLogistics.css",
