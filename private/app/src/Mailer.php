@@ -80,6 +80,7 @@ class Mailer{
         //fclose($file);
         $error_message = array($mail->ErrorInfo);
         $this->logger->error("MAILER-ERROR", $error_message);
+        echo $e;
         //echo "Message could not be sent. Mailer Error: {$error_message}";
 
     }

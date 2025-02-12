@@ -20,7 +20,7 @@ $account_type = $request->getAttribute('accountType');
     $html_file_data = file_get_contents(TEMPLATE_PATH . '/' . $selected_file, true);
   
 
-    return $this->view->render($response,'ContentManager.twig', array(
+    return $this->view->render($response,'content-manager.html', array(
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "ContentManager.css",
             'css_nav_file' => CSS_PATH . "NavigationBar.css",

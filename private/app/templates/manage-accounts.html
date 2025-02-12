@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/dce6efa4ea.js"
+      crossorigin="anonymous"></script>
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" crossorigin href="./assets/ManageAccounts-BNN18KDm.css">
+    <link rel="stylesheet" crossorigin href="./assets/Navbar-BQ0c1Epq.css">
+    <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
+  </head>
+  <body>
+
+    <div id="wrapper">
+      <header>
+        <div id="mobilenavmenu" class="hideMobileMenu">
+          <div id="mobilenavwrapper">
+            <div id="closemobilenavmenu"><p
+                id="closenavtext">close</p><p>X</p></div>
+            <a href="/logout">Logout</a>
+            <a href="/manage-orders">Manage Bookings</a>
+            <a href="/content-manager">Content Manager</a>
+            <a class="currentpage" href="/manage-accounts">Manage Accounts</a>
+            <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+
+          </div>
+        </div>
+        <nav id="menu">
+          <div id="mobilenavtoggle">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <a class="navLinks" href="/logout">Logout</a>
+          <a class="navLinks" href="/manage-orders">Manage Bookings</a>
+          <a class="navLinks" href="/content-manager">Content Manager</a>
+          <a class="navLinks" href="/manage-accounts">Manage Accounts</a>
+          <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+        </nav>
+      </header>
+      <div id="maincontent">
+        <div class="searchbar bubble">
+          <div class="searchoption">Filter</div>
+          <form action="/manage-accounts" method="get">
+            <select class="searchoption" name="field" id="filter">
+              <option disabled selected value> -- select an option -- </option>
+              <option value="id">ID</option>
+              <option value="username">Username</option>
+              <option value="account_type">Type</option>
+            </select>
+            <input class="searchoption" type="text" id="search" name="filter"
+              placeholder="search value">
+            <button class="searchoption" type="submit">Search</button>
+          </form>
+          <a href="/add-user">
+            <button class="searchoption" type="button">Add</button>
+          </a>
+        </div>
+        <div class="bubble">
+          <div class="userdata">
+            <table>
+              <tr class="headerrow">
+                <th>ID</th>
+                <th>Username</th>
+                <th>Type</th>
+                <th>Timestamp</th>
+              </tr>
+              {{ userdata|raw }}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+  <script type="text/javascript" src="{{ js_file }}"></script>
+  <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+</html>

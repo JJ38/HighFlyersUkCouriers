@@ -25,7 +25,7 @@ $app->get('/contact-us[/invalidform]', function (Request $request, Response $res
     }
   };
 
-  return $this->view->render($response,'NewContactUs.twig', array(
+  return $this->view->render($response,'contact-us.html', array(
           'page_title' => APP_TITLE,
           'css_file' => CSS_PATH . "NewContactUs.css",
           'css_nav_file' => CSS_PATH . "NavigationBar.css",

@@ -42,7 +42,7 @@ $app->get('/bookings[/invalidform]', function (Request $request, Response $respo
 
   $api_key = $env['MAPS_JAVASCRIPT_API_KEY'];
 
-  return $this->view->render($response,'NewBooking.twig', array(
+  return $this->view->render($response,'bookings.html', array(
           'places_api_key' => $api_key,
           'page_title' => APP_TITLE,
           'css_file' => CSS_PATH . "NewBooking.css",

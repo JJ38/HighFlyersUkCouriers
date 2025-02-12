@@ -60,7 +60,7 @@ $app->get('/delete-order[/id]', function (Request $request, Response $response) 
 
       //echo '<pre>' . var_export($order_data,true) . '</pre>';
 
-      return $this->view->render($response,'DeleteOrder.twig', array(
+      return $this->view->render($response,'delete-order.html', array(
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "DeleteOrder.css",
               'asset_path' => ASSET_PATH,

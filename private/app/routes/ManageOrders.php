@@ -181,7 +181,7 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
       $manage_order_model->generateHTMLFromData();
       
 
-      return $this->view->render($response,'ManageOrders.twig', array(
+      return $this->view->render($response,'manage-orders.html', array(
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "ManageOrders.css",
               'asset_path' => ASSET_PATH,

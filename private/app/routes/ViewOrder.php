@@ -57,7 +57,7 @@ $app->get('/view-order[/id]', function (Request $request, Response $response) us
         }
 
 
-        return $this->view->render($response,'ViewOrder.twig', array(
+        return $this->view->render($response,'view-order.html', array(
                 'page_title' => APP_TITLE,
                 'css_file' => CSS_PATH . "DeleteOrder.css",
                 'asset_path' => ASSET_PATH,

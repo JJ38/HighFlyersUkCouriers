@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
+      
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+        
+        <title>{{ page_title }}</title>
+      <link rel="stylesheet" crossorigin href="./assets/ShipmentsLogisticsManager-DOuPPCCh.css">
+      <link rel="stylesheet" crossorigin href="./assets/Navbar-BQ0c1Epq.css">
+      <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
+      <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-Y5lxdKHq.css">
+    </head>
+    <body>
+      <div id="wrapper">
+        <header>
+          <div id="mobilenavmenu"  class="hideMobileMenu">
+            <div id="mobilenavwrapper">
+              <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+                <a href="/logout">Logout</a>
+                <a class="currentpage" href="/manage-orders">Bookings</a>
+                <a href="/content-manager">Content Manager</a>
+                <a href="/manage-accounts">Accounts</a>
+                <a class="navLinks" href="/manage-logistics">Logistics</a>
+
+            </div>
+          </div>
+          <nav id="menu">
+            <div id="mobilenavtoggle">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <a class="navLinks" href="/logout">Logout</a>
+            <a class="navLinks" href="/manage-orders">Bookings</a>
+            <a class="navLinks" href="/content-manager">Content Manager</a>
+            <a class="navLinks" href="/manage-accounts">Accounts</a>
+            <a class="navLinks" href="/manage-logistics">Logistics</a>
+          </nav>
+     
+        </header>
+        <Section id="navbarMainContentWrapper">
+          <nav class="logisticsVerticalNavbar">
+            <a class="verticalNavbarLink" href="/live-logistics-manager">
+                <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon">
+                share_location
+                </span>
+            </a>
+            <span id="shipmentLogisticsManagerButton" class="material-symbols-outlined navbarIcon selectedIconColour">
+              package_2
+            </span>
+          </nav>
+          <Section id="mainContent">
+            <Section id="shipmentsLogisticsManagerWrapper">
+              <Section id="shipmentsWindow">
+                <h1 class="windowTitle">Shipments</h1>
+                <div class="selectWrapper" >
+                  <label for="shipmentGroups" hidden="hidden">Shipment</label>
+                  <select id="shipmentGroups" name="shipmentGroups">
+                    <option value="wednesdaycollections">Wednesday Collections</option>
+                    <option value="thursdaydeliverys">Thursday Deliverys</option>
+                  </select>
+                  <span class="material-symbols-rounded dropDownIcon">
+                    arrow_drop_down_circle
+                  </span>
+                </div>
+                <div class="runInfoCardList">
+                  <div class="runCard">
+                    <p class="runName">Cumbria</p>
+                    <div class="row runInfoWrapper">
+                      <div class="row">
+                        <span class="material-symbols-rounded runInfoIcon">
+                          calendar_month
+                        </span>
+                        <p>32</p>
+                      </div>
+                      <div class="row">
+                        <span class="material-symbols-rounded runInfoIcon">
+                          location_on
+                        </span>
+                        <p>19</p>
+                      </div>
+                      <div class="row">
+                        <span class="material-symbols-rounded runInfoIcon">
+                          local_gas_station
+                        </span>
+                        <p>£85</p>
+                      </div>
+                    </div>
+                    <div class="row runInfoWrapper">
+                      <p class="runInfoTitle">AssignedDriver: </p>
+                      <p class="runInfo">Stephen</p>
+                    </div>
+                  </div>
+                  <div class="runCard">
+                    <p class="runName">South Yorks</p>
+                    <div class="row runInfoWrapper">
+                      <div class="row">
+                        <span class="material-symbols-rounded runInfoIcon">
+                          calendar_month
+                        </span>
+                        <p>32</p>
+                      </div>
+                      <div class="row">
+                        <span class="material-symbols-rounded runInfoIcon">
+                          location_on
+                        </span>
+                        <p>21</p>
+                      </div>
+                      <div class="row">
+                        <span class="material-symbols-rounded runInfoIcon">
+                          local_gas_station
+                        </span>
+                        <p>£95</p>
+                      </div>
+                    </div>
+                    <div class="row runInfoWrapper">
+                      <p class="runInfoTitle">AssignedDriver: </p>
+                      <p class="runInfo">Alexander</p>
+                    </div>
+                  </div>
+                </div>                 
+              </Section>
+            </Section>
+            <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map>
+            
+          </Section>
+        </Section>
+    </body>
+    <!-- <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&libraries=maps,marker&v=beta"}} defer></script> -->
+    <script type="text/javascript" src="{{js_file}}"></script>
+    <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+    <script type="text/javascript" src="/js/ShipmentsLogisticsManager.js"></script>
+</html>
+

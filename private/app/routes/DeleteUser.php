@@ -57,7 +57,7 @@ $app->get('/delete-user[/id]', function (Request $request, Response $response) u
 
       //echo '<pre>' . var_export($order_data,true) . '</pre>';
 
-      return $this->view->render($response,'DeleteUser.twig', array(
+      return $this->view->render($response,'delete-user.html', array(
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "DeleteUser.css",
               'asset_path' => ASSET_PATH,

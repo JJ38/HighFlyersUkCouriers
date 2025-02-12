@@ -5,7 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/prices', function (Request $request, Response $response) use ($app) : Response{
 
-return $this->view->render($response,'NewPrices.twig', array(
+return $this->view->render($response,'prices.html', array(
         'page_title' => APP_TITLE,
         'css_file' => CSS_PATH . "NewPrices.css",
         'css_nav_file' => CSS_PATH . "NavigationBar.css",

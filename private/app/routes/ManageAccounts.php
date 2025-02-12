@@ -92,7 +92,7 @@ $app->get('/manage-accounts[/error/deleted/passwordreset]', function (Request $r
       
       $manage_accounts_model->generateHTMLFromData();
 
-      return $this->view->render($response,'ManageAccounts.twig', array(
+      return $this->view->render($response,'manage-accounts.html', array(
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "ManageAccounts.css",
               'asset_path' => ASSET_PATH,

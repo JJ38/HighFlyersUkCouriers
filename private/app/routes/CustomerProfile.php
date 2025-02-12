@@ -43,7 +43,7 @@ $app->get('/customer-profile[/updated]', function (Request $request, Response $r
         $customer_details = $doctrine_wrapper->getQueryResult();
 
 
-        return $this->view->render($response,'CustomerProfile.twig', array(
+        return $this->view->render($response,'customer-profile.html', array(
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "CustomerProfile.css",
             'css_nav_file' => CSS_PATH . "NavigationBar.css",

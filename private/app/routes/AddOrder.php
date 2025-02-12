@@ -18,7 +18,7 @@ $app->get('/add-order', function (Request $request, Response $response, $args) u
 
     $api_key = $env['MAPS_JAVASCRIPT_API_KEY'];
 
-    return $this->view->render($response,'AddOrder.twig', array(
+    return $this->view->render($response,'add-order.html', array(
             'places_api_key' => $api_key,
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "AddOrder.css",

@@ -258,108 +258,117 @@ function loadBasket(){
 }
 
 function addToBasket(){
-
-    //check if profile has email
-    var isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if(!profileEmail.value.match(isEmail)){
-        alert("Please enter a valid email under the profile tab before making an order");
-    }
-    
-    //check if required fields are filled
-    let requiredFieldsMet = true;
-
-    for(let i = 0; i < requiredFields.length; i++){
-        if(requiredFields[i].value == ""){
-            requiredFields[i].style.borderColor = "#ff0000ff";
-            requiredFieldsMet = false;
-        }else{
-            requiredFields[i].style.borderColor = "#000000FF";
-        }
-    }
-
-    if(!requiredFieldsMet){
-        alert("Please fill in all required fields");
-        return;
-    }
-
-
-    //validate fields
-    const validateResult = validateOrder();
-    if(validateResult != null){
-        alert(validateResult);
-        return;
-    }
-
-
-    //store in local storage
-
-    //create JSON of order
-
-    //get current basket
-
-    //add order to JSON
-
-    // if required fields entered add dom elements
-
     
 
-    //set order data
-
-    
-    animalTypeValue = animalType.value;
-    quantityValue = quantity.value;
-    codeValue = code.value;
-    collectionNameValue = collectionName.value;
-    collectionPostcodeValue = collectionPostcode.value;
-    collectionAddress1Value = collectionAddress1.value;
-    collectionAddress2Value = collectionAddress2.value;
-    collectionAddress3Value = collectionAddress3.value;
-    collectionTelephoneValue = collectionTelephone.value;
-    deliveryNameValue = deliveryName.value;
-    deliveryPostcodeValue = deliveryPostcode.value;
-    deliveryAddress1Value = deliveryAddress1.value;
-    deliveryAddress2Value = deliveryAddress2.value;
-    deliveryAddress3Value = deliveryAddress3.value;
-    deliveryTelephoneValue = deliveryTelephone.value;
-    emailValue = email.value;
-    paymentOptionValue = paymentOption.value;
-    messageValue = message.value;
-    
-    //update local storage
-
-    addOrderHTML(idBookmark);
-    
     try{
-    
-        basketJSON = JSON.parse(localStorage.getItem("basket"));
-        basketJSON['basket'].push(orderToJSON());
-
-        localStorage.setItem("basket", JSON.stringify(basketJSON));
-
-        console.log(basketJSON = JSON.parse(localStorage.getItem("basket")));
-
-
-        idBookmark ++;
-
-        //update localstorage id_bookmark
-        basketJSON = JSON.parse(localStorage.getItem("basket"));
-        console.log(basketJSON['id_bookmark']);
-        basketJSON['id_bookmark'] = idBookmark;
-
-        localStorage.setItem("basket", JSON.stringify(basketJSON));
-
-        console.log(JSON.parse(localStorage.getItem("basket")));
+        //check if profile has email
+        var isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if(!profileEmail.value.match(isEmail)){
+            alert("Please enter a valid email under the profile tab before making an order");
+        }
         
-    }catch(e){
-        console.log(e);
+        //check if required fields are filled
+        let requiredFieldsMet = true;
+        console.log(requiredFields);
+        for(let i = 0; i < requiredFields.length; i++){
+
+            if(requiredFields[i].value == ""){
+                requiredFields[i].style.borderColor = "#ff0000ff";
+                requiredFieldsMet = false;
+            }else{
+                requiredFields[i].style.borderColor = "#000000FF";
+            }
+        }
+
+        if(!requiredFieldsMet){
+            alert("Please fill in all required fields");
+            return;
+        }
+
+
+        //validate fields
+        const validateResult = validateOrder();
+        if(validateResult != null){
+            alert(validateResult);
+            return;
+        }
+
+
+        //store in local storage
+
+        //create JSON of order
+
+        //get current basket
+
+        //add order to JSON
+
+        // if required fields entered add dom elements
+
+        
+
+        //set order data
+
+        
+        animalTypeValue = animalType.value;
+        quantityValue = quantity.value;
+        codeValue = code.value;
+        collectionNameValue = collectionName.value;
+        collectionPostcodeValue = collectionPostcode.value;
+        collectionAddress1Value = collectionAddress1.value;
+        collectionAddress2Value = collectionAddress2.value;
+        collectionAddress3Value = collectionAddress3.value;
+        collectionTelephoneValue = collectionTelephone.value;
+        deliveryNameValue = deliveryName.value;
+        deliveryPostcodeValue = deliveryPostcode.value;
+        deliveryAddress1Value = deliveryAddress1.value;
+        deliveryAddress2Value = deliveryAddress2.value;
+        deliveryAddress3Value = deliveryAddress3.value;
+        deliveryTelephoneValue = deliveryTelephone.value;
+        emailValue = email.value;
+        paymentOptionValue = paymentOption.value;
+        messageValue = message.value;
+        
+        //update local storage
+
+        addOrderHTML(idBookmark);
+        
+        try{
+        
+            basketJSON = JSON.parse(localStorage.getItem("basket"));
+            basketJSON['basket'].push(orderToJSON());
+
+            localStorage.setItem("basket", JSON.stringify(basketJSON));
+
+            console.log(basketJSON = JSON.parse(localStorage.getItem("basket")));
+
+
+            idBookmark ++;
+
+            //update localstorage id_bookmark
+            basketJSON = JSON.parse(localStorage.getItem("basket"));
+            console.log(basketJSON['id_bookmark']);
+            basketJSON['id_bookmark'] = idBookmark;
+
+            localStorage.setItem("basket", JSON.stringify(basketJSON));
+
+            console.log(JSON.parse(localStorage.getItem("basket")));
+            
+        }catch(e){
+            console.log(e);
+            updateBasket();
+
+        }
+
+        resetFormValues();
+
+
         updateBasket();
+    }catch(e){
 
+        
+
+        console.log("");
     }
-
-    resetFormValues();
-
-
-    updateBasket();
     
 
 }

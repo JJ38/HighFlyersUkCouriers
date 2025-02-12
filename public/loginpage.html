@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="/css/Footer.css" type="text/css">
+        <link rel="stylesheet" href="/css/Navbar.css" type="text/css">
+        <link rel="stylesheet" href="/css/LoginPage.css" type="text/css">
+        <title>{{ page_title }}</title>
+        <script type="module" src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js" ></script> 
+
+        <!-- <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-firestore.js"></script>  -->
+        <!-- <script type="module" src="/js/Firebase.js" defer></script> -->
+        <script type="module" src="/js/LoginPage.js" defer></script>
+
+    </head>
+    <body>
+       
+        <form id="loginForm" action="loginpage" method="post">               
+            <h2 id="login-heading">Login</h2>
+            <div class="form-input">
+                <label for="username">Username</label>
+                <br>
+                <input class="form-input-text" id="username" name="username" type="text" placeholder="Username" size="33" maxlength="32" tabindex="1" required>
+                <br><br>
+            </div>
+            <div class="form-input" id="password-input">
+                <label for="password">Password</label>
+                <br>
+                <input  id="password" name="password" type="password" placeholder="Password" size="30"  size="33" maxlength="32" tabindex="2" required>
+            </div>
+            <div class="form-input">
+                <input id="loginButton" class="form-input-button" type="button" onclick="login()" value="Login">
+            </div>     
+        </form>
+     
+    </body>
+   
+</html>
+

@@ -27,7 +27,7 @@ $app->get('/add-user[/usernameavailable]', function (Request $request, Response 
         }
     }
 
-    return $this->view->render($response,'AddUser.twig', array(
+    return $this->view->render($response,'add-user.html', array(
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "AddUser.css",
             'asset_path' => ASSET_PATH,

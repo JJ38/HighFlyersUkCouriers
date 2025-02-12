@@ -7,21 +7,17 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 $app->get('/loginpage', function (Request $request, Response $response) use ($app) : Response{
 
-    return $this->view->render($response,'LoginPage.twig', array(
+    return $this->view->render($response,'loginpage.html', array(
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "LoginPage.css",
             'asset_path' => ASSET_PATH,
-            'js_path' => JS_PATH . "avents.js",
+            'js_path' => '/js/LoginPage.js',
             'landing_page' => __FILE__,
             'heading_1' => APP_TITLE,
             'links'=> array(
                 'register' => 'registerform',
                 'login' => 'loginform',
                 'homepage' => '#',
-                'send_initial_messages' => 'sendinitialtelemetrymessages',
-                'present_telemetry' => 'presenttelemetrydata',
-                'manage_users' => 'manageusersform',
-                'send_telemetry' => 'sendtelemetrydata',
                 'logout' => 'logout'
             ),
         ));
@@ -42,6 +38,12 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   $doctrine_wrapper = $container->get('doctrineWrapper');
   $session_wrapper = $container->get('sessionWrapper');
   $logger = $container->get('logger');
+
+
+  //Does account exist on firebase
+
+
+
 
   // // Doctrine wrapper setup
   $database_connection_settings = $container->get('settings')['doctrineSettings'];

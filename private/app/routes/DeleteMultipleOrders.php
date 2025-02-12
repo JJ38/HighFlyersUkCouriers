@@ -45,7 +45,7 @@ $app->get('/delete-multiple-orders', function (Request $request, Response $respo
 
         $order_data = $manage_order_model->getOrderData();
 
-        return $this->view->render($response,'DeleteMultipleOrders.twig', array(
+        return $this->view->render($response,'delete-multiple-orders.html', array(
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "DeleteMultipleOrders.css",
             'asset_path' => ASSET_PATH,

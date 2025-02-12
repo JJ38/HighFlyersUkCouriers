@@ -49,7 +49,7 @@ $app->get('/change-password[/id/equalpasswords]', function (Request $request, Re
         return $response->withRedirect('manage-accounts', 302);
     }
     
-    return $this->view->render($response,'ChangePassword.twig', array(
+    return $this->view->render($response,'change-password.html', array(
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "ChangePassword.css",
             'asset_path' => ASSET_PATH,

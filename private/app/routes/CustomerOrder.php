@@ -79,7 +79,7 @@ $app->get('/customer-order', function (Request $request, Response $response) use
 
             $api_key = $env['MAPS_JAVASCRIPT_API_KEY'];
 
-            return $this->view->render($response,'CustomerOrder.twig', array(
+            return $this->view->render($response,'customer-order.html', array(
                 'places_api_key' => $api_key,
                 'page_title' => APP_TITLE,
                 'css_file' => CSS_PATH . "CustomerOrder.css",
@@ -119,8 +119,6 @@ $app->post('/customer-order', function (Request $request, Response $response) us
 
         $allPostVars = $request->getParsedBody();
 
-     
-
         $container = $app->getContainer();
 
         $manage_order_model = $container->get('manageOrderModel');
@@ -129,6 +127,8 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $account_name = $session_wrapper->getSessionVar('user');
 
         $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $account_name);
+
+        // echo var_dump($cleaned_orders);
 
         if(empty($cleaned_orders)){
             return $response->withRedirect('/customer-order?error=true', 302);
@@ -159,6 +159,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $sanitizer = $container->get('sanitizer');
 
         //send email
+
 
         $cleaned_email = $sanitizer->sanitizeEmail($allPostVars['profileemail']);
 
