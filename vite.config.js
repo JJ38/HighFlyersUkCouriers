@@ -2,7 +2,7 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
 const root = resolve(__dirname, 'public');
-const base = resolve(__dirname, 'public');
+
 
 export default defineConfig({
     root,
@@ -37,6 +37,9 @@ export default defineConfig({
           ViewOrder: resolve(root, 'view-order.html'),
 
         },
+        output: {
+          // assetFileNames: "[name].[ext]",
+        }
       }
     },
     plugins: [
