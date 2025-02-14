@@ -11,7 +11,9 @@
       "monolog/monolog": "^2",
       "doctrine/orm": "^2.6",
       "phpmailer/phpmailer": "^6.7",
-      "kreait/firebase-php":"^7.0" 
+      "kreait/firebase-php": "^5.26",
+      "grpc/grpc": "1.38",
+      "google/cloud-firestore": "^1.41" 
     },
     "config": {
         "platform": {

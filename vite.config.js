@@ -37,9 +37,7 @@ export default defineConfig({
           ViewOrder: resolve(root, 'view-order.html'),
 
         },
-        output: {
-          // assetFileNames: "[name].[ext]",
-        }
+       
       }
     },
     plugins: [

@@ -26,16 +26,17 @@
             <div class="form-input">
                 <label for="username">Username</label>
                 <br>
-                <input class="form-input-text" id="username" name="username" type="text" placeholder="Username" size="33" maxlength="32" tabindex="1" required>
+                <input id="username" class="form-input-text" id="username" name="username" type="text" placeholder="Username" size="33" maxlength="32" tabindex="1">
                 <br><br>
             </div>
             <div class="form-input" id="password-input">
                 <label for="password">Password</label>
                 <br>
-                <input  id="password" name="password" type="password" placeholder="Password" size="30"  size="33" maxlength="32" tabindex="2" required>
+                <input id="password" name="password" type="password" placeholder="Password" size="30"  size="33" maxlength="32" tabindex="2">
             </div>
-            <div class="form-input">
-                <input id="loginButton" class="form-input-button" type="button" onclick="login()" value="Login">
+            <div id="loginButtonWrapper" class="form-input">
+                <input id="loginButton" class="form-input-button" type="button" value="Login">
+                <div id="loader" class="loader"></div>
             </div>     
         </form>
      

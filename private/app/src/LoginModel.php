@@ -14,6 +14,9 @@ class LoginModel
     private $session_wrapper;
     private $user_credentials;
     private $login_result;
+    private $auth;
+    private $ID_token;
+    private $verified_ID_Token;
 
     public function __construct()
     {
@@ -44,6 +47,15 @@ class LoginModel
     public function setDoctrineWrapper($doctrine_wrapper) : void
     {
         $this->doctrine_wrapper = $doctrine_wrapper;
+    }
+
+
+    public function setAuth($auth) : void{
+        $this->auth = $auth;
+    }
+
+    public function setIDToken($ID_token) : void{
+        $this->ID_token = $ID_token;
     }
 
     /**
@@ -84,6 +96,11 @@ class LoginModel
     public function getResult() : bool
     {
         return $this->login_result;
+    }
+
+    public function getVerifiedIDToken()
+    {
+        return $this->verified_ID_Token;
     }
 
     /**
@@ -146,4 +163,47 @@ class LoginModel
 
         $this->login_result = $login_result;
     }
+
+    public function verifyIDToken() : void
+    {
+        try {
+
+            $verified_ID_Token = $this->auth->verifyIdToken($this->ID_token);
+            $this->verified_ID_Token = $verified_ID_Token;
+            $this->login_result = true;
+
+            //$verified_ID_token = $login_model->getVerifiedIDToken();
+            $uid = $verified_ID_Token->claims()->get('sub');
+            $email = $verified_ID_Token->claims()->get('email');
+            $custom_claims = $this->auth->getUser($uid)->customClaims;
+
+            $account_type = $custom_claims['role'];
+
+            // $this->auth->setCustomUserClaims($uid, ['role' => 'staff']);
+     
+
+            echo $email;
+            echo $account_type;
+
+            if(empty($account_type)){
+                $account_type = " ";
+            }
+
+            if(empty($email)){
+                $email = " ";
+            }
+
+
+            $this->session_wrapper->setSessionVar('accountType', $account_type);
+            $this->session_wrapper->setSessionVar('user',  $email);
+
+
+        } catch (\Exception $e) {
+
+            echo 'The token is invalid: '.$e->getMessage();
+            $this->login_result = false;
+
+        }
+    }
+
 }

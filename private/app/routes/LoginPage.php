@@ -3,6 +3,7 @@
 use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Kreait\Firebase\Factory;
 
 
 $app->get('/loginpage', function (Request $request, Response $response) use ($app) : Response{
@@ -29,7 +30,6 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   // Retrieve user credentials in POST body
   $tainted_parameters = $request->getParsedBody();
   $cleaned_parameters = cleanLoginData($app, $tainted_parameters);
-  //$cleaned_parameters = $tainted_parameters;
 
   // Get models + Wrappers
   $container = $app->getContainer();
@@ -39,11 +39,7 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   $session_wrapper = $container->get('sessionWrapper');
   $logger = $container->get('logger');
 
-
   //Does account exist on firebase
-
-
-
 
   // // Doctrine wrapper setup
   $database_connection_settings = $container->get('settings')['doctrineSettings'];
@@ -59,18 +55,36 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   $login_model->setUserCredentials($cleaned_parameters);
   $login_model->setLoggerHandle($logger);
 
-  $login_model->login();
-  $login_result = $login_model->getResult(); //If result is successful $login_result is true
+  // $login_model->login();
+  
+  $factory = (new Factory)->withServiceAccount('../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-12de523cbb.json');
+  $auth = $factory->createAuth();
+  
+  $sanitizer = $app->getContainer()->get('sanitizer');
+  $ID_Token_String = $sanitizer->sanitizeString($_POST['accessToken']);
+
+  $login_model->setAuth($auth);
+  $login_model->setIDToken($ID_Token_String);
+  $login_model->verifyIDToken();
+  $login_result = $login_model->getResult();
+
+  
+
+  // $role = $verified_ID_Token->claims()->get('role');
+  // var_dump($ID_Token_String);
+
+
 
   if($login_result) {
-      $account_type = $session_wrapper->getSessionVar('accountType');
 
-      if($account_type == "admin" || $account_type == "staff"){
-       
-        return $response->withRedirect('/manage-orders', 302);
-      }
+    $account_type = $session_wrapper->getSessionVar('accountType');
 
-      return $response->withRedirect('/customer-order', 302);
+    if($account_type == "admin" || $account_type == "staff"){
+      
+      return $response->withRedirect('/manage-orders', 302);
+    }
+
+    return $response->withRedirect('/customer-order', 302);
     
   } 
 

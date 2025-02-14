@@ -3,9 +3,13 @@
 use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Value\Uid;
+use Google\Cloud\Firestore\FirestoreClient;
 
 $app->get('/add-user[/usernameavailable]', function (Request $request, Response $response, $args) use ($app) : Response{
+
+
 
   $account_type = $request->getAttribute('accountType');
 
@@ -60,7 +64,9 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
     if($account_type == "admin"){
     
         $container = $app->getContainer();
-
+        $factory = (new Factory)->withServiceAccount('../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-12de523cbb.json');
+        $auth = $factory->createAuth();
+    
         $tainted_parameters = $request->getParsedBody();
     
         $cleaned_parameters = cleanUserData($container, $tainted_parameters);
@@ -72,43 +78,37 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
             return $response->withRedirect('/manage-accounts?error=true', 302);
         }
 
-        //store in database
-        $doctrine_wrapper = $container->get('doctrineWrapper');
-        $logger = $container->get('logger');
+        $userProperties = [
+            'email' =>  $cleaned_parameters['username'],
+            'password' =>  $cleaned_parameters['password'],
+        ];
+        
+        $createdUser = $auth->createUser($userProperties);
+        $uid = $createdUser->uid;
+        var_dump($uid);
+        $auth->setCustomUserClaims($uid, ['role' => $cleaned_parameters['accountType']]);
 
+        //create docuement in users collection to store roles for admin panel to see role information
 
-        // // Doctrine wrapper setup
-        $database_connection_settings = $container->get('settings')['doctrineSettings'];
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-        $query_builder = $database_connection->createQueryBuilder();
-        $doctrine_wrapper->setQueryBuilder($query_builder);
-        $doctrine_wrapper->setDoctrineLogger($logger);
+        // $db = new FirestoreClient();
 
+        // $firestore = $factory->withFirestoreClientConfig([ "apiKey" => "AIzaSyBHkjHITuk2opFgiG2wG36WJE6CDmb4tK4",
+        // "authDomain" => "highflyersukcouriers-a9c17.firebaseapp.com",
+        // "projectId" => "highflyersukcouriers-a9c17",
+        // "storageBucket" => "highflyersukcouriers-a9c17.firebasestorage.app",
+        // "messagingSenderId" => "970355130070",
+        // "appId" => "1:970355130070:web:b2ff0ee62b6b9ac2339377",
+        // "measurementId" => "G-93M1E0Q9FJ",])->createFirestore();
+        // $firestore = $factory->createFirestore();
+        // $database = $firestore->database();
 
-        //check for duplicate users
-        $doctrine_wrapper->checkIfUsernameAvailable($cleaned_parameters['username']);
-        $is_username_available = $doctrine_wrapper->getQueryResult();
-
-        if($is_username_available){
-            //store username
-
-            //hash password
-            $bcryptWrapper = $container->get('bcryptWrapper');
-
-            $cleaned_parameters['password'] = $bcryptWrapper->createHashedPassword($cleaned_parameters['password']);
-
-            $doctrine_wrapper->storeUserDetails($cleaned_parameters['username'], $cleaned_parameters['password'], $cleaned_parameters['accountType']);
-
-            if($cleaned_parameters['accountType'] == "customer"){
-
-                $doctrine_wrapper->createCustomer($cleaned_parameters['username']);
-                
-            }
-     
-
-        }else{
-            return $response->withRedirect('/add-user?usernameavailable=false', 302);
-        }
+        // $docRef = $database->collection('users')->document('alovelace');
+        // $docRef->set([
+        //     'first' => 'Ada',
+        //     'last' => 'Lovelace',
+        //     'born' => 1815
+        // ]);
+    
 
 
         return $response->withRedirect('/manage-accounts', 302);

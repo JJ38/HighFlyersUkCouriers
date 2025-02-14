@@ -39,10 +39,11 @@ class AuthenticationMiddleware
      * @throws \Doctrine\DBAL\Exception
      */
 
-     //This is istnvoked before every reque
+     //This is is invoked before every reque
     public function __invoke(Request $request, Response $response, callable $next) : Response
     {
-        // session_start();
+        
+
         $is_authenticated = false;
         $username = $this->session_wrapper->getSessionVar('user');
         $account_type = $this->session_wrapper->getSessionVar('accountType');
@@ -52,11 +53,9 @@ class AuthenticationMiddleware
             $request = $request->withAttribute('username', $username);
             $request = $request->withAttribute('isAuthenticated', $is_authenticated); //If has username set as var then add authenticated attribute to request.
             $request = $request->withAttribute('accountType', $account_type); //If has username set as var then add authenticated attribute to request.
-
         }
 
         $response = $next($request, $response);
-
         return $response; 
     }
 }

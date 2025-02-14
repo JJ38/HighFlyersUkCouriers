@@ -162,7 +162,6 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
       }
         
       
-      
       $query_builder = $database_connection->createQueryBuilder();
       $doctrine_wrapper->setQueryBuilder($query_builder);
       $doctrine_wrapper->setDoctrineLogger($logger);
