@@ -116,19 +116,21 @@ $app->post('/customer-order', function (Request $request, Response $response) us
 
     if($account_type == "customer"){
 
-
         $allPostVars = $request->getParsedBody();
-
-     
 
         $container = $app->getContainer();
 
         $manage_order_model = $container->get('manageOrderModel');
+        $logger = $container->get("logger");
+        $manage_order_model->setLogger($logger);
+
 
         $session_wrapper = $container->get('sessionWrapper');
         $account_name = $session_wrapper->getSessionVar('user');
 
         $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $account_name);
+
+        // echo var_dump($cleaned_orders);
 
         if(empty($cleaned_orders)){
             return $response->withRedirect('/customer-order?error=true', 302);
