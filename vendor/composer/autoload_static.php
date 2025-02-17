@@ -14,10 +14,10 @@ class ComposerStaticInit721415390c4b9da7e3b0cc2e2b5f663f
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '27592325262b385204a263c2ab632d6e' => __DIR__ . '/..' . '/kreait/clock/src/Clock.php',
-        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
+        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         'b067bc7112e384b61c701452d53a14a8' => __DIR__ . '/..' . '/mtdowling/jmespath.php/src/JmesPath.php',
         '253c157292f75eb38082b5acb06f3f01' => __DIR__ . '/..' . '/nikic/fast-route/src/functions.php',
@@ -69,6 +69,7 @@ class ComposerStaticInit721415390c4b9da7e3b0cc2e2b5f663f
         ),
         'M' => 
         array (
+            'MrShan0\\PHPFirestore\\' => 21,
             'Monolog\\' => 8,
         ),
         'L' => 
@@ -103,7 +104,6 @@ class ComposerStaticInit721415390c4b9da7e3b0cc2e2b5f663f
             'Google\\LongRunning\\' => 19,
             'Google\\Iam\\' => 11,
             'Google\\Cloud\\Storage\\' => 21,
-            'Google\\Cloud\\Firestore\\' => 23,
             'Google\\Cloud\\Core\\' => 18,
             'Google\\Cloud\\' => 13,
             'Google\\Auth\\' => 12,
@@ -116,7 +116,6 @@ class ComposerStaticInit721415390c4b9da7e3b0cc2e2b5f663f
             'GPBMetadata\\Google\\Longrunning\\' => 31,
             'GPBMetadata\\Google\\Logging\\' => 27,
             'GPBMetadata\\Google\\Iam\\' => 23,
-            'GPBMetadata\\Google\\Firestore\\' => 29,
             'GPBMetadata\\Google\\Cloud\\' => 25,
             'GPBMetadata\\Google\\Api\\' => 23,
             'GPBMetadata\\ApiCore\\' => 20,
@@ -253,6 +252,10 @@ class ComposerStaticInit721415390c4b9da7e3b0cc2e2b5f663f
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
+        'MrShan0\\PHPFirestore\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/bensontrent/firestore-php/src',
+        ),
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
@@ -329,10 +332,6 @@ class ComposerStaticInit721415390c4b9da7e3b0cc2e2b5f663f
         array (
             0 => __DIR__ . '/..' . '/google/cloud-storage/src',
         ),
-        'Google\\Cloud\\Firestore\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/google/cloud-firestore/src',
-        ),
         'Google\\Cloud\\Core\\' => 
         array (
             0 => __DIR__ . '/..' . '/google/cloud-core/src',
@@ -380,10 +379,6 @@ class ComposerStaticInit721415390c4b9da7e3b0cc2e2b5f663f
         'GPBMetadata\\Google\\Iam\\' => 
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Iam',
-        ),
-        'GPBMetadata\\Google\\Firestore\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/google/cloud-firestore/metadata',
         ),
         'GPBMetadata\\Google\\Cloud\\' => 
         array (

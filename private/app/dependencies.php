@@ -77,6 +77,10 @@ $container['customerProfileModel'] = function () {
   return new \HighFlyersUkCouriers\CustomerProfileModel();
 };
 
+$container['addUserModel'] = function () {
+  return new \HighFlyersUkCouriers\AddUserModel();
+};
+
 $container['notFoundHandler'] = function ($container) {
   return function ($request, $response) use ($container) {
       return  $response->withRedirect('/', 302);
