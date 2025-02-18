@@ -3,6 +3,7 @@
 use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Kreait\Firebase\Factory;
 
 
 $app->get('/change-password[/id/equalpasswords]', function (Request $request, Response $response, $args) use ($app) : Response{
@@ -18,10 +19,6 @@ $app->get('/change-password[/id/equalpasswords]', function (Request $request, Re
 
     $container = $app->getContainer();
 
-
-    $cleaned_id = cleanID($allGetVars['id'], $container);
-    $equal_passwords = null;
-
     if(!empty($allGetVars['equalpasswords'])){
         $sanitizer = $container->get('sanitizer');
         $cleaned_equal_passwords = $sanitizer->sanitizeBoolean($allGetVars['equalpasswords']);
@@ -30,44 +27,15 @@ $app->get('/change-password[/id/equalpasswords]', function (Request $request, Re
         }
     }
 
+    $session_wrapper = $container->get('sessionWrapper');
+    $session_wrapper->setSessionVar('CHANGE_PASSWORD_UID', $allGetVars['id']);
     
-    $doctrine_wrapper = $container->get('doctrineWrapper');
-    $logger = $container->get('logger');
-
-
-    //Doctrine wrapper setup
-    $database_connection_settings = $container->get('settings')['doctrineSettings'];
-    $database_connection = DriverManager::getConnection($database_connection_settings);
-    $query_builder = $database_connection->createQueryBuilder();
-    $doctrine_wrapper->setQueryBuilder($query_builder);
-    $doctrine_wrapper->setDoctrineLogger($logger);
-
-    //check for valid id
-    $doctrine_wrapper->fetchUserDataByField('id', $cleaned_id);
-    $query_result = $doctrine_wrapper->getQueryResult();
-    if(empty($query_result)){
-        return $response->withRedirect('manage-accounts', 302);
-    }
     
     return $this->view->render($response,'change-password.html', array(
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "ChangePassword.css",
             'asset_path' => ASSET_PATH,
-            'js_path' => JS_PATH . "",
-            'landing_page' => __FILE__,
-            'heading_1' => APP_TITLE,
-            'userid' => $cleaned_id,
-            'links'=> array(
-                'register' => 'registerform',
-                'login' => 'loginform',
-                'homepage' => '#',
-                'send_initial_messages' => 'sendinitialtelemetrymessages',
-                'present_telemetry' => 'presenttelemetrydata',
-                'manage_users' => 'manageusersform',
-                'send_telemetry' => 'sendtelemetrydata',
-                'logout' => 'logout'
-            ),
-        ));
+            ));
     }else{
 
       return $response->withRedirect('loginpage', 302);
@@ -78,87 +46,62 @@ $app->get('/change-password[/id/equalpasswords]', function (Request $request, Re
 $app->post('/change-password', function (Request $request, Response $response) use ($app) : Response
 {
 
-  $tainted_parameters = $request->getParsedBody();
+  $account_type = $request->getAttribute('accountType');
 
-  //if one of the parameters does not meet requirements
+  if($account_type == "admin"){
+      
+    putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json");
 
-  $container = $app->getContainer();
+    $tainted_parameters = $request->getParsedBody();
+    $container = $app->getContainer();
 
-  //var_dump($tainted_parameters['accountid']);
+    $session_wrapper = $container->get('sessionWrapper');
+    $uid = $session_wrapper->getSessionVar('CHANGE_PASSWORD_UID');
 
-  $cleaned_parameters = cleanChangePasswordForm($tainted_parameters, $container);
+ 
 
-  if(empty($cleaned_parameters)){
-    return $response->withRedirect('/manage-accounts', 302);
-  }
+    //if one of the parameters does not meet requirements
+    if(empty($uid)){
+      return $response->withRedirect('/manage-accounts?error=true', 302);
+    }
 
-  //are passwords equal
+    //are passwords equal
+    $password = $tainted_parameters['password'];
+    $confirm_password = $tainted_parameters['confirmpassword'];
+    
 
-  $password = $cleaned_parameters['password'];
-  $confirm_password = $cleaned_parameters['confirmpassword'];
+    if($password != $confirm_password){
+      return $response->withRedirect("/change-password?id=" . $uid. "&equalpasswords=false", 302);
+
+    }
+
+        
+    //setup manage accounts model
+
+    $factory = new Factory();
+    $auth = $factory->createAuth();
   
+    $logger = $container->get('logger');
 
-  if($password != $confirm_password){
-    return $response->withRedirect("/change-password?id=" . $cleaned_parameters['id'] . "&equalpasswords=false", 302);
+    $manage_accounts_model = $container->get('manageAccountsModel');
 
-  }
-
-
-  //store in database
-  $doctrine_wrapper = $container->get('doctrineWrapper');
-  $logger = $container->get('logger');
+    $manage_accounts_model->setLogger($logger);
+    $manage_accounts_model->setFirebaseAuth($auth);
+    $manage_accounts_model->setUID($uid);
+    $manage_accounts_model->changeUserPassword($password);
 
 
-  // // Doctrine wrapper setup
-  $database_connection_settings = $container->get('settings')['doctrineSettings'];
-  $database_connection = DriverManager::getConnection($database_connection_settings);
-  $query_builder = $database_connection->createQueryBuilder();
-  $doctrine_wrapper->setQueryBuilder($query_builder);
-  $doctrine_wrapper->setDoctrineLogger($logger);
+    if($manage_accounts_model->getFirebaseAuthResult() == false){
+      return $response->withRedirect('/manage-accounts?passwordreset=false', 302);
+    }
 
-  $bcrypt_wrapper = $container->get('bcryptWrapper');
-  $hashed_password = $bcrypt_wrapper->createHashedPassword($password);
-
-  $doctrine_wrapper->changeUserPassword($cleaned_parameters['id'], $hashed_password);
-
-  if($doctrine_wrapper->getQueryResult()){
+    $session_wrapper->unsetSessionVar('CHANGE_PASSWORD_UID');
+    
     return $response->withRedirect('/manage-accounts?passwordreset=true', 302);
+    
+  }else{
+    return $response->withRedirect('/loginpage', 302);
   }
-  
-
-
-  return $response->withRedirect('/manage-accounts?passwordreset=true', 302);
-  
-
 
 })->setName('change-password');
 
-
-function cleanID($id, $container) : int{
- 
-  $sanitizer = $container->get('sanitizer');
-  $validator = $container->get('validator');
-
-  $saintized_id = $sanitizer->sanitizePositiveNumber($id);  
-  $cleaned_id = $validator->validatePositiveNumber($saintized_id);  
-
-  return $cleaned_id;   
-
-}
-
-function cleanChangePasswordForm($tainted_parameters, $container) : array{
-
-    $sanitizer = $container->get('sanitizer');
-    $validator = $container->get('validator');
-  
-    $cleaned_parameters = [];
-
-    $saintized_id = $sanitizer->sanitizePositiveNumber($tainted_parameters['accountid']);  
-    $cleaned_parameters['id'] = $validator->validatePositiveNumber($saintized_id);  
-
-    $cleaned_parameters['password'] = $tainted_parameters['password'];
-    $cleaned_parameters['confirmpassword'] = $tainted_parameters['confirmpassword'];
-
-    return $cleaned_parameters;
-
-}

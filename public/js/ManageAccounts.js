@@ -41,7 +41,7 @@ function generateTableRow(userData, userID){
     const buttonWrapper = document.createElement('td');
 
     const changePasswordLink = document.createElement('a');
-    changePasswordLink.href = "/change-password";
+    changePasswordLink.href = "/change-password?id=" + userID;
     const resetPasswordButton = document.createElement('button');
     resetPasswordButton.innerText = "reset password";
     changePasswordLink.appendChild(resetPasswordButton);

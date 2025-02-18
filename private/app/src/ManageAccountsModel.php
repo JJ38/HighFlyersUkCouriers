@@ -88,7 +88,7 @@ class ManageAccountsModel
     
                 }
                 
-                $this->firebase_auth_result = true;
+                $this->firebase_auth_result = false;
             }
 
         }else{
@@ -185,6 +185,34 @@ class ManageAccountsModel
         }else{
             $this->firebase_firestore_result = false;
             $this->delete_user_result = false;
+        }
+
+      
+    }
+
+    public function changeUserPassword($newPassword) : void{
+
+        if($this->firebase_auth != null){
+
+            try{
+
+                $this->firebase_auth->changeUserPassword($this->uid, $newPassword);
+                $this->firebase_auth_result = true;
+
+            }catch(\Exception $e){
+                
+                if ($this->logger !== null) {
+    
+                    $this->logger->error("FIREBASE_AUTH_CHANGEPASSWORD_ERROR", array($e));
+                    $this->logger->error("FIREBASE_AUTH_CHANGEPASSWORD_ERROR_AUTH", array($this->firebase_auth));
+        
+                }
+                
+                $this->firebase_auth_result = false;
+            }
+
+        }else{
+            $this->firebase_auth_result = false;
         }
 
       
