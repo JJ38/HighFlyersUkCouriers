@@ -69,16 +69,12 @@ $container['manageOrderModel'] = function () {
   return new \HighFlyersUkCouriers\ManageOrderModel();
 };
 
-$container['manageAccountsModel'] = function () {
-  return new \HighFlyersUkCouriers\ManageAccountsModel();
-};
-
 $container['customerProfileModel'] = function () {
   return new \HighFlyersUkCouriers\CustomerProfileModel();
 };
 
-$container['addUserModel'] = function () {
-  return new \HighFlyersUkCouriers\AddUserModel();
+$container['manageAccountsModel'] = function () {
+  return new \HighFlyersUkCouriers\ManageAccountsModel();
 };
 
 $container['notFoundHandler'] = function ($container) {

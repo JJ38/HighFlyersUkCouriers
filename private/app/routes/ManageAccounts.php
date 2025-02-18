@@ -68,49 +68,12 @@ $app->get('/manage-accounts[/error/deleted/passwordreset]', function (Request $r
         }
       }
 
-    
-      
-      $container = $app->getContainer();
-      $logger = $container->get('logger');
-      $doctrine_wrapper = $container->get('doctrineWrapper');
-
-      // // Doctrine wrapper setup
-      $database_connection_settings = $container->get('settings')['doctrineSettings'];
-      $database_connection = DriverManager::getConnection($database_connection_settings);
-      $query_builder = $database_connection->createQueryBuilder();
-      $doctrine_wrapper->setQueryBuilder($query_builder);
-      $doctrine_wrapper->setDoctrineLogger($logger);
-
-
-      $manage_accounts_model = $container->get('manageAccountsModel');
-      $manage_accounts_model->setDoctrineWrapper($doctrine_wrapper);
-      if($cleaned_field == null || $cleaned_filter == null){
-        $manage_accounts_model->fetchAllUsers();
-      }else{
-        $manage_accounts_model->fetchUserDataByField($cleaned_field, $cleaned_filter);
-      }
-      
-      $manage_accounts_model->generateHTMLFromData();
+  
 
       return $this->view->render($response,'manage-accounts.html', array(
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "ManageAccounts.css",
-              'asset_path' => ASSET_PATH,
-              // 'js_file' => JS_PATH . "ManageAccounts.js",
-              'userdata' => $manage_accounts_model->getUserDataHTML(),
-              'landing_page' => __FILE__,
-              'heading_1' => APP_TITLE,
-              'links'=> array(
-                  'register' => 'registerform',
-                  'login' => 'loginform',
-                  'homepage' => '#',
-                  'send_initial_messages' => 'sendinitialtelemetrymessages',
-                  'present_telemetry' => 'presenttelemetrydata',
-                  'manage_users' => 'manageusersform',
-                  'send_telemetry' => 'sendtelemetrydata',
-                  'logout' => 'logout'
-              ),
-          ));
+              'asset_path' => ASSET_PATH,));
     }else{
 
       return $response->withRedirect('loginpage', 302);

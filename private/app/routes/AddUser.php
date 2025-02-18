@@ -5,7 +5,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use MrShan0\PHPFirestore\FirestoreClient;
 use Kreait\Firebase\Factory;
-use Kreait\Firebase\Contract\Auth;
+
 
 use Throwable;
 
@@ -63,12 +63,12 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
 
     if($account_type == "admin"){
 
-        putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-5b32c3ad97.json"); //works
+        putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); //works
         
         $container = $app->getContainer();
         $logger = $container->get('logger');
-        $addUserModel = $container->get('addUserModel');
-        $addUserModel->setLogger($logger);
+        $manageAccountsModel = $container->get('manageAccountsModel');
+        $manageAccountsModel->setLogger($logger);
     
             
         $factory = new Factory();
@@ -91,12 +91,12 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
 
 
 
-        $addUserModel->setFirebaseAuth($auth);
-        $addUserModel->setCredentials($userCredentials);
-        $addUserModel->setRole($cleaned_parameters['accountType']);
-        $addUserModel->createUser();
+        $manageAccountsModel->setFirebaseAuth($auth);
+        $manageAccountsModel->setCredentials($userCredentials);
+        $manageAccountsModel->setRole($cleaned_parameters['accountType']);
+        $manageAccountsModel->createUser();
 
-        if($addUserModel->getFirebaseAuthResult() == false){
+        if($manageAccountsModel->getFirebaseAuthResult() == false){
             return $response->withRedirect('/manage-accounts?error=fireauth', 302);
         }
         
@@ -111,8 +111,8 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
                 'database' => '(default)',
             ]);
 
-            $addUserModel->setFirebaseFirestore($firestore);
-            $addUserModel->createFirestoreUserDocument();
+            $manageAccountsModel->setFirebaseFirestore($firestore);
+            $manageAccountsModel->createFirestoreUserDocument();
 
 
         }catch(Exception $e){
@@ -127,7 +127,7 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
         }
 
 
-        if($addUserModel->getFirebaseFirestoreResult() == false){
+        if($manageAccountsModel->getFirebaseFirestoreResult() == false){
             return $response->withRedirect('/manage-accounts?error=firestore', 302);
         }
     
