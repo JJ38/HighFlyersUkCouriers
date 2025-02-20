@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="/css/ManageOrders.css" type="text/css">
     <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
     <title>{{ page_title }}</title>
+    <script src="/js/ManageOrdersNonDeferred.js"></script>
+    
   </head>
   <body>
 
@@ -119,11 +121,11 @@
             </form>
           </div>
 
-          <div class="bubble orderdatawrapper">
+          <div id="orderDataWrapper" class="bubble orderdatawrapper">
 
             <div class="orderdata">
-              <table>
-                <tr class="headerrow">
+              <table id="orderTable">
+                <tr class="headerrow">               
                   <th></th>
                   <th>ID</th>
                   <th>Animal Type</th>
@@ -151,9 +153,8 @@
                   <th>Time</th>
                   <th id="topright"></th>
                 </tr>
-
-                {{ orderdata|raw }}
-
+                <tbody id="tableBody">
+                </tbody>
               </table>
             </div>
           </div>
@@ -162,6 +163,7 @@
     </div>
 
   </body>
-  <script type="text/javascript" src="{{ js_file }}"></script>
-  <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+  <script type="module" src="/js/FirebaseManageOrders.js" defer></script>
+  <script type="module" src="/js/ManageOrders.js" defer></script>
+  <script type="module" src="/js/MobileNavigationBar.js"></script>
 </html>

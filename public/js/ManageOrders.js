@@ -24,14 +24,6 @@ for(let i = 0; i < printButtons.length; i++){
     });
 }
 
-function highlightorder(orderCheckBox){
-
-  console.log("highlighorder");
-
-  orderCheckBox.parentElement.parentElement.classList.toggle("highlightorder");
-
-}
-
 function singularPrint(){
 
   if(confirm("Would you like the selected orders as printed?")){
