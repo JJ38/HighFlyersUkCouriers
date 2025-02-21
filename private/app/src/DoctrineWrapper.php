@@ -64,7 +64,6 @@ class DoctrineWrapper
     }
 
 
-
     public function storeOrderData($cleaned_parameters) : void
     {
 

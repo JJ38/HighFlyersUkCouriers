@@ -596,8 +596,6 @@ class ManageOrderModel
       $delivery_date->modify('next monday');
     }
 
-    
-    
     // echo $current_date->format('M-d');
     //$current_date->modify('next tuesday');
     return $delivery_date->format('W');

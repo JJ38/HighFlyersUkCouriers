@@ -3,6 +3,9 @@
 use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Kreait\Firebase\Contract\Auth;
+use Kreait\Firebase\Firestore;
+use MrShan0\PHPFirestore\FirestoreClient;
 
 
 
@@ -48,10 +51,22 @@ $app->get('/add-order', function (Request $request, Response $response, $args) u
 $app->post('/add-order', function (Request $request, Response $response) use ($app) : Response
 {
 
+   
+  $account_type = $request->getAttribute('accountType');
+
+  if(!$account_type == "admin" || !$account_type == "staff"){
+
+    var_dump($account_type);
+    return $response;
+
+    return $response->withRedirect("/loginpage", 301);
+
+  }
+
+
   $tainted_parameters = $request->getParsedBody();
   //$tainted_parameters["printed"] = "0"; //default not printed value for newly added orders
  
-
   $container = $app->getContainer();
   $manage_order_model = $container->get('manageOrderModel');
 
@@ -59,18 +74,13 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   //if one of the parameters does not meet requirements
 
-
-
   if(empty($cleaned_parameters)){
 
-    $error_message = "Error (No parameters where posted - connection error)"; //default error message
-
+    $error_message = "Error (No parameters were posted - connection error)"; //default error message
     $error_message = $manage_order_model->getErrorMessage();
-
 
     return $response->withRedirect("/manage-orders?addorder=$error_message", 301);
   }
-
   
   $username = $request->getAttribute('username');
   $cleaned_parameters['added_by'] = $username;
@@ -78,39 +88,55 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   if(empty($cleaned_parameters['delivery_week'])){//if delivery week empty
     //add delivery week in
-
     $cleaned_parameters['delivery_week'] = $manage_order_model->getDeliveryWeek("CUSTOMER");
-
   }
 
+  //add in order id
+
+
+
+  putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
 
   $container = $app->getContainer();
 
   //store in database
+  $logger = $container->get('logger');
+  $add_order_model = $container->get('addOrderModel');
+  
+  $add_order_model->setLogger($logger);
+  $add_order_model->setOrderData($cleaned_parameters);
+
+  try{
+            
+    $env = parse_ini_file(realpath('../.env'));
+
+    $projectID = $env['FIREBASE_PROJECT_ID'];
+    $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+
+    $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+        'database' => '(default)',
+    ]);
+
+    $add_order_model->setFirebaseFirestore($firestore);
+
+  }catch(Exception $e){
+
+      if($logger != null){
+          $logger->error('FIREBASE_INIT_ERROR', array($e));
+          $logger->error('FIREBASE_INIT_ENV', array($env));
+      }
+
+      return $response->withRedirect('/manage-accounts?error=dberror', 302);
+
+  }
 
   
-  $doctrine_wrapper = $container->get('doctrineWrapper');
-  $logger = $container->get('logger');
-
-  // // Doctrine wrapper setup
-  $database_connection_settings = $container->get('settings')['doctrineSettings'];
-  try{
-    $database_connection = DriverManager::getConnection($database_connection_settings);
-  }catch(Exception $e){
-    return $response->withRedirect('/manage-orders?error=dbconnection', 301);
-  }
-  $query_builder = $database_connection->createQueryBuilder();
-  $doctrine_wrapper->setQueryBuilder($query_builder);
-  $doctrine_wrapper->setDoctrineLogger($logger);
-  $doctrine_wrapper->setDatabaseConnection($database_connection);
-
-  //check for duplicate orders
 
 
   //store data
-  $doctrine_wrapper->storeOrderData($cleaned_parameters);
+  $add_order_model->storeOrder();
+  $query_result = $add_order_model->getFirebaseFirestoreResult();
 
-  $query_result = $doctrine_wrapper->getQueryResult();
 
   if($query_result){    
 

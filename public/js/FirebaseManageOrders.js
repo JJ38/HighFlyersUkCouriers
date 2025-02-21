@@ -29,27 +29,12 @@ const app = initializeApp(firebaseConfig);
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
 
-
 getOrderData();
-
-// const unsubscribe = onSnapshot(q, (querySnapshot) => {
-//   querySnapshot.forEach((doc) => {
-//       console.log(doc.data());
-//   });
-
-// });
-
-//unsubscribe();
-
-//const next = query(collection(db, "cities"), startAfter(lastVisible), limit(25))
-console.log(orderDataWrapper.getBoundingClientRect().height)
 
 orderDataWrapper.addEventListener('scroll', (event) => {
   
     const scrollHeight = event.target.scrollHeight;
     const scrollTop = event.target.scrollTop; 
-    
-    // console.log(scrollHeight - scrollTop - orderDataWrapperHeight);
 
     if(fetchingOrders){
         return;
@@ -72,8 +57,6 @@ window.onresize = (event) => {
 
 
 function addOrdersToTable(orderArray, prepend){
-    console.log(orderArray);
-
 
     for(let i = 0; i < orderArray.length; i++){
 
@@ -147,7 +130,7 @@ function sortOrderData(orderFields){
         timestamp: orderFields['timestamp']
         
     }
-    console.log(sortedOrderData);
+
     return sortedOrderData;
 }
 

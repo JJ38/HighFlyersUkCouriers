@@ -69,6 +69,10 @@ $container['manageOrderModel'] = function () {
   return new \HighFlyersUkCouriers\ManageOrderModel();
 };
 
+$container['addOrderModel'] = function () {
+  return new \HighFlyersUkCouriers\AddOrderModel();
+};
+
 $container['customerProfileModel'] = function () {
   return new \HighFlyersUkCouriers\CustomerProfileModel();
 };
