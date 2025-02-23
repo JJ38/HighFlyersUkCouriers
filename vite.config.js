@@ -27,7 +27,7 @@ export default defineConfig({
           DeleteMultipleOrders: resolve(root, 'delete-multiple-orders.html'),
           DeleteOrder: resolve(root, 'delete-order.html'),
           DeleteUser: resolve(root, 'delete-user.html'),
-          EditOrders: resolve(root, 'edit-orders.html'),
+          EditOrders: resolve(root, 'edit-order.html'),
           FAQ: resolve(root, 'f-a-q.html'),
           LiveLogisticsManager: resolve(root, 'live-logistics-manager.html'),
           LoginPage: resolve(root, 'loginpage.html'),

@@ -1,6 +1,6 @@
 
 const orderElements = document.querySelectorAll('tr');
-const printButtons = document.querySelectorAll('.print');
+//const printButtons = document.querySelectorAll('.print');
 const selectAllButton = document.getElementById('selectall');
 const deletedSelectedButton = document.getElementById('deleteselected');
 const printSelectedButton = document.getElementById('printselected');
@@ -13,15 +13,17 @@ let printType = "";
 let orderID = -1;
 let isPrinted = "";
 
-for(let i = 0; i < printButtons.length; i++){
-    printButtons[i].addEventListener('click', e => {
-        // orderElements[i + 1].children[21].textContent
-        printType = "SINGULARPRINT";
-        orderID = orderElements[i + 1].children[1].innerHTML;
-        isPrinted = orderElements[i + 1].children[23].textContent;
-        printOrder(orderElements[i + 1].children[1].innerHTML);
-        
-    });
+export function addPrintListener(orderFields){
+
+  orderFields["printButton"].addEventListener('click', e => {
+      console.log("print clicked");
+      printType = "SINGULARPRINT";
+      orderID = orderFields["ID"];
+      isPrinted = orderFields["printed"];
+      printOrder(orderFields);
+      
+  });
+
 }
 
 function singularPrint(){
@@ -93,9 +95,10 @@ function setPrint() {
   this.contentWindow.print();
 }
 
-function printOrder(orderNumber) {
+function printOrder(orderFields) {
 
-  const form = generateForms([orderNumber]);
+  const form = generateForms(orderFields);
+  console.log(form);
   print(form);
 
 }
@@ -171,7 +174,7 @@ function print(form){
   document.body.appendChild(hideFrame);
 }
 
-function generateForms(orderIDs){
+function generateForms(orderFields){
 
   let html;
 
@@ -194,19 +197,14 @@ function generateForms(orderIDs){
   
   html = boilerplateTop;
 
-  orderData = [];
 
-  for(let i = 1; i < orderElements.length; i++){
-    if(orderIDs.includes(orderElements[i].children[1].innerHTML)){
-      orderData.push(orderElements[i]);
-    }
-  }
+  // for(let i = 0; i < orderIDs.length; i++){
+  //   const orderHTML = getOrderHTML(orderData[i].getElementsByTagName('td'));
+  //   html = html + orderHTML;
+  // }
 
-
-  for(let i = 0; i < orderIDs.length; i++){
-    const orderHTML = getOrderHTML(orderData[i].getElementsByTagName('td'));
-    html = html + orderHTML;
-  }
+  const orderHTML = getOrderHTML(orderFields);
+  html = html + orderHTML;
 
   html = html + boilerplateBottom;
   
@@ -214,9 +212,9 @@ function generateForms(orderIDs){
     
 }
 
-function getOrderHTML(tableData){
+function getOrderHTML(orderFields){
 
-  console.log(tableData);
+  console.log(orderFields);
 
   let order =  
   '<div class="page">'+
@@ -228,21 +226,21 @@ function getOrderHTML(tableData){
     '</h2>'+
     '<div class="grid">'+
       '<label class="bold">Order ID: </label>'+
-      '<p>' + tableData[1].innerHTML + '</p>'+
+      '<p>' + orderFields['ID'] + '</p>'+
       ''+
       '<label class="bold">Animal Type: </label>'+
-      '<p>' + tableData[2].innerHTML + '</p>'+
+      '<p>' + orderFields['animalType'] + '</p>'+
       ''+
       '<label class="bold">Quantity: </label>'+
-      '<p>' + tableData[3].innerHTML + '</p>'+
+      '<p>' + orderFields['quantity'] + '</p>'+
       ''+
       '<label class="bold">Payment Method: </label>'+
-      '<p> Cash On ' + tableData[19].innerHTML + '</p>'+
+      '<p> Cash On ' + orderFields['payment'] + '</p>'+
       ''+
       '<label class="bold">Code: </label>'+
-      '<p>' + tableData[21].innerHTML + '</p>'+
+      '<p>' + orderFields['code'] + '</p>'+
       '<label class="bold">Notes: </label>'+
-      '<p>' + tableData[20].innerHTML + '</p>'+
+      '<p>' + orderFields['message'] + '</p>'+
     '</div>'+
      
     '<div class="formwrapper">'+
@@ -252,18 +250,18 @@ function getOrderHTML(tableData){
         '</h3>'+
         '<div class="infowrapper">'+
           '<label>Name:</label>'+
-          '<p>' + tableData[7].innerHTML + '</p>'+
+          '<p>' + orderFields['deliveryName'] + '</p>'+
 
           '<label>Address:</label>'+
           '<address>' + 
-            '<p>' + tableData[8].innerHTML + '</p>'+
-            '<p>' + tableData[9].innerHTML + '</p>'+
-            '<p>' + tableData[10].innerHTML + '</p>'+
-            '<p>' + tableData[11].innerHTML + '</p>'+
+            '<p>' + orderFields['deliveryAddress1']+ '</p>'+
+            '<p>' + orderFields['deliveryAddress2'] + '</p>'+
+            '<p>' + orderFields['deliveryAddress3'] + '</p>'+
+            '<p>' + orderFields['deliveryPostcode'] + '</p>'+
           '</address>' +
       
           '<label>Telephone:</label>'+
-          '<p>' + tableData[12].innerHTML + '</p>'+          
+          '<p>' + orderFields['deliveryPhoneNumber']  + '</p>'+          
       
         '</div>'+
       '</div>'+
@@ -273,18 +271,18 @@ function getOrderHTML(tableData){
         '</h3>'+
           '<div class="infowrapper">'+
             '<label>Name:</label>'+
-            '<p>' + tableData[13].innerHTML + '</p>'+
+            '<p>' + orderFields['collectionName']  + '</p>'+
         
             '<label>Address:</label>'+
             '<address>' + 
-              '<p>' + tableData[14].innerHTML + '</p>'+
-              '<p>' + tableData[15].innerHTML + '</p>'+
-              '<p>' + tableData[16].innerHTML + '</p>'+
-              '<p>' + tableData[17].innerHTML + '</p>'+
+              '<p>' + orderFields['collectionAddress1'] + '</p>'+
+              '<p>' + orderFields['collectionAddress2'] + '</p>'+
+              '<p>' + orderFields['collectionAddress3'] + '</p>'+
+              '<p>' + orderFields['collectionPostcode'] + '</p>'+
             '</address>' +
                           
             '<label>Telephone:</label>'+
-            '<p>' + tableData[18].innerHTML + '</p>'+
+            '<p>' + orderFields['collectionPhoneNumber'] + '</p>'+
           '</div>'+
       '</div>'+
     '</div>'+
@@ -300,22 +298,22 @@ function getOrderHTML(tableData){
     '</h2>'+
     '<div class="grid">'+
       '<label class="bold">Order ID: </label>'+
-      '<p>' + tableData[1].innerHTML + '</p>'+
+      '<p>' + orderFields['ID'] + '</p>'+
       ''+
       '<label class="bold">Animal Type: </label>'+
-      '<p>' + tableData[2].innerHTML + '</p>'+
+      '<p>' + orderFields['animalType'] + '</p>'+
       ''+
       '<label class="bold">Quantity: </label>'+
-      '<p>' + tableData[3].innerHTML + '</p>'+
+      '<p>' + orderFields['quantity'] + '</p>'+
       ''+
       '<label class="bold">Payment Method: </label>'+
-      '<p> Cash On ' + tableData[19].innerHTML + '</p>'+
+      '<p> Cash On ' + orderFields['payment'] + '</p>'+
       ''+
       '<label class="bold">Code: </label>'+
-      '<p>' + tableData[21].innerHTML + '</p>'+
+      '<p>' + orderFields['code'] + '</p>'+
       ''+
       '<label class="bold">Notes: </label>'+
-      '<p>' + tableData[20].innerHTML + '</p>'+
+      '<p>' + orderFields['message'] + '</p>'+
     '</div>'+
     '<div class="formwrapper">'+
       '<div class="wrapper grid collectiontextcolour">'+
@@ -324,18 +322,18 @@ function getOrderHTML(tableData){
         '</h3>'+
         '<div class="infowrapper">'+
           '<label>Name:</label>'+
-          '<p>' + tableData[7].innerHTML +'</p>'+
+          '<p>' + orderFields['deliveryName'] +'</p>'+
   
           '<label>Address:</label>'+
           '<address>' + 
-            '<p>' + tableData[8].innerHTML + '</p>'+
-            '<p>' + tableData[9].innerHTML + '</p>'+
-            '<p>' + tableData[10].innerHTML + '</p>'+
-            '<p>' + tableData[11].innerHTML + '</p>'+
+            '<p>' + orderFields['deliveryAddress1'] + '</p>'+
+            '<p>' + orderFields['deliveryAddress2'] + '</p>'+
+            '<p>' + orderFields['deliveryAddress3'] + '</p>'+
+            '<p>' + orderFields['deliveryPostcode'] + '</p>'+
           '</address>' +
         
           '<label>Telephone:</label>'+
-          '<p>' + tableData[12].innerHTML + '</p>'+
+          '<p>' + orderFields['deliveryPhonenumber'] + '</p>'+
       
         '</div>'+ 
       '</div>'+
@@ -345,18 +343,18 @@ function getOrderHTML(tableData){
         '</h3>'+
         '<div class="infowrapper">'+
           '<label>Name:</label>'+
-          '<p>' + tableData[13].innerHTML + ' </p>'+
+          '<p>' + orderFields['collectionName'] + ' </p>'+
          
           '<label>Address:</label>'+
           '<address>' + 
-            '<p>' + tableData[14].innerHTML + '</p>'+
-            '<p>' + tableData[15].innerHTML + '</p>'+
-            '<p>' + tableData[16].innerHTML + '</p>'+
-            '<p>' + tableData[17].innerHTML + '</p>'+
+            '<p>' + orderFields['collectionAddress1'] + '</p>'+
+            '<p>' + orderFields['collectionAddress2'] + '</p>'+
+            '<p>' + orderFields['collectionAddress3'] + '</p>'+
+            '<p>' + orderFields['collectionPostcode'] + '</p>'+
           '</address>' +
           
           '<label>Telephone:</label>'+
-          '<p>' + tableData[18].innerHTML + '</p>'+
+          '<p>' + orderFields['collectionPhoneNumber'] + '</p>'+
         '</div>'+
       '</div>'+
       '<br>'+

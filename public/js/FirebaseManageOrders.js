@@ -1,7 +1,8 @@
 
 import { initializeApp } from "firebase/app";
 import { collection, getFirestore, getDocs, startAfter, where, query, limit, orderBy, onSnapshot} from "firebase/firestore";
-import { initial } from "lodash";
+import { addPrintListener } from "/js/ManageOrders.js";
+
 
 const orderTable = document.getElementById('tableBody');
 const orderDataWrapper = document.getElementById('orderDataWrapper');
@@ -13,6 +14,7 @@ let initialQuery = true;
 let orderListenerSubscription;
 let latestOrderID;
 let snapshotQuery;
+let orderData = [];
 
 const firebaseConfig = {
   apiKey: "AIzaSyBHkjHITuk2opFgiG2wG36WJE6CDmb4tK4",
@@ -46,13 +48,11 @@ orderDataWrapper.addEventListener('scroll', (event) => {
         console.log("Fetching Orders");
     }
 
-   
-   
 });
 
 window.onresize = (event) => {
     orderDataWrapperHeight = orderDataWrapper.getBoundingClientRect().height;
-    console.log(orderDataWrapperHeight);
+  
 }
 
 
@@ -64,13 +64,19 @@ function addOrdersToTable(orderArray, prepend){
         const tableRow = document.createElement('tr');
 
         const sortedOrderData = sortOrderData(orderFields);
-         
+
         for(var field in sortedOrderData){
 
+            console.log(field);
+            console.log(sortedOrderData[field]);
+
             const tableData = document.createElement('td');
-            tableData.innerHTML = orderFields[field];
-            tableRow.appendChild(tableData);
+            tableData.innerHTML = sortedOrderData[field];
+            tableRow.append(tableData);
+        
         }
+
+        
 
         //add order checkbox
         const tableData = document.createElement('td');
@@ -91,41 +97,52 @@ function addOrdersToTable(orderArray, prepend){
         }
         
         //add order buttons
-        const orderButtons = getOrderButtons(orderFields['ID']);
+        const orderDataMap = new Map();
+        orderDataMap.set("ID", orderFields['ID']);
+        orderDataMap.set("printed", orderFields['printed'])
+        
+        const orderButtons = getOrderButtons(orderFields);
         tableRow.appendChild(orderButtons);
 
+        //add print button to orderFields so listener can be added to it
+        orderFields['printButton'] = orderButtons.children[0].firstChild;
+        addPrintListener(orderFields);
     }
 
     fetchingOrders = false;
 
+
+
 }
 
-function getOrderButtons(ID){
+function getOrderButtons(orderData){
 
     const buttonWrapper = document.createElement('td');
 
     const printLink = document.createElement('a');
+    printLink.classList = "print";
     const printButton = document.createElement('button');
     printButton.innerText = "Print";
     printButton.type= "button";
     printLink.appendChild(printButton);
+    //add print button to array
 
     const viewLink = document.createElement('a');
-    viewLink.href="/view-order?id=" + ID;
+    viewLink.href="/view-order?id=" + orderData["ID"];
     const viewButton = document.createElement('button');
     viewButton.innerText = "View";
     viewButton.type= "button";
     viewLink.appendChild(viewButton);
 
     const editLink = document.createElement('a');
-    editLink.href = "/edit-order?id=" + ID;
+    editLink.href = "/edit-order?id=" + orderData["ID"];
     const editButton = document.createElement('button');
     editButton.innerText = "Edit";
     editButton.type= "button";
     editLink.appendChild(editButton);
 
     const deleteLink = document.createElement('a');
-    deleteLink.href = "/delete-order?id=" + ID;
+    deleteLink.href = "/delete-order?id=" + orderData["ID"];
     const deleteButton = document.createElement('button');
     deleteButton.innerText = "Delete";
     deleteButton.type= "button";
@@ -155,7 +172,7 @@ function sortOrderData(orderFields){
         collectionName: orderFields['collectionName'],
         collectionAddress1: orderFields['collectionAddress1'],
         collectionAddress2: orderFields['collectionAddress2'],
-        collectionAddress3: orderFields['collectionAddress2'],
+        collectionAddress3: orderFields['collectionAddress3'],
         collectionPostcode: orderFields['collectionPostcode'],
         collectionPhoneNumber: orderFields['collectionPhoneNumber'],
         
