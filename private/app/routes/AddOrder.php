@@ -51,7 +51,6 @@ $app->get('/add-order', function (Request $request, Response $response, $args) u
 $app->post('/add-order', function (Request $request, Response $response) use ($app) : Response
 {
 
-   
   $account_type = $request->getAttribute('accountType');
 
   if(!$account_type == "admin" || !$account_type == "staff"){
@@ -62,7 +61,6 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
     return $response->withRedirect("/loginpage", 301);
 
   }
-
 
   $tainted_parameters = $request->getParsedBody();
   //$tainted_parameters["printed"] = "0"; //default not printed value for newly added orders
@@ -77,6 +75,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   if(empty($cleaned_parameters)){
 
     $error_message = "Error (No parameters were posted - connection error)"; //default error message
+    
     $error_message = $manage_order_model->getErrorMessage();
 
     return $response->withRedirect("/manage-orders?addorder=$error_message", 301);
@@ -85,16 +84,12 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $username = $request->getAttribute('username');
   $cleaned_parameters['added_by'] = $username;
 
-
   if(empty($cleaned_parameters['delivery_week'])){//if delivery week empty
     //add delivery week in
     $cleaned_parameters['delivery_week'] = $manage_order_model->getDeliveryWeek("CUSTOMER");
   }
 
   //add in order id
-
-
-
   putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
 
   $container = $app->getContainer();
@@ -130,13 +125,9 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   }
 
-  
-
-
   //store data
   $add_order_model->storeOrder();
   $query_result = $add_order_model->getFirebaseFirestoreResult();
-
 
   if($query_result){    
 
@@ -145,6 +136,5 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   }
 
   return $response->withRedirect('/manage-orders?addorder=dberror', 301);
-
 
 })->setName('add-orders');

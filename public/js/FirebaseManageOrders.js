@@ -91,10 +91,54 @@ function addOrdersToTable(orderArray, prepend){
         }
         
         //add order buttons
+        const orderButtons = getOrderButtons(orderFields['ID']);
+        tableRow.appendChild(orderButtons);
+
     }
 
     fetchingOrders = false;
 
+}
+
+function getOrderButtons(ID){
+
+    const buttonWrapper = document.createElement('td');
+
+    const printLink = document.createElement('a');
+    const printButton = document.createElement('button');
+    printButton.innerText = "Print";
+    printButton.type= "button";
+    printLink.appendChild(printButton);
+
+    const viewLink = document.createElement('a');
+    viewLink.href="/view-order?id=" + ID;
+    const viewButton = document.createElement('button');
+    viewButton.innerText = "View";
+    viewButton.type= "button";
+    viewLink.appendChild(viewButton);
+
+    const editLink = document.createElement('a');
+    editLink.href = "/edit-order?id=" + ID;
+    const editButton = document.createElement('button');
+    editButton.innerText = "Edit";
+    editButton.type= "button";
+    editLink.appendChild(editButton);
+
+    const deleteLink = document.createElement('a');
+    deleteLink.href = "/delete-order?id=" + ID;
+    const deleteButton = document.createElement('button');
+    deleteButton.innerText = "Delete";
+    deleteButton.type= "button";
+    deleteLink.appendChild(deleteButton);
+
+
+    buttonWrapper.appendChild(printLink);
+    buttonWrapper.appendChild(viewLink);
+    buttonWrapper.appendChild(editLink);
+    buttonWrapper.appendChild(deleteLink);
+    buttonWrapper.classList = "orderbuttons";
+
+    return buttonWrapper;
 }
 
 function sortOrderData(orderFields){

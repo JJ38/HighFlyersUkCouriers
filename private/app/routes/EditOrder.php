@@ -92,7 +92,7 @@ $app->get('/edit-order[/id]', function (Request $request, Response $response) us
         return  $response->withRedirect('manage-orders', 302);
       }
 
-      return $this->view->render($response,'edit-orders.html', array(
+      return $this->view->render($response,'edit-order.html', array(
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "EditOrders.css",
               'asset_path' => ASSET_PATH,
