@@ -13,6 +13,8 @@ let printType = "";
 let orderID = -1;
 let isPrinted = "";
 
+addListeners();
+
 export function addPrintListener(orderFields){
 
   orderFields["printButton"].addEventListener('click', e => {
@@ -20,9 +22,21 @@ export function addPrintListener(orderFields){
       printType = "SINGULARPRINT";
       orderID = orderFields["ID"];
       isPrinted = orderFields["printed"];
-      printOrder(orderFields);
+      printOrder([orderFields]);
       
   });
+
+}
+
+function addListeners(){
+
+  printSelectedButton.addEventListener('click', e => {
+
+    printSelected();
+
+  });
+
+
 
 }
 
@@ -67,14 +81,39 @@ function printSelected(){
   printType = "MULTIPLEPRINT";
 
   const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked');
+  console.log(selectedCheckBoxes);
   orderIDs = [];
   hasPrinted = [];
+  let orderFields = [];
+
   for(let i = 0; i < selectedCheckBoxes.length; i++){
     orderIDs.push(selectedCheckBoxes[i].value);
     hasPrinted.push(selectedCheckBoxes[i].parentElement.parentElement.children[23].textContent);
+    const orderTableRow = selectedCheckBoxes[i].parentElement.parentElement
+    orderFields.push(getOrderFields(orderTableRow));
   }
 
-  print(generateForms(orderIDs));
+  print(generateForms(orderFields));
+
+}
+
+function getOrderFields(orderTableRow){
+
+  let orderMap = [];
+
+  const fields = orderTableRow.children;
+
+  for (let i = 0; i < fields.length; i++){
+   
+    //if field
+    if (fields[i].className && fields[i].className != "orderbuttons"){ 
+      
+      orderMap[fields[i].className] = fields[i].textContent;
+    }
+   
+  }
+
+  return orderMap;
 
 }
 
@@ -98,7 +137,6 @@ function setPrint() {
 function printOrder(orderFields) {
 
   const form = generateForms(orderFields);
-  console.log(form);
   print(form);
 
 }
@@ -176,6 +214,8 @@ function print(form){
 
 function generateForms(orderFields){
 
+  console.log(orderFields);
+
   let html;
 
   let boilerplateTop = '<!DOCTYPE html>'+
@@ -197,14 +237,14 @@ function generateForms(orderFields){
   
   html = boilerplateTop;
 
+  for(let i = 0; i < orderFields.length; i++){
 
-  // for(let i = 0; i < orderIDs.length; i++){
-  //   const orderHTML = getOrderHTML(orderData[i].getElementsByTagName('td'));
-  //   html = html + orderHTML;
-  // }
+    const orderHTML = getOrderHTML(orderFields[i]);
+    html = html + orderHTML;
 
-  const orderHTML = getOrderHTML(orderFields);
-  html = html + orderHTML;
+  }
+
+ 
 
   html = html + boilerplateBottom;
   
@@ -213,8 +253,6 @@ function generateForms(orderFields){
 }
 
 function getOrderHTML(orderFields){
-
-  console.log(orderFields);
 
   let order =  
   '<div class="page">'+

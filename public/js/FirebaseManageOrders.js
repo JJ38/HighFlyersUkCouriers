@@ -67,11 +67,9 @@ function addOrdersToTable(orderArray, prepend){
 
         for(var field in sortedOrderData){
 
-            console.log(field);
-            console.log(sortedOrderData[field]);
-
             const tableData = document.createElement('td');
             tableData.innerHTML = sortedOrderData[field];
+            tableData.classList.add(field);
             tableRow.append(tableData);
         
         }
