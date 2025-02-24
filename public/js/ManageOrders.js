@@ -1,11 +1,8 @@
 
-const orderElements = document.querySelectorAll('tr');
-//const printButtons = document.querySelectorAll('.print');
 const selectAllButton = document.getElementById('selectall');
 const deletedSelectedButton = document.getElementById('deleteselected');
 const printSelectedButton = document.getElementById('printselected');
 const allCheckBoxes = document.querySelectorAll('input[type=checkbox]');
-const body = document.querySelectorAll('body');
 
 let orderIDs = [];
 let hasPrinted = [];
@@ -31,12 +28,8 @@ export function addPrintListener(orderFields){
 function addListeners(){
 
   printSelectedButton.addEventListener('click', e => {
-
     printSelected();
-
   });
-
-
 
 }
 
@@ -109,6 +102,7 @@ function getOrderFields(orderTableRow){
     if (fields[i].className && fields[i].className != "orderbuttons"){ 
       
       orderMap[fields[i].className] = fields[i].textContent;
+      
     }
    
   }
