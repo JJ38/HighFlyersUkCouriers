@@ -413,7 +413,7 @@ class ManageOrderModel
     }
       
     if(array_key_exists('deliveryWeek', $tainted_parameters)){
-      $cleaned_parameters['delivery_week'] = $sanitizer->sanitizeString($tainted_parameters['deliveryWeek']);
+      $cleaned_parameters['delivery_week'] = $sanitizer->sanitizePositiveNumber($tainted_parameters['deliveryWeek']);
     }else{
       $cleaned_parameters['delivery_week'] = null;
     }

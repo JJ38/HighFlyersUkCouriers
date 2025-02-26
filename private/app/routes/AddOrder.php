@@ -89,6 +89,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
     $cleaned_parameters['delivery_week'] = $manage_order_model->getDeliveryWeek("CUSTOMER");
   }
 
+
   //add in order id
   putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
 
@@ -97,9 +98,11 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   //store in database
   $logger = $container->get('logger');
   $add_order_model = $container->get('addOrderModel');
+  $session_wrapper = $container->get('sessionWrapper');
   
   $add_order_model->setLogger($logger);
   $add_order_model->setOrderData($cleaned_parameters);
+  $add_order_model->setSessionWrapper($session_wrapper);
 
   try{
             

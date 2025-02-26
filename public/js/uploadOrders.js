@@ -78,7 +78,7 @@ async function addDocument(orderData){
     quantity: parseInt(orderData[2]), //int
     email: orderData[3],
     account: orderData[4],
-    deliveryWeek: orderData[5],
+    deliveryWeek: parseInt(orderData[5]),//int
     collectionName: orderData[6],
     collectionPhoneNumber: orderData[7],
     collectionAddress1: orderData[8],

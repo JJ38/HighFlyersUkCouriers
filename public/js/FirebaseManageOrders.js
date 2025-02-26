@@ -6,6 +6,9 @@ import { addPrintListener } from "/js/ManageOrders.js";
 
 const orderTable = document.getElementById('tableBody');
 const orderDataWrapper = document.getElementById('orderDataWrapper');
+const searchButton = document.getElementById('searchButton');
+const searchValue = document.getElementById('searchValue');
+const searchOption = document.getElementById('searchOption');
 
 let orderDataWrapperHeight = orderDataWrapper.getBoundingClientRect().height;
 let lastVisibleID = null;
@@ -16,7 +19,7 @@ let latestOrderID;
 let snapshotQuery;
 let orderData = [];
 
-getOrderData();
+getOrderData(query(collection(db, "Orders"), orderBy('ID', 'desc'), limit(20)));
 
 orderDataWrapper.addEventListener('scroll', (event) => {
   
@@ -27,11 +30,43 @@ orderDataWrapper.addEventListener('scroll', (event) => {
         return;
     }
 
+    //if search filter is on return
+    if(searchOption.value != ""){
+        return;
+    }
+
     if(scrollHeight - scrollTop - orderDataWrapperHeight < 100){
         fetchingOrders = true;
-        getOrderData();
+        getOrderData(query(collection(db, "Orders"), orderBy('ID', 'desc'), startAfter(lastVisibleID), limit(20)));
         console.log("Fetching Orders");
     }
+
+});
+
+searchButton.addEventListener('click', () => {
+
+    var q;
+
+    switch(searchOption.value){
+
+        case "ID":
+        case "deliveryWeek":
+        case "quantity":
+            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption.value, "==", parseInt(searchValue.value)));
+            break;
+        default:
+            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption.value, "==", searchValue.value));
+            break;
+    }
+
+        
+    console.log("searchButton");
+    console.log(searchOption.value);
+    console.log(searchValue.value);
+    //clear table of current orders
+    const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = "";
+    getOrderData(q);
 
 });
 
@@ -178,22 +213,23 @@ function sortOrderData(orderFields){
     return sortedOrderData;
 }
 
-async function getOrderData(){
+async function getOrderData(q){
 
-    let q;
     
-    if(initialQuery){
-        //initial query
-        q = query(collection(db, "Orders"), orderBy('ID', 'desc'), limit(20));
+    
+    // if(initialQuery){
+    //     //initial query
+    //     q = query(collection(db, "Orders"), orderBy('ID', 'desc'), limit(20));
 
-    }else{
-        //pagination query
-        q = query(collection(db, "Orders"), orderBy('ID', 'desc'), startAfter(lastVisibleID), limit(20));
-    }
+    // }else{
+    //     //pagination query
+    //     q = query(collection(db, "Orders"), orderBy('ID', 'desc'), startAfter(lastVisibleID), limit(20));
+    // }
    
     const documentSnapshots = await getDocs(q);
 
     if(documentSnapshots.empty){
+        console.log("no results");
         return;
     }
     

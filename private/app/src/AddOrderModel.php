@@ -2,6 +2,7 @@
 
 namespace HighFlyersUkCouriers;
 
+use Exception;
 use Ramsey\Uuid\Type\Integer;
 
 class AddOrderModel
@@ -10,6 +11,7 @@ class AddOrderModel
     private $firebase_firestore;
     private $order_data;
     private $logger;
+    private $session_wrapper;
 
     public function getFirebaseFirestoreResult() : bool{
         return $this->firebase_firestore_result;
@@ -22,20 +24,26 @@ class AddOrderModel
     public function setOrderData($order_data){
         $this->order_data = $order_data;
     }
+
+    public function setSessionWrapper($session_wrapper){
+        $this->session_wrapper = $session_wrapper;
+    }
     
     public function setLogger($logger) : void{
         $this->logger = $logger;
     }
 
     private function getOrderID() : int{
+
+
+        //add error handling for error codes. 
         
 
         try{    
 
-            $env = parse_ini_file(realpath('../.env'));
-            $firestoreAccessToken = $env['FIREBASE_FIRESTORE_ACCESS_TOKEN'];
-            
 
+            $firestoreAccessToken = $this->session_wrapper->getSessionVar('verified_ID_Token');
+            
             $ch = curl_init();
 
             curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/(default)/documents:commit?key=AIzaSyDNBL3PpPTm6l69jVFbL');
@@ -56,13 +64,15 @@ class AddOrderModel
             $result = curl_exec($ch);
             if (curl_errno($ch)) {
                 echo 'Error:' . curl_error($ch);
+                curl_close($ch);
+                return -1;
             }
             curl_close($ch);
 
             $result_arr = json_decode($result, true);
             $order_ID = intval($result_arr['writeResults'][0]['transformResults'][0]['integerValue']);
 
-            $this->firebase_firestore_result = false;
+            $this->firebase_firestore_result = true;
 
             return $order_ID;
 
@@ -89,7 +99,7 @@ class AddOrderModel
 
         $order_ID = $this->getOrderID();
 
-        if($order_ID == -1){
+        if($order_ID < 1){
             $this->firebase_firestore_result = false;
             return;
         }
@@ -123,6 +133,8 @@ class AddOrderModel
             ]);
 
             $this->firebase_firestore_result = true;
+
+            echo "ORDERID: " . $order_ID;
 
         }catch(\Exception $e){
 

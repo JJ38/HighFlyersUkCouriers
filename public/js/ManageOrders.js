@@ -4,6 +4,7 @@ const deletedSelectedButton = document.getElementById('deleteselected');
 const printSelectedButton = document.getElementById('printselected');
 const allCheckBoxes = document.querySelectorAll('input[type=checkbox]');
 
+
 let orderIDs = [];
 let hasPrinted = [];
 let printType = "";
