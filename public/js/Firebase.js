@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, getDocs } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBHkjHITuk2opFgiG2wG36WJE6CDmb4tK4",
@@ -13,3 +13,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+
+export async function getDocuments(q){
+
+   return await getDocs(q); 
+
+}

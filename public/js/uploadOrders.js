@@ -80,11 +80,11 @@ async function addDocument(orderData){
     account: orderData[4],
     deliveryWeek: orderData[5],
     collectionName: orderData[6],
-    collectionAddress1: orderData[7],
-    collectionAddress2: orderData[8],
-    collectionAddress3: orderData[9],
-    collectionPostcode: orderData[10],
-    collectionPhoneNumber: orderData[11],
+    collectionPhoneNumber: orderData[7],
+    collectionAddress1: orderData[8],
+    collectionAddress2: orderData[9],
+    collectionAddress3: orderData[10],
+    collectionPostcode: orderData[11],
     deliveryName: orderData[12],
     deliveryAddress1: orderData[13],
     deliveryAddress2: orderData[14],
@@ -92,11 +92,12 @@ async function addDocument(orderData){
     deliveryPostcode: orderData[16],
     deliveryPhoneNumber: orderData[17],
     payment: orderData[18],
-    message: orderData[19],
-    code: orderData[20],
-    addedBy: orderData[21],
+    message: orderData[19], 
+    addedBy: orderData[20],
+    code: orderData[21],
     printed: parseInt(orderData[22]), //int
-    timestamp: orderData[23]
+    timestamp: orderData[23],
+    
 
   };
 

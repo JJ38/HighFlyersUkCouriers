@@ -336,8 +336,8 @@ class ManageOrderModel
     $this->error_message = "error";
 
     //convert postcodes to uppercase
-    $tainted_parameters['collection_postcode'] = strtoupper($tainted_parameters['collection_postcode']);
-    $tainted_parameters['delivery_postcode'] = strtoupper($tainted_parameters['delivery_postcode']);
+    $tainted_parameters['collection_postcode'] = strtoupper($tainted_parameters['collectionPostcode']);
+    $tainted_parameters['delivery_postcode'] = strtoupper($tainted_parameters['deliveryPostcode']);
 
 
     $cleaned_parameters = array();
@@ -366,31 +366,31 @@ class ManageOrderModel
       return $cleaned_parameters;
     }
 
-    $sanitized_parameters['payment_option'] = $sanitizer->sanitizeString($tainted_parameters['payment_option']);
+    $sanitized_parameters['payment_option'] = $sanitizer->sanitizeString($tainted_parameters['payment']);
     $cleaned_parameters['payment_option'] = $validator->validatePaymentOption($sanitized_parameters['payment_option']);
     if(!$validator->getValidationResult()){
       $cleaned_parameters = array();
       $this->error_message = "invalid payment option";
-      $this->error_input_value = $tainted_parameters['payment_option'];
+      $this->error_input_value = $tainted_parameters['payment'];
       return $cleaned_parameters;
     }
 
-    $sanitized_parameters['delivery_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['delivery_phone_number']);
+    $sanitized_parameters['delivery_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['deliveryPhoneNumber']);
     $cleaned_parameters['delivery_phone_number'] = $validator->validatePhoneNumber($sanitized_parameters['delivery_phone_number']);
 
     if(!$validator->getValidationResult()){
       $cleaned_parameters = array();
       $this->error_message = "invalid delivery phone number";
-      $this->error_input_value = $tainted_parameters['delivery_phone_number'];
+      $this->error_input_value = $tainted_parameters['deliveryPhoneNumber'];
       return $cleaned_parameters;
     }
 
-    $sanitized_parameters['collection_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['collection_phone_number']);
+    $sanitized_parameters['collection_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['collectionPhoneNumber']);
     $cleaned_parameters['collection_phone_number'] = $validator->validatePhoneNumber($sanitized_parameters['collection_phone_number']);
     if(!$validator->getValidationResult()){
       $cleaned_parameters = array();
       $this->error_message = "invalid collection phone number";
-      $this->error_input_value = $tainted_parameters['collection_phone_number'];
+      $this->error_input_value = $tainted_parameters['collectionPhoneNumber'];
       return $cleaned_parameters;
     }
 
@@ -406,14 +406,14 @@ class ManageOrderModel
       $cleaned_parameters['username'] = "";
     }
       
-    if(array_key_exists('added_by', $tainted_parameters)){
-      $cleaned_parameters['added_by'] = $sanitizer->sanitizeString($tainted_parameters['added_by']);
+    if(array_key_exists('addedBy', $tainted_parameters)){
+      $cleaned_parameters['added_by'] = $sanitizer->sanitizeString($tainted_parameters['addedBy']);
     }else{
       $cleaned_parameters['added_by'] = "";
     }
       
-    if(array_key_exists('delivery_week', $tainted_parameters)){
-      $cleaned_parameters['delivery_week'] = $sanitizer->sanitizeString($tainted_parameters['delivery_week']);
+    if(array_key_exists('deliveryWeek', $tainted_parameters)){
+      $cleaned_parameters['delivery_week'] = $sanitizer->sanitizeString($tainted_parameters['deliveryWeek']);
     }else{
       $cleaned_parameters['delivery_week'] = null;
     }
@@ -425,17 +425,17 @@ class ManageOrderModel
     }
 
 
-    $cleaned_parameters['animal_type'] = $sanitizer->sanitizeString($tainted_parameters['animal_type']);
-    $cleaned_parameters['collection_name'] = $sanitizer->sanitizeString($tainted_parameters['collection_name']);
-    $cleaned_parameters['collection_address_1'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_1']);
-    $cleaned_parameters['collection_address_2'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_2']);
-    $cleaned_parameters['collection_address_3'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_3']);
-    $cleaned_parameters['collection_postcode'] = $sanitizer->sanitizeString($tainted_parameters['collection_postcode']);
-    $cleaned_parameters['delivery_name'] = $sanitizer->sanitizeString($tainted_parameters['delivery_name']);
-    $cleaned_parameters['delivery_address_1'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_1']);
-    $cleaned_parameters['delivery_address_2'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_2']);
-    $cleaned_parameters['delivery_address_3'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_3']);
-    $cleaned_parameters['delivery_postcode'] = $sanitizer->sanitizeString($tainted_parameters['delivery_postcode']);
+    $cleaned_parameters['animal_type'] = $sanitizer->sanitizeString($tainted_parameters['animalType']);
+    $cleaned_parameters['collection_name'] = $sanitizer->sanitizeString($tainted_parameters['collectionName']);
+    $cleaned_parameters['collection_address_1'] = $sanitizer->sanitizeString($tainted_parameters['collectionAddress1']);
+    $cleaned_parameters['collection_address_2'] = $sanitizer->sanitizeString($tainted_parameters['collectionAddress2']);
+    $cleaned_parameters['collection_address_3'] = $sanitizer->sanitizeString($tainted_parameters['collectionAddress3']);
+    $cleaned_parameters['collection_postcode'] = $sanitizer->sanitizeString($tainted_parameters['collectionPostcode']);
+    $cleaned_parameters['delivery_name'] = $sanitizer->sanitizeString($tainted_parameters['deliveryName']);
+    $cleaned_parameters['delivery_address_1'] = $sanitizer->sanitizeString($tainted_parameters['deliveryAddress1']);
+    $cleaned_parameters['delivery_address_2'] = $sanitizer->sanitizeString($tainted_parameters['deliveryAddress2']);
+    $cleaned_parameters['delivery_address_3'] = $sanitizer->sanitizeString($tainted_parameters['deliveryAddress3']);
+    $cleaned_parameters['delivery_postcode'] = $sanitizer->sanitizeString($tainted_parameters['deliveryPostcode']);
     $cleaned_parameters['message'] = $sanitizer->sanitizeString($tainted_parameters['message']);
     
     

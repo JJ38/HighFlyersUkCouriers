@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/dce6efa4ea.js"
       crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{{ css_footer_file }}" type="text/css">
     <link rel="stylesheet" href="/css/Navbar.css" type="text/css">
     <link rel="stylesheet" href="/css/EditOrders.css" type="text/css">
     <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
@@ -23,8 +22,8 @@
 
         <form action="/edit-order" method="post">
           <div class="form">
-            <table>
-              {{orderdata|raw}}
+            <table id="orderdata">
+             
             </table>
           </div>
           <div id="savebuttonwrapper">
@@ -36,6 +35,5 @@
     </div>
 
   </body>
-  <script type="text/javascript" src="{{ js_file }}"></script>
-  <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+  <script type="module" src="/js/EditOrder.js"></script>
 </html>
