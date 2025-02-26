@@ -2,6 +2,9 @@ import { db, getDocuments } from "/js/Firebase.js";
 import { where, query, collection } from "firebase/firestore";
 
 const ID = parseInt(new URLSearchParams(document.location.search).get("id"));
+const form = document.getElementById("form");
+
+console.log(ID);
 const q = query(collection(db, "Orders"), where("ID", "==", ID));
 
 getDocuments(q).then((documentSnapshots) => {
@@ -16,60 +19,24 @@ getDocuments(q).then((documentSnapshots) => {
 
     const sortedOrderData = sortOrderData(orderData);
 
+    console.log(sortedOrderData);
+
     for(var fields in sortedOrderData){
+
+        console.log(fields);
 
         const tableRow = document.createElement('tr');
 
         const field = document.createElement('td');
-        field.innerText = fields;
+        field.innerText = fields
 
         const data = document.createElement('td');
-
-        switch (fields){
-
-            case "ID":
-            case "timestamp":
-            case "addedBy":
-            {
-                data.innerText = sortedOrderData[fields];
-            
-                break;
-            }
-            case "printed":
-            {
-                const input = document.createElement('select');
-
-                const printedOpt = document.createElement('option');
-                printedOpt.value = "Printed";
-                printedOpt.innerText = "Printed";
-                
-                const notPrintedOpt = document.createElement('option');
-                notPrintedOpt.value = "Not Printed";
-                notPrintedOpt.innerText = "Not Printed";
-
-                input.appendChild(notPrintedOpt);
-                input.appendChild(printedOpt);
-
-                data.appendChild(input);
-
-                break;
-            }
-
-            default:
-            {
-                const input = document.createElement('input');
-                input.type = "text";
-                input.value = sortedOrderData[fields];
-                input.name = fields;
-                data.appendChild(input);
-            }
-        }
+        data.innerText = sortedOrderData[fields];
 
         tableRow.appendChild(field);
         tableRow.appendChild(data);    
         
         table.appendChild(tableRow);
-
     }
 
     const docRef = document.createElement('input');
@@ -77,8 +44,10 @@ getDocuments(q).then((documentSnapshots) => {
     docRef.value = documentSnapshots.docs[0].id;
     docRef.name = "docRef";
 
-    table.appendChild(docRef);
+    form.appendChild(docRef);
+
 });
+
 
 function sortOrderData(orderFields){
 

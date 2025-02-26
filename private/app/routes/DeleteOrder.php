@@ -3,6 +3,7 @@
 use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use MrShan0\PHPFirestore\FirestoreClient;
 
 $app->get('/delete-order[/id]', function (Request $request, Response $response) use ($app) : Response{
 
@@ -10,55 +11,6 @@ $app->get('/delete-order[/id]', function (Request $request, Response $response) 
 
     if($account_type == "admin"){
 
-      $allGetVars = $request->getQueryParams();
-
-      if(!empty($allGetVars)){
-
-        $tainted_order_id = $allGetVars['id'];
-
-        $sanitizer = $app->getContainer()->get('sanitizer');
-        $validator = $app->getContainer()->get('validator');
-
-        $sanitized_order_id = $sanitizer->sanitizePositiveNumberString($tainted_order_id);
-        $cleaned_order_id = $validator->validatePositiveNumberString($sanitized_order_id);
-        if(empty($cleaned_order_id)){
-          return $response->withRedirect('manage-orders', 302);
-        }
-
-
-        $container = $app->getContainer();
-        $logger = $container->get('logger');
-        $doctrine_wrapper = $container->get('doctrineWrapper');
-
-        // // Doctrine wrapper setup
-        $database_connection_settings = $container->get('settings')['doctrineSettings'];
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-        $query_builder = $database_connection->createQueryBuilder();
-        $doctrine_wrapper->setQueryBuilder($query_builder);
-        $doctrine_wrapper->setDoctrineLogger($logger);
-
-
-        $manage_order_model = $container->get('manageOrderModel');
-        $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
-        $manage_order_model->fetchOrderDataByField('id', $cleaned_order_id);
-        if(empty($manage_order_model->getOrderData())){
-          return $response->withRedirect('manage-orders', 302);
-        }
-
-        $manage_order_model->generateHTMLForDeleteData();
-        $order_data = $manage_order_model->getOrderData();
-
-        $session_wrapper = $app->getContainer()->get('sessionWrapper');
-
-        $session_wrapper->setSessionVar('id', $order_data[0]['id']);
-
-      }else{
-        return  $response->withRedirect('manage-orders', 302);
-      }
-
-      //var_export($HTML_order_data);
-
-      //echo '<pre>' . var_export($order_data,true) . '</pre>';
 
       return $this->view->render($response,'delete-order.html', array(
               'page_title' => APP_TITLE,
@@ -67,7 +19,6 @@ $app->get('/delete-order[/id]', function (Request $request, Response $response) 
               'js_path' => JS_PATH . "",
               'landing_page' => __FILE__,
               'heading_1' => APP_TITLE,
-              'orderdata' => $manage_order_model->getHTMLOrderData(),
               'links'=> array(
                   'register' => 'registerform',
                   'login' => 'loginform',
@@ -93,27 +44,54 @@ $app->post('/delete-order', function (Request $request, Response $response) use 
 
   if($account_type == "admin" || $account_type == "staff"){
 
+    $allGetVars = $request->getParsedBody();
+    $docRef = $allGetVars['docRef'];
+
+    if(empty($docRef)){
+      return $response->withRedirect('/manage-orders?deleted=false', 302);
+    }
+
     $container = $app->getContainer();
-
-    $doctrine_wrapper = $container->get('doctrineWrapper');
     $logger = $container->get('logger');
+    $delete_order_model = $container->get('deleteOrderModel');
+    $delete_order_model->setLogger($logger);
+    $delete_order_model->setDocRef($docRef);
 
-    $session_wrapper = $container->get('sessionWrapper');
-    $order_id = $session_wrapper->getSessionVar('id');
+    try{
+              
+      $env = parse_ini_file(realpath('../.env'));
 
+      $projectID = $env['FIREBASE_PROJECT_ID'];
+      $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
 
-    // // Doctrine wrapper setup
-    $database_connection_settings = $container->get('settings')['doctrineSettings'];
-    $database_connection = DriverManager::getConnection($database_connection_settings);
-    $query_builder = $database_connection->createQueryBuilder();
-    $doctrine_wrapper->setQueryBuilder($query_builder);
-    $doctrine_wrapper->setDoctrineLogger($logger);
+      $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+          'database' => '(default)',
+      ]);
 
-    $doctrine_wrapper->deleteOrderById($order_id);
-    $doctrine_wrapper->getQueryResult();
+      $delete_order_model->setFirebaseFirestore($firestore);
 
-    return $response->withRedirect('/manage-orders?deleted=true', 302);
+    }catch(Exception $e){
+
+        if($logger != null){
+            $logger->error('FIREBASE_INIT_ERROR', array($e));
+            $logger->error('FIREBASE_INIT_ENV', array($env));
+        }
+
+        return $response->withRedirect('/manage-accounts?error=dberror', 302);
+
+    }
+  
+    $delete_order_model->deleteOrder();
+    $query_result = $delete_order_model->getFirebaseFirestoreResult();
+
+    if($query_result){
+      return $response->withRedirect('/manage-orders?deleted=true', 302);
+    }
+
+    return $response->withRedirect('/manage-orders?deleted=false', 302);
   }
 
+  return $response->withRedirect('/loginpage', 302);
+  
 
 })->setName('edit-orders');

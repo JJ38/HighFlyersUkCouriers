@@ -13,7 +13,6 @@
     <title>{{ page_title }}</title>
   </head>
   <body>
-
     <div id="wrapper">
       <header>
         <nav id="menu">
@@ -22,8 +21,8 @@
       </header>
       <div id="maincontent">
         <div class="form">
-          <table>
-            {{orderdata|raw}}
+          <table id="orderdata">
+   
           </table>
         </div>
         <form action="/delete-order" method="post">
@@ -37,6 +36,5 @@
       </div>
     </div>
   </body>
-  <script type="text/javascript" src="{{ js_file }}"></script>
-  <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+  <script type="module" src="/js/DeleteOrder.js"></script>
 </html>
