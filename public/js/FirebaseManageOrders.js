@@ -59,10 +59,6 @@ searchButton.addEventListener('click', () => {
             break;
     }
 
-        
-    console.log("searchButton");
-    console.log(searchOption.value);
-    console.log(searchValue.value);
     //clear table of current orders
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = "";
@@ -101,7 +97,7 @@ function addOrdersToTable(orderArray, prepend){
         const orderCheckBox = document.createElement('input');
         orderCheckBox.type = "checkbox";
         orderCheckBox.id = orderFields['ID'];
-        orderCheckBox.name = orderFields['ID'];
+        orderCheckBox.name = "ID";
         orderCheckBox.value = orderFields['ID'];
         orderCheckBox.setAttribute('onclick', 'highlightorder(this)');
 

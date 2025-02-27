@@ -21,7 +21,7 @@
         </header>
         <div class="bubble orderdatawrapper">
             <div class="orderdata">
-                <table>
+                <table id="orderdata">
                     <tr class="headerrow">
                         <th>ID</th>
                         <th>Animal Type</th>
@@ -46,8 +46,6 @@
                         <th>Time</th>
                     </tr>
 
-                    {{ orderdata|raw }}
-
                 </table>
             </div>
         </div>
@@ -55,11 +53,11 @@
             method="post">
             <label for="yes">Are you sure you want to delete these
                 orders?</label>
-            <button id="confirmdelete" onclick="confirmDelete()"
+            <button id="confirmdelete"
                 type="button">Yes</button>
         </form>
 
     </body>
-    <script type="text/javascript" src="{{ js_file }}"></script>
-    <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+    <script type="module" src="/js/Firebase.js"></script>
+    <script type="module" src="/js/DeleteMultipleOrders.js"></script>
 </html>

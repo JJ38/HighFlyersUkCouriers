@@ -9,10 +9,10 @@
     <title>{{ page_title }}</title>
     <script src="/js/ManageOrdersNonDeferred.js"></script>
     
-    <script type="module" crossorigin src="./assets/ManageOrders-CPItadVu.js"></script>
+    <script type="module" crossorigin src="./assets/ManageOrders-CMRVEYBw.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
-    <link rel="modulepreload" crossorigin href="./assets/index.esm2017-BIwyFzF2.js">
-    <link rel="modulepreload" crossorigin href="./assets/Firebase-CkQ1RLzy.js">
+    <link rel="modulepreload" crossorigin href="./assets/index.esm2017-D_V0Uudp.js">
+    <link rel="modulepreload" crossorigin href="./assets/Firebase-MLztFUIU.js">
     <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
     <link rel="stylesheet" crossorigin href="./assets/ManageOrders-CPPaINL-.css">
     <link rel="stylesheet" crossorigin href="./assets/Footer-Co0a3HEz.css">
@@ -58,50 +58,50 @@
         <div class="orderviewcontainer">
           <div class="searchbar bubble">
             <div class="searchoption">Filter</div>
-            <form id="searchform" action="/manage-orders" method="get">
+            
               <div>
-                <select class="searchoption" name="field" id="filter">
+                <select id="searchOption" class="searchoption" name="field" id="filter">
                   <option disabled selected value> -- select an option --
                   </option>
                   <option value="id">ID</option>
-                  <option value="animal_type">Animal Type</option>
+                  <option value="animalType">Animal Type</option>
                   <option value="quantity">Quantity</option>
                   <option value="email">Email</option>
                   <option value="username">Account</option>
-                  <option value="delivery_week">Delivery Week</option>
-                  <option value="collection_phone_number">Phone Number</option>
-                  <option value="collection_name">Collection Name</option>
-                  <option value="collection_address_1">Collection Address
+                  <option value="deliveryWeek">Delivery Week</option>
+                  <option value="collectionPhoneNumber">Phone Number</option>
+                  <option value="collectionName">Collection Name</option>
+                  <option value="collectionAddress1">Collection Address
                     1</option>
-                  <option value="collection_address_2">Collection Address
+                  <option value="collectionAddress2">Collection Address
                     2</option>
-                  <option value="collection_address_3">Collection Address
+                  <option value="collectionAddress3">Collection Address
                     3</option>
-                  <option value="collection_postcode">Collection
+                  <option value="collectionPostcode">Collection
                     Postcode</option>
-                  <option value="delivery_name">Delivery Name</option>
-                  <option value="delivery_address_1">Delivery Address 1</option>
-                  <option value="delivery_address_2">Delivery Address 2</option>
-                  <option value="delivery_address_3">Delivery Address 3</option>
-                  <option value="delivery_postcode">Delivery Postcode</option>
-                  <option value="delivery_phone_number">Delivery Phone
+                  <option value="deliveryName">Delivery Name</option>
+                  <option value="deliveryAddress1">Delivery Address 1</option>
+                  <option value="deliveryAddress2">Delivery Address 2</option>
+                  <option value="deliveryAddress3">Delivery Address 3</option>
+                  <option value="deliveryPostcode">Delivery Postcode</option>
+                  <option value="deliveryPhoneNumber">Delivery Phone
                     Number</option>
-                  <option value="payment_option">Payment</option>
+                  <option value="payment">Payment</option>
                   <option value="message">Message</option>
                   <option value="code">Code</option>
-                  <option value="added_by">Added By</option>
+                  <option value="addedBy">Added By</option>
                   <option value="printed">Printed</option>
                 </select>
               </div>
               <div>
-                <input class="searchoption" type="text" id="search"
+                <input id="searchValue" class="searchoption" type="text" 
                   name="filter" placeholder="search value">
               </div>
               <div>
                 <button id="searchButton" class="searchoption button"
-                  type="submit">Search</button>
+                  type="button">Search</button>
               </div>
-            </form>
+           
             <a class="button" href="/add-order">
               Add
             </a>
@@ -116,7 +116,7 @@
             <form id="deleteselectedform" action="/delete-multiple-orders"
               method="get">
               <button id="deleteselected" class="massactionbutton"
-                onclick="deleteSelected()" type="button">Delete
+                type="button">Delete
                 Selected</button>
             </form>
             {% endif %}

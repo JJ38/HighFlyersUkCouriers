@@ -2,7 +2,7 @@
 const selectAllButton = document.getElementById('selectall');
 const deletedSelectedButton = document.getElementById('deleteselected');
 const printSelectedButton = document.getElementById('printselected');
-const allCheckBoxes = document.querySelectorAll('input[type=checkbox]');
+
 
 
 let orderIDs = [];
@@ -32,6 +32,14 @@ function addListeners(){
     printSelected();
   });
 
+  selectAllButton.addEventListener('click', e => {
+    selectAll();
+  });
+
+  deletedSelectedButton.addEventListener('click', e => {
+    deleteSelected();
+  });
+
 }
 
 function singularPrint(){
@@ -47,6 +55,9 @@ function singularPrint(){
 
 
 function selectAll(){
+
+  const allCheckBoxes = document.querySelectorAll('input[type=checkbox]');
+
   for(let i = 0; i < allCheckBoxes.length; i++){
     allCheckBoxes[i].checked = true;
     allCheckBoxes[i].parentElement.parentElement.classList.add("highlightorder");

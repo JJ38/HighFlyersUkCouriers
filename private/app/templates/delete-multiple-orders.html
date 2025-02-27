@@ -7,6 +7,10 @@
         <script src="https://kit.fontawesome.com/dce6efa4ea.js"
             crossorigin="anonymous"></script>
         <title>{{ page_title }}</title>
+      <script type="module" crossorigin src="./assets/DeleteMultipleOrders-wSWkqwJk.js"></script>
+      <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
+      <link rel="modulepreload" crossorigin href="./assets/index.esm2017-D_V0Uudp.js">
+      <link rel="modulepreload" crossorigin href="./assets/Firebase-MLztFUIU.js">
       <link rel="stylesheet" crossorigin href="./assets/DeleteMultipleOrders-DWbtvwX0.css">
       <link rel="stylesheet" crossorigin href="./assets/Navbar-BQ0c1Epq.css">
       <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
@@ -20,7 +24,7 @@
         </header>
         <div class="bubble orderdatawrapper">
             <div class="orderdata">
-                <table>
+                <table id="orderdata">
                     <tr class="headerrow">
                         <th>ID</th>
                         <th>Animal Type</th>
@@ -45,8 +49,6 @@
                         <th>Time</th>
                     </tr>
 
-                    {{ orderdata|raw }}
-
                 </table>
             </div>
         </div>
@@ -54,11 +56,9 @@
             method="post">
             <label for="yes">Are you sure you want to delete these
                 orders?</label>
-            <button id="confirmdelete" onclick="confirmDelete()"
+            <button id="confirmdelete"
                 type="button">Yes</button>
         </form>
 
-    </body>
-    <script type="text/javascript" src="{{ js_file }}"></script>
-    <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+    </body>
 </html>

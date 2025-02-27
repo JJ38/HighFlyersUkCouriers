@@ -142,6 +142,20 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
               }
             }
           }
+        }else if(!empty($allGetVars['partiallyDeleted'])){
+          $tainted_permission = $allGetVars['partiallyDeleted'];
+          if($tainted_permission){
+            $sanitizer = $app->getContainer()->get('sanitizer');
+            $cleaned_permission = $sanitizer->sanitizePositiveNumber($tainted_permission);
+
+            if($cleaned_permission != null){
+
+             
+              echo "<script>alert('Error failed to delete $cleaned_permission');</script>";
+
+              
+            }
+          }
         }
 
       }
@@ -150,7 +164,6 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
       $container = $app->getContainer();
       $logger = $container->get('logger');
 
-     
 
       return $this->view->render($response,'manage-orders.html', array(
               'page_title' => APP_TITLE,

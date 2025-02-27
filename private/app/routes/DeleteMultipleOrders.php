@@ -3,6 +3,7 @@
 use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use MrShan0\PHPFirestore\FirestoreClient;
 
 $app->get('/delete-multiple-orders', function (Request $request, Response $response) use ($app) : Response{
 
@@ -10,60 +11,7 @@ $app->get('/delete-multiple-orders', function (Request $request, Response $respo
 
     if($account_type == "admin"){
 
-        $container = $app->getContainer();
-
-        $allGetVars = $_GET;
-
-        $tainted_ids = [];
-
-        for($i = 0; $i < count($allGetVars); $i++){
-          
-            $tainted_ids[$i] = $allGetVars[array_keys($allGetVars)[$i]];
-        }
-        
-        // var_dump($tainted_ids);
-
-        // return $response;
-
-        //get orders from database
-        $doctrine_wrapper = $container->get('doctrineWrapper');
-        $logger = $container->get('logger');
-
-        // // Doctrine wrapper setup
-        $database_connection_settings = $container->get('settings')['doctrineSettings'];
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-        $query_builder = $database_connection->createQueryBuilder();
-        $doctrine_wrapper->setQueryBuilder($query_builder);
-        $doctrine_wrapper->setDoctrineLogger($logger);
-
-
-        $manage_order_model = $container->get('manageOrderModel');
-        $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
-        $manage_order_model->fetchOrderDataByFieldAndMultipleValues('id', $tainted_ids);
-
-        $manage_order_model->generateHTMLForMultipleDelete();
-
-        $order_data = $manage_order_model->getOrderData();
-
-        return $this->view->render($response,'delete-multiple-orders.html', array(
-            'page_title' => APP_TITLE,
-            'css_file' => CSS_PATH . "DeleteMultipleOrders.css",
-            'asset_path' => ASSET_PATH,
-            'js_file' => JS_PATH . "DeleteMultipleOrders.js",
-            'landing_page' => __FILE__,
-            'heading_1' => APP_TITLE,
-            'orderdata' => $manage_order_model->getHTMLOrderData(),
-            'links'=> array(
-                'register' => 'registerform',
-                'login' => 'loginform',
-                'homepage' => '#',
-                'send_initial_messages' => 'sendinitialtelemetrymessages',
-                'present_telemetry' => 'presenttelemetrydata',
-                'manage_users' => 'manageusersform',
-                'send_telemetry' => 'sendtelemetrydata',
-                'logout' => 'logout'
-            ),
-        ));
+        return $this->view->render($response,'delete-multiple-orders.html');
     }
     
     
@@ -77,44 +25,76 @@ $app->post('/delete-multiple-orders', function (Request $request, Response $resp
     $account_type = $request->getAttribute('accountType');
 
     if($account_type == "admin" || $account_type == "staff"){
-        
-        $allPostVars = $request->getParsedBody();
 
         $container = $app->getContainer();
-
-
-        $doctrine_wrapper = $container->get('doctrineWrapper');
-        $logger = $container->get('logger');
-
+        
+        $allPostVars = $request->getParsedBody();
+        $validator = $container->get('sanitizer');
 
         $ids = [];
 
-        for($i = 0; $i < count($allPostVars); $i++){
-         
-            $ids[$i] = $allPostVars[array_keys($allPostVars)[$i]];
+        foreach($allPostVars as $key => $value){
+            
+
+            $sanitized_id = $validator->sanitizeString($value);
+
+            if($sanitized_id){
+                array_push($ids, $sanitized_id);
+            }else{
+
+                return $response->withRedirect('manage-orders?deleted=false', 302);
+
+            }
         }
 
+        //add in order id
+        putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
 
-   
+        $logger = $container->get('logger');  
+        $delete_order_model = $container->get('deleteOrderModel');
 
-        // // Doctrine wrapper setup
-        $database_connection_settings = $container->get('settings')['doctrineSettings'];
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-        $query_builder = $database_connection->createQueryBuilder();
-        $doctrine_wrapper->setQueryBuilder($query_builder);
-        $doctrine_wrapper->setDoctrineLogger($logger);
+        try{
+            
+            $env = parse_ini_file(realpath('../.env'));
+        
+            $projectID = $env['FIREBASE_PROJECT_ID'];
+            $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+        
+            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+                'database' => '(default)',
+            ]);
+        
+            $delete_order_model->setFirebaseFirestore($firestore);
+        
+          }catch(Exception $e){
+        
+              if($logger != null){
+                  $logger->error('FIREBASE_INIT_ERROR', array($e));
+                  $logger->error('FIREBASE_INIT_ENV', array($env));
+              }
+        
+              return $response->withRedirect('/manage-accounts?error=dberror', 302);
+        
+          }
 
-        //TODO: make sure id and timestamp are set as session vars before storing
+        
+        $delete_order_model->setLogger($logger);
+        $delete_order_model->setDocRefArray($ids);
+        $delete_order_model->bulkDeleteOrder();
 
-        $doctrine_wrapper->deleteMultipleOrders($ids);
-        $query_result = $doctrine_wrapper->getQueryResult();
 
+
+
+        $query_result = $delete_order_model->getFirebaseFirestoreResult();
 
         if($query_result){
             return $response->withRedirect('manage-orders?deleted=true', 302);
         }
 
-        return $response->withRedirect('manage-orders?deleted=false', 302);
+        $unsuccessfullyDeletedTally = $delete_order_model->getUnsuccessfullyDeletedTally();
+        $numberOfOrders = count($ids);
+
+        return $response->withRedirect('manage-orders?partiallyDeleted=' . $unsuccessfullyDeletedTally . "/" . $numberOfOrders, 302);
 
     }
 
