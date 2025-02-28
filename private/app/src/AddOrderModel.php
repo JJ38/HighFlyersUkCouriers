@@ -12,9 +12,14 @@ class AddOrderModel
     private $order_data;
     private $logger;
     private $session_wrapper;
+    private $order_ID;
 
     public function getFirebaseFirestoreResult() : bool{
         return $this->firebase_firestore_result;
+    }
+
+    public function getOrderID(){
+        return $this->order_ID;
     }
 
     public function setFirebaseFirestore($firebase_firestore) : void{
@@ -33,7 +38,11 @@ class AddOrderModel
         $this->logger = $logger;
     }
 
-    private function getOrderID() : int{
+    public function setDateTime($date_time) : void{
+        $this->date_time = $date_time;
+    }
+
+    private function incrementOrderID() : int{
 
 
         //add error handling for error codes. 
@@ -74,6 +83,8 @@ class AddOrderModel
 
             $this->firebase_firestore_result = true;
 
+            $this->order_ID = $order_ID;
+
             return $order_ID;
 
         }catch(\Exception $e){
@@ -97,9 +108,9 @@ class AddOrderModel
 
         //get order ID
 
-        $order_ID = $this->getOrderID();
+        $order_ID = $this->incrementOrderID();
 
-        if($order_ID < 1){
+        if($order_ID < 1 || $order_ID == null){
             $this->firebase_firestore_result = false;
             return;
         }
@@ -130,6 +141,8 @@ class AddOrderModel
                 'payment' => $this->order_data['payment_option'],
                 'message' => $this->order_data['message'],
                 'addedBy' => $this->order_data['added_by'],
+                'printed' => 0,
+                'timestamp' => $this->date_time->format("Y-m-d H:i:s"),
             ]);
 
             $this->firebase_firestore_result = true;

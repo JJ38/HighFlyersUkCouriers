@@ -211,16 +211,6 @@ function sortOrderData(orderFields){
 
 async function getOrderData(q){
 
-    
-    
-    // if(initialQuery){
-    //     //initial query
-    //     q = query(collection(db, "Orders"), orderBy('ID', 'desc'), limit(20));
-
-    // }else{
-    //     //pagination query
-    //     q = query(collection(db, "Orders"), orderBy('ID', 'desc'), startAfter(lastVisibleID), limit(20));
-    // }
    
     const documentSnapshots = await getDocs(q);
 

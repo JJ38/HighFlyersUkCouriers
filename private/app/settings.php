@@ -55,8 +55,7 @@ return array(
         ),
         'mailerBookingSettings' => array(
             'username' => 'jamesjbrass@gmail.com', //highflyerscouriers@gmail.com
-            'password' => 'zmcjwpccozwufjsb
-            ', //tgslhgadszechaqg           xsto iklf tdle gqgp
+            'password' => 'chcwyokupzxvgpuo', //tgslhgadszechaqg           xsto iklf tdle gqgp
             'port' => 25,
             'host' => 'smtp.gmail.com'
         ),
@@ -68,8 +67,7 @@ return array(
         // ),
         'mailerContactUsSettings' => array(
             'username' => 'jamesjbrass@gmail.com', //highflyerscouriers@gmail.com
-            'password' => 'zmcjwpccozwufjsb
-            ', //tgslhgadszechaqg           xsto iklf tdle gqgp
+            'password' => 'chcwyokupzxvgpuo', //tgslhgadszechaqg           xsto iklf tdle gqgp
             'port' => 25,
             'host' => 'smtp.gmail.com'
         ),
