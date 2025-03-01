@@ -89,8 +89,6 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
             'password' =>  $cleaned_parameters['password'],
         ];
 
-
-
         $manageAccountsModel->setFirebaseAuth($auth);
         $manageAccountsModel->setCredentials($userCredentials);
         $manageAccountsModel->setRole($cleaned_parameters['accountType']);
@@ -114,6 +112,9 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
             $manageAccountsModel->setFirebaseFirestore($firestore);
             $manageAccountsModel->createFirestoreUserDocument();
 
+            if($cleaned_parameters['accountType'] == "customer"){
+                $manageAccountsModel->createFirestoreCustomerDocument();
+            }
 
         }catch(Exception $e){
 

@@ -26,7 +26,6 @@ const collectionTelephone = document.getElementById('collectiontelephone');
 const email = document.getElementById('email');
 const profileEmail = document.getElementById('profileemail');
 
-
 const deliveryName = document.getElementById('deliveryname');
 const deliveryTelephone = document.getElementById('deliverytelephone');
 const paymentOption = document.getElementById('payment');

@@ -1,10 +1,7 @@
-import { camelCase } from "lodash";
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword  } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore"; 
 import { getFirestore } from "firebase/firestore";
-
-console.log(camelCase("hello world"));
 
 const form = document.getElementById('loginForm');
 const usernameInput = document.getElementById('username');

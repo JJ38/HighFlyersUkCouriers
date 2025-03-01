@@ -5,18 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet"
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+
 
-        <script
-            src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js"></script>
-        <script
-            src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js"></script>
-        <script
-            src="https://www.gstatic.com/firebasejs/7.16.1/firebase-firestore.js"></script>
-
-        <script src="/js/Firebase.js" defer></script>
-
-      <script type="module" crossorigin src="./assets/CustomerOrder-DlZXvoWt.js"></script>
+      <script type="module" crossorigin src="./assets/CustomerOrder-Cjn68lGJ.js"></script>
       <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
+      <link rel="modulepreload" crossorigin href="./assets/index.esm2017-xPjAJ9Bi.js">
+      <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-DgbgaQSq.js">
+      <link rel="modulepreload" crossorigin href="./assets/Firebase-CjLXKIh4.js">
       <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
       <link rel="stylesheet" crossorigin href="./assets/CustomerOrder-CoOIpQ7V.css">
       <link rel="stylesheet" crossorigin href="./assets/Navbar-BQ0c1Epq.css">
@@ -83,22 +78,22 @@
                 </h1>
                 <hr>
                 <section class="profiledata">
-                    <!-- <input id="profileemail" name="profileemail" type="hidden" value={{ email|raw }}> -->
-                    <!-- <div id="quickaddress" class="quickcollectionaddresswrapper">
-                        <p id="collectionaddressarrow"><</p>
-                        <p id="quickAddressName">{{ collection_name|raw }}</p>
+                    <input id="profileemail" name="profileemail" type="hidden">
+                    <div id="quickaddress" class="quickcollectionaddresswrapper">
+                        <p id="collectionaddressarrow">	arrow</p>
+                        <p id="quickAddressName"></p>
                         <div class="flex collectionaddressdetailswrapper">
-                            <p id="quickAddress1">{{ collection_address_1|raw }}</p>
+                            <p id="quickAddress1"></p>
                             <p class="comma">,</p>
-                            <p id="quickAddress2">{{ collection_address_2|raw}}</p>
+                            <p id="quickAddress2"></p>
                             <p class="comma">,</p>
-                            <p id="quickAddress3">{{ collection_address_3|raw}}</p>
+                            <p id="quickAddress3"></p>
                             <p class="comma">,</p>
-                            <p id="quickAddressPostcode">{{collection_postcode|raw }}</p>
+                            <p id="quickAddressPostcode"></p>
                         </div>
-                        <p id="quickAddressEmail">{{ email|raw }}</p>
-                        <p id="quickAddressTelephone">{{ collection_phone_number|raw }}</p>
-                    </div> -->
+                        <p id="quickAddressEmail"></p>
+                        <p id="quickAddressTelephone"></p>
+                    </div>
                     <section id="collectioninfoFormWrapper" class="hideInfo">
                         <section id="collectionAddressAutocomplete"
                             class="bookingInput column">
@@ -124,14 +119,14 @@
 
                                 <div class="forminput">
                                     <label for class>Collection Name*</label>
-                                    <input id="collectionname" name type="text"
+                                    <input id="collectionName" name type="text"
                                         onchange="updateQuickAddressName()"
                                         required>
                                 </div>
                                 <div class="forminput">
                                     <label for class>Collection
                                         Postcode*</label>
-                                    <input id="collection_postcode" name
+                                    <input id="collectionPostcode" name
                                         type="text"
                                         onchange="updateQuickAddressPostcode()"
                                         required>
@@ -139,7 +134,7 @@
                                 <div class="forminput">
                                     <label for class>Collection
                                         Telephone*</label>
-                                    <input id="collectiontelephone" name
+                                    <input id="collectionPhoneNumber" name
                                         type="text"
                                         onchange="updateQuickAddressTelephone()"
                                         minlength="11" maxlength="11" required>
@@ -147,7 +142,7 @@
                                 <div class="forminput">
                                     <label for class>Collection Address
                                         1*</label>
-                                    <input id="collection_address_1" name
+                                    <input id="collectionAddress1" name
                                         type="text"
                                         onchange="updateQuickAddress1()"
                                         required>
@@ -155,14 +150,14 @@
                                 <div class="forminput">
                                     <label for class>Collection Address
                                         2</label>
-                                    <input id="collection_address_2" name
+                                    <input id="collectionAddress2" name
                                         type="text"
                                         onchange="updateQuickAddress2()">
                                 </div>
                                 <div class="forminput">
                                     <label for class>Collection Address
                                         3</label>
-                                    <input id="collection_address_3" name
+                                    <input id="collectionAddress3" name
                                         type="text"
                                         onchange="updateQuickAddress3()">
                                 </div>
@@ -203,30 +198,30 @@
 
                         <div class="forminput">
                             <label for class>Delivery Name*</label>
-                            <input id="deliveryname" name type="text" required>
+                            <input id="deliveryName" name type="text" required>
                         </div>
                         <div class="forminput">
                             <label for class>Delivery Postcode*</label>
-                            <input id="delivery_postcode" name type="text"
+                            <input id="deliveryPostcode" name type="text"
                                 required>
                         </div>
                         <div class="forminput">
                             <label for class>Delivery Telephone*</label>
-                            <input id="deliverytelephone" name type="text"
+                            <input id="deliveryPhoneNumber" name type="text"
                                 minlength="11" maxlength="11" required>
                         </div>
                         <div class="forminput">
                             <label for class>Delivery Address 1*</label>
-                            <input id="delivery_address_1" name type="text"
+                            <input id="deliveryAddress1" name type="text"
                                 required>
                         </div>
                         <div class="forminput">
                             <label for class>Delivery Address 2</label>
-                            <input id="delivery_address_2" name type="text">
+                            <input id="deliveryAddress2" name type="text">
                         </div>
                         <div class="forminput">
                             <label for class>Delivery Address 3</label>
-                            <input id="delivery_address_3" name type="text">
+                            <input id="deliveryAddress3" name type="text">
                         </div>
                     </section>
                     <h1>

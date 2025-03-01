@@ -57,46 +57,15 @@ $app->get('/customer-order', function (Request $request, Response $response) use
 
         // Get models + Wrappers
         $container = $app->getContainer();
-        $doctrine_wrapper = $container->get('doctrineWrapper');
-        $session_wrapper = $container->get('sessionWrapper');
         $logger = $container->get('logger');
 
-        // // Doctrine wrapper setup
-        $database_connection_settings = $container->get('settings')['doctrineSettings'];
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-        $query_builder = $database_connection->createQueryBuilder();
-        $doctrine_wrapper->setQueryBuilder($query_builder);
-        $doctrine_wrapper->setDoctrineLogger($logger);
 
-        $username = $session_wrapper->getSessionVar('user');
-
-        $doctrine_wrapper->fetchCustomerDetails($username);
-        $customer_details = $doctrine_wrapper->getQueryResult();
-    
         if($account_type == "customer"){
 
-            $env = parse_ini_file(realpath('../.env'));
 
-            $api_key = $env['MAPS_JAVASCRIPT_API_KEY'];
+        
 
-            return $this->view->render($response,'customer-order.html', array(
-                'places_api_key' => $api_key,
-                'page_title' => APP_TITLE,
-                'css_file' => CSS_PATH . "CustomerOrder.css",
-                'css_nav_file' => CSS_PATH . "NavigationBar.css",
-                'css_footer_file' => CSS_PATH . "Footer.css",
-                'asset_path' => ASSET_PATH,
-                'js_file' => JS_PATH . "CustomerOrder.js",
-                'email' => $customer_details[0]['email'],
-                'collection_name' => $customer_details[0]['collection_name'],
-                'collection_phone_number' => $customer_details[0]['collection_phone_number'],
-                'collection_address_1' => $customer_details[0]['collection_address_1'],
-                'collection_address_2' => $customer_details[0]['collection_address_2'],
-                'collection_address_3' => $customer_details[0]['collection_address_3'],
-                'collection_postcode' => $customer_details[0]['collection_postcode'],
-                'landing_page' => __FILE__,
-                'heading_1' => APP_TITLE,
-            ));
+            return $this->view->render($response,'customer-order.html');
         }
     
     }

@@ -118,8 +118,47 @@ class ManageAccountsModel
     
                 if ($this->logger !== null) {
     
-                    $this->logger->error("FIREBASE_FIRESTORE_ERROR", array($e));
-                    $this->logger->error("FIREBASE_FIRESTORE_PARAMETERS", array($this->email, $this->role));
+                    $this->logger->error("FIREBASE_FIRESTORE_CREATE_USER_DOCUMENT_ERROR", array($e));
+                    $this->logger->error("FIREBASE_FIRESTORE_CREATE_USER_DOCUMENT_PARAMETERS", array($this->email, $this->role));
+    
+                }
+
+                $this->firebase_firestore_result = false;
+              
+            }
+
+        }else{
+            $this->firebase_firestore_result = false;
+        }
+
+      
+    }
+
+    public function createFirestoreCustomerDocument() : void{
+
+        if($this->firebase_firestore != null){
+
+            try{
+
+                //create docuement in customer collection to store profile information
+                $this->firebase_firestore->addDocument('Customers', [
+                    'collectionAddress1' => "",
+                    'collectionAddress2' => "",
+                    'collectionAddress3' => "",
+                    'collectionName' => "",
+                    'collectionPhoneNumber' => "",
+                    'collectionPostcode' => "",
+                    'email' => "",
+                ], $this->uid);
+                
+                $this->firebase_firestore_result = true;
+    
+            }catch (\Exception $e) {
+    
+                if ($this->logger !== null) {
+    
+                    $this->logger->error("FIREBASE_FIRESTORE_CREATE_CUSTOMER_DOCUMENT_ERROR", array($e));
+                    $this->logger->error("FIREBASE_FIRESTORE_CREATE_CUSTOMER_DOCUMENT_PARAMETERS", array($this->email, $this->role));
     
                 }
 
@@ -140,8 +179,6 @@ class ManageAccountsModel
         if($this->firebase_firestore != null){
 
             //remove auth account
-
-    
 
             try {
 

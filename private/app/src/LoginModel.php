@@ -180,10 +180,6 @@ class LoginModel
             $account_type = $custom_claims['role'];
 
             // $this->auth->setCustomUserClaims($uid, ['role' => 'staff']);
-     
-
-            echo $email;
-            echo $account_type;
 
             if(empty($account_type)){
                 $account_type = " ";

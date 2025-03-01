@@ -6,8 +6,10 @@
         <link rel="stylesheet" href="/css/NavBar.css" type="text/css">
         <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
         <link rel="stylesheet" href="/css/CustomerProfile.css" type="text/css">
+        <script type="module" src="/js/MobileNavigationBar.js"></script>
+        <script type="module" src="/js/CustomerProfile.js"></script>
+        <script type="module" src="/js/Firebase.js"></script>
     </head>
-    
     <body>
         <header>
             <div id="mobilenavmenu"  class="hideMobileMenu">
@@ -36,13 +38,15 @@
             </nav>
         </header>
         <div class="profileinfobubble">
-            <form action="/customer-profile" method="post">
+            <div id="loader" class="loader"></div>
+            <form id="customerProfileData" class="hidden" action="/customer-profile" method="post">
+                
                 <h2>Contact info</h2>
                     <hr>
                     <section class="formsection">
                         <section class="bookingInput">
                             <label for="email">Email</label>
-                            <input id="email" name="email" type="email" required="" value="{{email}}">
+                            <input id="email" name="email" type="email" required="">
                         </section>
                     </section>    
                 <h2>
@@ -53,38 +57,37 @@
             
                     <section class="bookingInput">
                         <label for="collectionName">Collection Name </label>
-                        <input id="collectionName" name="collectionName" type="text" required="" value="{{collection_name}}">
+                        <input id="collectionName" name="collectionName" type="text" required="" >
                     </section>
 
                     <section class="bookingInput">
                         <label for="collectionAddress1">Collection Address 1 </label>
-                        <input id="collectionAddress1" name="collectionAddress1" type="text" required="" value="{{collection_address_1}}">
+                        <input id="collectionAddress1" name="collectionAddress1" type="text" required="" >
                     </section>
 
                     <section class="bookingInput">
                         <label for="collectionAddress2">Collection Address 2 </label>
-                        <input id="collectionAddress2" name="collectionAddress2" type="text" required="" value="{{collection_address_2}}">
+                        <input id="collectionAddress2" name="collectionAddress2" type="text" required="">
                     </section>
 
                     <section class="bookingInput">
                         <label for="collectionAddress3">Collection Address 3 </label>
-                        <input id="collectionAddress3" name="collectionAddress3" type="text" required="" value="{{collection_address_3}}">
+                        <input id="collectionAddress3" name="collectionAddress3" type="text" required="" >
                     </section>
 
                     <section class="bookingInput">
                         <label for="collectionPostcode">Collection Postcode</label>
-                        <input id="collectionPostcode" name="collectionPostcode" type="text" required="" value="{{collection_postcode}}">
+                        <input id="collectionPostcode" name="collectionPostcode" type="text" required="">
                     </section>
 
                     <section class="bookingInput">
                         <label for="email">Collection Telephone Number</label>
-                        <input id="collectionTelephone" name="collectionTelephone" type="text" minlength="11" maxlength="11" required="" value="{{collection_phone_number}}">
+                        <input id="collectionPhoneNumber" name="collectionPhoneNumber" type="text" minlength="11" maxlength="11" required="">
                     </section>
                  
                 </section>
                 <input id="updatebutton" type="submit" value="Update" aria-label="Update">
             </form>
         </div>
-        <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
     </body>
 </html>
