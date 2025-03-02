@@ -103,6 +103,32 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $date_time->setTimezone(new DateTimeZone('Europe/London'));
   $add_order_model->setDateTime($date_time);
 
+
+  try{
+            
+    $env = parse_ini_file(realpath('../.env'));
+
+    $projectID = $env['FIREBASE_PROJECT_ID'];
+    $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+
+    $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+        'database' => '(default)',
+    ]);
+
+    $add_order_model->setFirebaseFirestore($firestore);
+
+  }catch(Exception $e){
+
+      if($logger != null){
+          $logger->error('FIREBASE_INIT_ERROR', array($e));
+          $logger->error('FIREBASE_INIT_ENV', array($env));
+      }
+
+      return $response->withRedirect('/manage-accounts?error=dberror', 302);
+
+  }
+
+
   
   $add_order_model->setLogger($logger);
   $add_order_model->setOrderData($cleaned_parameters);

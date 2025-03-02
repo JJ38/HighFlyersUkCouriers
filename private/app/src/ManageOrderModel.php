@@ -494,7 +494,7 @@ class ManageOrderModel
         return [];
       }
 
-      $cleaned_order['delivery_week'] = $delivery_week;
+      $cleaned_order['delivery_week'] = intval($delivery_week);
 
       $cleaned_orders[$i] = $cleaned_order;
     }

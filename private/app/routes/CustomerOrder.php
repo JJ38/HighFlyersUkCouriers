@@ -99,8 +99,6 @@ $app->post('/customer-order', function (Request $request, Response $response) us
 
         $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $account_name);
 
-        // echo var_dump($cleaned_orders);
-
         if(empty($cleaned_orders)){
             return $response->withRedirect('/customer-order?error=true', 302);
         }
@@ -128,16 +126,16 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         
             $add_order_model->setFirebaseFirestore($firestore);
         
-          }catch(Exception $e){
-        
-              if($logger != null){
-                  $logger->error('FIREBASE_INIT_ERROR', array($e));
-                  $logger->error('FIREBASE_INIT_ENV', array($env));
-              }
-        
-              return $response->withRedirect('/manage-accounts?error=dberror', 302);
-        
-          }
+        }catch(Exception $e){
+    
+            if($logger != null){
+                $logger->error('FIREBASE_INIT_ERROR', array($e));
+                $logger->error('FIREBASE_INIT_ENV', array($env));
+            }
+    
+            return $response->withRedirect('/manage-accounts?error=dberror', 302);
+    
+        }
 
         $date_time = new DateTime();
         $date_time->setTimezone(new DateTimeZone('Europe/London'));
