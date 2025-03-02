@@ -7,10 +7,12 @@
         <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
         <link rel="stylesheet" href="/css/CustomerOrder.css" type="text/css">
         <link rel="stylesheet" href="/css/AutoComplete.css" type="text/css">
-        <link rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-
-        <script type="module" src="/js/Firebase.js"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+        <script type="module" src="/js/AddressAutocomplete.js"></script>
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
+        <script type="module" src="/js/CustomerOrder.js" crossorigin="anonymous"></script>
+        <script type="module" src="/js/MobileNavigationBar.js"></script>
+        <script type="text/javascript" src="/js/CustomerOrderNonDeffered.js"></script>
 
     </head>
     <body>
@@ -47,7 +49,7 @@
                     <h1>
                         Order info
                     </h1>
-                    <button onclick="addToBasket()">
+                    <button id="addToBasketButton">
                         Add To Basket
                     </button>
                 </section>
@@ -75,7 +77,7 @@
                 <section class="profiledata">
                     <input id="profileemail" name="profileemail" type="hidden">
                     <div id="quickaddress" class="quickcollectionaddresswrapper">
-                        <p id="collectionaddressarrow">	arrow</p>
+                        <p id="collectionaddressarrow">&lt;</p>
                         <p id="quickAddressName"></p>
                         <div class="flex collectionaddressdetailswrapper">
                             <p id="quickAddress1"></p>
@@ -172,7 +174,7 @@
 
                     <section id="deliveryAddressAutocomplete"
                         class="bookingInput column">
-                        <label for="deliveryName">Find Delivery Address </label>
+                        <label for="deliveryAddressAutocompleteInput" >Find Delivery Address </label>
 
                         <input id="deliveryAddressAutocompleteInput" type="text"
                             placeholder="Search for a place..." />
@@ -248,7 +250,7 @@
                         Basket
                     </h1>
                     <div id="table">
-                        <div class="columns tablerow headerrow">
+                        <div id="headerrow" class="columns tablerow headerrow">
 
                             <h3>Animal</h3>
                             <h3>Quantity</h3>
@@ -263,19 +265,13 @@
                     </div>
                     <div id="submitbuttonwrapper">
                         <div id="loadingsymbol"></div>
-                        <button id="submitorders" type="button"
-                            onclick="submitOrders()">Submit Orders</button>
+                        <button id="submitorders" type="button">Submit Orders</button>
                     </div>
-                    <form method="post" action="/customer-order">
-                    </form>
+                    <form method="post" action="/customer-order"></form>
                     <br>
-
                 </div>
             </div>
-            <script type="module" src="/js/AddressAutocomplete.js"></script>
-            <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
-            <script type="module" src="/js/CustomerOrder.js" crossorigin="anonymous"></script>
-            <script type="module" src="/js/MobileNavigationBar.js"></script>
+          
             <!-- <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&callback=init&libraries=places&v=weekly"}} defer></script> -->
         </body>
     </html>

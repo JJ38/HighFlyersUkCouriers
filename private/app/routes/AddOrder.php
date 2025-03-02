@@ -6,8 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Kreait\Firebase\Contract\Auth;
 use Kreait\Firebase\Firestore;
 use MrShan0\PHPFirestore\FirestoreClient;
-
-
+use DateTime;
 
 $app->get('/add-order', function (Request $request, Response $response, $args) use ($app) : Response{
 
@@ -99,34 +98,17 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $logger = $container->get('logger');
   $add_order_model = $container->get('addOrderModel');
   $session_wrapper = $container->get('sessionWrapper');
+
+  $date_time = new DateTime();
+  $date_time->setTimezone(new DateTimeZone('Europe/London'));
+  $add_order_model->setDateTime($date_time);
+
   
   $add_order_model->setLogger($logger);
   $add_order_model->setOrderData($cleaned_parameters);
   $add_order_model->setSessionWrapper($session_wrapper);
 
-  try{
-            
-    $env = parse_ini_file(realpath('../.env'));
-
-    $projectID = $env['FIREBASE_PROJECT_ID'];
-    $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
-
-    $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-        'database' => '(default)',
-    ]);
-
-    $add_order_model->setFirebaseFirestore($firestore);
-
-  }catch(Exception $e){
-
-      if($logger != null){
-          $logger->error('FIREBASE_INIT_ERROR', array($e));
-          $logger->error('FIREBASE_INIT_ENV', array($env));
-      }
-
-      return $response->withRedirect('/manage-accounts?error=dberror', 302);
-
-  }
+ 
 
   //store data
   $add_order_model->storeOrder();

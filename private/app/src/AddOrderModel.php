@@ -13,6 +13,7 @@ class AddOrderModel
     private $logger;
     private $session_wrapper;
     private $order_ID;
+    private $date_time;
 
     public function getFirebaseFirestoreResult() : bool{
         return $this->firebase_firestore_result;
@@ -115,7 +116,6 @@ class AddOrderModel
             return;
         }
 
-
         try{
 
             $this->firebase_firestore->addDocument('Orders', [
@@ -146,8 +146,6 @@ class AddOrderModel
             ]);
 
             $this->firebase_firestore_result = true;
-
-            echo "ORDERID: " . $order_ID;
 
         }catch(\Exception $e){
 

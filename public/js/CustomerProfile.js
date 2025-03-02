@@ -1,5 +1,5 @@
 import { db, auth, getDocument } from "/js/Firebase.js";
-import { doc, getDoc } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 const email = document.getElementById('email');
@@ -13,6 +13,37 @@ const collectionPhoneNumber = document.getElementById('collectionPhoneNumber');
 const customerProfileData = document.getElementById('customerProfileData');
 const loader = document.getElementById('loader');
 
+const updateButton = document.getElementById('updatebutton');
+
+var uid;
+
+updateButton.addEventListener('click', () => {
+
+  //update customer profile
+  if(uid == null){
+    alert("error updating profile");
+  }
+
+  const emailValue = email.value;
+  const collectionNameValue = collectionName.value;
+  const collectionAddress1Value = collectionAddress1.value;
+  const collectionAddress2Value = collectionAddress2.value;
+  const collectionAddress3Value = collectionAddress3.value;
+  const collectionPostcodeValue = collectionPostcode.value;
+  const collectionPhoneNumberValue = collectionPhoneNumber.value;
+
+  //validate email and phone number
+  const validateFormResult = validateForm();
+
+  //if error
+  if(validateFormResult){
+    
+    alert(validateFormResult);
+    
+  }
+
+
+});
 
 console.log(auth);
 const user = auth.currentUser;
@@ -20,27 +51,27 @@ const user = auth.currentUser;
 // const doc = getDocs(q);
 // console.log(doc);
 onAuthStateChanged(auth, (user) => {
+
   if (user) {
     // User is signed in
 
-    const uid = user.uid;
-    console.log(uid);
-
+    uid = user.uid;
+  
     const docRef = doc(db, "Customers", uid);
 
     getDocument(docRef).then((doc) => {
         parseCustomerProfile(doc.data());
+
         //show customer profile data
         loader.style.display = "none";
         customerProfileData.classList.remove("hidden");
     });
     
- 
-
   } else {
     // User is signed out
  
   }
+
 });
 
 function parseCustomerProfile(customerProfileData){
@@ -54,5 +85,7 @@ function parseCustomerProfile(customerProfileData){
     collectionAddress3.value = customerProfileData['collectionAddress3'];
     collectionPostcode.value = customerProfileData['collectionPostcode'];
     collectionPhoneNumber.value = customerProfileData['collectionPhoneNumber'];
+
+    
     
 }

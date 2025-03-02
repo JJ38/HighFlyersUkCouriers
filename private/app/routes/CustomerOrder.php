@@ -3,8 +3,8 @@
 use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Dompdf\Dompdf; 
-use Mpdf\Mpdf;
+use MrShan0\PHPFirestore\FirestoreClient;
+use DateTime;
 
 $app->get('/customer-order', function (Request $request, Response $response) use ($app) : Response{
 
@@ -56,8 +56,9 @@ $app->get('/customer-order', function (Request $request, Response $response) use
         
 
         // Get models + Wrappers
-        $container = $app->getContainer();
         $logger = $container->get('logger');
+
+    
 
 
         if($account_type == "customer"){
@@ -95,6 +96,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $session_wrapper = $container->get('sessionWrapper');
         $account_name = $session_wrapper->getSessionVar('user');
 
+
         $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $account_name);
 
         // echo var_dump($cleaned_orders);
@@ -103,28 +105,53 @@ $app->post('/customer-order', function (Request $request, Response $response) us
             return $response->withRedirect('/customer-order?error=true', 302);
         }
 
-       
         // Get models + Wrappers
         $container = $app->getContainer();
-        $doctrine_wrapper = $container->get('doctrineWrapper');
         $logger = $container->get('logger');
+        $add_order_model = $container->get('addOrderModel');
+        $session_wrapper = $container->get('sessionWrapper');
 
-        // Doctrine wrapper setup
-        $database_connection_settings = $container->get('settings')['doctrineSettings'];
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-        $query_builder = $database_connection->createQueryBuilder();
-        $doctrine_wrapper->setQueryBuilder($query_builder);
-        $doctrine_wrapper->setDoctrineLogger($logger);
-        $doctrine_wrapper->setDatabaseConnection($database_connection);
+        
+        putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
 
 
-        $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
+        try{
+            
+            $env = parse_ini_file(realpath('../.env'));
+        
+            $projectID = $env['FIREBASE_PROJECT_ID'];
+            $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+        
+            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+                'database' => '(default)',
+            ]);
+        
+            $add_order_model->setFirebaseFirestore($firestore);
+        
+          }catch(Exception $e){
+        
+              if($logger != null){
+                  $logger->error('FIREBASE_INIT_ERROR', array($e));
+                  $logger->error('FIREBASE_INIT_ENV', array($env));
+              }
+        
+              return $response->withRedirect('/manage-accounts?error=dberror', 302);
+        
+          }
+
+        $date_time = new DateTime();
+        $date_time->setTimezone(new DateTimeZone('Europe/London'));
+        $add_order_model->setDateTime($date_time);
+        $add_order_model->setLogger($logger);
+        $add_order_model->setSessionWrapper($session_wrapper);
+    
         $manage_order_model->setOrderData($cleaned_orders);
+        $manage_order_model->setAddOrderModel($add_order_model);
 
        
         $store_result = $manage_order_model->storeMultipleOrders();
         $confirmed_orders = $manage_order_model->getConfirmedOrders();
-       
+
         $sanitizer = $container->get('sanitizer');
 
         //send email

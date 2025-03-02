@@ -15,6 +15,7 @@ class ManageOrderModel
   private $is_admin;
   private $error_message;
   private $error_input_value;
+  private $add_order_model;
 
 
   public function getOrderData() : array|null //for testing purposes
@@ -54,6 +55,11 @@ class ManageOrderModel
   public function setOrderData($order_data) : void
   {
     $this->order_data = $order_data;
+  }
+
+  public function setAddOrderModel($add_order_model) : void
+  {
+    $this->add_order_model = $add_order_model;
   }
 
   public function setIsAdmin($is_admin){
@@ -456,24 +462,24 @@ class ManageOrderModel
     for($i = 1; $i < $number_of_orders + 1; $i++){
       $tainted_order = [];
 
-      $tainted_order['animal_type'] = $tainted_parameters['collection'][$i][0];
+      $tainted_order['animalType'] = $tainted_parameters['collection'][$i][0];
       $tainted_order['quantity'] = $tainted_parameters['collection'][$i][1];
-      $tainted_order['collection_name'] = $tainted_parameters['collection'][$i][2];
-      $tainted_order['collection_address_1'] = $tainted_parameters['collection'][$i][3];
-      $tainted_order['collection_address_2'] = $tainted_parameters['collection'][$i][4];
-      $tainted_order['collection_address_3'] = $tainted_parameters['collection'][$i][5];
-      $tainted_order['collection_postcode'] = $tainted_parameters['collection'][$i][6];
-      $tainted_order['collection_phone_number'] = $tainted_parameters['collection'][$i][7];
+      $tainted_order['collectionName'] = $tainted_parameters['collection'][$i][2];
+      $tainted_order['collectionAddress1'] = $tainted_parameters['collection'][$i][3];
+      $tainted_order['collectionAddress2'] = $tainted_parameters['collection'][$i][4];
+      $tainted_order['collectionAddress3'] = $tainted_parameters['collection'][$i][5];
+      $tainted_order['collectionPostcode'] = $tainted_parameters['collection'][$i][6];
+      $tainted_order['collectionPhoneNumber'] = $tainted_parameters['collection'][$i][7];
   
-      $tainted_order['delivery_name'] = $tainted_parameters['delivery'][$i][0];
-      $tainted_order['delivery_address_1'] = $tainted_parameters['delivery'][$i][1];
-      $tainted_order['delivery_address_2'] = $tainted_parameters['delivery'][$i][2];
-      $tainted_order['delivery_address_3'] = $tainted_parameters['delivery'][$i][3];
-      $tainted_order['delivery_postcode'] = $tainted_parameters['delivery'][$i][4];
-      $tainted_order['delivery_phone_number'] = $tainted_parameters['delivery'][$i][5];
+      $tainted_order['deliveryName'] = $tainted_parameters['delivery'][$i][0];
+      $tainted_order['deliveryAddress1'] = $tainted_parameters['delivery'][$i][1];
+      $tainted_order['deliveryAddress2'] = $tainted_parameters['delivery'][$i][2];
+      $tainted_order['deliveryAddress3'] = $tainted_parameters['delivery'][$i][3];
+      $tainted_order['deliveryPostcode'] = $tainted_parameters['delivery'][$i][4];
+      $tainted_order['deliveryPhoneNumber'] = $tainted_parameters['delivery'][$i][5];
       
       $tainted_order['email'] = $tainted_parameters['extra'][$i][0];
-      $tainted_order['payment_option'] = $tainted_parameters['extra'][$i][1];
+      $tainted_order['payment'] = $tainted_parameters['extra'][$i][1];
       $tainted_order['code'] = $tainted_parameters['extra'][$i][2];
       $tainted_order['message'] = $tainted_parameters['extra'][$i][3];
 
@@ -498,18 +504,16 @@ class ManageOrderModel
   }
 
 
-  public function storeMultipleOrders(){
+  public function storeMultipleOrders() : bool{
 
     $this->confirmed_orders = [];
 
     for($i = 1; $i < count($this->order_data) + 1; $i++){ 
 
-      //get delivery week
-
-      $this->doctrine_wrapper->storeOrderData($this->order_data[$i]);
-      $store_result = $this->getQueryResult();
-
-      $this->order_data[$i]['ID'] = $this->doctrine_wrapper->getLastInsertID();
+      $this->add_order_model->setOrderData($this->order_data[$i]);
+      $this->add_order_model->storeOrder();
+      $store_result = $this->add_order_model->getFirebaseFirestoreResult();
+      $this->order_data[$i]['ID'] = $this->add_order_model->getOrderID();
 
       if(!$store_result){
         return false;
