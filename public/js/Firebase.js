@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, getDocs, getDoc } from "firebase/firestore";
+import { getFirestore, getDocs, getDoc, updateDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
@@ -18,13 +18,15 @@ export const db = getFirestore(app);
 export async function getDocuments(q){
 
    return await getDocs(q); 
-
 }
 
 export async function getDocument(q){
 
     return await getDoc(q); 
 }
- 
- 
+
+export async function updateDocument(docRef, fieldsToUpdate){
+
+    return await updateDoc(docRef, fieldsToUpdate); 
+}
 

@@ -172,14 +172,12 @@ class LoginModel
             $this->verified_ID_Token = $verified_ID_Token;
             $this->login_result = true;
 
-            //$verified_ID_token = $login_model->getVerifiedIDToken();
             $uid = $verified_ID_Token->claims()->get('sub');
             $email = $verified_ID_Token->claims()->get('email');
             $custom_claims = $this->auth->getUser($uid)->customClaims;
 
             $account_type = $custom_claims['role'];
 
-            // $this->auth->setCustomUserClaims($uid, ['role' => 'staff']);
 
             if(empty($account_type)){
                 $account_type = " ";

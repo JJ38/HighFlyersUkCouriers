@@ -1,4 +1,4 @@
-import { db, auth, getDocument } from "/js/Firebase.js";
+import { db, auth, getDocument, updateDocument } from "/js/Firebase.js";
 import { doc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -12,6 +12,7 @@ const collectionPhoneNumber = document.getElementById('collectionPhoneNumber');
 
 const customerProfileData = document.getElementById('customerProfileData');
 const loader = document.getElementById('loader');
+const updateLoader = document.getElementById('updateLoader')
 
 const updateButton = document.getElementById('updatebutton');
 
@@ -19,43 +20,33 @@ var uid;
 
 updateButton.addEventListener('click', () => {
 
-  //update customer profile
-  if(uid == null){
+  updateLoader.style.display = "block";
+
+  //update customer profile;
+  if(uid == null || db == null){
     alert("error updating profile");
+    return;
   }
 
-  const emailValue = email.value;
-  const collectionNameValue = collectionName.value;
-  const collectionAddress1Value = collectionAddress1.value;
-  const collectionAddress2Value = collectionAddress2.value;
-  const collectionAddress3Value = collectionAddress3.value;
-  const collectionPostcodeValue = collectionPostcode.value;
-  const collectionPhoneNumberValue = collectionPhoneNumber.value;
-
-  //validate email and phone number
-  const validateFormResult = validateForm();
-
-  //if error
-  if(validateFormResult){
-    
-    alert(validateFormResult);
-    
-  }
-
+  const docRef = doc(db, "Customers", uid);
+  const customerProfile = createCustomerProfile();
+  updateDocument(docRef, customerProfile);
+  
+  updateLoader.style.display = "none";
+  alert("Your profile has been updated");
 
 });
 
-console.log(auth);
-const user = auth.currentUser;
-// const q = query(collection(db, "Customers"), );
-// const doc = getDocs(q);
-// console.log(doc);
+
 onAuthStateChanged(auth, (user) => {
 
   if (user) {
     // User is signed in
-
     uid = user.uid;
+
+    if(uid == null || db == null){
+      alert("Error fetching profile");
+    }
   
     const docRef = doc(db, "Customers", uid);
 
@@ -75,8 +66,6 @@ onAuthStateChanged(auth, (user) => {
 });
 
 function parseCustomerProfile(customerProfileData){
-    console.log(customerProfileData);
-    console.log(customerProfileData['email']);
 
     email.value = customerProfileData['email'];
     collectionName.value = customerProfileData['collectionName'];
@@ -86,6 +75,23 @@ function parseCustomerProfile(customerProfileData){
     collectionPostcode.value = customerProfileData['collectionPostcode'];
     collectionPhoneNumber.value = customerProfileData['collectionPhoneNumber'];
 
-    
-    
+}
+
+function createCustomerProfile(){
+
+  const customerProfile = {
+
+    email: email.value,
+    collectionName: collectionName.value,
+    collectionAddress1: collectionAddress1.value,
+    collectionAddress2: collectionAddress2.value,
+    collectionAddress3: collectionAddress3.value,
+    collectionPostcode: collectionPostcode.value,
+    collectionPhoneNumber: collectionPhoneNumber.value,
+  
+
+  }
+
+  return customerProfile;
+
 }
