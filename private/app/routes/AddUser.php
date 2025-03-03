@@ -85,7 +85,7 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
         }
 
         $userCredentials = [
-            'email' =>  $cleaned_parameters['username'],
+            'email' =>  $cleaned_parameters['username'] . "@placeholder.com",
             'password' =>  $cleaned_parameters['password'],
         ];
 

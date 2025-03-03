@@ -17,6 +17,7 @@ class LoginModel
     private $auth;
     private $ID_token;
     private $verified_ID_Token;
+    private $account_type;
 
     public function __construct()
     {
@@ -98,6 +99,11 @@ class LoginModel
         return $this->login_result;
     }
 
+    public function getAccountType() : string
+    {
+        return $this->account_type;
+    }
+
     public function getVerifiedIDToken()
     {
         return $this->verified_ID_Token;
@@ -151,6 +157,7 @@ class LoginModel
             //check if admin
             $this->doctrine_wrapper->getAccountType($this->user_credentials['username']);
             $account_type = $this->doctrine_wrapper->getQueryResult();
+            $this->account_type = $account_type;
 
             // Adding to Session Var
             $this->session_wrapper->setSessionVar('user', $this->user_credentials['username']);
@@ -180,6 +187,7 @@ class LoginModel
 
 
             if(empty($account_type)){
+                echo "cuustom role not set";
                 $account_type = " ";
             }
 

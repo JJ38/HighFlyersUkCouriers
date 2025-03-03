@@ -27,18 +27,29 @@ export function addPrintListener(orderFields){
 }
 
 function addListeners(){
+  if(printSelectedButton != null){
 
-  printSelectedButton.addEventListener('click', e => {
-    printSelected();
-  });
+    printSelectedButton.addEventListener('click', e => {
+      printSelected();
+    });
+    
+  }
 
-  selectAllButton.addEventListener('click', e => {
-    selectAll();
-  });
+  if(selectAllButton != null){
 
-  deletedSelectedButton.addEventListener('click', e => {
-    deleteSelected();
-  });
+    selectAllButton.addEventListener('click', e => {
+      selectAll();
+    });
+  }
+
+  if(deletedSelectedButton != null){
+
+    deletedSelectedButton.addEventListener('click', e => {
+      deleteSelected();
+    });
+
+  }
+  
 
 }
 

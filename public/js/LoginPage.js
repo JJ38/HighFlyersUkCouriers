@@ -35,11 +35,11 @@ async function login(){
     loginButton.style.display = "none";
     loader.style.display = "block";
 
-    // const usernameValue = usernameInput.value + "@placeholder.com";
-    const usernameValue = usernameInput.value;
+    const usernameValue = usernameInput.value.replace(" ", "") + "@placeholder.com";
     const passwordValue = passwordInput.value;
 
     console.log(usernameValue);
+
     var accessToken = "";
 
     if(usernameValue && passwordValue){
@@ -67,13 +67,14 @@ async function login(){
 
                 case "auth/invalid-credential":
 
-                    alert("incorrect username and password");
-                    // passwordInput.value = "";
+                    //alert("incorrect username and password");
+                    //post top backend to check if legacy account exists
+                    form.submit();
 
                     break;
                 
                 case "auth/invalid-email":
-                    alert("invalid username " +  usernameValue);
+                    alert("invalid username " +  usernameInput.value);
                     usernameInput.value = "";
             
                     break;

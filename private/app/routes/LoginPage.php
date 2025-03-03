@@ -4,7 +4,7 @@ use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Kreait\Firebase\Factory;
-
+use MrShan0\PHPFirestore\FirestoreClient;
 
 $app->get('/loginpage', function (Request $request, Response $response) use ($app) : Response{
 
@@ -31,6 +31,7 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   $tainted_parameters = $request->getParsedBody();
   $cleaned_parameters = cleanLoginData($app, $tainted_parameters);
 
+
   // Get models + Wrappers
   $container = $app->getContainer();
   $login_model = $container->get('loginModel');
@@ -39,7 +40,7 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   $session_wrapper = $container->get('sessionWrapper');
   $logger = $container->get('logger');
 
-  //Does account exist on firebase
+
 
   // // Doctrine wrapper setup
   $database_connection_settings = $container->get('settings')['doctrineSettings'];
@@ -55,20 +56,92 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   $login_model->setUserCredentials($cleaned_parameters);
   $login_model->setLoggerHandle($logger);
 
-  // $login_model->login();
-  
-  $factory = (new Factory)->withServiceAccount('../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json');
-  $auth = $factory->createAuth();
-  
-  $sanitizer = $app->getContainer()->get('sanitizer');
-  $ID_Token_String = $sanitizer->sanitizeString($_POST['accessToken']);
+  $login_result = false;
 
-  $login_model->setAuth($auth);
-  $login_model->setIDToken($ID_Token_String);
-  $login_model->verifyIDToken();
-  $login_result = $login_model->getResult();
+  //if not authenticated on firebase via the frontend
+  if(empty($_POST['accessToken'])){
+ 
 
+    $login_model->login();
+    $login_result = $login_model->getResult();
+
+    if($login_result){
+      //create firebase account
+        $manageAccountsModel = $container->get('manageAccountsModel');
+        $manageAccountsModel->setLogger($logger);
+    
+        $factory = new Factory();
+        $auth = $factory->createAuth();
+
+        $userCredentials = [
+            'email' =>  str_replace(" ", "", $cleaned_parameters['username']) . "@placeholder.com",
+            'password' =>  $cleaned_parameters['password'],
+        ];
+
+        $account_type = $login_model->getAccountType();
+
+        $manageAccountsModel->setFirebaseAuth($auth);
+        $manageAccountsModel->setCredentials($userCredentials);
+        $manageAccountsModel->setRole($account_type);
+        $manageAccountsModel->createUser();
+
+        $login_result = $manageAccountsModel->getFirebaseAuthResult();
+
+        if($login_result == false){
+          return $response->withRedirect('loginpage?error=fireauth', 302);
+        }
+
+        try{
+            
+          $env = parse_ini_file(realpath('../.env'));
+
+          $projectID = $env['FIREBASE_PROJECT_ID'];
+          $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+
+          $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+              'database' => '(default)',
+          ]);
+
+          $manageAccountsModel->setFirebaseFirestore($firestore);
+          $manageAccountsModel->createFirestoreUserDocument();
+
+          if($cleaned_parameters['accountType'] == "customer"){
+              $manageAccountsModel->createFirestoreCustomerDocument();
+          }
+
+        }catch(Exception $e){
+
+            if($logger != null){
+                $logger->error('FIREBASE_INIT_ERROR', array($e));
+                $logger->error('FIREBASE_INIT_ENV', array($env));
+            }
+
+            return $response->withRedirect('/loginpage?error=firestore', 302);
+
+        }
+
+    }
+
+  }else{
+
+    //if firebase account already exists
   
+    $factory = (new Factory)->withServiceAccount('../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json');
+    $auth = $factory->createAuth();
+    
+    $sanitizer = $app->getContainer()->get('sanitizer');
+    $ID_Token_String = $sanitizer->sanitizeString($_POST['accessToken']);
+
+    $login_model->setAuth($auth);
+    $login_model->setIDToken($ID_Token_String);
+    $login_model->verifyIDToken();
+    $login_result = $login_model->getResult();
+
+    // var_dump($login_result);
+    // var_dump($session_wrapper->getSessionVar('accountType'));
+    // return $response;
+
+  }
 
   // $role = $verified_ID_Token->claims()->get('role');
   // var_dump($ID_Token_String);
@@ -85,8 +158,9 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
     }
 
     return $response->withRedirect('/customer-order', 302);
-    
+
   } 
+
 
   return $response->withRedirect('loginpage', 302);
 
