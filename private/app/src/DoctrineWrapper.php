@@ -649,7 +649,7 @@ class DoctrineWrapper
                 ->setParameter('username', $username);
 
             $query = $query_builder->execute();
-            $retrieve_result = $query->fetchAll();
+            $retrieve_result = $query->fetch();
 
         } catch (\Exception $exception) {
             if ($this->doctrine_logger !== null) {

@@ -20,6 +20,7 @@ class ManageAccountsModel
     private $firebase_auth_result;
     private $firebase_firestore_result;
     private $delete_user_result;
+    private $customer_profile;
 
     public function __construct()
     {
@@ -63,6 +64,10 @@ class ManageAccountsModel
 
     public function setCredentials($credentials) : void{
         $this->credentials = $credentials;
+    }
+
+    public function setCustomerProfile($customer_profile) : void{
+        $this->customer_profile = $customer_profile;
     }
 
     public function createUser() : void{
@@ -137,25 +142,37 @@ class ManageAccountsModel
     public function createFirestoreCustomerDocument() : void{
 
         if($this->firebase_firestore != null){
+            
+            //$customer_profile will be null if there is an error fetching it from the legacy database or creating a new customer account
+            if($this->customer_profile == null){
+                $this->customer_profile['collection_address_1'] = "";
+                $this->customer_profile['collection_address_2'] = "";
+                $this->customer_profile['collection_address_3'] = "";
+                $this->customer_profile['collection_name'] = "";
+                $this->customer_profile['collection_phone_number'] = "";
+                $this->customer_profile['collection_postcode'] = "";
+                $this->customer_profile['email'] = "";
+            }
+
 
             try{
 
-                //create docuement in customer collection to store profile information
+                //create document in customer collection to store profile information
                 $this->firebase_firestore->addDocument('Customers', [
-                    'collectionAddress1' => "",
-                    'collectionAddress2' => "",
-                    'collectionAddress3' => "",
-                    'collectionName' => "",
-                    'collectionPhoneNumber' => "",
-                    'collectionPostcode' => "",
-                    'email' => "",
+                    'collectionAddress1' => $this->customer_profile['collection_address_1'],
+                    'collectionAddress2' => $this->customer_profile['collection_address_2'],
+                    'collectionAddress3' => $this->customer_profile['collection_address_3'],
+                    'collectionName' => $this->customer_profile['collection_name'],
+                    'collectionPhoneNumber' => $this->customer_profile['collection_phone_number'],
+                    'collectionPostcode' => $this->customer_profile['collection_postcode'],
+                    'email' => $this->customer_profile['email'],
                 ], $this->uid);
                 
                 $this->firebase_firestore_result = true;
     
-            }catch (\Exception $e) {
+            }catch (\Exception $e){
     
-                if ($this->logger !== null) {
+                if ($this->logger !== null){
     
                     $this->logger->error("FIREBASE_FIRESTORE_CREATE_CUSTOMER_DOCUMENT_ERROR", array($e));
                     $this->logger->error("FIREBASE_FIRESTORE_CREATE_CUSTOMER_DOCUMENT_PARAMETERS", array($this->email, $this->role));

@@ -185,9 +185,8 @@ class LoginModel
 
             $account_type = $custom_claims['role'];
 
-
             if(empty($account_type)){
-                echo "cuustom role not set";
+                echo "custom role not set";
                 $account_type = " ";
             }
 

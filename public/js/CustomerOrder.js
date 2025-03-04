@@ -69,20 +69,18 @@ let idBookmark = 0;
 var uid;
 
 onAuthStateChanged(auth, (user) => {
+console.log("customer order authstatechanged");
 
   if (user) {
     // User is signed in
-
+    
     uid = user.uid;
-  
+    console.log(uid);
     const docRef = doc(db, "Customers", uid);
 
-    console.log(docRef);
-
     getDocument(docRef).then((doc) => {
-        console.log(doc.data()['email']);
+        console.log(doc.data());
         setProfileData(doc.data());
-
         //show customer profile data
         // loader.style.display = "none";
         // customerProfileData.classList.remove("hidden");

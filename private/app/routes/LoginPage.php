@@ -61,70 +61,81 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
   //if not authenticated on firebase via the frontend
   if(empty($_POST['accessToken'])){
  
-
     $login_model->login();
     $login_result = $login_model->getResult();
 
     if($login_result){
+
       //create firebase account
-        $manageAccountsModel = $container->get('manageAccountsModel');
-        $manageAccountsModel->setLogger($logger);
-    
-        $factory = new Factory();
-        $auth = $factory->createAuth();
+      $manageAccountsModel = $container->get('manageAccountsModel');
+      $manageAccountsModel->setLogger($logger);
+  
+      $factory = new Factory();
+      $auth = $factory->createAuth();
 
-        $userCredentials = [
-            'email' =>  str_replace(" ", "", $cleaned_parameters['username']) . "@placeholder.com",
-            'password' =>  $cleaned_parameters['password'],
-        ];
+      $userCredentials = [
+          'email' =>  str_replace(" ", "", $cleaned_parameters['username']) . "@placeholder.com",
+          'password' =>  $cleaned_parameters['password'],
+      ];
 
-        $account_type = $login_model->getAccountType();
+      $account_type = $login_model->getAccountType();
 
-        $manageAccountsModel->setFirebaseAuth($auth);
-        $manageAccountsModel->setCredentials($userCredentials);
-        $manageAccountsModel->setRole($account_type);
-        $manageAccountsModel->createUser();
+      $manageAccountsModel->setFirebaseAuth($auth);
+      $manageAccountsModel->setCredentials($userCredentials);
+      $manageAccountsModel->setRole($account_type);
+      $manageAccountsModel->createUser();
 
-        $login_result = $manageAccountsModel->getFirebaseAuthResult();
+      $login_result = $manageAccountsModel->getFirebaseAuthResult();
 
-        if($login_result == false){
-          return $response->withRedirect('loginpage?error=fireauth', 302);
-        }
+      if($login_result == false){
+        return $response->withRedirect('loginpage?error=fireauth', 302);
+      }
 
-        try{
-            
-          $env = parse_ini_file(realpath('../.env'));
+      try{
+          
+        $env = parse_ini_file(realpath('../.env'));
 
-          $projectID = $env['FIREBASE_PROJECT_ID'];
-          $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+        $projectID = $env['FIREBASE_PROJECT_ID'];
+        $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
 
-          $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-              'database' => '(default)',
-          ]);
+        $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+            'database' => '(default)',
+        ]);
 
-          $manageAccountsModel->setFirebaseFirestore($firestore);
-          $manageAccountsModel->createFirestoreUserDocument();
+        $manageAccountsModel->setFirebaseFirestore($firestore);
+        $manageAccountsModel->createFirestoreUserDocument();
 
-          if($cleaned_parameters['accountType'] == "customer"){
-              $manageAccountsModel->createFirestoreCustomerDocument();
+        
+
+      }catch(Exception $e){
+
+          if($logger != null){
+              $logger->error('FIREBASE_INIT_ERROR', array($e));
+              $logger->error('FIREBASE_INIT_ENV', array($env));
           }
 
-        }catch(Exception $e){
+          return $response->withRedirect('/loginpage?error=firestore', 302);
 
-            if($logger != null){
-                $logger->error('FIREBASE_INIT_ERROR', array($e));
-                $logger->error('FIREBASE_INIT_ENV', array($env));
-            }
+      }
 
-            return $response->withRedirect('/loginpage?error=firestore', 302);
 
-        }
+      if($account_type == "customer"){
+
+        //get customer profile data from legacy database;
+        $doctrine_wrapper->fetchCustomerDetails($cleaned_parameters['username']);
+        $customer_profile = $doctrine_wrapper->getQueryResult();//could be null
+        // var_dump($customer_profile);
+        // return $response;
+        $manageAccountsModel->setCustomerProfile($customer_profile);
+        $manageAccountsModel->createFirestoreCustomerDocument();
+
+      }
 
     }
 
   }else{
 
-    //if firebase account already exists
+    //verify JWT
   
     $factory = (new Factory)->withServiceAccount('../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json');
     $auth = $factory->createAuth();
@@ -137,16 +148,7 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
     $login_model->verifyIDToken();
     $login_result = $login_model->getResult();
 
-    // var_dump($login_result);
-    // var_dump($session_wrapper->getSessionVar('accountType'));
-    // return $response;
-
   }
-
-  // $role = $verified_ID_Token->claims()->get('role');
-  // var_dump($ID_Token_String);
-
-
 
   if($login_result) {
 
