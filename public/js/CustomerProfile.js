@@ -39,6 +39,7 @@ updateButton.addEventListener('click', () => {
 
 
 onAuthStateChanged(auth, (user) => {
+  
   console.log("customer profile authstatechanged");
   if (user) {
     // User is signed in

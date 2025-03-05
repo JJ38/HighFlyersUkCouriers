@@ -201,7 +201,11 @@ class LoginModel
 
         } catch (\Exception $e) {
 
-            echo 'The token is invalid: '.$e->getMessage();
+            if ($this->logger_handle !== null) {
+                $this->logEvent('VERIFY_ID_TOKEN_ERROR', array($this->user_credentials['username'], $this->ID_token));
+                $this->logEvent('VERIFY_ID_TOKEN_ERROR_EXCEPTION', array($e));
+            }
+          
             $this->login_result = false;
 
         }

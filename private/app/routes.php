@@ -25,4 +25,5 @@ require "routes/ViewOrder.php";
 require "routes/LiveLogisticsManager.php";
 require "routes/ShipmentsLogisticsManager.php";
 require "routes/AuthenticateCredentials.php";
+require "routes/LoginLegacy.php";
 
