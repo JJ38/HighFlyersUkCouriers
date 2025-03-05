@@ -28,6 +28,8 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 loginButton.addEventListener('click', login);
+var firebaseUsername;
+
 
 async function login(){
 
@@ -37,21 +39,20 @@ async function login(){
     loginButton.style.display = "none";
     loader.style.display = "block";
 
-    const usernameValue = usernameInput.value.replace(" ", "") + "@placeholder.com";
-    const passwordValue = passwordInput.value;
+    firebaseUsername = usernameInput.value.replace(" ", "") + "@placeholder.com";
+    const password = passwordInput.value;
 
-    console.log(usernameValue);
+    console.log(firebaseUsername);
 
-    var accessToken = "";
 
-    if(usernameValue && passwordValue){
+    if(firebaseUsername && password){
 
-            await signInWithEmailAndPassword(auth, usernameValue, passwordValue)
+            await signInWithEmailAndPassword(auth, firebaseUsername, password)
         .then((userCredential) => {
             // Signed in 
 
             console.log(userCredential.user.accessToken);
-            accessToken = userCredential.user.accessToken;
+            const accessToken = userCredential.user.accessToken;
 
             var input = document.createElement('input');
             input.id = "accessToken";
@@ -71,59 +72,9 @@ async function login(){
             
                 case "auth/invalid-credential":
 
+                    checkIfLegacyAccount(usernameInput.value, password);
                     //alert("incorrect username and password");
                     //post top backend to check if legacy account exists
-
-                    console.log("checking for legacy account");
-                   
-                    fetch("login-legacy", {
-                        method: "POST",
-                        headers: { "Content-type": "application/json" },
-                        body: JSON.stringify({ username: usernameInput.value, password: passwordValue})
-                      }).then(async (response) => {
-                        console.log(response.status + "second login attempt");
-
-                        switch (response.status){
-
-                            case 204:
-                                console.log("case 204");
-                                //sign in front end to firebase as account has been created
-                                await signInWithEmailAndPassword(auth, usernameValue, passwordValue)
-                                .then((userCredential) => {
-                                    // Signed in 
-                        
-                                    console.log(userCredential.user.accessToken);
-                                    accessToken = userCredential.user.accessToken;
-                        
-                                    var input = document.createElement('input');
-                                    input.id = "accessToken";
-                                    input.name = "accessToken";
-                                    input.value = accessToken;
-                                    input.style.display = "none";
-                                    loginForm.append(input);
-                                    loginForm.submit();
-                                    
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                    alert("Error signing in please try again later");
-                                });
-                                
-                                break;
-
-                            case 401:
-
-                                alert("Error code 401: Invalid username and password");
-                                break;
-
-                            case 500:
-
-                                alert("Error code 500: Error signing in please try again later");
-                                break;
-                        }
-                        
-                      });
-
                     break;
                 
                 case "auth/invalid-email":
@@ -147,6 +98,62 @@ async function login(){
     loginButton.style.display = "block";
     loader.style.display = "none";
 
+
+}
+
+function checkIfLegacyAccount(username, password){
+
+    console.log("checking for legacy account");
+                   
+    fetch("login-legacy", {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({ username: username, password: password})
+        }).then(async (response) => {
+        console.log(response.status + "second login attempt");
+
+        switch (response.status){
+
+            case 204:
+                console.log("case 204");
+                //sign in front end to firebase as account has been created
+                await signInWithEmailAndPassword(auth, firebaseUsername, password)
+                .then((userCredential) => {
+                    // Signed in 
+        
+                    console.log(userCredential.user.accessToken);
+                    const accessToken = userCredential.user.accessToken;
+        
+                    var input = document.createElement('input');
+                    input.id = "accessToken";
+                    input.name = "accessToken";
+                    input.value = accessToken;
+                    input.style.display = "none";
+                    loginForm.append(input);
+                    loginForm.submit();
+                    
+                })
+                .catch((error) => {
+                    console.log(error);
+                    alert("Error signing in please try again later");
+                });
+                
+                break;
+
+            case 401:
+
+                alert("Error code 401: Invalid username and password");
+                break;
+
+            case 500:
+
+                alert("Error code 500: Error signing in please try again later");
+                break;
+        }
+        
+        });
+
+         
 
 }
 
