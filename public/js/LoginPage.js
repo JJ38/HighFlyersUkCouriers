@@ -111,6 +111,7 @@ function checkIfLegacyAccount(username, password){
         body: JSON.stringify({ username: username, password: password})
         }).then(async (response) => {
         console.log(response.status + "second login attempt");
+        console.log(response.text());
 
         switch (response.status){
 
@@ -141,7 +142,6 @@ function checkIfLegacyAccount(username, password){
                 break;
 
             case 401:
-
                 alert("Error code 401: Invalid username and password");
                 break;
 

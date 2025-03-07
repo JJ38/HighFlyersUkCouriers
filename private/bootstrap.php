@@ -30,8 +30,12 @@ require $app_path . 'dependencies.php';
 //$app = AppFactory::create();
 $app = new \Slim\App($container);
 
+
+
 /** Routes and Middleware. */
 require $app_path . 'routes.php';
 require $app_path . 'middleware.php';
+
+
 
 $app->run();

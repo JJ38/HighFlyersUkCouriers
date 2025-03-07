@@ -75,6 +75,16 @@ $app->post('/login-legacy', function (Request $request, Response $response) use 
     $login_result = $manageAccountsModel->getFirebaseAuthResult();
 
     if($login_result == false){
+
+        $error_code = $manageAccountsModel->getErrorCode();
+
+        //if email exists on firebase already even though legacy account does exist. Most likely user changed password and then entered password of old legacy account with vaild username
+        if($error_code == 400){
+
+            $response = $response->withStatus(401);
+            return $response;
+        }
+
         $response = $response->withStatus(500);
         return $response;
     }

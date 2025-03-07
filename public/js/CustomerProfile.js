@@ -1,6 +1,6 @@
 import { db, auth, getDocument, updateDocument } from "/js/Firebase.js";
 import { doc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, updatePassword } from "firebase/auth";
 
 const email = document.getElementById('email');
 const collectionName = document.getElementById('collectionName');
@@ -13,30 +13,53 @@ const collectionPhoneNumber = document.getElementById('collectionPhoneNumber');
 const customerProfileData = document.getElementById('customerProfileData');
 const loader = document.getElementById('loader');
 const updateLoader = document.getElementById('updateLoader')
+const updatePasswordLoader = document.getElementById('updatePasswordLoader')
 
 const updateButton = document.getElementById('updatebutton');
 
+const password = document.getElementById('password');
+const confirmPassword = document.getElementById('confirmPassword');
+const updatePasswordButton = document.getElementById('updatePasswordButton');
+
 var uid;
 
-updateButton.addEventListener('click', () => {
+addEventListeners();
 
-  updateLoader.style.display = "block";
+function addEventListeners(){
 
-  //update customer profile;
-  if(uid == null || db == null){
-    alert("error updating profile");
-    return;
+  if(updatePasswordButton != null){
+    updatePasswordButton.addEventListener('click', () => {
+      updatePasswordLoader.style.display = "block";
+      updateUserPassword();
+      updatePasswordLoader.style.display = "none";
+    });
+  }
+  
+  if(updateButton != null){
+
+    updateButton.addEventListener('click', () => {
+
+      updateLoader.style.display = "block";
+  
+      //update customer profile;
+      if(uid == null || db == null){
+        alert("error updating profile");
+        return;
+      }
+  
+      const docRef = doc(db, "Customers", uid);
+      const customerProfile = createCustomerProfile();
+      updateDocument(docRef, customerProfile);
+      
+      updateLoader.style.display = "none";
+      alert("Your profile has been updated");
+  
+    });
+
   }
 
-  const docRef = doc(db, "Customers", uid);
-  const customerProfile = createCustomerProfile();
-  updateDocument(docRef, customerProfile);
   
-  updateLoader.style.display = "none";
-  alert("Your profile has been updated");
-
-});
-
+}
 
 onAuthStateChanged(auth, (user) => {
   
@@ -56,7 +79,10 @@ onAuthStateChanged(auth, (user) => {
 
         //show customer profile data
         loader.style.display = "none";
-        customerProfileData.classList.remove("hidden");
+        if(customerProfileData != null){
+          customerProfileData.classList.remove("hidden");
+        }
+        
     });
     
   } else {
@@ -95,4 +121,36 @@ function createCustomerProfile(){
 
   return customerProfile;
 
+}
+
+
+
+function updateUserPassword(){
+  console.log(password.value);
+  console.log(confirmPassword.value);
+  console.log(auth.currentUser);
+
+  //check if password and confirm password are equal. if they're not return
+  if(!(password.value == confirmPassword.value)){
+    alert("password and confirm password are not equal");
+    return;
+  }
+ 
+  if(auth == null){
+    alert("error updating password");
+    return;
+  }
+
+  const user = auth.currentUser;
+  const newPassword = password.value;
+
+  updatePassword(user, newPassword).then(() => {
+    // Update successful.
+    alert("password updated successfully");
+  }).catch((error) => {
+    // An error ocurred
+    alert("error updating password firebase");
+    console.log(error);
+    
+  });
 }

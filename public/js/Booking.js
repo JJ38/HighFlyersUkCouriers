@@ -19,6 +19,8 @@ const quantity = document.getElementById('quantity');
 const requiredFields = [collectionName, collectionAddress1, collectionPostcode, collectionTelephone, email, deliveryName, deliveryAddress1, 
     deliveryPostcode, deliveryTelephone, paymentOption, quantity, animalType];
 
+console.log("testing new config public with client");
+
 function submitorders(){
     
     //if form fields are filled

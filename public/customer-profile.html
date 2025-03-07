@@ -39,58 +39,78 @@
         </header>
         <div class="profileinfobubble">
             <div id="loader" class="loader"></div>
-            <h2>Contact info</h2>
+            <div id="customerProfileData" class="hidden">
+                <h2>Contact info</h2>
+                    <hr>
+                    <section class="formsection">
+                        <section class="bookingInput">
+                            <label for="email">Email</label>
+                            <input id="email" name="email" type="email" required="">
+                        </section>
+                    </section>    
+                <h2>
+                    Collection info
+                </h2>
                 <hr>
                 <section class="formsection">
+            
                     <section class="bookingInput">
-                        <label for="email">Email</label>
-                        <input id="email" name="email" type="email" required="">
+                        <label for="collectionName">Collection Name </label>
+                        <input id="collectionName" name="collectionName" type="text" required="" >
                     </section>
-                </section>    
-            <h2>
-                Collection info
-            </h2>
-            <hr>
-            <section class="formsection">
-        
-                <section class="bookingInput">
-                    <label for="collectionName">Collection Name </label>
-                    <input id="collectionName" name="collectionName" type="text" required="" >
-                </section>
 
-                <section class="bookingInput">
-                    <label for="collectionAddress1">Collection Address 1 </label>
-                    <input id="collectionAddress1" name="collectionAddress1" type="text" required="" >
-                </section>
+                    <section class="bookingInput">
+                        <label for="collectionAddress1">Collection Address 1 </label>
+                        <input id="collectionAddress1" name="collectionAddress1" type="text" required="" >
+                    </section>
 
-                <section class="bookingInput">
-                    <label for="collectionAddress2">Collection Address 2 </label>
-                    <input id="collectionAddress2" name="collectionAddress2" type="text" required="">
-                </section>
+                    <section class="bookingInput">
+                        <label for="collectionAddress2">Collection Address 2 </label>
+                        <input id="collectionAddress2" name="collectionAddress2" type="text" required="">
+                    </section>
 
-                <section class="bookingInput">
-                    <label for="collectionAddress3">Collection Address 3 </label>
-                    <input id="collectionAddress3" name="collectionAddress3" type="text" required="" >
-                </section>
+                    <section class="bookingInput">
+                        <label for="collectionAddress3">Collection Address 3 </label>
+                        <input id="collectionAddress3" name="collectionAddress3" type="text" required="" >
+                    </section>
 
-                <section class="bookingInput">
-                    <label for="collectionPostcode">Collection Postcode</label>
-                    <input id="collectionPostcode" name="collectionPostcode" type="text" required="">
-                </section>
+                    <section class="bookingInput">
+                        <label for="collectionPostcode">Collection Postcode</label>
+                        <input id="collectionPostcode" name="collectionPostcode" type="text" required="">
+                    </section>
 
-                <section class="bookingInput">
-                    <label for="email">Collection Telephone Number</label>
-                    <input id="collectionPhoneNumber" name="collectionPhoneNumber" type="text" minlength="11" maxlength="11" required="">
+                    <section class="bookingInput">
+                        <label for="email">Collection Telephone Number</label>
+                        <input id="collectionPhoneNumber" name="collectionPhoneNumber" type="text" minlength="11" maxlength="11" required="">
+                    </section>
+                    
                 </section>
+                <div>
+                    <input id="updatebutton" class="updateButton" type="button" value="Update" aria-label="Update">
+                    <div id="updateLoader" class="loader" style="display: none"></div>
+                </div>
                 
-            </section>
-            <div>
-                <input id="updatebutton" type="button" value="Update" aria-label="Update">
-                <div id="updateLoader" class="loader" style="display: none"></div>
             </div>
             
-            
-            
+        </div>
+        <div class="profileinfobubble">
+            <h2> Update Password</h2>
+            <hr>
+            <section class="formsection">
+                <section class="bookingInput">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" required>
+                </section>
+                <section class="bookingInput">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input id="confirmPassword" name="confirmPassword" type="password" required>
+                </section>
+            </section>   
+
+        <div>
+        <div>
+            <input id="updatePasswordButton" class="updateButton" type="button" value="Update Password" aria-label="Update">
+            <div id="updatePasswordLoader" class="loader" style="display: none"></div>
         </div>
     </body>
 </html>

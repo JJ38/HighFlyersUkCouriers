@@ -78,13 +78,13 @@ input{
     box-shadow: 0px 0px 15px #00000022;
 }
 
-#updatebutton{
+.updateButton{
     background-color: #2881FF;
     color: white;
     padding: 0 20px;
 }
 
-#updatebutton:hover{
+.updateButton:hover{
     color:#2881FF;
     background-color: white;
 }

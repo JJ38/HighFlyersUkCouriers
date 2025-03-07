@@ -3,11 +3,11 @@ import { defineConfig } from 'vite'
 
 const root = resolve(__dirname, 'public');
 
-
 export default defineConfig({
     root,
     base: '',
     build: {
+      // manifest: true,
       emptyOutDir: true,
       outDir: '../dist/templates',
       assetsDir: 'assets',
@@ -17,7 +17,7 @@ export default defineConfig({
           AboutUs: resolve(root, 'about-us.html'),
           AddOrder: resolve(root, 'add-order.html'),
           AddUser: resolve(root, 'add-user.html'),
-          Prices: resolve(root, 'Prices.html'),
+          Prices: resolve(root, 'prices.html'),
           Bookings: resolve(root, 'bookings.html'),
           ChangePassword: resolve(root, 'change-password.html'),
           ContactUs: resolve(root, 'contact-us.html'),
@@ -37,7 +37,11 @@ export default defineConfig({
           ViewOrder: resolve(root, 'view-order.html'),
 
         },
-       
+        output: {
+          // assetFileNames: "assets/[name][extname]",
+          // chunkFileNames: "assets/[name].js",
+          // entryFileNames: "assets/[name].js",
+        }
       }
     },
     plugins: [
@@ -51,24 +55,20 @@ export default defineConfig({
                 type: 'full-reload',
               });
             }
+            if (file.endsWith('.js')) {
+              ws.send({
+                type: 'full-reload',
+              });
+            }
           });
         },
       },
     ],
     server: {
+    
       watch: {
         usePolling: true,
       }
-    }
+    },
     
-    // build: {
-    //     rollupOptions: {
-    //       input: {
-    //         main: './private/app/templates/homepage/index.html',
-    //         server: {
-    //             open: './private/app/templates/bookings',
-    //         },
-    //       }
-    //     }
-    //   }
   })

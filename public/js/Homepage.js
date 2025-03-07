@@ -1,6 +1,4 @@
 
-import { camelCase } from 'lodash';
-
 const slides = document.querySelectorAll('.carouselslide');
 const leftButton = document.querySelector('.leftarrowwrapper');
 const rightButton = document.querySelector('.rightarrowwrapper');
@@ -9,7 +7,7 @@ var inFocus = true;
 const numberOfSlides = slides.length
 let carouselOffset = 100000000;
 
-console.log(camelCase("testing testing"));
+console.log("hot reload");
 
 //give slide to left class left to be identifiable
 slides[carouselOffset % numberOfSlides].style.transform = "translateX(100%)"; //right

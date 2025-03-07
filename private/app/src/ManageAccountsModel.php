@@ -3,6 +3,7 @@
 namespace HighFlyersUkCouriers;
 
 use Kreait\Firebase\Contract\Auth;
+use Kreait\Firebase\Exception\Auth\EmailExists;
 use MrShan0\PHPFirestore\FirestoreClient;
 
 class ManageAccountsModel
@@ -21,6 +22,7 @@ class ManageAccountsModel
     private $firebase_firestore_result;
     private $delete_user_result;
     private $customer_profile;
+    private $error_code;
 
     public function __construct()
     {
@@ -40,6 +42,10 @@ class ManageAccountsModel
 
     public function getFirebaseFirestoreResult() : bool{
         return $this->firebase_firestore_result;
+    }
+
+    public function getErrorCode(){
+        return $this->error_code;
     }
 
     public function setUID($uid){
@@ -83,6 +89,20 @@ class ManageAccountsModel
 
                 $this->firebase_auth_result = true;
 
+            }catch(EmailExists $e){
+
+                $this->firebase_auth_result = false;
+                $this->error_code = 400;
+
+                if ($this->logger !== null) {
+    
+                    $this->logger->error("FIREBASE_AUTH_EMAIL_EXISTS", array($e));
+                    $this->logger->error("FIREBASE_AUTH_ERROR_AUTH", array($this->firebase_auth));
+                    $this->logger->error("FIREBASE_AUTH_ERROR_USER", array($createdUser));
+    
+                }
+
+                
             }catch(\Exception $e){
                 
                 if ($this->logger !== null) {
@@ -94,6 +114,7 @@ class ManageAccountsModel
                 }
                 
                 $this->firebase_auth_result = false;
+                var_dump($e);
             }
 
         }else{
