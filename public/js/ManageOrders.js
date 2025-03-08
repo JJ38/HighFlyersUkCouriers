@@ -231,8 +231,6 @@ function print(form){
 
 function generateForms(orderFields){
 
-  console.log(orderFields);
-
   let html;
 
   let boilerplateTop = '<!DOCTYPE html>'+

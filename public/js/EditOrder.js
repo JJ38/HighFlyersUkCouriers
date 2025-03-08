@@ -38,14 +38,24 @@ getDocuments(q).then((documentSnapshots) => {
             case "printed":
             {
                 const input = document.createElement('select');
+                input.name = "printed"
+                input.id = "printed";
 
                 const printedOpt = document.createElement('option');
                 printedOpt.value = "Printed";
                 printedOpt.innerText = "Printed";
-                
+
+
                 const notPrintedOpt = document.createElement('option');
                 notPrintedOpt.value = "Not Printed";
                 notPrintedOpt.innerText = "Not Printed";
+
+                if(sortedOrderData[fields]){//printed
+                    printedOpt.selected = true;
+                }else{
+                    notPrintedOpt.selected = false;
+                }
+
 
                 input.appendChild(notPrintedOpt);
                 input.appendChild(printedOpt);

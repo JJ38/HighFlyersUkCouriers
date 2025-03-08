@@ -57,8 +57,6 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
       $tainted_parameters = $request->getParsedBody();
 
       $container = $app->getContainer();
-      
-      
       $session_wrapper = $app->getContainer()->get('sessionWrapper');
 
 
@@ -66,12 +64,14 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
         $tainted_parameters['delivery_week'] = $session_wrapper->getSessionVar('delivery_week');
         $session_wrapper->unsetSessionVar('delivery_week');
       }
-
-      // var_dump($tainted_parameters);
-      // return $response;
      
       $manage_order_model = $container->get('manageOrderModel');
       $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
+
+      // echo "<pre>";
+      // var_dump($tainted_parameters);
+      // echo "</pre>";
+      // return $response;
 
      
       //if one of the parameters does not meet requirements
@@ -123,8 +123,7 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
 
       }
 
-      // var_dump($cleaned_parameters);
-      // return $response;
+   
 
       $edit_order_model->updateOrder();
       $query_result = $edit_order_model->getFirebaseFirestoreResult();

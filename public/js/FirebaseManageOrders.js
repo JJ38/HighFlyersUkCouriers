@@ -79,6 +79,14 @@ function addOrdersToTable(orderArray, prepend){
         const orderFields = orderArray[i].data();
         const tableRow = document.createElement('tr');
 
+        //translate printed field
+        if(orderFields['printed'] == 1){
+            orderFields['printed'] = "Printed";
+        }else{
+            orderFields['printed'] = "Not Printed";
+        }
+            
+
         const sortedOrderData = sortOrderData(orderFields);
 
         for(var field in sortedOrderData){
@@ -90,6 +98,7 @@ function addOrdersToTable(orderArray, prepend){
         
         }
 
+      
         
 
         //add order checkbox
@@ -109,11 +118,10 @@ function addOrdersToTable(orderArray, prepend){
         }else{
             orderTable.appendChild(tableRow);
         }
-        
-        //add order buttons
-        const orderDataMap = new Map();
-        orderDataMap.set("ID", orderFields['ID']);
-        orderDataMap.set("printed", orderFields['printed'])
+
+        // const orderDataMap = new Map();
+        // orderDataMap.set("ID", orderFields['ID']);
+        // orderDataMap.set("printed", orderFields['printed'])
         
         const orderButtons = getOrderButtons(orderFields);
         tableRow.appendChild(orderButtons);

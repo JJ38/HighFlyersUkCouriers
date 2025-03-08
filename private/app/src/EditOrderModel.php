@@ -50,6 +50,7 @@ class EditOrderModel
                 'deliveryAddress3' => $this->order_data['delivery_address_3'],
                 'deliveryPostcode' => $this->order_data['delivery_postcode'],
                 'deliveryPhoneNumber' => $this->order_data['delivery_phone_number'],
+                'printed' => $this->order_data['printed'],
                 'payment' => $this->order_data['payment_option'],
                 'message' => $this->order_data['message'],
             ], true);
