@@ -47,6 +47,7 @@ $app->post('/delete-order', function (Request $request, Response $response) use 
     $allGetVars = $request->getParsedBody();
     $docRef = $allGetVars['docRef'];
 
+
     if(empty($docRef)){
       return $response->withRedirect('/manage-orders?deleted=false', 302);
     }
