@@ -42,9 +42,6 @@ let requestCollection = {
 
 async function initAC() {
 
-    console.log(deliveryAddress1);
-    console.log(collectionAddress1);
-
     tokenCollection = new google.maps.places.AutocompleteSessionToken();
     titleCollection = document.getElementById("autocompleteTitleCollection");
     resultsCollection = document.getElementById("autocompleteResultsCollection");
@@ -179,10 +176,6 @@ async function onPlaceSelected(place, streetAddressInput, cityInput, countyInput
 
         }
     }
-
-    console.log(streetAddress);
-    console.log(streetAddressInput)
-    console.log(streetAddressInput.value);
 
     streetAddressInput.value = streetAddress;
     cityInput.value = city;

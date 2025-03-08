@@ -247,14 +247,38 @@ class ManageAccountsModel
     
                 if ($this->logger !== null) {
     
-                    $this->logger->error("FIREBASE_FIRESTORE_DELETE_ERROR", array($e));
-                    $this->logger->error("FIREBASE_FIRESTORE_DELETE_PARAMETERS", array($this->uid));
+                    $this->logger->error("FIREBASE_FIRESTORE_DELETE_USER_DOCUMENT_ERROR", array($e));
+                    $this->logger->error("FIREBASE_FIRESTORE_DELETE_USER_DOCUMENT_PARAMETERS", array($this->uid));
     
                 }
 
                 $this->firebase_firestore_result = false;
                 $this->delete_user_result = false;
+
+                return;
               
+            }
+
+            try{
+
+                $this->firebase_firestore->deleteDocument('Customer/' . $this->uid);
+                $this->firebase_firestore_result = true;
+                $this->delete_user_result = true;
+    
+            }catch (\Exception $e) {
+    
+                if ($this->logger !== null) {
+    
+                    $this->logger->error("FIREBASE_FIRESTORE_DELETE_CUSTOMER_DOCUMENT_ERROR", array($e));
+                    $this->logger->error("FIREBASE_FIRESTORE_DELETE_CUSTOMER_DOCUMENT_PARAMETERS", array($this->uid));
+    
+                }
+
+                $this->firebase_firestore_result = false;
+                $this->delete_user_result = false;
+                
+                return;
+
             }
 
         }else{
@@ -292,9 +316,6 @@ class ManageAccountsModel
 
       
     }
-
-
-    
 
 
 }

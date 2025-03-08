@@ -89,13 +89,18 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
     $logger = $container->get('logger');
     $manage_accounts_model = $container->get('manageAccountsModel');
 
+
     $manage_accounts_model->setLogger($logger);
     $manage_accounts_model->setFirebaseFirestore($firestore);
     $manage_accounts_model->setFirebaseAuth($auth);
     $manage_accounts_model->setUID($cleaned_user_id);
     $manage_accounts_model->deleteUser();
 
+    // if($customer_account){
 
+    //   $manage_accounts_model->deleteCustomerDocument();
+
+    // }
     
 
     if($manage_accounts_model->getDeleteUserResult() == false){
