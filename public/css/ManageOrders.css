@@ -94,6 +94,11 @@ div.searchbar{
   color: rgb(34, 34, 34);
 
 }
+
+.hidden{
+  display: none;
+}
+
 @media (hover: hover) {
   button:hover{
     cursor: pointer;

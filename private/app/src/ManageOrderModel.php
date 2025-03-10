@@ -16,6 +16,7 @@ class ManageOrderModel
   private $error_message;
   private $error_input_value;
   private $add_order_model;
+  private $firebase_firestore;
 
 
   public function getOrderData() : array|null //for testing purposes
@@ -60,6 +61,11 @@ class ManageOrderModel
   public function setAddOrderModel($add_order_model) : void
   {
     $this->add_order_model = $add_order_model;
+  }
+
+  public function setFirebaseFirestore($firebase_firestore) : void
+  {
+    $this->firebase_firestore = $firebase_firestore;
   }
 
   public function setIsAdmin($is_admin){
@@ -314,7 +320,7 @@ class ManageOrderModel
 
     for($i = 0; $i < count($this->order_data); $i++){ 
 
-      $this->doctrine_wrapper->updatePrinted($this->order_data[$i]);
+      
 
       $store_result = $this->getQueryResult();
       if(!$store_result){
@@ -325,7 +331,6 @@ class ManageOrderModel
     }
 
     return true;
-    
   }
 
 

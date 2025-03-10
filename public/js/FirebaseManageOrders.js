@@ -1,6 +1,6 @@
 
 import { db } from "/js/Firebase.js";
-import { collection, getFirestore, getDocs, startAfter, where, query, limit, orderBy, onSnapshot} from "firebase/firestore";
+import { collection, getDocs, startAfter, where, query, limit, orderBy, onSnapshot, writeBatch, doc} from "firebase/firestore";
 import { addPrintListener } from "/js/ManageOrders.js";
 
 
@@ -45,7 +45,7 @@ orderDataWrapper.addEventListener('scroll', (event) => {
 
 searchButton.addEventListener('click', () => {
 
-    var q;
+    let q;
 
     switch(searchOption.value){
 
@@ -54,6 +54,25 @@ searchButton.addEventListener('click', () => {
         case "quantity":
             q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption.value, "==", parseInt(searchValue.value)));
             break;
+
+        case "printed":
+
+            let translatedSearchValue = "";
+
+            if(searchValue.value.toLowerCase() == "printed"){
+
+                translatedSearchValue = 1;
+
+            }else if(searchValue.value.toLowerCase() == "not printed"){
+
+                translatedSearchValue = 0;
+                
+            }   
+
+            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption.value, "==", translatedSearchValue));
+
+            break;
+
         default:
             q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption.value, "==", searchValue.value));
             break;
@@ -78,7 +97,7 @@ function addOrdersToTable(orderArray, prepend){
 
         const orderFields = orderArray[i].data();
         const tableRow = document.createElement('tr');
-
+       
         //translate printed field
         if(orderFields['printed'] == 1){
             orderFields['printed'] = "Printed";
@@ -98,16 +117,13 @@ function addOrdersToTable(orderArray, prepend){
         
         }
 
-      
-        
-
         //add order checkbox
         const tableData = document.createElement('td');
         const orderCheckBox = document.createElement('input');
         orderCheckBox.type = "checkbox";
         orderCheckBox.id = orderFields['ID'];
         orderCheckBox.name = "ID";
-        orderCheckBox.value = orderFields['ID'];
+        orderCheckBox.value = orderArray[i].id;
         orderCheckBox.setAttribute('onclick', 'highlightorder(this)');
 
         tableData.appendChild(orderCheckBox);
@@ -118,22 +134,17 @@ function addOrdersToTable(orderArray, prepend){
         }else{
             orderTable.appendChild(tableRow);
         }
-
-        // const orderDataMap = new Map();
-        // orderDataMap.set("ID", orderFields['ID']);
-        // orderDataMap.set("printed", orderFields['printed'])
         
         const orderButtons = getOrderButtons(orderFields);
         tableRow.appendChild(orderButtons);
 
         //add print button to orderFields so listener can be added to it
         orderFields['printButton'] = orderButtons.children[0].firstChild;
-        addPrintListener(orderFields);
+      
+        addPrintListener(orderFields, orderArray[i].id);
     }
 
     fetchingOrders = false;
-
-
 
 }
 
@@ -269,5 +280,55 @@ function updateSnapshotQuery(){
     });
 
 }
+console.log(window.location.origin);
+export async function markOrdersAsPrinted(notPrintedOrders){
+
+    console.log(notPrintedOrders);
+
+    const batch = writeBatch(db);
+  
+    for(let i = 0; i < notPrintedOrders.length; i++){
+      const docRef = doc(db, "Orders", notPrintedOrders[i]);
+      batch.update(docRef, {"printed": 1});
+    }
+    
+    try{
+
+        await batch.commit();
+        //if successful
+        window.location.replace(window.location.origin + "/manage-orders?printerror=false");
+
+    }catch(e){
+        //if unsuccessful
+        window.location.replace(window.location.origin + "/manage-orders?printerror=true");
+
+    }
+   
+
+  
+    
+    // const form = document.createElement('form');
+    // form.action = "/mark-orders-as-printed";
+    // form.method = "post";
+    // form.name = "printedordersform";
+    // form.id = "printedordersform";    
+    // //add ids as inputs
+  
+    // console.log("markOrdersAsPrinted");
+  
+    // for(let i = 0; i < notPrintedOrders.length; i++){
+    //   const input = document.createElement('input');
+    //   input.name = i;
+    //   input.id = i;
+    //   input.type = "hidden";
+    //   input.value = notPrintedOrders[i];
+    //   form.appendChild(input);
+    // }
+  
+    // console.log(form)
+    // document.body.appendChild(form);
+  
+    //form.submit();
+  }
 
 

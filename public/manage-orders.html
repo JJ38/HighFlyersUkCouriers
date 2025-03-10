@@ -108,7 +108,7 @@
           <div class="massactionbuttons">
             <form>
               <button id="selectall" class="massactionbutton"
-                onclick="selectAll()" type="button">Select all</button>
+                type="button">Select all</button>
             </form>
             {% if isAdmin == true %}
             <form id="deleteselectedform" action="/delete-multiple-orders"
@@ -120,7 +120,7 @@
             {% endif %}
             <form id="printselectedform" action method="get">
               <button id="printselected" class="massactionbutton"
-                onclick="printSelected()" type="button">Print Selected</button>
+               type="button">Print Selected</button>
             </form>
           </div>
 

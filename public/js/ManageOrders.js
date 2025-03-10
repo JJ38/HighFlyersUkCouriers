@@ -1,9 +1,9 @@
+import { markOrdersAsPrinted } from "/js/FirebaseManageOrders.js";
+
 
 const selectAllButton = document.getElementById('selectall');
 const deletedSelectedButton = document.getElementById('deleteselected');
 const printSelectedButton = document.getElementById('printselected');
-
-
 
 let orderIDs = [];
 let hasPrinted = [];
@@ -13,12 +13,13 @@ let isPrinted = "";
 
 addListeners();
 
-export function addPrintListener(orderFields){
+export function addPrintListener(orderFields, localOrderID){
+
 
   orderFields["printButton"].addEventListener('click', e => {
       console.log("print clicked");
       printType = "SINGULARPRINT";
-      orderID = orderFields["ID"];
+      orderID = localOrderID;
       isPrinted = orderFields["printed"];
       printOrder([orderFields]);
       
@@ -57,6 +58,7 @@ function singularPrint(){
 
   if(confirm("Would you like the selected orders as printed?")){
     if(isPrinted == "Not Printed"){
+      //import from FirebaseManageOrders.js
       markOrdersAsPrinted([orderID]);
     }else{
       alert('Order already marked printed');
@@ -97,16 +99,17 @@ function printSelected(){
   printType = "MULTIPLEPRINT";
 
   const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked');
-  console.log(selectedCheckBoxes);
   orderIDs = [];
   hasPrinted = [];
   let orderFields = [];
 
   for(let i = 0; i < selectedCheckBoxes.length; i++){
+
     orderIDs.push(selectedCheckBoxes[i].value);
     hasPrinted.push(selectedCheckBoxes[i].parentElement.parentElement.children[23].textContent);
     const orderTableRow = selectedCheckBoxes[i].parentElement.parentElement
     orderFields.push(getOrderFields(orderTableRow));
+
   }
 
   print(generateForms(orderFields));
@@ -161,7 +164,7 @@ function printOrder(orderFields) {
 
 function confirmPrint() {
 
-  if(confirm("Would you like the selected orders as printed?")){
+  if(confirm("Would you like to mark the selected orders as printed?")){
   
     //check if already marked as printed
 
@@ -188,33 +191,12 @@ function confirmPrint() {
   
 }
 
-function markOrdersAsPrinted(notPrintedOrders){
-  
-  const form = document.createElement('form');
-  form.action = "/mark-orders-as-printed";
-  form.method = "post";
-  form.name = "printedordersform";
-  form.id = "printedordersform";    
-  //add ids as inputs
 
-  console.log("markOrdersAsPrinted");
-
-  for(let i = 0; i < notPrintedOrders.length; i++){
-    const input = document.createElement('input');
-    input.name = i;
-    input.id = i;
-    input.type = "hidden";
-    input.value = notPrintedOrders[i];
-    form.appendChild(input);
-  }
-
-  document.body.appendChild(form);
-
-  form.submit();
-}
 
 
 function print(form){
+
+  console.log("print");
 
   const hideFrame = document.createElement("iframe");
   hideFrame.onload = setPrint;

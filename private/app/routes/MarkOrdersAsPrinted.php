@@ -9,34 +9,17 @@ $app->post('/mark-orders-as-printed', function (Request $request, Response $resp
     $account_type = $request->getAttribute('accountType');
 
     if($account_type == "admin" || $account_type == "staff"){
+        
         // Retrieve user credentials in POST body
-        $tainted_parameters = $request->getParsedBody();
-
+        $doc_references = $request->getParsedBody();
       
-
         // Get models + Wrappers
         $container = $app->getContainer();
-        $doctrine_wrapper = $container->get('doctrineWrapper');
         $logger = $container->get('logger');
-
-        // // Doctrine wrapper setup
-        $database_connection_settings = $container->get('settings')['doctrineSettings'];
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-        $query_builder = $database_connection->createQueryBuilder();
-        $doctrine_wrapper->setQueryBuilder($query_builder);
-        $doctrine_wrapper->setDoctrineLogger($logger);
-
         $manage_order_model = $container->get('manageOrderModel');
-        $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
 
-        // echo '<pre>';
-        // var_dump($tainted_parameters);
-        // echo '</pre>';
-
-        // return $response;
-
-
-        $manage_order_model->setOrderData($tainted_parameters);
+        //Add firebase update printed field functionality
+        $manage_order_model->setOrderData($doc_references);
         $update_result = $manage_order_model->updatePrinted();
 
         if($update_result){
