@@ -22,6 +22,10 @@ body{
   overflow-x: hidden;
 }
 
+.menu{
+  padding-top: 2rem;
+}
+
 h1{
   margin:0;
 }

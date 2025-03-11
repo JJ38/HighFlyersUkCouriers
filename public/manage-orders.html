@@ -10,12 +10,14 @@
     <link rel="stylesheet" href="/css/Navbar.css" type="text/css">
     <link rel="stylesheet" href="/css/ManageOrders.css" type="text/css">
     <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
-    <title>{{ page_title }}</title>
-    <script src="/js/ManageOrdersNonDeferred.js"></script>
-    <script type="module" src="/js/FirebaseManageOrders.js" defer></script>
-    <script type="module" src="/js/ManageOrders.js" defer></script>
-    <script type="module" src="/js/MobileNavigationBar.js"></script>
     
+    <script src="/js/ManageOrdersNonDeferred.js"></script>
+    <script type="module" src="/js/FirebaseManageOrders.js"></script>
+    <script type="module" src="/js/ManageOrders.js"></script>
+    <script type="module" src="/js/MobileNavigationBar.js"></script>
+    <script type="module" src="/js/Logout.js"></script>
+    
+    <title>{{ page_title }}</title>
   </head>
   <body>
 
@@ -25,14 +27,11 @@
           <div id="mobilenavwrapper">
             <div id="closemobilenavmenu"><p
                 id="closenavtext">close</p><p>X</p></div>
-            <a href="/logout">Logout</a>
+            <a class="logoutButton">Logout</a>
             <a class="currentpage" href="/manage-orders">Bookings</a>
-            {% if isAdmin == true %}
-            <a href="/content-manager">Content Manager</a>
-            <a href="/manage-accounts">Accounts</a>
-            <a class="navLinks" href="/live-logistics-manager">Logistics</a>
-
-            {% endif %}
+            <a class="adminLink hidden" href="/content-manager">Content Manager</a>
+            <a class="adminLink hidden" href="/manage-accounts">Accounts</a>
+            <a class="navLinks adminLink hidden" href="/live-logistics-manager">Logistics</a>
           </div>
         </div>
         <nav id="menu">
@@ -41,14 +40,12 @@
             <div></div>
             <div></div>
           </div>
-          <a class="navLinks" href="/logout">Logout</a>
+          <a class="navLinks logoutButton">Logout</a>
           <a class="navLinks" href="/manage-orders">Bookings</a>
-          {% if isAdmin == true %}
-          <a class="navLinks" href="/content-manager">Content Manager</a>
-          <a class="navLinks" href="/manage-accounts">Accounts</a>
-          <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+          <a class="navLinks adminLink hidden" href="/content-manager">Content Manager</a>
+          <a class="navLinks adminLink hidden" href="/manage-accounts">Accounts</a>
+          <a class="navLinks adminLink hidden" href="/live-logistics-manager">Logistics</a>
 
-          {% endif %}
         </nav>
       </header>
       <div id="maincontent">
@@ -110,14 +107,14 @@
               <button id="selectall" class="massactionbutton"
                 type="button">Select all</button>
             </form>
-            {% if isAdmin == true %}
+        
             <form id="deleteselectedform" action="/delete-multiple-orders"
               method="get">
-              <button id="deleteselected" class="massactionbutton"
-                type="button">Delete
+              <button id="deleteselected" class="massactionbutton hidden"
+                type="hidden">Delete
                 Selected</button>
             </form>
-            {% endif %}
+    
             <form id="printselectedform" action method="get">
               <button id="printselected" class="massactionbutton"
                type="button">Print Selected</button>

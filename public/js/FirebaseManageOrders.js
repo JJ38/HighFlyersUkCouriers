@@ -137,6 +137,7 @@ function addOrdersToTable(orderArray, prepend){
         
         const orderButtons = getOrderButtons(orderFields);
         tableRow.appendChild(orderButtons);
+        console.log("added delete buttons");
 
         //add print button to orderFields so listener can be added to it
         orderFields['printButton'] = orderButtons.children[0].firstChild;
@@ -179,6 +180,8 @@ function getOrderButtons(orderData){
     const deleteButton = document.createElement('button');
     deleteButton.innerText = "Delete";
     deleteButton.type= "button";
+    deleteButton.classList.add("hidden");
+    deleteButton.classList.add("deleteButton");
     deleteLink.appendChild(deleteButton);
 
 
@@ -229,7 +232,6 @@ function sortOrderData(orderFields){
 }
 
 async function getOrderData(q){
-
    
     const documentSnapshots = await getDocs(q);
 
@@ -280,7 +282,7 @@ function updateSnapshotQuery(){
     });
 
 }
-console.log(window.location.origin);
+
 export async function markOrdersAsPrinted(notPrintedOrders){
 
     console.log(notPrintedOrders);
@@ -303,32 +305,7 @@ export async function markOrdersAsPrinted(notPrintedOrders){
         window.location.replace(window.location.origin + "/manage-orders?printerror=true");
 
     }
-   
 
-  
-    
-    // const form = document.createElement('form');
-    // form.action = "/mark-orders-as-printed";
-    // form.method = "post";
-    // form.name = "printedordersform";
-    // form.id = "printedordersform";    
-    // //add ids as inputs
-  
-    // console.log("markOrdersAsPrinted");
-  
-    // for(let i = 0; i < notPrintedOrders.length; i++){
-    //   const input = document.createElement('input');
-    //   input.name = i;
-    //   input.id = i;
-    //   input.type = "hidden";
-    //   input.value = notPrintedOrders[i];
-    //   form.appendChild(input);
-    // }
-  
-    // console.log(form)
-    // document.body.appendChild(form);
-  
-    //form.submit();
   }
 
 

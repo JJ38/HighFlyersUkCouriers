@@ -7,7 +7,8 @@
     <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/css/Navbar.css" type="text/css">
     <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
-    <link rel="stylesheet" href="/css/ContentManager.css" type="text/css">   
+    <link rel="stylesheet" href="/css/ContentManager.css" type="text/css"> 
+    <script type="module" src="/js/Logout.js"></script>  
     <title>{{ page_title }}</title>
 
 </head>
@@ -35,7 +36,7 @@
             <div id="mobilenavmenu"  class="hideMobileMenu">
                 <div id="mobilenavwrapper">
                   <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
-                    <a href="/logout">Logout</a>
+                    <a class="logoutButton">Logout</a>
                     <a href="/manage-orders">Bookings</a>
                     <a class="currentpage" href="/content-manager">Content Manager</a>
                     <a href="/manage-accounts">Accounts</a>
@@ -50,7 +51,7 @@
                     <div></div>
                     <div></div>
                 </div>
-                <a href="/logout">Logout</a>
+                <a class="logoutButton">Logout</a>
                 <a href="/manage-orders">Bookings</a>
                 <a href="/content-manager">Content Manager</a>
                 <a href="/manage-accounts">Accounts</a>

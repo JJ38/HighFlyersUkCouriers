@@ -10,12 +10,17 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
         
         <title>{{ page_title }}</title>
+      <script type="module" crossorigin src="./assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
+      <script type="module" crossorigin src="./assets/index-dfc2d82f-BrcG0wnI.js"></script>
+      <script type="module" crossorigin src="./assets/Firebase-BndNuiOs.js"></script>
+      <script type="module" crossorigin src="./assets/Logout-BI0wInK0.js"></script>
       <link rel="stylesheet" crossorigin href="./assets/LiveLogisticsManager-BkqYhmN5.css">
-      <link rel="stylesheet" crossorigin href="./assets/Navbar-BQ0c1Epq.css">
+      <link rel="stylesheet" crossorigin href="./assets/Navbar-CypaAb2F.css">
       <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
-      <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-Y5lxdKHq.css">
+      <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-oHciNmWq.css">
     </head>
     <body>
       <div id="wrapper">
@@ -23,7 +28,7 @@
           <div id="mobilenavmenu"  class="hideMobileMenu">
             <div id="mobilenavwrapper">
               <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
-                <a href="/logout">Logout</a>
+                <a class="logoutButton">Logout</a>
                 <a class="currentpage" href="/manage-orders">Bookings</a>
                 <a href="/content-manager">Content Manager</a>
                 <a href="/manage-accounts">Accounts</a>
@@ -37,7 +42,7 @@
               <div></div>
               <div></div>
             </div>
-            <a class="navLinks" href="/logout">Logout</a>
+            <a class="navLinks logoutButton">Logout</a>
             <a class="navLinks" href="/manage-orders">Bookings</a>
             <a class="navLinks" href="/content-manager">Content Manager</a>
             <a class="navLinks" href="/manage-accounts">Accounts</a>

@@ -28,7 +28,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 loginButton.addEventListener('click', login);
-var firebaseUsername;
+let firebaseUsername;
 
 
 async function login(){
@@ -125,7 +125,7 @@ function checkIfLegacyAccount(username, password){
                     console.log(userCredential.user.accessToken);
                     const accessToken = userCredential.user.accessToken;
         
-                    var input = document.createElement('input');
+                    let input = document.createElement('input');
                     input.id = "accessToken";
                     input.name = "accessToken";
                     input.value = accessToken;

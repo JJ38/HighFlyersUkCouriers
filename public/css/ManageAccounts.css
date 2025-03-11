@@ -26,10 +26,6 @@ header {
   flex: 0 1 auto;
 }
 
-nav{
-  padding: 30px;
-}
-
 nav a{
  
   font-family: 'inter', sans-serif;

@@ -60,6 +60,11 @@ export default defineConfig({
                 type: 'full-reload',
               });
             }
+            if (file.endsWith('.css')) {
+              ws.send({
+                type: 'full-reload',
+              });
+            }
           });
         },
       },

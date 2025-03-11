@@ -1,9 +1,15 @@
 import { markOrdersAsPrinted } from "/js/FirebaseManageOrders.js";
+import { auth } from "/js/Firebase.js";
+import { getIdTokenResult, onAuthStateChanged } from "firebase/auth";
+import { get } from "lodash";
 
 
 const selectAllButton = document.getElementById('selectall');
 const deletedSelectedButton = document.getElementById('deleteselected');
 const printSelectedButton = document.getElementById('printselected');
+
+const adminLinks = document.querySelectorAll(".adminLink");
+
 
 let orderIDs = [];
 let hasPrinted = [];
@@ -11,7 +17,62 @@ let printType = "";
 let orderID = -1;
 let isPrinted = "";
 
+
 addListeners();
+
+onAuthStateChanged(auth, (user) => {
+
+  if (user) {
+
+    auth.currentUser.getIdTokenResult().then((getIdTokenResult) => {
+      console.log(getIdTokenResult.claims.role);    
+      
+      roleBasedAccess(getIdTokenResult.claims.role);
+      
+
+    });
+
+
+  } else {
+
+  }
+  
+});
+
+
+
+function roleBasedAccess(role){
+
+  if(role == "admin"){
+
+    if(deletedSelectedButton != null){
+      deletedSelectedButton.classList.remove("hidden");
+    }
+    console.log("fetching delete buttons");
+    //show individual delete buttons
+    const deleteButtons = document.querySelector(".deleteButton");
+
+    console.log(deleteButtons);
+
+    if(deleteButtons != null){
+      for(let i = 0 ; i < deleteButtons.length; i++){
+        deleteButtons[i].classList.remove("hidden");
+      }
+    }
+
+    if(adminLinks != null){
+
+      for(const link of adminLinks){
+        
+        link.classList.remove("hidden");
+
+      }
+
+    }
+
+  }
+
+}
 
 export function addPrintListener(orderFields, localOrderID){
 

@@ -6,18 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/dce6efa4ea.js"
       crossorigin="anonymous"></script>
-    <title>{{ page_title }}</title>
-    <script src="/js/ManageOrdersNonDeferred.js"></script>
     
-    <script type="module" crossorigin src="./assets/ManageOrders-BJLec8yY.js"></script>
+    <script src="/js/ManageOrdersNonDeferred.js"></script>
+    
+    <title>{{ page_title }}</title>
+    <script type="module" crossorigin src="./assets/ManageOrders-SaAa_Pi8.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
-    <link rel="modulepreload" crossorigin href="./assets/index.esm2017-Byl6So49.js">
-    <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-CQHktAZp.js">
-    <link rel="modulepreload" crossorigin href="./assets/Firebase-cX9Ck1kR.js">
+    <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-BrcG0wnI.js">
+    <link rel="modulepreload" crossorigin href="./assets/Firebase-BndNuiOs.js">
     <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
+    <link rel="modulepreload" crossorigin href="./assets/Logout-BI0wInK0.js">
     <link rel="stylesheet" crossorigin href="./assets/ManageOrders-Ct99ekwY.css">
     <link rel="stylesheet" crossorigin href="./assets/Footer-Co0a3HEz.css">
-    <link rel="stylesheet" crossorigin href="./assets/Navbar-BQ0c1Epq.css">
+    <link rel="stylesheet" crossorigin href="./assets/Navbar-CypaAb2F.css">
     <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
   </head>
   <body>
@@ -28,11 +29,11 @@
           <div id="mobilenavwrapper">
             <div id="closemobilenavmenu"><p
                 id="closenavtext">close</p><p>X</p></div>
-            <a href="/logout">Logout</a>
-            <a class="currentpage" href="/manage-orders">Manage Bookings</a>
+            <a class="logoutButton">Logout</a>
+            <a class="currentpage" href="/manage-orders">Bookings</a>
             {% if isAdmin == true %}
             <a href="/content-manager">Content Manager</a>
-            <a href="/manage-accounts">Manage Accounts</a>
+            <a href="/manage-accounts">Accounts</a>
             <a class="navLinks" href="/live-logistics-manager">Logistics</a>
 
             {% endif %}
@@ -44,11 +45,11 @@
             <div></div>
             <div></div>
           </div>
-          <a class="navLinks" href="/logout">Logout</a>
-          <a class="navLinks" href="/manage-orders">Manage Bookings</a>
+          <a class="navLinks logoutButton">Logout</a>
+          <a class="navLinks" href="/manage-orders">Bookings</a>
           {% if isAdmin == true %}
           <a class="navLinks" href="/content-manager">Content Manager</a>
-          <a class="navLinks" href="/manage-accounts">Manage Accounts</a>
+          <a class="navLinks" href="/manage-accounts">Accounts</a>
           <a class="navLinks" href="/live-logistics-manager">Logistics</a>
 
           {% endif %}
@@ -116,8 +117,8 @@
             {% if isAdmin == true %}
             <form id="deleteselectedform" action="/delete-multiple-orders"
               method="get">
-              <button id="deleteselected" class="massactionbutton"
-                type="button">Delete
+              <button id="deleteselected" class="massactionbutton hidden"
+                type="hidden">Delete
                 Selected</button>
             </form>
             {% endif %}
