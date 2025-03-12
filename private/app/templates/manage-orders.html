@@ -10,15 +10,15 @@
     <script src="/js/ManageOrdersNonDeferred.js"></script>
     
     <title>{{ page_title }}</title>
-    <script type="module" crossorigin src="./assets/ManageOrders-SaAa_Pi8.js"></script>
+    <script type="module" crossorigin src="./assets/ManageOrders-OOPB-Zkd.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
-    <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-BrcG0wnI.js">
-    <link rel="modulepreload" crossorigin href="./assets/Firebase-BndNuiOs.js">
+    <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-9ZOO5N4z.js">
+    <link rel="modulepreload" crossorigin href="./assets/Firebase-DnALzBam.js">
     <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
-    <link rel="modulepreload" crossorigin href="./assets/Logout-BI0wInK0.js">
-    <link rel="stylesheet" crossorigin href="./assets/ManageOrders-Ct99ekwY.css">
+    <link rel="modulepreload" crossorigin href="./assets/Logout-C_SXqiFM.js">
+    <link rel="stylesheet" crossorigin href="./assets/ManageOrders-BZ4CvUz3.css">
     <link rel="stylesheet" crossorigin href="./assets/Footer-Co0a3HEz.css">
-    <link rel="stylesheet" crossorigin href="./assets/Navbar-CypaAb2F.css">
+    <link rel="stylesheet" crossorigin href="./assets/Navbar-_3NclZQX.css">
     <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
   </head>
   <body>
@@ -31,12 +31,9 @@
                 id="closenavtext">close</p><p>X</p></div>
             <a class="logoutButton">Logout</a>
             <a class="currentpage" href="/manage-orders">Bookings</a>
-            {% if isAdmin == true %}
-            <a href="/content-manager">Content Manager</a>
-            <a href="/manage-accounts">Accounts</a>
-            <a class="navLinks" href="/live-logistics-manager">Logistics</a>
-
-            {% endif %}
+            <a class="adminLink hidden" href="/content-manager">Content Manager</a>
+            <a class="adminLink hidden" href="/manage-accounts">Accounts</a>
+            <a class="navLinks adminLink hidden" href="/live-logistics-manager">Logistics</a>
           </div>
         </div>
         <nav id="menu">
@@ -47,12 +44,10 @@
           </div>
           <a class="navLinks logoutButton">Logout</a>
           <a class="navLinks" href="/manage-orders">Bookings</a>
-          {% if isAdmin == true %}
-          <a class="navLinks" href="/content-manager">Content Manager</a>
-          <a class="navLinks" href="/manage-accounts">Accounts</a>
-          <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+          <a class="navLinks adminLink hidden" href="/content-manager">Content Manager</a>
+          <a class="navLinks adminLink hidden" href="/manage-accounts">Accounts</a>
+          <a class="navLinks adminLink hidden" href="/live-logistics-manager">Logistics</a>
 
-          {% endif %}
         </nav>
       </header>
       <div id="maincontent">
@@ -65,7 +60,7 @@
                 <select id="searchOption" class="searchoption" name="field" id="filter">
                   <option disabled selected value> -- select an option --
                   </option>
-                  <option value="id">ID</option>
+                  <option value="ID">ID</option>
                   <option value="animalType">Animal Type</option>
                   <option value="quantity">Quantity</option>
                   <option value="email">Email</option>
@@ -109,19 +104,19 @@
             </a>
           </div>
 
-          <div class="massactionbuttons">
+          <div id="massActionButtons" class="massactionbuttons hidden">
             <form>
               <button id="selectall" class="massactionbutton"
                 type="button">Select all</button>
             </form>
-            {% if isAdmin == true %}
+        
             <form id="deleteselectedform" action="/delete-multiple-orders"
               method="get">
               <button id="deleteselected" class="massactionbutton hidden"
                 type="hidden">Delete
                 Selected</button>
             </form>
-            {% endif %}
+    
             <form id="printselectedform" action method="get">
               <button id="printselected" class="massactionbutton"
                type="button">Print Selected</button>
@@ -160,7 +155,7 @@
                   <th>Time</th>
                   <th id="topright"></th>
                 </tr>
-                <tbody id="tableBody">
+                <tbody id="tableBody" class="">
                 </tbody>
               </table>
             </div>

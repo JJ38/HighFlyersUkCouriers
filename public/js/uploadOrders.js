@@ -1,4 +1,4 @@
-//SELECT * FROM orders OUTFILE 'var/mysql/mysql_files
+//SELECT * FROM orders INTO OUTFILE '/var/lib/mysql_files/orders.csv' FIELDS TERMINATED BY '|' LINES TERMINATED BY '~'; 
 
 import { initializeApp } from "firebase/app";
 import { collection, getFirestore, doc, setDoc, addDoc} from "firebase/firestore";
@@ -21,7 +21,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
 
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);

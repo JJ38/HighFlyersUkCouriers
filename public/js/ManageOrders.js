@@ -1,21 +1,32 @@
-import { markOrdersAsPrinted } from "/js/FirebaseManageOrders.js";
+import { markOrdersAsPrinted, getInitialData, loadAdditionalOrders, sortOrderData, getFilterOrders, filterSearch } from "/js/FirebaseManageOrders.js";
 import { auth } from "/js/Firebase.js";
 import { getIdTokenResult, onAuthStateChanged } from "firebase/auth";
-import { get } from "lodash";
 
+const massActionButtons = document.getElementById('massActionButtons');
 
 const selectAllButton = document.getElementById('selectall');
 const deletedSelectedButton = document.getElementById('deleteselected');
 const printSelectedButton = document.getElementById('printselected');
 
-const adminLinks = document.querySelectorAll(".adminLink");
+const searchButton = document.getElementById('searchButton');
+const searchValue = document.getElementById('searchValue');
+const searchOption = document.getElementById('searchOption');
 
+const adminLinks = document.querySelectorAll(".adminLink");
+const orderDataWrapper = document.getElementById('orderDataWrapper');
+
+const orderTable = document.getElementById('tableBody');
+
+let orderDataWrapperHeight = orderDataWrapper.getBoundingClientRect().height;
 
 let orderIDs = [];
 let hasPrinted = [];
 let printType = "";
 let orderID = -1;
 let isPrinted = "";
+let role;
+let initialQuery = true;
+let fetchingOrders = false;
 
 
 addListeners();
@@ -24,12 +35,11 @@ onAuthStateChanged(auth, (user) => {
 
   if (user) {
 
-    auth.currentUser.getIdTokenResult().then((getIdTokenResult) => {
-      console.log(getIdTokenResult.claims.role);    
-      
-      roleBasedAccess(getIdTokenResult.claims.role);
-      
-
+    auth.currentUser.getIdTokenResult().then(async (getIdTokenResult) => {
+      console.log(getIdTokenResult.claims.role);   
+      role = getIdTokenResult.claims.role;
+    
+      loadOrders();
     });
 
 
@@ -39,24 +49,101 @@ onAuthStateChanged(auth, (user) => {
   
 });
 
+orderDataWrapper.addEventListener('scroll', (event) => {
+  
+  const scrollHeight = event.target.scrollHeight;
+  const scrollTop = event.target.scrollTop; 
+
+  if(scrollHeight - scrollTop - orderDataWrapperHeight < 100){
+    loadOrders();
+  }
+
+});
 
 
-function roleBasedAccess(role){
+
+searchButton.addEventListener('click', async () => {
+
+  const query = filterSearch(searchOption.value, searchValue.value);
+  console.log(query);
+
+
+  const orderData = await getFilterOrders(query);
+
+  console.log(orderData);
+
+  //clear table of current orders
+  const tableBody = document.getElementById('tableBody');
+  tableBody.innerHTML = "";
+
+  //append order data to table
+  addOrdersToTable(orderData, false);
+
+  roleBasedAccess();
+
+});
+
+
+async function loadOrders(){
+
+  let orderData = null;
+
+  if(fetchingOrders){
+    return;
+  }
+
+  fetchingOrders = true;
+
+  if(initialQuery){
+
+      initialQuery = false;
+      orderData = await getInitialData();
+
+  }else{
+     
+      orderData = await loadAdditionalOrders();
+
+  }
+
+  //append order data to table
+  addOrdersToTable(orderData, false);
+
+  roleBasedAccess();
+
+  fetchingOrders = false;
+
+}
+
+
+
+function roleBasedAccess(){
 
   if(role == "admin"){
 
     if(deletedSelectedButton != null){
       deletedSelectedButton.classList.remove("hidden");
     }
-    console.log("fetching delete buttons");
-    //show individual delete buttons
-    const deleteButtons = document.querySelector(".deleteButton");
 
-    console.log(deleteButtons);
+    //show individual delete buttons
+    const deleteButtons = document.querySelectorAll(".deleteButton");
 
     if(deleteButtons != null){
+    
       for(let i = 0 ; i < deleteButtons.length; i++){
+
         deleteButtons[i].classList.remove("hidden");
+        
+      }
+    }
+
+    const editButton = document.querySelectorAll(".editButton");
+    
+    if(editButton != null){
+    
+      for(let i = 0 ; i < editButton.length; i++){
+
+        editButton[i].classList.remove("hidden");
+        
       }
     }
 
@@ -72,9 +159,190 @@ function roleBasedAccess(role){
 
   }
 
+  if(role == "staff"){
+
+    //show delete buttons on public orders only
+    const editButton = document.querySelectorAll(".publicEditOrderButton");
+    
+    if(editButton != null){
+    
+      for(let i = 0 ; i < editButton.length; i++){
+
+        editButton[i].classList.remove("hidden");
+        
+      }
+    }
+
+  }
+
+  massActionButtons.classList.remove("hidden");
+
 }
 
-export function addPrintListener(orderFields, localOrderID){
+function getDeliveryWeekColour(week){
+
+  const weekNumber = parseInt(week);
+  let weekColour;
+
+  switch (weekNumber % 8) {
+    case 0:
+      weekColour = "red";
+      break;
+
+    case 1:
+      weekColour = "green";
+      break;
+
+    case 2:
+      weekColour = "yellow";
+      break;
+
+    case 3:
+      weekColour = "blue";
+      break;
+
+    case 4:
+      weekColour = "#B5651D";
+      break;
+
+    case 5:
+      weekColour = "#CBC3E3";
+      break;
+
+    case 6:
+      weekColour = "pink";
+      break;
+
+    case 7:
+      weekColour = "orange";
+      break;
+
+    default:
+      weekColour = "white";
+  }
+
+  return weekColour;
+
+}
+
+function addOrdersToTable(orderArray, prepend){
+
+  console.log(orderArray);
+
+  for(let i = 0; i < orderArray.length; i++){
+
+      const orderFields = orderArray[i].data();
+      const tableRow = document.createElement('tr');
+     
+      //translate printed field
+      if(orderFields['printed'] == 1){
+          orderFields['printed'] = "Printed";
+      }else{
+          orderFields['printed'] = "Not Printed";
+      }
+          
+      const sortedOrderData = sortOrderData(orderFields);
+
+    
+
+      for(var field in sortedOrderData){
+
+          const tableData = document.createElement('td');
+          tableData.innerHTML = sortedOrderData[field];
+          tableData.classList.add(field);
+          if(field == "deliveryWeek"){
+
+            tableData.style.background = getDeliveryWeekColour(sortedOrderData['deliveryWeek'])
+          }
+          tableRow.append(tableData);
+      
+      }
+
+      //add order checkbox
+      const tableData = document.createElement('td');
+      const orderCheckBox = document.createElement('input');
+      orderCheckBox.type = "checkbox";
+      orderCheckBox.id = orderFields['ID'];
+      orderCheckBox.name = "ID";
+      orderCheckBox.value = orderArray[i].id;
+      orderCheckBox.setAttribute('onclick', 'highlightorder(this)');
+
+      tableData.appendChild(orderCheckBox);
+
+      tableRow.prepend(tableData);
+      if(prepend){
+          orderTable.prepend(tableRow);
+      }else{
+          orderTable.appendChild(tableRow);
+      }
+
+      const orderButtons = getOrderButtons(orderFields);
+
+      tableRow.appendChild(orderButtons);
+      console.log("added delete buttons");
+
+      //add print button to orderFields so listener can be added to it
+      orderFields['printButton'] = orderButtons.children[0].firstChild;
+    
+      addPrintListener(orderFields, orderArray[i].id);
+  }
+
+}
+
+function getOrderButtons(orderData){
+
+  const buttonWrapper = document.createElement('td');
+
+  const printLink = document.createElement('a');
+  printLink.classList = "print";
+  const printButton = document.createElement('button');
+  printButton.innerText = "Print";
+  printButton.type= "button";
+  printLink.appendChild(printButton);
+  //add print button to array
+
+  const viewLink = document.createElement('a');
+  viewLink.href="/view-order?id=" + orderData["ID"];
+  const viewButton = document.createElement('button');
+  viewButton.innerText = "View";
+  viewButton.type= "button";
+  viewLink.appendChild(viewButton);
+
+  const editLink = document.createElement('a');
+  editLink.href = "/edit-order?id=" + orderData["ID"];
+  const editButton = document.createElement('button');
+  editButton.innerText = "Edit";
+  editButton.type= "button";
+  editButton.classList.add("editButton");
+  editButton.classList.add("hidden");
+  editLink.appendChild(editButton);
+
+  //mark as public order
+  if(orderData['account'] == ""){
+    editButton.classList.add("publicEditOrderButton");
+  }
+
+  const deleteLink = document.createElement('a');
+  deleteLink.href = "/delete-order?id=" + orderData["ID"];
+
+  const deleteButton = document.createElement('button');
+  deleteButton.innerText = "Delete";
+  deleteButton.type= "button";
+  deleteButton.classList.add("hidden");
+  deleteButton.classList.add("deleteButton");
+  deleteLink.appendChild(deleteButton);
+
+
+  buttonWrapper.appendChild(printLink);
+  buttonWrapper.appendChild(viewLink);
+  buttonWrapper.appendChild(editLink);
+  buttonWrapper.appendChild(deleteLink);
+  buttonWrapper.classList = "orderbuttons";
+
+  return buttonWrapper;
+}
+
+function addPrintListener(orderFields, localOrderID){
 
 
   orderFields["printButton"].addEventListener('click', e => {
@@ -141,6 +409,7 @@ function selectAll(){
 }
 
 function deleteSelected(){
+
   const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked');
   const deleteSelectedForm = document.getElementById("deleteselectedform");
 

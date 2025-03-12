@@ -1,5 +1,5 @@
-import { db, getDocuments } from "/js/Firebase.js";
-import { where, query, collection, getDocs } from "firebase/firestore";
+import { db, getDocuments, getDocument} from "/js/Firebase.js";
+import { where, query, collection, getDocs, doc } from "firebase/firestore";
 
 var orders = document.querySelectorAll('tr');
 const confirmDeleteButton = document.getElementById('confirmdelete');
@@ -8,11 +8,11 @@ const orderTable = document.getElementById('orderdata');
 
 console.log(new URLSearchParams(document.location.search).getAll("ID"));
 const orderIDs = new URLSearchParams(document.location.search).getAll("ID");
-
+console.log(orderIDs);
 for(let i = 0; i < orderIDs.length; i++){
 
-    getOrderData(query(collection(db, "Orders"), where("ID", "==", parseInt(orderIDs[i]))));
-
+    //getOrderData(query(collection(db, "Orders"), where("ID", "==", parseInt(orderIDs[i]))));
+    getOrderData(doc(db, "Orders", orderIDs[i]));
 }
 
 confirmDeleteButton.addEventListener('click', () => {
@@ -23,49 +23,52 @@ confirmDeleteButton.addEventListener('click', () => {
 
 async function getOrderData(q){
 
-    getDocs(q).then((documentSnapshots) => {
+    getDocument(q).then((documentSnapshots) => {
 
         if(documentSnapshots.empty){
-            alert("error gettting orders to delete");
+            alert("error getting orders to delete");
             return;
         }
 
-        addOrdersToTable(documentSnapshots.docs);
+        console.log(documentSnapshots);
+        // if(documentSnapshots.docs < 1){
+        //     addOrdersToTable(documentSnapshots);
+        // }
+
+        addOrderToTable(documentSnapshots);
 
     });
     
 }
 
 
-function addOrdersToTable(orderArray){
+function addOrderToTable(orderArray){
 
-    for(let i = 0; i < orderArray.length; i++){
+    // for(let i = 0; i < orderArray.length; i++){
 
-        const orderFields = orderArray[i].data();
-        const tableRow = document.createElement('tr');
+    const orderFields = orderArray.data();
+    const tableRow = document.createElement('tr');
 
-        const sortedOrderData = sortOrderData(orderFields);
+    const sortedOrderData = sortOrderData(orderFields);
 
-        for(var field in sortedOrderData){
+    for(var field in sortedOrderData){
 
-            const tableData = document.createElement('td');
-            tableData.innerHTML = sortedOrderData[field];
-            tableData.classList.add(field);
-            tableRow.append(tableData);
-        
-        }
-
-        orderTable.appendChild(tableRow);
-
-        const docRef = document.createElement('input');
-        docRef.type = "hidden";
-        docRef.value = orderArray[i].id;
-        docRef.name = orderArray[i].id;
-        confirmDeleteForm.appendChild(docRef);
+        const tableData = document.createElement('td');
+        tableData.innerHTML = sortedOrderData[field];
+        tableData.classList.add(field);
+        tableRow.append(tableData);
+    
     }
 
-   
+    orderTable.appendChild(tableRow);
 
+    const docRef = document.createElement('input');
+    docRef.type = "hidden";
+    docRef.value = orderArray.id;
+    docRef.name = orderArray.id;
+    confirmDeleteForm.appendChild(docRef);
+    // }
+    
 }
 
 

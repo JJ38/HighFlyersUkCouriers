@@ -1,16 +1,8 @@
 
 import { db } from "/js/Firebase.js";
 import { collection, getDocs, startAfter, where, query, limit, orderBy, onSnapshot, writeBatch, doc} from "firebase/firestore";
-import { addPrintListener } from "/js/ManageOrders.js";
 
 
-const orderTable = document.getElementById('tableBody');
-const orderDataWrapper = document.getElementById('orderDataWrapper');
-const searchButton = document.getElementById('searchButton');
-const searchValue = document.getElementById('searchValue');
-const searchOption = document.getElementById('searchOption');
-
-let orderDataWrapperHeight = orderDataWrapper.getBoundingClientRect().height;
 let lastVisibleID = null;
 let fetchingOrders = false;
 let initialQuery = true;
@@ -19,47 +11,52 @@ let latestOrderID;
 let snapshotQuery;
 let orderData = [];
 
-getOrderData(query(collection(db, "Orders"), orderBy('ID', 'desc'), limit(20)));
 
-orderDataWrapper.addEventListener('scroll', (event) => {
-  
-    const scrollHeight = event.target.scrollHeight;
-    const scrollTop = event.target.scrollTop; 
+export async function getInitialData(){
 
-    if(fetchingOrders){
-        return;
-    }
+    const orderData = getOrderData(query(collection(db, "Orders"), orderBy('ID', 'desc'), limit(20)));
+    return orderData;
+}
 
+
+export async function loadAdditionalOrders(){
+    
     //if search filter is on return
     if(searchOption.value != ""){
         return;
     }
 
-    if(scrollHeight - scrollTop - orderDataWrapperHeight < 100){
-        fetchingOrders = true;
-        getOrderData(query(collection(db, "Orders"), orderBy('ID', 'desc'), startAfter(lastVisibleID), limit(20)));
-        console.log("Fetching Orders");
-    }
+    const orderData = getOrderData(query(collection(db, "Orders"), orderBy('ID', 'desc'), startAfter(lastVisibleID), limit(20)));
+    return orderData;
+}
 
-});
+export async function getFilterOrders(q){
 
-searchButton.addEventListener('click', () => {
+    const orderData = getOrderData(q);
+    return orderData;
+}
+
+
+
+export function filterSearch(searchOption, searchValue){
 
     let q;
+    console.log(searchOption);
+    console.log(searchValue);
 
-    switch(searchOption.value){
+    switch(searchOption){
 
         case "ID":
         case "deliveryWeek":
         case "quantity":
-            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption.value, "==", parseInt(searchValue.value)));
+            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", parseInt(searchValue)));
             break;
 
         case "printed":
 
             let translatedSearchValue = "";
 
-            if(searchValue.value.toLowerCase() == "printed"){
+            if(searchValue.toLowerCase() == "printed"){
 
                 translatedSearchValue = 1;
 
@@ -69,132 +66,25 @@ searchButton.addEventListener('click', () => {
                 
             }   
 
-            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption.value, "==", translatedSearchValue));
+            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", translatedSearchValue));
 
             break;
 
         default:
-            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption.value, "==", searchValue.value));
+            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", searchValue));
             break;
     }
 
-    //clear table of current orders
-    const tableBody = document.getElementById('tableBody');
-    tableBody.innerHTML = "";
-    getOrderData(q);
+    return q;
 
-});
+}
 
 window.onresize = (event) => {
     orderDataWrapperHeight = orderDataWrapper.getBoundingClientRect().height;
   
 }
 
-
-function addOrdersToTable(orderArray, prepend){
-
-    for(let i = 0; i < orderArray.length; i++){
-
-        const orderFields = orderArray[i].data();
-        const tableRow = document.createElement('tr');
-       
-        //translate printed field
-        if(orderFields['printed'] == 1){
-            orderFields['printed'] = "Printed";
-        }else{
-            orderFields['printed'] = "Not Printed";
-        }
-            
-
-        const sortedOrderData = sortOrderData(orderFields);
-
-        for(var field in sortedOrderData){
-
-            const tableData = document.createElement('td');
-            tableData.innerHTML = sortedOrderData[field];
-            tableData.classList.add(field);
-            tableRow.append(tableData);
-        
-        }
-
-        //add order checkbox
-        const tableData = document.createElement('td');
-        const orderCheckBox = document.createElement('input');
-        orderCheckBox.type = "checkbox";
-        orderCheckBox.id = orderFields['ID'];
-        orderCheckBox.name = "ID";
-        orderCheckBox.value = orderArray[i].id;
-        orderCheckBox.setAttribute('onclick', 'highlightorder(this)');
-
-        tableData.appendChild(orderCheckBox);
-
-        tableRow.prepend(tableData);
-        if(prepend){
-            orderTable.prepend(tableRow);
-        }else{
-            orderTable.appendChild(tableRow);
-        }
-        
-        const orderButtons = getOrderButtons(orderFields);
-        tableRow.appendChild(orderButtons);
-        console.log("added delete buttons");
-
-        //add print button to orderFields so listener can be added to it
-        orderFields['printButton'] = orderButtons.children[0].firstChild;
-      
-        addPrintListener(orderFields, orderArray[i].id);
-    }
-
-    fetchingOrders = false;
-
-}
-
-function getOrderButtons(orderData){
-
-    const buttonWrapper = document.createElement('td');
-
-    const printLink = document.createElement('a');
-    printLink.classList = "print";
-    const printButton = document.createElement('button');
-    printButton.innerText = "Print";
-    printButton.type= "button";
-    printLink.appendChild(printButton);
-    //add print button to array
-
-    const viewLink = document.createElement('a');
-    viewLink.href="/view-order?id=" + orderData["ID"];
-    const viewButton = document.createElement('button');
-    viewButton.innerText = "View";
-    viewButton.type= "button";
-    viewLink.appendChild(viewButton);
-
-    const editLink = document.createElement('a');
-    editLink.href = "/edit-order?id=" + orderData["ID"];
-    const editButton = document.createElement('button');
-    editButton.innerText = "Edit";
-    editButton.type= "button";
-    editLink.appendChild(editButton);
-
-    const deleteLink = document.createElement('a');
-    deleteLink.href = "/delete-order?id=" + orderData["ID"];
-    const deleteButton = document.createElement('button');
-    deleteButton.innerText = "Delete";
-    deleteButton.type= "button";
-    deleteButton.classList.add("hidden");
-    deleteButton.classList.add("deleteButton");
-    deleteLink.appendChild(deleteButton);
-
-
-    buttonWrapper.appendChild(printLink);
-    buttonWrapper.appendChild(viewLink);
-    buttonWrapper.appendChild(editLink);
-    buttonWrapper.appendChild(deleteLink);
-    buttonWrapper.classList = "orderbuttons";
-
-    return buttonWrapper;
-}
-
-function sortOrderData(orderFields){
+export function sortOrderData(orderFields){
 
     const sortedOrderData = {
 
@@ -232,7 +122,7 @@ function sortOrderData(orderFields){
 }
 
 async function getOrderData(q){
-   
+
     const documentSnapshots = await getDocs(q);
 
     if(documentSnapshots.empty){
@@ -249,19 +139,23 @@ async function getOrderData(q){
         //set up listener to get documents with IDs higher than the current highest ID value
         orderListenerSubscription = onSnapshot(snapshotQuery,  (querySnapshot) => {
 
-            addOrdersToTable(querySnapshot.docs, true);
+            //addOrdersToTable(querySnapshot.docs, true);
             //Update latestOrderID
             if(querySnapshot.docs.length > 0){
                 latestOrderID = querySnapshot.docs[querySnapshot.docs.length-1].data()['ID'];   
                 updateSnapshotQuery();     
             }
+            console.log(latestOrderID);
+            console.log(querySnapshot.docs);
+            return querySnapshot.docs;
         
         });
 
         initialQuery = false;
     }
 
-    addOrdersToTable(documentSnapshots.docs, false);
+    return documentSnapshots.docs;
+
 }
 
 function updateSnapshotQuery(){

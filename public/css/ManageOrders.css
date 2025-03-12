@@ -93,7 +93,7 @@ div.searchbar{
 }
 
 .hidden{
-  display: none;
+  display: none !important;
 }
 
 @media (hover: hover) {
