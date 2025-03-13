@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use MrShan0\PHPFirestore\FirestoreClient;
 use Datetime;
 use DateTimeZone;
+use Google\Service\Datastore;
 
 $app->get('/bookings[/invalidform]', function (Request $request, Response $response, $args) use ($app) : Response{
 
@@ -139,16 +140,16 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
       return $response->withRedirect('/manage-accounts?error=dberror', 302);
 
   }
+
  
   //store data
   $add_order_model->storeOrder();
   $query_result = $add_order_model->getFirebaseFirestoreResult();
 
+
   if(!$query_result){   
     return $response->withRedirect('/bookings?error=true', 301);
   }
-
-
 
   $cleaned_parameters['ID'] = $add_order_model->getOrderID();
 

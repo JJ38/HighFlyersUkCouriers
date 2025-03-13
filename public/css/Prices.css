@@ -10,6 +10,10 @@ html,body{
     margin: 0;
 }
 
+.menu{
+    padding-top: 2rem;  
+}
+
 div.underlinePrices{
     background-color: #2881FF;
     height: 3px;

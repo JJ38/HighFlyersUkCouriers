@@ -1,6 +1,7 @@
 
 import { db } from "/js/Firebase.js";
 import { collection, getDocs, startAfter, where, query, limit, orderBy, onSnapshot, writeBatch, doc} from "firebase/firestore";
+import { addOrdersToTable } from "/js/ManageOrders.js";
 
 
 let lastVisibleID = null;
@@ -139,14 +140,13 @@ async function getOrderData(q){
         //set up listener to get documents with IDs higher than the current highest ID value
         orderListenerSubscription = onSnapshot(snapshotQuery,  (querySnapshot) => {
 
-            //addOrdersToTable(querySnapshot.docs, true);
+            addOrdersToTable(querySnapshot.docs, true);
             //Update latestOrderID
             if(querySnapshot.docs.length > 0){
                 latestOrderID = querySnapshot.docs[querySnapshot.docs.length-1].data()['ID'];   
                 updateSnapshotQuery();     
             }
-            console.log(latestOrderID);
-            console.log(querySnapshot.docs);
+            
             return querySnapshot.docs;
         
         });
@@ -163,11 +163,12 @@ function updateSnapshotQuery(){
     orderListenerSubscription();//unsubscribe from listener
 
     orderListenerSubscription = onSnapshot(snapshotQuery,  (querySnapshot) => {
+        
+       
 
         addOrdersToTable(querySnapshot.docs, true);
         
         //Update latestOrderID
-        console.log(querySnapshot.docs[querySnapshot.docs.length-1]);
         if(querySnapshot.docs.length > 0){
             latestOrderID = querySnapshot.docs[querySnapshot.docs.length-1].data()['ID'];   
             updateSnapshotQuery();     

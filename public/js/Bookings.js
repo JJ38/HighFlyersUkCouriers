@@ -19,7 +19,8 @@ const quantity = document.getElementById('quantity');
 const requiredFields = [collectionName, collectionAddress1, collectionPostcode, collectionTelephone, email, deliveryName, deliveryAddress1, 
     deliveryPostcode, deliveryTelephone, paymentOption, quantity, animalType];
 
-function submitorders(){
+
+function submitOrders(){
     
     //if form fields are filled
 
@@ -28,8 +29,6 @@ function submitorders(){
     for(let i = 0; i < requiredFields.length; i++){
         
         requiredFields[i].style.border = "1px solid black";
-
-        
 
         if(requiredFields[i].value == ""){
             requiredFields[i].style.border = "1px solid red";
@@ -56,6 +55,12 @@ function submitorders(){
     }
 
 }
+
+submitOrdersButton.addEventListener('click', () => {
+    
+    submitOrders();
+
+});
 
 
 function validateForm(){ 

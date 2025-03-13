@@ -79,8 +79,6 @@ searchButton.addEventListener('click', async () => {
   //append order data to table
   addOrdersToTable(orderData, false);
 
-  roleBasedAccess();
-
 });
 
 
@@ -107,8 +105,6 @@ async function loadOrders(){
 
   //append order data to table
   addOrdersToTable(orderData, false);
-
-  roleBasedAccess();
 
   fetchingOrders = false;
 
@@ -225,9 +221,7 @@ function getDeliveryWeekColour(week){
 
 }
 
-function addOrdersToTable(orderArray, prepend){
-
-  console.log(orderArray);
+export function addOrdersToTable(orderArray, prepend){
 
   for(let i = 0; i < orderArray.length; i++){
 
@@ -286,6 +280,9 @@ function addOrdersToTable(orderArray, prepend){
     
       addPrintListener(orderFields, orderArray[i].id);
   }
+
+
+  roleBasedAccess();
 
 }
 

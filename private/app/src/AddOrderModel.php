@@ -3,6 +3,7 @@
 namespace HighFlyersUkCouriers;
 
 use Exception;
+use Google\Auth\AccessToken;
 use Ramsey\Uuid\Type\Integer;
 
 class AddOrderModel
@@ -22,6 +23,7 @@ class AddOrderModel
     public function getOrderID(){
         return $this->order_ID;
     }
+
 
     public function setFirebaseFirestore($firebase_firestore) : void{
         $this->firebase_firestore = $firebase_firestore;
@@ -43,16 +45,93 @@ class AddOrderModel
         $this->date_time = $date_time;
     }
 
+
+    private function getOAuth2Token(){
+
+
+        function base64url_encode($data) { 
+            return rtrim(strtr(base64_encode($data), '+/', '-_'), '='); 
+        }
+        
+        //Google's Documentation of Creating a JWT: https://developers.google.com/identity/protocols/OAuth2ServiceAccount#authorizingrequests
+        
+        //{Base64url encoded JSON header}
+        $jwtHeader = base64url_encode(json_encode(array(
+            "alg" => "RS256",
+            "typ" => "JWT"
+        )));
+
+        //{Base64url encoded JSON claim set}
+        $now = time();
+        $jwtClaim = base64url_encode(json_encode(array(
+            "iss" => "firebase-adminsdk-fbsvc@highflyersukcouriers-a9c17.iam.gserviceaccount.com",
+            "scope" => "https://www.googleapis.com/auth/datastore",
+            "aud" => "https://oauth2.googleapis.com/token",
+            "exp" => $now + 3600,
+            "iat" => $now
+        )));
+
+
+        $env = parse_ini_file(realpath('../.env'));
+        $private_key = $env['SERVICE_ACCOUNT_PRIVATE_KEY'];
+
+        $new_private_key = str_replace('\n', "\n", $private_key); //important for formatting. Key wont work otherwise
+
+        //The base string for the signature: {Base64url encoded JSON header}.{Base64url encoded JSON claim set}
+        $encryption_result = openssl_sign(
+            $jwtHeader.".".$jwtClaim,
+            $jwtSig,
+            $new_private_key,
+            "sha256WithRSAEncryption"
+        );
+
+        $jwtSign = base64url_encode($jwtSig);
+        
+        //{Base64url encoded JSON header}.{Base64url encoded JSON claim set}.{Base64url encoded signature}
+        $jwtAssertion = $jwtHeader.".".$jwtClaim.".".$jwtSign;
+        
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://oauth2.googleapis.com/token');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=" . $jwtAssertion);
+
+        $headers = array();
+        $headers[] = 'Content-Type: application/x-www-form-urlencoded';
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+
+        $result_arr = json_decode($result, true);
+        $access_token = $result_arr['access_token'];
+        curl_close($ch);
+
+        return $access_token;
+
+    }
+
+
     private function incrementOrderID() : int{
 
-
-        //add error handling for error codes. 
-        
+        $accessToken = null;
 
         try{    
 
+            if($this->session_wrapper->getSessionVar('verified_ID_Token') != null){
+                $accessToken = $this->session_wrapper->getSessionVar('verified_ID_Token');
+            }
 
-            $firestoreAccessToken = $this->session_wrapper->getSessionVar('verified_ID_Token');
+            if($accessToken == null){
+
+
+                $accessToken = $this->getOAuth2Token();
+            
+            }
             
             $ch = curl_init();
 
@@ -63,20 +142,24 @@ class AddOrderModel
             curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
             
             $headers = array();
-            $headers[] = 'Authorization: Bearer ' . $firestoreAccessToken;
+            $headers[] = 'Authorization: Bearer ' . $accessToken;
             $headers[] = 'Accept: application/json';
             $headers[] = 'Content-Type: application/json';
 
-            
-         
+        
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             
             $result = curl_exec($ch);
             if (curl_errno($ch)) {
+
                 echo 'Error:' . curl_error($ch);
                 curl_close($ch);
+
+                $this->logger->error("FIREBASE_REST_API_ERROR", array($ch));
+
                 return -1;
             }
+
             curl_close($ch);
 
             $result_arr = json_decode($result, true);
@@ -85,6 +168,14 @@ class AddOrderModel
             $this->firebase_firestore_result = true;
 
             $this->order_ID = $order_ID;
+
+            if($order_ID < 1 || $order_ID == null){
+
+                $this->logger->error("FIREBASE_FIRESTORE_INCREMENT_ORDER_ID_INVALID", array($order_ID));
+                $this->logger->error("FIREBASE_FIRESTORE_INCREMENT_ORDER_ID_ERROR", array($result_arr));
+                $this->logger->error("FIREBASE_FIRESTORE_INCREMENT_ORDER_ID_PARAMETERS", array($accessToken));
+               
+            }
 
             return $order_ID;
 
@@ -105,13 +196,15 @@ class AddOrderModel
         return -1;
     }
         
-    public function storeOrder() : void{
+    public function storeOrder(){
 
         //get order ID
-
         $order_ID = $this->incrementOrderID();
 
         if($order_ID < 1 || $order_ID == null){
+
+            $this->logger->error("FIREBASE_FIRESTORE_GET_ORDER_ID_INVALID", array($order_ID));
+
             $this->firebase_firestore_result = false;
             return;
         }

@@ -97,8 +97,9 @@ class ManageAccountsModel
                 if ($this->logger !== null) {
     
                     $this->logger->error("FIREBASE_AUTH_EMAIL_EXISTS", array($e));
-                    $this->logger->error("FIREBASE_AUTH_ERROR_AUTH", array($this->firebase_auth));
-                    $this->logger->error("FIREBASE_AUTH_ERROR_USER", array($createdUser));
+                    $this->logger->error("FIREBASE_AUTH_EMAIL_EXISTS_AUTH", array($this->firebase_auth));
+                    $this->logger->error("FIREBASE_AUTH_EMAIL_EXISTS_USER", array($createdUser));
+                    $this->logger->error("FIREBASE_AUTH_EMAIL_EXISTS_CREDENTIALS", array($this->credentials));
     
                 }
 
@@ -110,6 +111,7 @@ class ManageAccountsModel
                     $this->logger->error("FIREBASE_AUTH_ERROR", array($e));
                     $this->logger->error("FIREBASE_AUTH_ERROR_AUTH", array($this->firebase_auth));
                     $this->logger->error("FIREBASE_AUTH_ERROR_USER", array($createdUser));
+                    $this->logger->error("FIREBASE_AUTH_ERROR_CREDENTIALS", array($this->credentials));
     
                 }
                 

@@ -9,6 +9,10 @@ div.underlineContactUs{
     border-radius: 20em;
 }
 
+.menu{
+  padding-top: 2rem;
+}
+
 div.maincontent{
     display: flex;
     min-height: 80vh;

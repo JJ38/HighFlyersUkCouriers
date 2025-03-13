@@ -10,13 +10,14 @@
       "slim/twig-view": "^2.4",
       "doctrine/orm": "^2.6",
       "phpmailer/phpmailer": "^6.7",
-    "kreait/firebase-php": "^5.26",
-    "bensontrent/firestore-php": "^3.1",
-    "monolog/monolog": "^3.8" 
+      "kreait/firebase-php": "^5.26",
+      "bensontrent/firestore-php": "^3.1",
+      "monolog/monolog": "^3.8" 
     },
     "config": {
         "platform": {
-             "php": "8.2"
+             "php": "8.1"
         }
     }
+    
 }

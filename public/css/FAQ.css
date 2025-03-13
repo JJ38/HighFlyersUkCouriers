@@ -10,6 +10,10 @@ div.underlineFAQ{
   border-radius: 20em;
 }
 
+.menu{
+  padding-top: 2rem;
+}
+
 section.maincontent{
   display: flex;
   flex-direction: column;

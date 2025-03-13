@@ -158,9 +158,13 @@ class LoginModel
             $this->doctrine_wrapper->getAccountType($this->user_credentials['username']);
             $account_type = $this->doctrine_wrapper->getQueryResult();
             $this->account_type = $account_type;
+            
+            //strip '@placeholder.com' out of username
+
+            $username = str_replace('@placeholder.com', '', $this->user_credentials['username']);
 
             // Adding to Session Var
-            $this->session_wrapper->setSessionVar('user', $this->user_credentials['username']);
+            $this->session_wrapper->setSessionVar('user', $username);
             $this->session_wrapper->setSessionVar('accountType', $account_type);
             // Log Successful Authentication
             if ($this->logger_handle !== null) {
@@ -194,9 +198,11 @@ class LoginModel
                 $email = " ";
             }
 
+            $username = str_replace('@placeholder.com', '', $email);
+
             $this->session_wrapper->setSessionVar('verified_ID_Token', $this->ID_token);
             $this->session_wrapper->setSessionVar('accountType', $account_type);
-            $this->session_wrapper->setSessionVar('user',  $email);
+            $this->session_wrapper->setSessionVar('user',  $username);
 
 
         } catch (\Exception $e) {

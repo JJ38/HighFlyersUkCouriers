@@ -16,7 +16,6 @@ $app->post('/login-legacy', function (Request $request, Response $response) use 
     $response->getBody()->write($cleaned_parameters['password']);
 
 
-
     // Get models + Wrappers
     $container = $app->getContainer();
     $login_model = $container->get('loginModel');
@@ -57,7 +56,8 @@ $app->post('/login-legacy', function (Request $request, Response $response) use 
     $manageAccountsModel = $container->get('manageAccountsModel');
     $manageAccountsModel->setLogger($logger);
 
-    $factory = new Factory();
+    // $factory = new Factory();
+    $factory = (new Factory)->withServiceAccount('../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json');
     $auth = $factory->createAuth();
 
     $userCredentials = [
