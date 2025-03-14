@@ -170,6 +170,11 @@ class LoginModel
             if ($this->logger_handle !== null) {
                 $this->logEvent('User Authentication', array($this->user_credentials['username']));
             }
+        }else{
+
+            if ($this->logger_handle !== null) {
+                $this->logEvent('USE_AUTHENTICATION_ATTEMPT', array($this->user_credentials['username']));
+            }
         }
 
         $this->login_result = $login_result;
