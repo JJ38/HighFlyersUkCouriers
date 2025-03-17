@@ -28,7 +28,6 @@ let role;
 let initialQuery = true;
 let fetchingOrders = false;
 
-
 addListeners();
 
 onAuthStateChanged(auth, (user) => {
@@ -67,7 +66,6 @@ searchButton.addEventListener('click', async () => {
   const query = filterSearch(searchOption.value, searchValue.value);
   console.log(query);
 
-
   const orderData = await getFilterOrders(query);
 
   console.log(orderData);
@@ -79,7 +77,14 @@ searchButton.addEventListener('click', async () => {
   //append order data to table
   addOrdersToTable(orderData, false);
 
+  //getOrdersByFilter(searchOption.value, searchValue.value);
+
 });
+
+
+async function getOrdersByFilter(selectedSearchOption){
+  
+}
 
 
 async function loadOrders(){
@@ -222,6 +227,8 @@ function getDeliveryWeekColour(week){
 }
 
 export function addOrdersToTable(orderArray, prepend){
+
+  console.log(orderArray);
 
   for(let i = 0; i < orderArray.length; i++){
 
@@ -611,40 +618,43 @@ function getOrderHTML(orderFields){
           'Pick up from:'+
         '</h3>'+
         '<div class="infowrapper">'+
-          '<label>Name:</label>'+
-          '<p>' + orderFields['deliveryName'] + '</p>'+
 
+          '<label>Name:</label>'+
+          '<p>' + orderFields['collectionName']  + '</p>'+
+      
           '<label>Address:</label>'+
           '<address>' + 
-            '<p>' + orderFields['deliveryAddress1']+ '</p>'+
-            '<p>' + orderFields['deliveryAddress2'] + '</p>'+
-            '<p>' + orderFields['deliveryAddress3'] + '</p>'+
-            '<p>' + orderFields['deliveryPostcode'] + '</p>'+
+            '<p>' + orderFields['collectionAddress1'] + '</p>'+
+            '<p>' + orderFields['collectionAddress2'] + '</p>'+
+            '<p>' + orderFields['collectionAddress3'] + '</p>'+
+            '<p>' + orderFields['collectionPostcode'] + '</p>'+
           '</address>' +
-      
+                        
           '<label>Telephone:</label>'+
-          '<p>' + orderFields['deliveryPhoneNumber']  + '</p>'+          
-      
-        '</div>'+
+          '<p>' + orderFields['collectionPhoneNumber'] + '</p>'+
+
+      '</div>'+
       '</div>'+
       '<div class="wrapper grid deliverytextcolour">'+
         '<h3>'+
           'Deliver to:'+
         '</h3>'+
           '<div class="infowrapper">'+
+
             '<label>Name:</label>'+
-            '<p>' + orderFields['collectionName']  + '</p>'+
-        
+            '<p>' + orderFields['deliveryName'] + '</p>'+
+
             '<label>Address:</label>'+
             '<address>' + 
-              '<p>' + orderFields['collectionAddress1'] + '</p>'+
-              '<p>' + orderFields['collectionAddress2'] + '</p>'+
-              '<p>' + orderFields['collectionAddress3'] + '</p>'+
-              '<p>' + orderFields['collectionPostcode'] + '</p>'+
+              '<p>' + orderFields['deliveryAddress1']+ '</p>'+
+              '<p>' + orderFields['deliveryAddress2'] + '</p>'+
+              '<p>' + orderFields['deliveryAddress3'] + '</p>'+
+              '<p>' + orderFields['deliveryPostcode'] + '</p>'+
             '</address>' +
-                          
+        
             '<label>Telephone:</label>'+
-            '<p>' + orderFields['collectionPhoneNumber'] + '</p>'+
+            '<p>' + orderFields['deliveryPhoneNumber']  + '</p>'+          
+      
           '</div>'+
       '</div>'+
     '</div>'+
@@ -684,18 +694,18 @@ function getOrderHTML(orderFields){
         '</h3>'+
         '<div class="infowrapper">'+
           '<label>Name:</label>'+
-          '<p>' + orderFields['deliveryName'] +'</p>'+
-  
+          '<p>' + orderFields['collectionName']  + '</p>'+
+      
           '<label>Address:</label>'+
           '<address>' + 
-            '<p>' + orderFields['deliveryAddress1'] + '</p>'+
-            '<p>' + orderFields['deliveryAddress2'] + '</p>'+
-            '<p>' + orderFields['deliveryAddress3'] + '</p>'+
-            '<p>' + orderFields['deliveryPostcode'] + '</p>'+
+            '<p>' + orderFields['collectionAddress1'] + '</p>'+
+            '<p>' + orderFields['collectionAddress2'] + '</p>'+
+            '<p>' + orderFields['collectionAddress3'] + '</p>'+
+            '<p>' + orderFields['collectionPostcode'] + '</p>'+
           '</address>' +
-        
+                        
           '<label>Telephone:</label>'+
-          '<p>' + orderFields['deliveryPhonenumber'] + '</p>'+
+          '<p>' + orderFields['collectionPhoneNumber'] + '</p>'+
       
         '</div>'+ 
       '</div>'+
@@ -705,18 +715,18 @@ function getOrderHTML(orderFields){
         '</h3>'+
         '<div class="infowrapper">'+
           '<label>Name:</label>'+
-          '<p>' + orderFields['collectionName'] + ' </p>'+
-         
-          '<label>Address:</label>'+
-          '<address>' + 
-            '<p>' + orderFields['collectionAddress1'] + '</p>'+
-            '<p>' + orderFields['collectionAddress2'] + '</p>'+
-            '<p>' + orderFields['collectionAddress3'] + '</p>'+
-            '<p>' + orderFields['collectionPostcode'] + '</p>'+
-          '</address>' +
-          
-          '<label>Telephone:</label>'+
-          '<p>' + orderFields['collectionPhoneNumber'] + '</p>'+
+            '<p>' + orderFields['deliveryName'] + '</p>'+
+
+            '<label>Address:</label>'+
+            '<address>' + 
+              '<p>' + orderFields['deliveryAddress1']+ '</p>'+
+              '<p>' + orderFields['deliveryAddress2'] + '</p>'+
+              '<p>' + orderFields['deliveryAddress3'] + '</p>'+
+              '<p>' + orderFields['deliveryPostcode'] + '</p>'+
+            '</address>' +
+        
+            '<label>Telephone:</label>'+
+            '<p>' + orderFields['deliveryPhoneNumber']  + '</p>'+      
         '</div>'+
       '</div>'+
       '<br>'+

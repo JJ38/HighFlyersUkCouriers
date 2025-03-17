@@ -78,7 +78,9 @@ async function login(){
                     break;
                 
                 case "auth/invalid-email":
-                    alert("invalid username " +  usernameInput.value);
+
+                    checkIfLegacyAccount(usernameInput.value, password);
+                    //alert("invalid username " +  usernameInput.value);
                     usernameInput.value = "";
             
                     break;

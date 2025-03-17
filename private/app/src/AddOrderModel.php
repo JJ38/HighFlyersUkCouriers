@@ -89,7 +89,8 @@ class AddOrderModel
         
         //{Base64url encoded JSON header}.{Base64url encoded JSON claim set}.{Base64url encoded signature}
         $jwtAssertion = $jwtHeader.".".$jwtClaim.".".$jwtSign;
-        
+
+        $this->logger->error("JWT", array($jwtAssertion));
 
         $ch = curl_init();
 
@@ -122,16 +123,19 @@ class AddOrderModel
 
         try{    
 
-            if($this->session_wrapper->getSessionVar('verified_ID_Token') != null){
-                $accessToken = $this->session_wrapper->getSessionVar('verified_ID_Token');
-            }
+            // if($this->session_wrapper->getSessionVar('verified_ID_Token') != null){
+            //     $accessToken = $this->session_wrapper->getSessionVar('verified_ID_Token');
+            // }
 
-            if($accessToken == null){
+            // if($accessToken == null){
 
-
-                $accessToken = $this->getOAuth2Token();
+            //     $accessToken = $this->getOAuth2Token();
             
-            }
+            // }
+
+            $accessToken = $this->getOAuth2Token();
+
+            $this->logger->error("OAUTH2_TOKEN", array($accessToken));
             
             $ch = curl_init();
 
@@ -164,7 +168,7 @@ class AddOrderModel
 
             $result_arr = json_decode($result, true);
             $order_ID = intval($result_arr['writeResults'][0]['transformResults'][0]['integerValue']);
-
+            $this->logger->error("ORDER_ID", array($order_ID));
             $this->firebase_firestore_result = true;
 
             $this->order_ID = $order_ID;
@@ -173,7 +177,10 @@ class AddOrderModel
 
                 $this->logger->error("FIREBASE_FIRESTORE_INCREMENT_ORDER_ID_INVALID", array($order_ID));
                 $this->logger->error("FIREBASE_FIRESTORE_INCREMENT_ORDER_ID_ERROR", array($result_arr));
-                $this->logger->error("FIREBASE_FIRESTORE_INCREMENT_ORDER_ID_PARAMETERS", array($accessToken));
+                $this->logger->error("FIREBASE_FIRESTORE_INCREMENT_ORDER_ID_ACCESS_TOKEN", array($accessToken));
+
+                $verified_id_token = $this->session_wrapper->getSessionVar('verified_ID_Token');
+                $this->logger->error("FIREBASE_FIRESTORE_INCREMENT_ORDER_ID_SESSION_VERIFIED_ID_TOKEN", array($verified_id_token));
                
             }
 

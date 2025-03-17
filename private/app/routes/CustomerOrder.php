@@ -10,6 +10,10 @@ $app->get('/customer-order', function (Request $request, Response $response) use
 
     $account_type = $request->getAttribute('accountType');
 
+    Echo "<h1>This form is currently unavailable. Please order through the public form in the booking page or call us to book orders. Sorry for the inconvenience</h1>";
+
+    return $response;
+
     if($account_type == "customer"){
 
         $container = $app->getContainer();
@@ -81,6 +85,12 @@ $app->get('/customer-order', function (Request $request, Response $response) use
 
 
 $app->post('/customer-order', function (Request $request, Response $response) use ($app) : Response{
+
+
+
+    Echo "<h1>This form is currently unavailable. Please order through the public form in the booking page or call us to book orders. Sorry for the inconvenience</h1>";
+
+    return $response;
 
     $account_type = $request->getAttribute('accountType');
 

@@ -1,6 +1,6 @@
 
 import { db } from "/js/Firebase.js";
-import { collection, getDocs, startAfter, where, query, limit, orderBy, onSnapshot, writeBatch, doc} from "firebase/firestore";
+import { collection, getDocs, startAfter, where, query, limit, orderBy, onSnapshot, writeBatch, doc, or} from "firebase/firestore";
 import { addOrdersToTable } from "/js/ManageOrders.js";
 
 
@@ -48,10 +48,18 @@ export function filterSearch(searchOption, searchValue){
     switch(searchOption){
 
         case "ID":
-        case "deliveryWeek":
         case "quantity":
+        
             q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", parseInt(searchValue)));
+         
             break;
+
+        case "deliveryWeek":
+
+            console.log(q);
+            q = query(collection(db, "Orders"), orderBy('ID', 'asc'), or(where(searchOption, "==", searchValue), where(searchOption, "==", parseInt(searchValue))));
+           
+            break
 
         case "printed":
 

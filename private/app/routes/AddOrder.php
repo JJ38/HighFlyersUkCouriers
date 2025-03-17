@@ -54,8 +54,6 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   if(!$account_type == "admin" || !$account_type == "staff"){
 
-    var_dump($account_type);
-    return $response;
 
     return $response->withRedirect("/loginpage", 301);
 
@@ -68,14 +66,22 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $manage_order_model = $container->get('manageOrderModel');
 
   $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
-
+  $logger = $container->get('logger');
   //if one of the parameters does not meet requirements
+
+  if($logger != null){
+    $logger->error('ADD_ORDER_POST', array($tainted_parameters));
+  }
 
   if(empty($cleaned_parameters)){
 
     $error_message = "Error (No parameters were posted - connection error)"; //default error message
     
     $error_message = $manage_order_model->getErrorMessage();
+    if($logger != null){
+        $logger->error('INVALID_ORDER_ERROR', array($tainted_parameters));
+        $logger->error('INVALID_ORDER_ERROR_MESSAGE', array($error_message));
+    }
 
     return $response->withRedirect("/manage-orders?addorder=$error_message", 301);
   }
@@ -89,13 +95,13 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   }
 
 
-  //add in order id
+
   putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
 
   $container = $app->getContainer();
 
   //store in database
-  $logger = $container->get('logger');
+  
   $add_order_model = $container->get('addOrderModel');
   $session_wrapper = $container->get('sessionWrapper');
 
@@ -139,6 +145,10 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   //store data
   $add_order_model->storeOrder();
   $query_result = $add_order_model->getFirebaseFirestoreResult();
+
+  if($logger != null){
+    $logger->error('ADD_ORDER_POST_STORE_RESULT', array($query_result));
+  }
 
   if($query_result){    
 

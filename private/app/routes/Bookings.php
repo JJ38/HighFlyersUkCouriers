@@ -62,9 +62,17 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
 {
 
   $container = $app->getContainer();
+  $logger = $container->get("logger"); 
+  $tainted_parameters = $request->getParsedBody();
+
+  if($logger != null){
+    $logger->error('BOOKING_FORM_POST', array($tainted_parameters));
+  }
+
+  
   $manage_order_model = $container->get('manageOrderModel');
 
-  $tainted_parameters = $request->getParsedBody();
+ 
 
   //$cleaned_parameters = cleanBookingForm($app, $tainted_parameters);
 
@@ -79,7 +87,7 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
 
     // return $response;
 
-    $logger = $container->get("logger");
+    
     $logger->error("BOOKING-FORM-ERROR", $tainted_parameters);
 
     return $response->withRedirect('/bookings?invalidform=true&errormessage=' . $error_message . '&inputvalue=' . $error_input_value, 301);
@@ -146,8 +154,14 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   $add_order_model->storeOrder();
   $query_result = $add_order_model->getFirebaseFirestoreResult();
 
+  if($logger != null){
+    $logger->error('BOOKING_FORM_POST_STORE_RESULT', array($query_result));
+  }
+
+
 
   if(!$query_result){   
+    
     return $response->withRedirect('/bookings?error=true', 301);
   }
 

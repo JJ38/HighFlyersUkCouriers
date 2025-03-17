@@ -335,7 +335,7 @@ class ManageOrderModel
   }
 
 
-  public function getDeliveryWeek($order_type){
+  public function getDeliveryWeek($order_type) : int{
 
     $current_date = new DateTime();
     $current_date->setTimezone(new DateTimeZone('Europe/London'));
@@ -392,7 +392,10 @@ class ManageOrderModel
 
     // echo $current_date->format('M-d');
     //$current_date->modify('next tuesday');
-    return $delivery_date->format('W');
+
+    $delivery_week = intval($delivery_date->format('W'));
+
+    return $delivery_week; 
 
   }
 
