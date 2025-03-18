@@ -67,7 +67,7 @@ function validateForm(){
 
     //var isNumber = /^\d+$/;
     const isNumber = new RegExp('^[0-9]*$');
-    var isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     const deliveryTelephoneNumber = deliveryTelephone.value.replace(" ", "");
     const collectionTelephoneNumber = collectionTelephone.value.replace(" ", "");

@@ -4,10 +4,12 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>      
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>      
         <title>{{ page_title }}</title>
+      <script type="module" crossorigin src="./assets/AddOrder-YQKoxXC8.js"></script>
+      <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
       <link rel="stylesheet" crossorigin href="./assets/Navbar-_3NclZQX.css">
-      <link rel="stylesheet" crossorigin href="./assets/AddOrder-C4yZ37kp.css">
+      <link rel="stylesheet" crossorigin href="./assets/AddOrder-DW0Xcw8W.css">
       <link rel="stylesheet" crossorigin href="./assets/AutoComplete-DluMj-8M.css">
       <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
     </head>
@@ -20,7 +22,7 @@
       </header>
       <div id="maincontent">
         <section class="formSection">
-          <form class="contactUsForm" action="/add-order" method="post">
+          <form id="addOrderForm" class="contactUsForm" action="/add-order" method="post">
             <table>
               <tr>
                 <td>
@@ -245,15 +247,17 @@
                 </td>
               </tr>
             </table>
-
-            <input class="submitButton" type="submit" value="submit" aria-label="Submit">
+            <div id="submitbuttonwrapper">
+              <div id="loadingsymbol"></div>
+              <input id="submitButton" type="button" value="Submit" aria-label="Submit">
+            </div>
           </form>
         </section>
       </div>
 
 
   </body>
-  <!-- <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&callback=init&libraries=places&v=weekly"}} defer></script> -->
-  <script src="js/AddressAutocomplete.js" ></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrJDwcnDimqAZ5BZAwk7q9Iw-YE6-A9yY&callback=init&libraries=places&v=weekly" defer></script>
+  <script src="/js/AddressAutocomplete.js" ></script>
 </html>
 
