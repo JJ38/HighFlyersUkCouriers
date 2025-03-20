@@ -139,9 +139,10 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $add_order_model->setLogger($logger);
   $add_order_model->setOrderData($cleaned_parameters);
   $add_order_model->setSessionWrapper($session_wrapper);
+  $add_order_model->getOAuth2Token();
+
 
  
-
   //store data
   $add_order_model->storeOrder();
   $query_result = $add_order_model->getFirebaseFirestoreResult();

@@ -15,6 +15,7 @@ class AddOrderModel
     private $session_wrapper;
     private $order_ID;
     private $date_time;
+    private $access_token;
 
     public function getFirebaseFirestoreResult() : bool{
         return $this->firebase_firestore_result;
@@ -46,7 +47,7 @@ class AddOrderModel
     }
 
 
-    private function getOAuth2Token(){
+    public function getOAuth2Token(){
 
 
         function base64url_encode($data) { 
@@ -112,7 +113,7 @@ class AddOrderModel
         $access_token = $result_arr['access_token'];
         curl_close($ch);
 
-        return $access_token;
+        $this->access_token = $access_token;
 
     }
 
@@ -123,17 +124,7 @@ class AddOrderModel
 
         try{    
 
-            // if($this->session_wrapper->getSessionVar('verified_ID_Token') != null){
-            //     $accessToken = $this->session_wrapper->getSessionVar('verified_ID_Token');
-            // }
-
-            // if($accessToken == null){
-
-            //     $accessToken = $this->getOAuth2Token();
-            
-            // }
-
-            $accessToken = $this->getOAuth2Token();
+            $accessToken = $this->access_token;
 
             $this->logger->error("OAUTH2_TOKEN", array($accessToken));
             

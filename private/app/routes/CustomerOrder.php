@@ -152,14 +152,14 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $add_order_model->setDateTime($date_time);
         $add_order_model->setLogger($logger);
         $add_order_model->setSessionWrapper($session_wrapper);
+        $add_order_model->getOAuth2Token();
     
         $manage_order_model->setOrderData($cleaned_orders);
         $manage_order_model->setAddOrderModel($add_order_model);
 
-       
+        
         $store_result = $manage_order_model->storeMultipleOrders();
         $confirmed_orders = $manage_order_model->getConfirmedOrders();
-
         $sanitizer = $container->get('sanitizer');
 
         //send email

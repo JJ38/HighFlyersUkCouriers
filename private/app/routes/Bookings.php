@@ -123,6 +123,7 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   $add_order_model->setOrderData($cleaned_parameters);
   $add_order_model->setSessionWrapper($session_wrapper);
   $add_order_model->setDateTime($date_time);
+  $add_order_model->getOAuth2Token();
 
  
   try{

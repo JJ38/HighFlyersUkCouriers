@@ -310,7 +310,7 @@ class ManageOrderModel
         return false;
       }
       //add order data to confirmed orders
-      $this->confirmed_orders[$i] = $this->order_data[$i];
+      $this->confirmed_orders[$i - 1] = $this->order_data[$i];
     }
 
     return true;
@@ -320,8 +320,6 @@ class ManageOrderModel
   public function updatePrinted(){
 
     for($i = 0; $i < count($this->order_data); $i++){ 
-
-      
 
       $store_result = $this->getQueryResult();
       if(!$store_result){
