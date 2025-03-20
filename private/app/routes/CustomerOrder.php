@@ -10,9 +10,9 @@ $app->get('/customer-order', function (Request $request, Response $response) use
 
     $account_type = $request->getAttribute('accountType');
 
-    Echo "<h1>This form is currently unavailable. Please order through the public form in the booking page or call us to book orders. Sorry for the inconvenience</h1>";
+    // Echo "<h1>This form is currently unavailable. Please order through the public form in the booking page or call us to book orders. Sorry for the inconvenience</h1>";
 
-    return $response;
+    // return $response;
 
     if($account_type == "customer"){
 
@@ -88,9 +88,9 @@ $app->post('/customer-order', function (Request $request, Response $response) us
 
 
 
-    Echo "<h1>This form is currently unavailable. Please order through the public form in the booking page or call us to book orders. Sorry for the inconvenience</h1>";
+    // Echo "<h1>This form is currently unavailable. Please order through the public form in the booking page or call us to book orders. Sorry for the inconvenience</h1>";
 
-    return $response;
+    // return $response;
 
     $account_type = $request->getAttribute('accountType');
 

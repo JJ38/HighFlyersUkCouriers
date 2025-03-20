@@ -39,7 +39,7 @@ async function login(){
     loginButton.style.display = "none";
     loader.style.display = "block";
 
-    firebaseUsername = usernameInput.value.replace(" ", "") + "@placeholder.com";
+    firebaseUsername = usernameInput.value.replaceAll(" ", "") + "@placeholder.com";
     const password = passwordInput.value;
 
     console.log(firebaseUsername);

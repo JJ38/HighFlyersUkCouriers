@@ -1,6 +1,10 @@
 const deliveryAddressAutocomplete = document.getElementById('deliveryAddressAutocomplete');
 const collectionAddressAutocomplete = document.getElementById('collectionAddressAutocomplete');
 
+const collectionAddressAutocompleteInput = document.getElementById('collectionAddressAutocompleteInput');
+const deliveryAddressAutocompleteInput = document.getElementById('deliveryAddressAutocompleteInput');
+
+
 const collectionAddress1 = document.getElementById('collectionAddress1');
 const collectionAddress2 = document.getElementById('collectionAddress2');
 const collectionAddress3 = document.getElementById('collectionAddress3');
@@ -15,6 +19,8 @@ const deliveryPostcode= document.getElementById('deliveryPostcode');
 //its a bird thing
 //tumley lofts
 
+let activeCollectionAutoCompleteSession = false;
+let activeDeliveryAutoCompleteSession = false;
 
 let titleCollection;
 let resultsCollection;
@@ -40,7 +46,51 @@ let requestCollection = {
     
 };
 
-async function initAC() {
+
+setUpListeners();
+
+
+function setUpListeners(){
+
+    if(collectionAddressAutocompleteInput != null){
+
+        collectionAddressAutocompleteInput.addEventListener("focus", () => {
+            console.log("in focus");
+            //is session currently active
+            if(activeCollectionAutoCompleteSession){
+                return;
+            }
+            
+            activeCollectionAutoCompleteSession = true;
+
+            initCollectionAddressAutocomplete();
+
+        })
+
+    }
+
+
+    if(deliveryAddressAutocompleteInput != null){
+
+        deliveryAddressAutocompleteInput.addEventListener('focus', () => {
+
+            if(activeDeliveryAutoCompleteSession){
+                return;
+            }
+
+            activeDeliveryAutoCompleteSession = true;
+
+            initDeliveryAddressAutocomplete();
+        })
+
+    }
+
+}
+
+// rework to start session when input box is clicked on
+
+
+function initCollectionAddressAutocomplete(){
 
     tokenCollection = new google.maps.places.AutocompleteSessionToken();
     titleCollection = document.getElementById("autocompleteTitleCollection");
@@ -48,8 +98,14 @@ async function initAC() {
     inputCollection = document.getElementById("collectionAddressAutocompleteInput");
     resultsWrapperCollection = document.getElementById("autocompleteResultsWrapperCollection");
 
-    inputCollection.addEventListener("input", (input) => makeAcRequest(input, collectionAddress1, collectionAddress2, collectionAddress3, collectionPostcode, requestCollection, resultsCollection, titleCollection, inputCollection, resultsWrapperCollection));
+    inputCollection.addEventListener("input", (input) => makeAcRequest(input, collectionAddress1, collectionAddress2, collectionAddress3, collectionPostcode, requestCollection, resultsCollection, titleCollection, inputCollection, resultsWrapperCollection, "COLLECTION"));
     requestCollection = refreshToken(requestCollection);
+  
+
+
+}
+
+function initDeliveryAddressAutocomplete(){
 
     tokenDelivery = new google.maps.places.AutocompleteSessionToken();
     titleDelivery = document.getElementById("autocompleteTitleDelivery");
@@ -57,14 +113,15 @@ async function initAC() {
     inputDelivery = document.getElementById("deliveryAddressAutocompleteInput");
     resultsWrapperDelivery = document.getElementById("autocompleteResultsWrapperDelivery");
 
-    inputDelivery.addEventListener("input", async (input) => makeAcRequest(input, deliveryAddress1, deliveryAddress2, deliveryAddress3, deliveryPostcode, requestDelivery, resultsDelivery, titleDelivery, inputDelivery, resultsWrapperDelivery));
+    inputDelivery.addEventListener("input", async (input) => makeAcRequest(input, deliveryAddress1, deliveryAddress2, deliveryAddress3, deliveryPostcode, requestDelivery, resultsDelivery, titleDelivery, inputDelivery, resultsWrapperDelivery, "DELIVERY"));
     
     requestDelivery = refreshToken(requestDelivery);
 
 
 }
 
-async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, postcodeInput, request, results, title, inputField, resultsWrapper) {
+
+async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, postcodeInput, request, results, title, inputField, resultsWrapper, autoCompleteType) {
     // Reset elements and exit if an empty string is received.
     if (input.target.value == "") {
         title.innerText = "";
@@ -107,7 +164,7 @@ async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, 
         const a = document.createElement("p");
 
         a.addEventListener("click", () => {
-            onPlaceSelected(placePrediction.toPlace(), streetAddressInput, cityInput, countyInput, postcodeInput, results, title, inputField);
+            onPlaceSelected(placePrediction.toPlace(), streetAddressInput, cityInput, countyInput, postcodeInput, results, title, inputField, autoCompleteType);
             resultsWrapper.classList.add('hidden');
 
         });
@@ -122,11 +179,9 @@ async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, 
 }
 
 // Event handler for clicking on a suggested place.
-async function onPlaceSelected(place, streetAddressInput, cityInput, countyInput, postcodeInput, results, title, inputField) {
+async function onPlaceSelected(place, streetAddressInput, cityInput, countyInput, postcodeInput, results, title, inputField, autoCompleteType) {
+
     await place.fetchFields({fields: ["addressComponents"]});
-
-
-    //loop through address components and find the address type. Based on address type use switch statement to assign address components needed.
 
     let streetAddress = "";
     let city;
@@ -189,15 +244,29 @@ async function onPlaceSelected(place, streetAddressInput, cityInput, countyInput
     //clear input field
     inputField.value = "";
 
-    refreshToken(requestDelivery);
+    if(autoCompleteType == "COLLECTION"){
+
+        activeCollectionAutoCompleteSession = false;
+
+    }else if(autoCompleteType == "DELIVERY"){
+
+        activeDeliveryAutoCompleteSession = false;
+    }
+
+
 }
 
 // Helper function to refresh the session token.
 async function refreshToken(request) {
+
+    console.log("getting new session token");
+
     // Create a new session token and add it to the request.
     token = new google.maps.places.AutocompleteSessionToken();
     request.sessionToken = token;
     return request;
 }
 
-window.init = initAC;
+function init(event){
+    console.log(event);
+}

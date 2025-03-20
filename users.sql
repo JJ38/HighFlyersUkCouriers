@@ -22,7 +22,7 @@ INSERT INTO `users` VALUES ('23', 'admin', 'anotheradmin', '$2y$10$Yl9rgteYgDrV1
 
 
 INSERT INTO `users` VALUES ('20', 'admin', 'admin', '$2y$10$A1Bi/B0aNvO93GWiSVWGh.K5qJcJmPe.RHb2ZcXq8bCtOsHifCKbi', '2022-01-01 00:00:00');
-INSERT INTO `users` VALUES ('92', 'customer', 'legacy customer', '$2y$10$VAKW0WsvXjdGTAXEKj8Ere.LuOmSJMyTiCUkPGBwpGfnxp0jScudy', '2022-01-01 00:00:00');
+INSERT INTO `users` VALUES ('94', 'customer', 'a c u s t o m e r 8 K', '$2y$10$VAKW0WsvXjdGTAXEKj8Ere.LuOmSJMyTiCUkPGBwpGfnxp0jScudy', '2022-01-01 00:00:00');
 
 -- Password: password   $2y$10$b5ssz1GBdBLwhK3qT9uV7uTg5oquB7pScwoLBD5dKLMg.fjhn5Gu2    $2y$10$VAKW0WsvXjdGTAXEKj8Ere.LuOmSJMyTiCUkPGBwpGfnxp0jScudy
 
