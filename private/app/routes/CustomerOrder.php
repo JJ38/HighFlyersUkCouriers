@@ -107,7 +107,13 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $account_name = $session_wrapper->getSessionVar('user');
 
 
+        echo $account_name;
+
         $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $account_name);
+
+
+
+        // return $response;
 
         if(empty($cleaned_orders)){
             return $response->withRedirect('/customer-order?error=true', 302);
@@ -161,7 +167,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $store_result = $manage_order_model->storeMultipleOrders();
         $confirmed_orders = $manage_order_model->getConfirmedOrders();
         $sanitizer = $container->get('sanitizer');
-
+        
         //send email
 
 

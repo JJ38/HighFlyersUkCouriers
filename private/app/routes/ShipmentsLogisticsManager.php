@@ -30,10 +30,7 @@ $app->get('/shipments-logistics-manager', function (Request $request, Response $
             ));
     }else{
 
-        echo var_dump($_GET);
-        echo var_dump($_SESSION);
-        echo"unauthenticated";
-        return $response;
+   
         return $response->withRedirect('loginpage', 302);
     }
 });

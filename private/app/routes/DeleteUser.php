@@ -80,7 +80,6 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
           'database' => '(default)',
       ]);
 
-
     }catch(Exception $e){
       return  $response->withRedirect('manage-accounts?error=true', 302);
     }
@@ -88,7 +87,6 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
     //setup manage accounts model
     $logger = $container->get('logger');
     $manage_accounts_model = $container->get('manageAccountsModel');
-
 
     $manage_accounts_model->setLogger($logger);
     $manage_accounts_model->setFirebaseFirestore($firestore);

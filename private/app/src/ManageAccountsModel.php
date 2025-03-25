@@ -263,7 +263,7 @@ class ManageAccountsModel
 
             try{
 
-                $this->firebase_firestore->deleteDocument('Customer/' . $this->uid);
+                $this->firebase_firestore->deleteDocument('Customers/' . $this->uid);
                 $this->firebase_firestore_result = true;
                 $this->delete_user_result = true;
     

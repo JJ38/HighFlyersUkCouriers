@@ -83,6 +83,7 @@ $app->post('/login-legacy', function (Request $request, Response $response) use 
 
             $response = $response->withStatus(401);
             return $response;
+            
         }
 
         $response = $response->withStatus(500);
@@ -103,16 +104,12 @@ $app->post('/login-legacy', function (Request $request, Response $response) use 
       $manageAccountsModel->setFirebaseFirestore($firestore);
       $manageAccountsModel->createFirestoreUserDocument();
 
-      
-
     }catch(Exception $e){
 
         if($logger != null){
             $logger->error('FIREBASE_INIT_ERROR', array($e));
             $logger->error('FIREBASE_INIT_ENV', array($env));
         }
-
-        //return $response->withRedirect('/loginpage?error=firestore', 302);
 
         $response = $response->withStatus(500);
         return $response;
@@ -125,16 +122,12 @@ $app->post('/login-legacy', function (Request $request, Response $response) use 
         //get customer profile data from legacy database;
         $doctrine_wrapper->fetchCustomerDetails($cleaned_parameters['username']);
         $customer_profile = $doctrine_wrapper->getQueryResult();//could be null
-        // var_dump($customer_profile);
-        // return $response;
+        
         $manageAccountsModel->setCustomerProfile($customer_profile);
         $manageAccountsModel->createFirestoreCustomerDocument();
 
-        //$response->getBody()->write("Lagacy account login failed.");
-
     }
 
-    $response->getBody()->write("firebase account created");
     $response = $response->withStatus(204); //204 response has been process and fulfilled but does not need to return a body
     return $response;
 });

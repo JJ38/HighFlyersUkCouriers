@@ -298,6 +298,7 @@ class ManageOrderModel
   public function storeMultipleOrders() : bool{
 
     $this->confirmed_orders = [];
+    $confirmed_orders = [];
 
     for($i = 1; $i < count($this->order_data) + 1; $i++){ 
 
@@ -310,8 +311,13 @@ class ManageOrderModel
         return false;
       }
       //add order data to confirmed orders
-      $this->confirmed_orders[$i - 1] = $this->order_data[$i];
+      
+      $confirmed_orders[$i] = $this->order_data[$i];
+    
     }
+
+
+    $this->confirmed_orders = $confirmed_orders;
 
     return true;
     
