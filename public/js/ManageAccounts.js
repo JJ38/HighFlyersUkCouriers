@@ -30,7 +30,9 @@ function generateTableRow(userData, userID){
     const tableRow = document.createElement('tr');
 
     const username = document.createElement('td');
-    username.innerText = userData.username
+    const convertedEmailToUsername = userData.username.replace("@placeholder.com", "");
+
+    username.innerText = convertedEmailToUsername;
 
     const role = document.createElement('td');
     role.innerText = userData.role;
