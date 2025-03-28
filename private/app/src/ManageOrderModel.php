@@ -4,13 +4,11 @@ namespace HighFlyersUkCouriers;
 
 use Datetime;
 use DateTimeZone;
-use Throwable;
 
 class ManageOrderModel
 {
 
   private $doctrine_wrapper;
-  private $logger;
   private $order_data;
   private $HTML_order_data;
   private $confirmed_orders;
@@ -53,11 +51,6 @@ class ManageOrderModel
   public function setDoctrineWrapper($doctrine_wrapper) : void
   {
     $this->doctrine_wrapper = $doctrine_wrapper;
-  }
-  
-  public function setLogger($logger) : void
-  {
-    $this->logger = $logger;
   }
 
   public function setOrderData($order_data) : void
@@ -251,61 +244,50 @@ class ManageOrderModel
 
     //assemble order
 
-    try{
+    $number_of_orders = count($tainted_parameters['collection']);
+    $cleaned_orders = [];
 
-      $number_of_orders = count($tainted_parameters['collection']);
-      $cleaned_orders = [];
+    $delivery_week = $this->getDeliveryWeek('CUSTOMER');
 
-      $delivery_week = $this->getDeliveryWeek('CUSTOMER');
+    for($i = 1; $i < $number_of_orders + 1; $i++){
+      $tainted_order = [];
 
-      for($i = 1; $i < $number_of_orders + 1; $i++){
-        $tainted_order = [];
+      $tainted_order['animalType'] = $tainted_parameters['collection'][$i][0];
+      $tainted_order['quantity'] = $tainted_parameters['collection'][$i][1];
+      $tainted_order['collectionName'] = $tainted_parameters['collection'][$i][2];
+      $tainted_order['collectionAddress1'] = $tainted_parameters['collection'][$i][3];
+      $tainted_order['collectionAddress2'] = $tainted_parameters['collection'][$i][4];
+      $tainted_order['collectionAddress3'] = $tainted_parameters['collection'][$i][5];
+      $tainted_order['collectionPostcode'] = $tainted_parameters['collection'][$i][6];
+      $tainted_order['collectionPhoneNumber'] = $tainted_parameters['collection'][$i][7];
   
-        $tainted_order['animalType'] = $tainted_parameters['collection'][$i][0];
-        $tainted_order['quantity'] = $tainted_parameters['collection'][$i][1];
-        $tainted_order['collectionName'] = $tainted_parameters['collection'][$i][2];
-        $tainted_order['collectionAddress1'] = $tainted_parameters['collection'][$i][3];
-        $tainted_order['collectionAddress2'] = $tainted_parameters['collection'][$i][4];
-        $tainted_order['collectionAddress3'] = $tainted_parameters['collection'][$i][5];
-        $tainted_order['collectionPostcode'] = $tainted_parameters['collection'][$i][6];
-        $tainted_order['collectionPhoneNumber'] = $tainted_parameters['collection'][$i][7];
-    
-        $tainted_order['deliveryName'] = $tainted_parameters['delivery'][$i][0];
-        $tainted_order['deliveryAddress1'] = $tainted_parameters['delivery'][$i][1];
-        $tainted_order['deliveryAddress2'] = $tainted_parameters['delivery'][$i][2];
-        $tainted_order['deliveryAddress3'] = $tainted_parameters['delivery'][$i][3];
-        $tainted_order['deliveryPostcode'] = $tainted_parameters['delivery'][$i][4];
-        $tainted_order['deliveryPhoneNumber'] = $tainted_parameters['delivery'][$i][5];
-        
-        $tainted_order['email'] = $tainted_parameters['extra'][$i][0];
-        $tainted_order['payment'] = $tainted_parameters['extra'][$i][1];
-        $tainted_order['code'] = $tainted_parameters['extra'][$i][2];
-        $tainted_order['message'] = $tainted_parameters['extra'][$i][3];
+      $tainted_order['deliveryName'] = $tainted_parameters['delivery'][$i][0];
+      $tainted_order['deliveryAddress1'] = $tainted_parameters['delivery'][$i][1];
+      $tainted_order['deliveryAddress2'] = $tainted_parameters['delivery'][$i][2];
+      $tainted_order['deliveryAddress3'] = $tainted_parameters['delivery'][$i][3];
+      $tainted_order['deliveryPostcode'] = $tainted_parameters['delivery'][$i][4];
+      $tainted_order['deliveryPhoneNumber'] = $tainted_parameters['delivery'][$i][5];
+      
+      $tainted_order['email'] = $tainted_parameters['extra'][$i][0];
+      $tainted_order['payment'] = $tainted_parameters['extra'][$i][1];
+      $tainted_order['code'] = $tainted_parameters['extra'][$i][2];
+      $tainted_order['message'] = $tainted_parameters['extra'][$i][3];
+
+
+      $tainted_order['username'] = $account_name;
+
+      $tainted_order['printed'] = "Not Printed";
   
-  
-        $tainted_order['username'] = $account_name;
-  
-        $tainted_order['printed'] = "Not Printed";
-    
-        $cleaned_order = $this->cleanOrder($tainted_order, $app);
-  
-        if(empty($cleaned_order)){
-          return [];
-        }
-  
-        $cleaned_order['delivery_week'] = intval($delivery_week);
-  
-  
-        $cleaned_orders[$i] = $cleaned_order;
+      $cleaned_order = $this->cleanOrder($tainted_order, $app);
+
+      if(empty($cleaned_order)){
+        return [];
       }
-  
-      
-    }catch(Throwable $exception){
-      
-      $this->logger->error("CLEAN-MULTIPLE-ORDER-ERROR", array($exception->getMessage()));
-      $this->logger->error("CLEAN-MULTIPLE-ORDER-ERROR-PARAMETERS", $tainted_parameters);
 
-      
+      $cleaned_order['delivery_week'] = intval($delivery_week);
+
+
+      $cleaned_orders[$i] = $cleaned_order;
     }
 
     return $cleaned_orders;
@@ -333,7 +315,6 @@ class ManageOrderModel
       $confirmed_orders[$i] = $this->order_data[$i];
     
     }
-
 
     $this->confirmed_orders = $confirmed_orders;
 

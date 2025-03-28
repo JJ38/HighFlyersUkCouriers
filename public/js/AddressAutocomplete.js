@@ -33,18 +33,6 @@ let inputDelivery;
 let tokenDelivery;
 let resultsWrapperCollection;
 let resultsWrapperDelivery;
-// Add an initial request body.
-let requestDelivery = {
-   
-    language: "en-UK",
-   
-};
-
-let requestCollection = {
-    
-    language: "en-UK",
-    
-};
 
 
 setUpListeners();
@@ -87,36 +75,35 @@ function setUpListeners(){
 
 }
 
-// rework to start session when input box is clicked on
-
-
 function initCollectionAddressAutocomplete(){
 
-    tokenCollection = new google.maps.places.AutocompleteSessionToken();
+    console.log("initCollectionAddressAutocomplete");
+
     titleCollection = document.getElementById("autocompleteTitleCollection");
     resultsCollection = document.getElementById("autocompleteResultsCollection");
     inputCollection = document.getElementById("collectionAddressAutocompleteInput");
     resultsWrapperCollection = document.getElementById("autocompleteResultsWrapperCollection");
 
-    inputCollection.addEventListener("input", (input) => makeAcRequest(input, collectionAddress1, collectionAddress2, collectionAddress3, collectionPostcode, requestCollection, resultsCollection, titleCollection, inputCollection, resultsWrapperCollection, "COLLECTION"));
-    requestCollection = refreshToken(requestCollection);
-  
+    const request = getRequest();
+
+    inputCollection.addEventListener("input", (input) => makeAcRequest(input, collectionAddress1, collectionAddress2, collectionAddress3, collectionPostcode, request, resultsCollection, titleCollection, inputCollection, resultsWrapperCollection, "COLLECTION"));
 
 
 }
 
 function initDeliveryAddressAutocomplete(){
 
-    tokenDelivery = new google.maps.places.AutocompleteSessionToken();
+    console.log("initDeliveryAddressAutocomplete");
+
     titleDelivery = document.getElementById("autocompleteTitleDelivery");
     resultsDelivery = document.getElementById("autocompleteResultsDelivery");
     inputDelivery = document.getElementById("deliveryAddressAutocompleteInput");
     resultsWrapperDelivery = document.getElementById("autocompleteResultsWrapperDelivery");
 
-    inputDelivery.addEventListener("input", async (input) => makeAcRequest(input, deliveryAddress1, deliveryAddress2, deliveryAddress3, deliveryPostcode, requestDelivery, resultsDelivery, titleDelivery, inputDelivery, resultsWrapperDelivery, "DELIVERY"));
-    
-    requestDelivery = refreshToken(requestDelivery);
+    const request = getRequest();
 
+    inputDelivery.addEventListener("input", async (input) => makeAcRequest(input, deliveryAddress1, deliveryAddress2, deliveryAddress3, deliveryPostcode, request, resultsDelivery, titleDelivery, inputDelivery, resultsWrapperDelivery, "DELIVERY"));
+    
 
 }
 
@@ -140,6 +127,8 @@ async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, 
     request.includedRegionCodes = ["uk", "ie"];
     
     title.innerText = 'Query predictions for "' + request.input + '"';
+
+    console.log(request);
 
     // Fetch autocomplete suggestions and show them in a list.
     // @ts-ignore
@@ -257,13 +246,20 @@ async function onPlaceSelected(place, streetAddressInput, cityInput, countyInput
 }
 
 // Helper function to refresh the session token.
-async function refreshToken(request) {
+function getRequest() {
 
     console.log("getting new session token");
 
     // Create a new session token and add it to the request.
-    token = new google.maps.places.AutocompleteSessionToken();
-    request.sessionToken = token;
+    const token = new google.maps.places.AutocompleteSessionToken();
+
+    const request = {
+
+        language: "en-UK",
+        sessionToken: token,
+
+    }
+    
     return request;
 }
 

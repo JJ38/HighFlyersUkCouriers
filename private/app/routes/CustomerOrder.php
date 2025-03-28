@@ -86,34 +86,22 @@ $app->get('/customer-order', function (Request $request, Response $response) use
 
 $app->post('/customer-order', function (Request $request, Response $response) use ($app) : Response{
 
-
-
-    // Echo "<h1>This form is currently unavailable. Please order through the public form in the booking page or call us to book orders. Sorry for the inconvenience</h1>";
-
-    // return $response;
-
     $account_type = $request->getAttribute('accountType');
 
     if($account_type == "customer"){
+
 
         $allPostVars = $request->getParsedBody();
 
         $container = $app->getContainer();
 
         $manage_order_model = $container->get('manageOrderModel');
-        $logger = $container->get("logger");
-        $manage_order_model->setLogger($logger);
-
 
         $session_wrapper = $container->get('sessionWrapper');
         $account_name = $session_wrapper->getSessionVar('user');
 
-
-        echo $account_name;
-
         $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $account_name);
 
-        // echo var_dump($cleaned_orders);
 
         if(empty($cleaned_orders)){
             return $response->withRedirect('/customer-order?error=true', 302);
@@ -128,8 +116,18 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         
         putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
 
+        $date_time = new DateTime();
+        $date_time->setTimezone(new DateTimeZone('Europe/London'));
+        $add_order_model->setDateTime($date_time);
+        $add_order_model->setLogger($logger);
+        $add_order_model->setSessionWrapper($session_wrapper);
+        $add_order_model->fetchOAuth2Token();
+
+        $accessToken = $add_order_model->getOAuth2Token();
 
         try{
+
+            $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
             
             $env = parse_ini_file(realpath('../.env'));
         
@@ -138,7 +136,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         
             $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
                 'database' => '(default)',
-            ]);
+            ], $client);
         
             $add_order_model->setFirebaseFirestore($firestore);
         
@@ -153,12 +151,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
     
         }
 
-        $date_time = new DateTime();
-        $date_time->setTimezone(new DateTimeZone('Europe/London'));
-        $add_order_model->setDateTime($date_time);
-        $add_order_model->setLogger($logger);
-        $add_order_model->setSessionWrapper($session_wrapper);
-        $add_order_model->getOAuth2Token();
+      
     
         $manage_order_model->setOrderData($cleaned_orders);
         $manage_order_model->setAddOrderModel($add_order_model);

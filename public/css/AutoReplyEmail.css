@@ -1,0 +1,24 @@
+.blueText{
+    color:blue;
+  }
+  
+  .greenText{
+    color:green;
+  }
+  
+  .redText{
+    color:red;
+  }
+  
+  .blue > td{
+    color: blue;
+  }
+  
+  .green > td{
+    color: green;
+  }
+  
+  .red > td{
+    color: red;
+  }
+  

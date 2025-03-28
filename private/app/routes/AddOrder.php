@@ -110,7 +110,16 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $add_order_model->setDateTime($date_time);
 
 
+  $add_order_model->setLogger($logger);
+  $add_order_model->setOrderData($cleaned_parameters);
+  $add_order_model->setSessionWrapper($session_wrapper);
+  $add_order_model->fetchOAuth2Token();
+
+  $accessToken = $add_order_model->getOAuth2Token();
+
   try{
+
+    $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
             
     $env = parse_ini_file(realpath('../.env'));
 
@@ -119,7 +128,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
     $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
         'database' => '(default)',
-    ]);
+    ], $client);
 
     $add_order_model->setFirebaseFirestore($firestore);
 
@@ -136,13 +145,8 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
 
   
-  $add_order_model->setLogger($logger);
-  $add_order_model->setOrderData($cleaned_parameters);
-  $add_order_model->setSessionWrapper($session_wrapper);
-  $add_order_model->getOAuth2Token();
 
 
- 
   //store data
   $add_order_model->storeOrder();
   $query_result = $add_order_model->getFirebaseFirestoreResult();

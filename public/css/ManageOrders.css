@@ -96,6 +96,17 @@ div.searchbar{
   display: none !important;
 }
 
+.loader {
+
+  border: 6px solid #f3f3f3; /* Light grey */
+  border-top: 6px solid #2881FF; /* Blue */
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s cubic-bezier(0.51, 0.24, 0.59, 0.8) infinite;
+
+}
+
 @media (hover: hover) {
   button:hover{
     cursor: pointer;
@@ -250,9 +261,17 @@ div.orderdatawrapper{
   cursor: pointer;
 }
 
+.centre{
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+
+}
+
 button{
   margin: 0 5px;
 }
+
 
 @media (max-width: 1000px){
 
@@ -300,9 +319,13 @@ button{
 
 }
 
-
 @media (max-width: 500px){
   .massactionbutton, .searchoption{
     font-size: 13px !important;
   }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

@@ -69,7 +69,6 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
           }
         }
 
-
         else if(!empty($allGetVars['error'])){
           $tainted_error = $allGetVars['error'];
           if($tainted_error){
@@ -85,7 +84,6 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
             }
           }
         }
-
 
         else if(!empty($allGetVars['field'])){
           if(!empty($allGetVars['filter'])){

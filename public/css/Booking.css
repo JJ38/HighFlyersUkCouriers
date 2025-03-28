@@ -185,6 +185,19 @@ select{
   
 }
 
+@media (max-width: 600px){
+
+  section.formsection{
+    display: flex;
+    
+  }
+
+  section.bookingInput{
+    width: 100%;
+  }
+  
+}
+
 
 
 .hidden{

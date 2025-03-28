@@ -55,20 +55,29 @@ $app->post('/delete-order', function (Request $request, Response $response) use 
     $container = $app->getContainer();
     $logger = $container->get('logger');
     $delete_order_model = $container->get('deleteOrderModel');
+    $add_order_model = $container->get('addOrderModel');
+
     $delete_order_model->setLogger($logger);
     $delete_order_model->setDocRef($docRef);
 
+    $add_order_model->setLogger($logger);
+    $add_order_model->fetchOAuth2Token();
+
+    $accessToken = $add_order_model->getOAuth2Token();
+
     try{
               
+      $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
+          
       $env = parse_ini_file(realpath('../.env'));
-
+  
       $projectID = $env['FIREBASE_PROJECT_ID'];
       $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
-
+  
       $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
           'database' => '(default)',
-      ]);
-
+      ], $client);
+      
       $delete_order_model->setFirebaseFirestore($firestore);
 
     }catch(Exception $e){

@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
 
 const table = document.getElementById('accountData');
 
@@ -16,7 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-getDocs(collection(db, "Users")).then((querySnapshot) => querySnapshot.forEach((doc) => {
+getDocs(query(collection(db, "Users"), orderBy('username', 'asc'))).then((querySnapshot) => querySnapshot.forEach((doc) => {
 
     generateTableRow(doc.data(), doc.id);
     

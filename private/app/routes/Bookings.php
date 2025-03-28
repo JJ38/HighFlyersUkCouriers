@@ -123,10 +123,13 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   $add_order_model->setOrderData($cleaned_parameters);
   $add_order_model->setSessionWrapper($session_wrapper);
   $add_order_model->setDateTime($date_time);
-  $add_order_model->getOAuth2Token();
+  $add_order_model->fetchOAuth2Token();
 
+  $accessToken = $add_order_model->getOAuth2Token();
  
   try{
+
+    $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
             
     $env = parse_ini_file(realpath('../.env'));
 
@@ -135,7 +138,7 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
 
     $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
         'database' => '(default)',
-    ]);
+    ], $client);
 
     $add_order_model->setFirebaseFirestore($firestore);
 

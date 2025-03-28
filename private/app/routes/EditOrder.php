@@ -95,20 +95,28 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
       //store in database
       $logger = $container->get('logger');
       $edit_order_model = $container->get('editOrderModel');
+      $add_order_model = $container->get('addOrderModel');
     
       $edit_order_model->setLogger($logger);
       $edit_order_model->setOrderData($cleaned_parameters);
 
+      $add_order_model->setLogger($logger);
+      $add_order_model->fetchOAuth2Token();
+
+      $accessToken = $add_order_model->getOAuth2Token();
+
       try{
                 
+        $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
+            
         $env = parse_ini_file(realpath('../.env'));
-
+    
         $projectID = $env['FIREBASE_PROJECT_ID'];
         $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
-
+    
         $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
             'database' => '(default)',
-        ]);
+        ], $client);
 
         $edit_order_model->setFirebaseFirestore($firestore);
 

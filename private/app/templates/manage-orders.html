@@ -5,18 +5,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/dce6efa4ea.js"
-      crossorigin="anonymous"></script>
+      crossorigin="anonymous"></script>
     
-    <script src="/js/ManageOrdersNonDeferred.js"></script>
+    <script src="/js/ManageOrdersNonDeferred.js"></script>
     
-    <title>{{ page_title }}</title>
-    <script type="module" crossorigin src="./assets/ManageOrders-BI7x6QQ9.js"></script>
+    <title>HighFlyersUkCouriers</title>
+    <script type="module" crossorigin src="./assets/ManageOrders-DjKwX1Dp.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
     <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-DekqGqg_.js">
     <link rel="modulepreload" crossorigin href="./assets/Firebase-DFDJhXei.js">
     <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
     <link rel="modulepreload" crossorigin href="./assets/Logout-BtrfE2Gy.js">
-    <link rel="stylesheet" crossorigin href="./assets/ManageOrders-BZ4CvUz3.css">
+    <link rel="stylesheet" crossorigin href="./assets/ManageOrders-DegoyWvw.css">
     <link rel="stylesheet" crossorigin href="./assets/Footer-Co0a3HEz.css">
     <link rel="stylesheet" crossorigin href="./assets/Navbar-_3NclZQX.css">
     <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
@@ -51,11 +51,14 @@
         </nav>
       </header>
       <div id="maincontent">
-
-        <div class="orderviewcontainer">
-          <div class="searchbar bubble">
-            <div class="searchoption">Filter</div>
-            
+        <div id="orderView" class="orderviewcontainer">
+          <div class="centre">
+            <div id="loadingsymbol" class="loader"></div>
+          </div>
+          
+          <div id="loaderWrapper" class="hidden">
+            <div class="searchbar bubble">
+              <div class="searchoption">Filter</div>
               <div>
                 <select id="searchOption" class="searchoption" name="field" id="filter">
                   <option disabled selected value> -- select an option --
@@ -98,71 +101,73 @@
                 <button id="searchButton" class="searchoption button"
                   type="button">Search</button>
               </div>
-           
-            <a class="button" href="/add-order">
-              Add
-            </a>
-          </div>
+            
+              <a class="button" href="/add-order">
+                Add
+              </a>
+            </div>
 
-          <div id="massActionButtons" class="massactionbuttons hidden">
-            <form>
-              <button id="selectall" class="massactionbutton"
-                type="button">Select all</button>
-            </form>
+            <div id="massActionButtons" class="massactionbuttons hidden">
+              <form>
+                <button id="selectall" class="massactionbutton"
+                  type="button">Select all</button>
+              </form>
         
-            <form id="deleteselectedform" action="/delete-multiple-orders"
-              method="get">
-              <button id="deleteselected" class="massactionbutton hidden"
-                type="hidden">Delete
-                Selected</button>
-            </form>
+              <form id="deleteselectedform" action="/delete-multiple-orders"
+                method="get">
+                <button id="deleteselected" class="massactionbutton hidden"
+                  type="hidden">Delete
+                  Selected</button>
+              </form>
     
-            <form id="printselectedform" action method="get">
-              <button id="printselected" class="massactionbutton"
-               type="button">Print Selected</button>
-            </form>
-          </div>
-
-          <div id="orderDataWrapper" class="bubble orderdatawrapper">
-
-            <div class="orderdata">
-              <table id="orderTable">
-                <tr class="headerrow">               
-                  <th></th>
-                  <th>ID</th>
-                  <th>Animal Type</th>
-                  <th>Quantity</th>
-                  <th>Email</th>
-                  <th>Account</th>
-                  <th>Delivery Week</th>
-                  <th>Collection Name</th>
-                  <th>Collection Address 1</th>
-                  <th>Collection Address 2</th>
-                  <th>Collection Address 3</th>
-                  <th>Collection Postcode</th>
-                  <th>Collection Phone Number</th>
-                  <th>Delivery Name</th>
-                  <th>Delivery Address 1</th>
-                  <th>Delivery Address 2</th>
-                  <th>Delivery Address 3</th>
-                  <th>Delivery Postcode</th>
-                  <th>Delivery Phone Number</th>
-                  <th>Payment</th>
-                  <th>Message</th>
-                  <th>Code</th>
-                  <th>Added By</th>
-                  <th>Printed</th>
-                  <th>Time</th>
-                  <th id="topright"></th>
-                </tr>
-                <tbody id="tableBody" class="">
-                </tbody>
-              </table>
+              <form id="printselectedform" action method="get">
+                <button id="printselected" class="massactionbutton"
+                type="button">Print Selected</button>
+              </form>
+            </div>
+            <div id="loaderOrderDataWrapper">
+              
+              <div id="orderDataWrapper" class="bubble orderdatawrapper">
+                <div class="orderdata">
+                  <table id="orderTable">
+                    <tr class="headerrow">               
+                      <th></th>
+                      <th>ID</th>
+                      <th>Animal Type</th>
+                      <th>Quantity</th>
+                      <th>Email</th>
+                      <th>Account</th>
+                      <th>Delivery Week</th>
+                      <th>Collection Name</th>
+                      <th>Collection Address 1</th>
+                      <th>Collection Address 2</th>
+                      <th>Collection Address 3</th>
+                      <th>Collection Postcode</th>
+                      <th>Collection Phone Number</th>
+                      <th>Delivery Name</th>
+                      <th>Delivery Address 1</th>
+                      <th>Delivery Address 2</th>
+                      <th>Delivery Address 3</th>
+                      <th>Delivery Postcode</th>
+                      <th>Delivery Phone Number</th>
+                      <th>Payment</th>
+                      <th>Message</th>
+                      <th>Code</th>
+                      <th>Added By</th>
+                      <th>Printed</th>
+                      <th>Time</th>
+                      <th id="topright"></th>
+                    </tr>
+                    <tbody id="tableBody" class="">
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </div>  
+        
       </div>
     </div>
-
   </body>
 </html>

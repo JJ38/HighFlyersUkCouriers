@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
@@ -10,10 +9,11 @@
         <link rel="stylesheet" href="/css/AutoComplete.css" type="text/css">   
         <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">   
         <script type="module" src="/js/AddOrders.js"></script>
-        <title>{{ page_title }}</title>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrJDwcnDimqAZ5BZAwk7q9Iw-YE6-A9yY&libraries=places&v=weekly" defer></script>
+        <script type="module" src="/js/AddressAutocomplete.js" ></script>
+        <title>HighFlyersUKCourier</title>
     </head>
     <body>
-  
       <header>
         <nav id="menu">
           <a class="navLinks" href="/manage-orders">Back</a>
@@ -23,6 +23,7 @@
         <section class="formSection">
           <form id="addOrderForm" class="contactUsForm" action="/add-order" method="post">
             <table>
+              
               <tr>
                 <td>
                   <label for="animalType">Bird/Animal type: </label>
@@ -254,7 +255,6 @@
         </section>
       </div>
   </body>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrJDwcnDimqAZ5BZAwk7q9Iw-YE6-A9yY&callback=init&libraries=places&v=weekly" defer></script>
-  <script src="/js/AddressAutocomplete.js" ></script>
+  
 </html>
 

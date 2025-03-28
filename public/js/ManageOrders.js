@@ -1,6 +1,6 @@
 import { markOrdersAsPrinted, getInitialData, loadAdditionalOrders, sortOrderData, getFilterOrders, filterSearch } from "/js/FirebaseManageOrders.js";
 import { auth } from "/js/Firebase.js";
-import { getIdTokenResult, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 
 const massActionButtons = document.getElementById('massActionButtons');
 
@@ -16,8 +16,11 @@ const adminLinks = document.querySelectorAll(".adminLink");
 const orderDataWrapper = document.getElementById('orderDataWrapper');
 
 const orderTable = document.getElementById('tableBody');
+const loadingSymbol = document.getElementById('loadingsymbol');
+const loaderWrapper = document.getElementById('loaderWrapper');
 
-let orderDataWrapperHeight = orderDataWrapper.getBoundingClientRect().height;
+
+let orderDataWrapperHeight;
 
 let orderIDs = [];
 let hasPrinted = [];
@@ -39,6 +42,10 @@ onAuthStateChanged(auth, (user) => {
       role = getIdTokenResult.claims.role;
     
       loadOrders();
+      loadingSymbol.classList.add('hidden');
+      loaderWrapper.classList.remove('hidden');
+      orderDataWrapperHeight = orderDataWrapper.getBoundingClientRect().height;
+      
     });
 
 
@@ -53,7 +60,11 @@ orderDataWrapper.addEventListener('scroll', (event) => {
   const scrollHeight = event.target.scrollHeight;
   const scrollTop = event.target.scrollTop; 
 
+  console.log(scrollHeight - scrollTop - orderDataWrapperHeight < 100);
+  console.log(orderDataWrapperHeight);
+
   if(scrollHeight - scrollTop - orderDataWrapperHeight < 100){
+    console.log("loadorders");
     loadOrders();
   }
 
@@ -88,6 +99,8 @@ async function getOrdersByFilter(selectedSearchOption){
 
 
 async function loadOrders(){
+
+  
 
   let orderData = null;
 
