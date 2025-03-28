@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Brick\Math\Internal\Calculator;
 
 use Brick\Math\Internal\Calculator;
+<<<<<<< HEAD
 use Override;
+=======
+>>>>>>> master
 
 /**
  * Calculator implementation using only native PHP code.
@@ -38,7 +41,10 @@ class NativeCalculator extends Calculator
         };
     }
 
+<<<<<<< HEAD
     #[Override]
+=======
+>>>>>>> master
     public function add(string $a, string $b) : string
     {
         /**
@@ -70,13 +76,19 @@ class NativeCalculator extends Calculator
         return $result;
     }
 
+<<<<<<< HEAD
     #[Override]
+=======
+>>>>>>> master
     public function sub(string $a, string $b) : string
     {
         return $this->add($a, $this->neg($b));
     }
 
+<<<<<<< HEAD
     #[Override]
+=======
+>>>>>>> master
     public function mul(string $a, string $b) : string
     {
         /**
@@ -120,19 +132,28 @@ class NativeCalculator extends Calculator
         return $result;
     }
 
+<<<<<<< HEAD
     #[Override]
+=======
+>>>>>>> master
     public function divQ(string $a, string $b) : string
     {
         return $this->divQR($a, $b)[0];
     }
 
+<<<<<<< HEAD
     #[Override]
+=======
+>>>>>>> master
     public function divR(string $a, string $b): string
     {
         return $this->divQR($a, $b)[1];
     }
 
+<<<<<<< HEAD
     #[Override]
+=======
+>>>>>>> master
     public function divQR(string $a, string $b) : array
     {
         if ($a === '0') {
@@ -186,7 +207,10 @@ class NativeCalculator extends Calculator
         return [$q, $r];
     }
 
+<<<<<<< HEAD
     #[Override]
+=======
+>>>>>>> master
     public function pow(string $a, int $e) : string
     {
         if ($e === 0) {
@@ -215,7 +239,10 @@ class NativeCalculator extends Calculator
     /**
      * Algorithm from: https://www.geeksforgeeks.org/modular-exponentiation-power-in-modular-arithmetic/
      */
+<<<<<<< HEAD
     #[Override]
+=======
+>>>>>>> master
     public function modPow(string $base, string $exp, string $mod) : string
     {
         // special case: the algorithm below fails with 0 power 0 mod 1 (returns 1 instead of 0)
@@ -250,7 +277,10 @@ class NativeCalculator extends Calculator
     /**
      * Adapted from https://cp-algorithms.com/num_methods/roots_newton.html
      */
+<<<<<<< HEAD
     #[Override]
+=======
+>>>>>>> master
     public function sqrt(string $n) : string
     {
         if ($n === '0') {
@@ -498,6 +528,7 @@ class NativeCalculator extends Calculator
         $r = $a; // remainder
         $z = $y; // focus length, always $y or $y+1
 
+<<<<<<< HEAD
         /** @psalm-var numeric-string $b */
         $nb = $b * 1; // cast to number
         // performance optimization in cases where the remainder will never cause int overflow
@@ -514,6 +545,8 @@ class NativeCalculator extends Calculator
             return [\ltrim($q, '0') ?: '0', (string) $r];
         }
 
+=======
+>>>>>>> master
         for (;;) {
             $focus = \substr($a, 0, $z);
 

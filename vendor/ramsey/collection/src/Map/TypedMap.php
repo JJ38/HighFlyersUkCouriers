@@ -29,7 +29,11 @@ namespace Ramsey\Collection\Map;
  *
  * Example usage:
  *
+<<<<<<< HEAD
  * ```
+=======
+ * ```php
+>>>>>>> master
  * $map = new TypedMap('string', Foo::class);
  * $map['x'] = new Foo();
  * foreach ($map as $key => $value) {
@@ -51,7 +55,11 @@ namespace Ramsey\Collection\Map;
  * It is preferable to subclass `AbstractTypedMap` to create your own typed map
  * implementation:
  *
+<<<<<<< HEAD
  * ```
+=======
+ * ```php
+>>>>>>> master
  * class FooTypedMap extends AbstractTypedMap
  * {
  *     public function getKeyType()
@@ -68,7 +76,11 @@ namespace Ramsey\Collection\Map;
  *
  * … but you also may use the `TypedMap` class:
  *
+<<<<<<< HEAD
  * ```
+=======
+ * ```php
+>>>>>>> master
  * class FooTypedMap extends TypedMap
  * {
  *     public function __constructor(array $data = [])

@@ -8,7 +8,10 @@ use Brick\Math\Exception\DivisionByZeroException;
 use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NumberFormatException;
 use Brick\Math\Exception\RoundingNecessaryException;
+<<<<<<< HEAD
 use Override;
+=======
+>>>>>>> master
 
 /**
  * Common interface for arbitrary-precision rational numbers.
@@ -52,9 +55,14 @@ abstract class BigNumber implements \JsonSerializable
      * - strings containing a `.` character or using an exponential notation are returned as BigDecimal
      * - strings containing only digits with an optional leading `+` or `-` sign are returned as BigInteger
      *
+<<<<<<< HEAD
      * @throws NumberFormatException If the format of the number is not valid.
      * @throws DivisionByZeroException If the value represents a rational number with a denominator of zero.
      * @throws RoundingNecessaryException If the value cannot be converted to an instance of the subclass without rounding.
+=======
+     * @throws NumberFormatException   If the format of the number is not valid.
+     * @throws DivisionByZeroException If the value represents a rational number with a denominator of zero.
+>>>>>>> master
      *
      * @psalm-pure
      */
@@ -73,9 +81,12 @@ abstract class BigNumber implements \JsonSerializable
     }
 
     /**
+<<<<<<< HEAD
      * @throws NumberFormatException If the format of the number is not valid.
      * @throws DivisionByZeroException If the value represents a rational number with a denominator of zero.
      *
+=======
+>>>>>>> master
      * @psalm-pure
      */
     private static function _of(BigNumber|int|float|string $value) : BigNumber
@@ -168,7 +179,11 @@ abstract class BigNumber implements \JsonSerializable
     /**
      * Overridden by subclasses to convert a BigNumber to an instance of the subclass.
      *
+<<<<<<< HEAD
      * @throws RoundingNecessaryException If the value cannot be converted.
+=======
+     * @throws MathException If the value cannot be converted.
+>>>>>>> master
      *
      * @psalm-pure
      */
@@ -507,7 +522,10 @@ abstract class BigNumber implements \JsonSerializable
      */
     abstract public function __toString() : string;
 
+<<<<<<< HEAD
     #[Override]
+=======
+>>>>>>> master
     final public function jsonSerialize() : string
     {
         return $this->__toString();

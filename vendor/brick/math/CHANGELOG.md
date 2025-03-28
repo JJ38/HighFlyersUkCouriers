@@ -2,6 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
+<<<<<<< HEAD
 ## [0.12.3](https://github.com/brick/math/releases/tag/0.12.3) - 2025-02-28
 
 ✨ **New features**
@@ -18,6 +19,8 @@ All notable changes to this project will be documented in this file.
 
 - Add missing `RoundingNecessaryException` to the `@throws` annotation of `BigNumber::of()`
 
+=======
+>>>>>>> master
 ## [0.12.1](https://github.com/brick/math/releases/tag/0.12.1) - 2023-11-29
 
 ⚡️ **Performance improvements**

@@ -16,7 +16,10 @@ namespace Ramsey\Collection\Tool;
 
 use Ramsey\Collection\Exception\InvalidPropertyOrMethod;
 use Ramsey\Collection\Exception\UnsupportedOperationException;
+<<<<<<< HEAD
 use ReflectionProperty;
+=======
+>>>>>>> master
 
 use function is_array;
 use function is_object;
@@ -30,11 +33,14 @@ use function sprintf;
 trait ValueExtractorTrait
 {
     /**
+<<<<<<< HEAD
      * Returns the type associated with this collection.
      */
     abstract public function getType(): string;
 
     /**
+=======
+>>>>>>> master
      * Extracts the value of the given property, method, or array key from the
      * element.
      *
@@ -70,6 +76,7 @@ trait ValueExtractorTrait
             ));
         }
 
+<<<<<<< HEAD
         if (property_exists($element, $propertyOrMethod) && method_exists($element, $propertyOrMethod)) {
             $reflectionProperty = new ReflectionProperty($element, $propertyOrMethod);
             if ($reflectionProperty->isPublic()) {
@@ -79,6 +86,8 @@ trait ValueExtractorTrait
             return $element->{$propertyOrMethod}();
         }
 
+=======
+>>>>>>> master
         if (property_exists($element, $propertyOrMethod)) {
             return $element->$propertyOrMethod;
         }
@@ -87,10 +96,13 @@ trait ValueExtractorTrait
             return $element->{$propertyOrMethod}();
         }
 
+<<<<<<< HEAD
         if (isset($element->$propertyOrMethod)) {
             return $element->$propertyOrMethod;
         }
 
+=======
+>>>>>>> master
         throw new InvalidPropertyOrMethod(sprintf(
             'Method or property "%s" not defined in %s',
             $propertyOrMethod,
