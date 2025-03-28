@@ -2,10 +2,9 @@
 const params = new URLSearchParams(document.location.search);
 
 for (const [key, value] of params.entries()) {
+
     console.log(`${key}, ${value}`);
-    if(shouldShowNotification(key, value)){
-        showNotification(key, value);
-    } 
+    shouldShowNotification(key, value);
     
 }
 
@@ -22,7 +21,78 @@ function shouldShowNotification(key, value){
                 showNotification("Success!", "Order added successfully")   
             }
 
+            else if(value == "dberror"){
+                showNotification("Error!", "Order not added - database error")
+            }
+
+            else{
+                showNotification("Error!", "Order not added - an error occured")
+            }
+
             break;
+        
+        case 'deleted':
+
+            if(value == "true"){
+                showNotification("Success!", "Order deleted successfully")  
+            }
+            
+            else{
+                showNotification("Error!", "Order not deleted - an error occured")
+            }
+
+            break;
+
+        case 'updated':
+
+            if(value == "true"){
+                showNotification("Success!", "Order updated successfully")  
+            }
+
+            else if(value == 'dberror'){
+                showNotification("Error!", "Order not updated - database error")
+            }
+
+            else{
+                showNotification("Error!", "Order not updated - an error occured")
+            }
+
+            break;
+
+        case 'printerror':
+
+            if(value == 'false'){
+                showNotification("Success!", "Orders marked as printed")
+            }
+
+            else{
+                showNotification("Error!", "Orders not marked as printed - error")
+            }
+
+            break;
+
+        case 'permission':
+
+            if(value == "denied"){
+                showNotification("Error!", "You do not have permission to edit this order!")
+            }
+            
+            break;
+
+
+        case 'partiallyDeleted':
+
+            if(value != null){
+                showNotification("Error!", "Error failed to delete order " + value)
+            }
+
+            break;
+
+        case 'error':
+
+            if(value == "dbconnection"){
+                showNotification("Error!", "Error connection to database!")
+            }
         
         default:
             return;
