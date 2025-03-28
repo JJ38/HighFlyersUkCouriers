@@ -142,6 +142,20 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
               }
             }
           }
+        }else if(!empty($allGetVars['partiallyDeleted'])){
+          $tainted_permission = $allGetVars['partiallyDeleted'];
+          if($tainted_permission){
+            $sanitizer = $app->getContainer()->get('sanitizer');
+            $cleaned_permission = $sanitizer->sanitizePositiveNumber($tainted_permission);
+
+            if($cleaned_permission != null){
+
+             
+              echo "<script>alert('Error failed to delete $cleaned_permission');</script>";
+
+              
+            }
+          }
         }
 
       }
@@ -149,46 +163,15 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
       //generate html order data
       $container = $app->getContainer();
       $logger = $container->get('logger');
-      $doctrine_wrapper = $container->get('doctrineWrapper');
-
-      // // Doctrine wrapper setup
-      $database_connection_settings = $container->get('settings')['doctrineSettings'];
-      try{
-
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-
-      }catch(Exception $e){
-       
-      }
-        
-      
-      
-      $query_builder = $database_connection->createQueryBuilder();
-      $doctrine_wrapper->setQueryBuilder($query_builder);
-      $doctrine_wrapper->setDoctrineLogger($logger);
 
 
-      $manage_order_model = $container->get('manageOrderModel');
-      $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
-      $manage_order_model->setIsAdmin($account_type == "admin");
-
-      if($cleaned_field == null || $cleaned_filter == null){
-        $manage_order_model->fetchALLOrderData();
-      }else{
-        $manage_order_model->fetchOrderDataByField($cleaned_field, $cleaned_filter);
-      }
-
-      $manage_order_model->generateHTMLFromData();
-      
-
-      return $this->view->render($response,'ManageOrders.twig', array(
+      return $this->view->render($response,'manage-orders.html', array(
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "ManageOrders.css",
               'asset_path' => ASSET_PATH,
               'js_file' => JS_PATH . "ManageOrders.js",
               'landing_page' => __FILE__,
               'heading_1' => APP_TITLE,
-              'orderdata' => $manage_order_model->getHTMLOrderData(),
               'isAdmin' => $account_type == "admin",
           ));
     }
@@ -200,3 +183,5 @@ $app->get('/manage-orders[/updated]', function (Request $request, Response $resp
     return $response->withRedirect('loginpage', 301);
     
 });
+
+

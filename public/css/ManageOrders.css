@@ -26,9 +26,6 @@ header {
 
 }
 
-nav {
-  padding: 30px;
-}
 
 nav > a{
  
@@ -94,6 +91,11 @@ div.searchbar{
   color: rgb(34, 34, 34);
 
 }
+
+.hidden{
+  display: none !important;
+}
+
 @media (hover: hover) {
   button:hover{
     cursor: pointer;

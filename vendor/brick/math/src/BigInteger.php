@@ -10,6 +10,10 @@ use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
 use Brick\Math\Exception\NumberFormatException;
 use Brick\Math\Internal\Calculator;
+<<<<<<< HEAD
+use Override;
+=======
+>>>>>>> master
 
 /**
  * An arbitrary-size integer.
@@ -42,6 +46,10 @@ final class BigInteger extends BigNumber
     /**
      * @psalm-pure
      */
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     protected static function from(BigNumber $number): static
     {
         return $number->toBigInteger();
@@ -856,6 +864,10 @@ final class BigInteger extends BigNumber
         return $this->shiftedRight($n)->isOdd();
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function compareTo(BigNumber|int|float|string $that) : int
     {
         $that = BigNumber::of($that);
@@ -867,31 +879,55 @@ final class BigInteger extends BigNumber
         return - $that->compareTo($this);
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function getSign() : int
     {
         return ($this->value === '0') ? 0 : (($this->value[0] === '-') ? -1 : 1);
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toBigInteger() : BigInteger
     {
         return $this;
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toBigDecimal() : BigDecimal
     {
         return self::newBigDecimal($this->value);
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toBigRational() : BigRational
     {
         return self::newBigRational($this, BigInteger::one(), false);
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toScale(int $scale, RoundingMode $roundingMode = RoundingMode::UNNECESSARY) : BigDecimal
     {
         return $this->toBigDecimal()->toScale($scale, $roundingMode);
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toInt() : int
     {
         $intValue = (int) $this->value;
@@ -903,6 +939,10 @@ final class BigInteger extends BigNumber
         return $intValue;
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toFloat() : float
     {
         return (float) $this->value;
@@ -1013,6 +1053,10 @@ final class BigInteger extends BigNumber
         return \hex2bin($hex);
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function __toString() : string
     {
         return $this->value;

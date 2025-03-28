@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/css/NavBar.css" type="text/css">
+        <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
+        <link rel="stylesheet" href="/css/CustomerOrder.css" type="text/css">
+        <link rel="stylesheet" href="/css/AutoComplete.css" type="text/css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+        <script type="module" src="/js/AddressAutocomplete.js"></script>
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
+        <script type="module" src="/js/CustomerOrder.js" crossorigin="anonymous"></script>
+        <script type="module" src="/js/MobileNavigationBar.js"></script>
+        <script type="text/javascript" src="/js/CustomerOrderNonDeffered.js"></script>
+
+    </head>
+    <body>
+        <header>
+            <div id="mobilenavmenu" class="hideMobileMenu">
+                <div id="mobilenavwrapper">
+                    <div id="closemobilenavmenu"><p
+                            id="closenavtext">close</p><p>X</p></div>
+                    <a href="/logout">Logout</a>
+                    <a class="currentpage" href="/customer-order">Order</a>
+                    <a href="/customer-profile">Profile</a>
+                </div>
+            </div>
+            <nav class="menu" contenteditable="false">
+                <div id="mobilenavtoggle">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <a class="navLinks" href="/logout">Logout</a>
+                <div>
+                    <a class="navLinks" href="/customer-order">Order</a>
+                    <div class="underlineOrder"></div>
+                </div>
+                <div>
+                    <a class="navLinks" href="/customer-profile">Profile</a>
+                    <div class="underlineProfile"></div>
+                </div>
+            </nav>
+        </header>
+        <div id="maincontent">
+            <div class="bubble orderwindow">
+                <section class="toprow">
+                    <h1>
+                        Order info
+                    </h1>
+                    <button id="addToBasketButton">
+                        Add To Basket
+                    </button>
+                </section>
+                <hr>
+                <section id="orderinfo" class="info">
+                    <div class="forminput">
+                        <label for class>Animal*</label>
+                        <input id="animal" name type="text" required>
+                    </div>
+                    <div class="forminput">
+                        <label for class="flex">Quantity*<p
+                                class="hinttext">(number of
+                                birds/boxes)</p></label>
+                        <input id="quantity" name type="number" required>
+                    </div>
+                    <div class="forminput">
+                        <label for class="flex">Code <p class="hinttext">(optional)</p></label>
+                        <input id="code" name type="text">
+                    </div>
+                </section>
+                <h1>
+                    Collection info
+                </h1>
+                <hr>
+                <section class="profiledata">
+                    <input id="profileemail" name="profileemail" type="hidden">
+                    <div id="quickaddress" class="quickcollectionaddresswrapper">
+                        <p id="collectionaddressarrow">&lt;</p>
+                        <p id="quickAddressName"></p>
+                        <div class="flex collectionaddressdetailswrapper">
+                            <p id="quickAddress1"></p>
+                            <p class="comma">,</p>
+                            <p id="quickAddress2"></p>
+                            <p class="comma">,</p>
+                            <p id="quickAddress3"></p>
+                            <p class="comma">,</p>
+                            <p id="quickAddressPostcode"></p>
+                        </div>
+                        <p id="quickAddressEmail"></p>
+                        <p id="quickAddressTelephone"></p>
+                    </div>
+                    <section id="collectioninfoFormWrapper" class="hideInfo">
+                        <section id="collectionAddressAutocomplete"
+                            class="bookingInput column">
+                            <label for="findAddressInfo">Find Collection Address
+                            </label>
+
+                            <input id="collectionAddressAutocompleteInput"
+                                name="findAddressInfo" type="text"
+                                placeholder="Search for a place..." />
+                            <div id="autocompleteResultsAnchor">
+                                <div id="autocompleteResultsWrapperCollection"
+                                    class="autocompleteResultsWrapper hidden">
+                                    <div class="autocompleteTitleWrapper">
+                                        <div id="autocompleteTitleCollection"
+                                            class="autocompleteTitle"></div>
+
+                                        <ul
+                                            id="autocompleteResultsCollection"></ul>
+                                    </div>
+                                </div>
+                            </section>
+                            <section id="collectioninfo" class="info">
+
+                                <div class="forminput">
+                                    <label for class>Collection Name*</label>
+                                    <input id="collectionName" name type="text"
+                                        onchange="updateQuickAddressName()"
+                                        required>
+                                </div>
+                                <div class="forminput">
+                                    <label for class>Collection
+                                        Postcode*</label>
+                                    <input id="collectionPostcode" name
+                                        type="text"
+                                        onchange="updateQuickAddressPostcode()"
+                                        required>
+                                </div>
+                                <div class="forminput">
+                                    <label for class>Collection
+                                        Telephone*</label>
+                                    <input id="collectionPhoneNumber" name
+                                        type="text"
+                                        onchange="updateQuickAddressTelephone()"
+                                        minlength="11" maxlength="11" required>
+                                </div>
+                                <div class="forminput">
+                                    <label for class>Collection Address
+                                        1*</label>
+                                    <input id="collectionAddress1" name
+                                        type="text"
+                                        onchange="updateQuickAddress1()"
+                                        required>
+                                </div>
+                                <div class="forminput">
+                                    <label for class>Collection Address
+                                        2</label>
+                                    <input id="collectionAddress2" name
+                                        type="text"
+                                        onchange="updateQuickAddress2()">
+                                </div>
+                                <div class="forminput">
+                                    <label for class>Collection Address
+                                        3</label>
+                                    <input id="collectionAddress3" name
+                                        type="text"
+                                        onchange="updateQuickAddress3()">
+                                </div>
+                                <div class="forminput">
+                                    <label for class>Email *</label>
+                                    <input id="email" name type="text"
+                                        onchange="updateQuickAddressEmail()"
+                                        required>
+                                </div>
+                            </section>
+                        </section>
+                    </section>
+                    <h1>
+                        Delivery info
+                    </h1>
+                    <hr>
+
+                    <section id="deliveryAddressAutocomplete"
+                        class="bookingInput column">
+                        <label for="deliveryAddressAutocompleteInput" >Find Delivery Address </label>
+
+                        <input id="deliveryAddressAutocompleteInput" type="text"
+                            placeholder="Search for a place..." />
+                        <div id="autocompleteResultsAnchor">
+                            <div id="autocompleteResultsWrapperDelivery"
+                                class="autocompleteResultsWrapper hidden">
+                                <div class="autocompleteTitleWrapper">
+                                    <div id="autocompleteTitleDelivery"
+                                        class="autocompleteTitle"></div>
+                                </div>
+                                <ul id="autocompleteResultsDelivery"></ul>
+                            </div>
+                        </div>
+
+                    </section>
+
+                    <section class="info">
+
+                        <div class="forminput">
+                            <label for class>Delivery Name*</label>
+                            <input id="deliveryName" name type="text" required>
+                        </div>
+                        <div class="forminput">
+                            <label for class>Delivery Postcode*</label>
+                            <input id="deliveryPostcode" name type="text"
+                                required>
+                        </div>
+                        <div class="forminput">
+                            <label for class>Delivery Telephone*</label>
+                            <input id="deliveryPhoneNumber" name type="text"
+                                minlength="11" maxlength="11" required>
+                        </div>
+                        <div class="forminput">
+                            <label for class>Delivery Address 1*</label>
+                            <input id="deliveryAddress1" name type="text"
+                                required>
+                        </div>
+                        <div class="forminput">
+                            <label for class>Delivery Address 2</label>
+                            <input id="deliveryAddress2" name type="text">
+                        </div>
+                        <div class="forminput">
+                            <label for class>Delivery Address 3</label>
+                            <input id="deliveryAddress3" name type="text">
+                        </div>
+                    </section>
+                    <h1>
+                        Payment info
+                    </h1>
+                    <hr>
+                    <section class="paymentinfo">
+                        <div class="forminput">
+                            <label for="payment">Payment on Pick Up or
+                                Delivery?*</label>
+                            <select name="payment" id="payment" required>
+                                <option value> </option>
+                                <option value="Pickup">Pickup</option>
+                                <option value="Delivery">Delivery</option>
+                                <option value="Account">Account</option>
+                            </select>
+                        </div>
+                        <div class="forminput">
+                            <label class="flex" for="message">Message <p
+                                    class="hinttext">(optional)</p></label>
+                            <textarea id="message" name="message" rows="4"
+                                wrap="soft"></textarea>
+                        </div>
+                    </section>
+
+                </div>
+                <div id="basket" class="hideInfo">
+                    <h1>
+                        Basket
+                    </h1>
+                    <div id="table">
+                        <div id="headerrow" class="columns tablerow headerrow">
+
+                            <h3>Animal</h3>
+                            <h3>Quantity</h3>
+                            <h3>Name</h3>
+                            <h3>Delivery address</h3>
+                            <h3>Delivery telephone</h3>
+                            <h3>Payment</h3>
+                            <h3></h3>
+
+                        </div>
+
+                    </div>
+                    <div id="submitbuttonwrapper">
+                        <div id="loadingsymbol"></div>
+                        <button id="submitorders" type="button">Submit Orders</button>
+                    </div>
+                    <form method="post" action="/customer-order"></form>
+                    <br>
+                </div>
+            </div>
+          
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrJDwcnDimqAZ5BZAwk7q9Iw-YE6-A9yY&callback=init&libraries=places&v=weekly" defer></script>
+        </body>
+    </html>

@@ -3,7 +3,10 @@
 use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-
+use MrShan0\PHPFirestore\FirestoreClient;
+use Datetime;
+use DateTimeZone;
+use Google\Service\Datastore;
 
 $app->get('/bookings[/invalidform]', function (Request $request, Response $response, $args) use ($app) : Response{
 
@@ -42,7 +45,7 @@ $app->get('/bookings[/invalidform]', function (Request $request, Response $respo
 
   $api_key = $env['MAPS_JAVASCRIPT_API_KEY'];
 
-  return $this->view->render($response,'NewBooking.twig', array(
+  return $this->view->render($response,'bookings.html', array(
           'places_api_key' => $api_key,
           'page_title' => APP_TITLE,
           'css_file' => CSS_PATH . "NewBooking.css",
@@ -59,15 +62,21 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
 {
 
   $container = $app->getContainer();
+  $logger = $container->get("logger"); 
+  $tainted_parameters = $request->getParsedBody();
+
+  if($logger != null){
+    $logger->error('BOOKING_FORM_POST', array($tainted_parameters));
+  }
+
+  
   $manage_order_model = $container->get('manageOrderModel');
 
-  $tainted_parameters = $request->getParsedBody();
+ 
 
   //$cleaned_parameters = cleanBookingForm($app, $tainted_parameters);
 
   $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
-
-
 
   //if one of the parameters does not meet requirements
 
@@ -78,7 +87,7 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
 
     // return $response;
 
-    $logger = $container->get("logger");
+    
     $logger->error("BOOKING-FORM-ERROR", $tainted_parameters);
 
     return $response->withRedirect('/bookings?invalidform=true&errormessage=' . $error_message . '&inputvalue=' . $error_input_value, 301);
@@ -89,36 +98,76 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
 
 
   //get delivery week
-
  
   $delivery_week = $manage_order_model->getDeliveryWeek('PUBLIC');
 
   $cleaned_parameters['delivery_week'] = $delivery_week;
 
-
   //store in database
-  $doctrine_wrapper = $container->get('doctrineWrapper');
   $logger = $container->get('logger');
 
+  $add_order_model = $container->get('addOrderModel');
+  //add in order id
+  putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
 
-  // // Doctrine wrapper setup
-  $database_connection_settings = $container->get('settings')['doctrineSettings'];
-  $database_connection = DriverManager::getConnection($database_connection_settings);
-  $query_builder = $database_connection->createQueryBuilder();
-  $doctrine_wrapper->setQueryBuilder($query_builder);
-  $doctrine_wrapper->setDoctrineLogger($logger);
-  $doctrine_wrapper->setDatabaseConnection($database_connection);
-  
-  $doctrine_wrapper->storeOrderData($cleaned_parameters);
-  
+  $container = $app->getContainer();
 
-  $query_result =  $doctrine_wrapper->getQueryResult();
+  //store in database
+  $logger = $container->get('logger');
+  $add_order_model = $container->get('addOrderModel');
+  $session_wrapper = $container->get('sessionWrapper');
+  $date_time = new DateTime();
+  $date_time->setTimezone(new DateTimeZone('Europe/London'));
+  
+  $add_order_model->setLogger($logger);
+  $add_order_model->setOrderData($cleaned_parameters);
+  $add_order_model->setSessionWrapper($session_wrapper);
+  $add_order_model->setDateTime($date_time);
+  $add_order_model->getOAuth2Token();
+
+ 
+  try{
+            
+    $env = parse_ini_file(realpath('../.env'));
+
+    $projectID = $env['FIREBASE_PROJECT_ID'];
+    $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+
+    $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+        'database' => '(default)',
+    ]);
+
+    $add_order_model->setFirebaseFirestore($firestore);
+
+  }catch(Exception $e){
+
+      if($logger != null){
+          $logger->error('FIREBASE_INIT_ERROR', array($e));
+          $logger->error('FIREBASE_INIT_ENV', array($env));
+      }
+
+      return $response->withRedirect('/manage-accounts?error=dberror', 302);
+
+  }
+
+ 
+  //store data
+  $add_order_model->storeOrder();
+  $query_result = $add_order_model->getFirebaseFirestoreResult();
+
+  if($logger != null){
+    $logger->error('BOOKING_FORM_POST_STORE_RESULT', array($query_result));
+  }
+
+
 
   if(!$query_result){   
+    
     return $response->withRedirect('/bookings?error=true', 301);
   }
 
-  $cleaned_parameters['ID'] = $doctrine_wrapper->getLastInsertID();
+  $cleaned_parameters['ID'] = $add_order_model->getOrderID();
+
 
   //TODO: popups for database error
 

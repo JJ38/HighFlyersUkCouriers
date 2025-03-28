@@ -3,6 +3,8 @@
 use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use MrShan0\PHPFirestore\FirestoreClient;
+use Kreait\Firebase\Factory;
 
 $app->get('/delete-user[/id]', function (Request $request, Response $response) use ($app) : Response{
 
@@ -18,63 +20,25 @@ $app->get('/delete-user[/id]', function (Request $request, Response $response) u
         $tainted_user_id = $allGetVars['id'];
 
         $sanitizer = $container->get('sanitizer');
-        $validator = $container->get('validator');
-
-        $sanitized_user_id = $sanitizer->sanitizePositiveNumberString($tainted_user_id);
-        $cleaned_user_id = $validator->validatePositiveNumberString($sanitized_user_id);
-        if(empty($cleaned_user_id)){
-          return $response->withRedirect('manage-accounts', 302);
-        }
-        
-        $logger = $container->get('logger');
-        $doctrine_wrapper = $container->get('doctrineWrapper');
-
-        // // Doctrine wrapper setup
-        $database_connection_settings = $container->get('settings')['doctrineSettings'];
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-        $query_builder = $database_connection->createQueryBuilder();
-        $doctrine_wrapper->setQueryBuilder($query_builder);
-        $doctrine_wrapper->setDoctrineLogger($logger);
-
-        $manage_accounts_model = $container->get('manageAccountsModel');
-        
-        $manage_accounts_model->setDoctrineWrapper($doctrine_wrapper);
-        $manage_accounts_model->fetchUserDataByID($cleaned_user_id);
-        $manage_accounts_model->generateHTMLForDeleteData();
-
-        $username = $manage_accounts_model->getUserData()[0]['username'];
+        $cleaned_user_id = $sanitizer->sanitizeString($tainted_user_id);
 
         $session_wrapper = $container->get('sessionWrapper');
         $session_wrapper->setSessionVar('delete_user_id', $cleaned_user_id);
-        $session_wrapper->setSessionVar('delete_username', $username);
+       
+        if(empty($cleaned_user_id)){
+          return $response->withRedirect('manage-accounts', 302);
+        }
 
+
+       
 
       }else{
         return  $response->withRedirect('manage-accounts', 302);
       }
 
-      //var_export($HTML_order_data);
-
-      //echo '<pre>' . var_export($order_data,true) . '</pre>';
-
-      return $this->view->render($response,'DeleteUser.twig', array(
+      return $this->view->render($response,'delete-user.html', array(
               'page_title' => APP_TITLE,
               'css_file' => CSS_PATH . "DeleteUser.css",
-              'asset_path' => ASSET_PATH,
-              'js_path' => JS_PATH . "",
-              'landing_page' => __FILE__,
-              'heading_1' => APP_TITLE,
-              'userdata' => $manage_accounts_model->getUserDataHTML(),
-              'links'=> array(
-                  'register' => 'registerform',
-                  'login' => 'loginform',
-                  'homepage' => '#',
-                  'send_initial_messages' => 'sendinitialtelemetrymessages',
-                  'present_telemetry' => 'presenttelemetrydata',
-                  'manage_users' => 'manageusersform',
-                  'send_telemetry' => 'sendtelemetrydata',
-                  'logout' => 'logout'
-              ),
           ));
     }else{
 
@@ -85,38 +49,68 @@ $app->get('/delete-user[/id]', function (Request $request, Response $response) u
 $app->post('/delete-user', function (Request $request, Response $response) use ($app) : Response
 {
 
+  $account_type = $request->getAttribute('accountType');
+
+  if($account_type == "admin"){
+    
     $container = $app->getContainer();
-
-    //store in database
-    $doctrine_wrapper = $container->get('doctrineWrapper');
-    $logger = $container->get('logger');
     $session_wrapper = $container->get('sessionWrapper');
-    $user_id = $session_wrapper->getSessionVar('delete_user_id');
-    $username = $session_wrapper->getSessionVar('delete_username');
-
-    // // Doctrine wrapper setup
-    $database_connection_settings = $container->get('settings')['doctrineSettings'];
-    $database_connection = DriverManager::getConnection($database_connection_settings);
-    $query_builder = $database_connection->createQueryBuilder();
-    $doctrine_wrapper->setQueryBuilder($query_builder);
-    $doctrine_wrapper->setDoctrineLogger($logger);
-
-    //TODO: make sure id and timestamp are set as session vars before storing
-
+    $uid = $session_wrapper->getSessionVar('delete_user_id');
     $session_wrapper->unsetSessionVar('delete_user_id');
-    $session_wrapper->unsetSessionVar('delete_username');
 
-    $doctrine_wrapper->deleteUser($user_id);
-   
+    putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json");
+    $container = $app->getContainer();
+    $sanitizer = $container->get('sanitizer');
+    $cleaned_user_id = $sanitizer->sanitizeString($uid);
 
-    if($doctrine_wrapper->getQueryResult()){
-        $doctrine_wrapper->deleteCustomer($username);
-        return $response->withRedirect('/manage-accounts?deleted=true', 302);
+    $factory = new Factory();
+
+    //create Auth
+    $auth = $factory->createAuth();
+
+    
+    try{
+      //create firestore  
+      $env = parse_ini_file(realpath('../.env'));
+
+      $projectID = $env['FIREBASE_PROJECT_ID'];
+      $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+
+      $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+          'database' => '(default)',
+      ]);
+
+    }catch(Exception $e){
+      return  $response->withRedirect('manage-accounts?error=true', 302);
+    }
+    
+    //setup manage accounts model
+    $logger = $container->get('logger');
+    $manage_accounts_model = $container->get('manageAccountsModel');
+
+    $manage_accounts_model->setLogger($logger);
+    $manage_accounts_model->setFirebaseFirestore($firestore);
+    $manage_accounts_model->setFirebaseAuth($auth);
+    $manage_accounts_model->setUID($cleaned_user_id);
+    $manage_accounts_model->deleteUser();
+
+    // if($customer_account){
+
+    //   $manage_accounts_model->deleteCustomerDocument();
+
+    // }
+    
+
+    if($manage_accounts_model->getDeleteUserResult() == false){
+      return  $response->withRedirect('manage-accounts?error=true', 302);
     }
 
-    return $response->withRedirect('/manage-accounts?deleted=false', 302);
+
+    return $response->withRedirect('/manage-accounts?deleted=true', 302);
 
 
-  
+  }
+  return $response->withRedirect('/loginpage', 302);
+
 
 })->setName('edit-orders');

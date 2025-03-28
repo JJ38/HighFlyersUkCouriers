@@ -3,48 +3,52 @@
 use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use MrShan0\PHPFirestore\FirestoreClient;
+use Kreait\Firebase\Factory;
 
+
+use Throwable;
 
 $app->get('/add-user[/usernameavailable]', function (Request $request, Response $response, $args) use ($app) : Response{
 
-  $account_type = $request->getAttribute('accountType');
+    $account_type = $request->getAttribute('accountType');
 
-  if($account_type == "admin"){
+    if($account_type == "admin"){
 
-    $container = $app->getContainer();
-    
+        $container = $app->getContainer();
+        
 
-    $allGetVars = $_GET;
+        $allGetVars = $_GET;
 
-    if(!empty($allGetVars)){
-        if(!empty($allGetVars['usernameavailable'])){
-            $sanitizer = $container->get('sanitizer');
-            $cleaned_parameters['usernameavailable'] = $sanitizer->sanitizeBoolean($allGetVars['usernameavailable']);
+        if(!empty($allGetVars)){
+            if(!empty($allGetVars['usernameavailable'])){
+                $sanitizer = $container->get('sanitizer');
+                $cleaned_parameters['usernameavailable'] = $sanitizer->sanitizeBoolean($allGetVars['usernameavailable']);
 
-            if($cleaned_parameters['usernameavailable'] == 'false'){
-                echo "<script>alert('Username not available');</script>";
+                if($cleaned_parameters['usernameavailable'] == 'false'){
+                    echo "<script>alert('Username not available');</script>";
+                }
             }
         }
-    }
 
-    return $this->view->render($response,'AddUser.twig', array(
-            'page_title' => APP_TITLE,
-            'css_file' => CSS_PATH . "AddUser.css",
-            'asset_path' => ASSET_PATH,
-            'js_path' => JS_PATH . "",
-            'landing_page' => __FILE__,
-            'heading_1' => APP_TITLE,
-            'links'=> array(
-                'register' => 'registerform',
-                'login' => 'loginform',
-                'homepage' => '#',
-                'send_initial_messages' => 'sendinitialtelemetrymessages',
-                'present_telemetry' => 'presenttelemetrydata',
-                'manage_users' => 'manageusersform',
-                'send_telemetry' => 'sendtelemetrydata',
-                'logout' => 'logout'
-            ),
-        ));
+        return $this->view->render($response,'add-user.html', array(
+                'page_title' => APP_TITLE,
+                'css_file' => CSS_PATH . "AddUser.css",
+                'asset_path' => ASSET_PATH,
+                'js_path' => JS_PATH . "",
+                'landing_page' => __FILE__,
+                'heading_1' => APP_TITLE,
+                'links'=> array(
+                    'register' => 'registerform',
+                    'login' => 'loginform',
+                    'homepage' => '#',
+                    'send_initial_messages' => 'sendinitialtelemetrymessages',
+                    'present_telemetry' => 'presenttelemetrydata',
+                    'manage_users' => 'manageusersform',
+                    'send_telemetry' => 'sendtelemetrydata',
+                    'logout' => 'logout'
+                ),
+            ));
     }
 
     return $response->withRedirect('loginpage', 302);
@@ -55,63 +59,81 @@ $app->get('/add-user[/usernameavailable]', function (Request $request, Response 
 $app->post('/add-user', function (Request $request, Response $response) use ($app) : Response
 {   
     $account_type = $request->getAttribute('accountType');
-
+ 
 
     if($account_type == "admin"){
-    
-        $container = $app->getContainer();
 
-        $tainted_parameters = $request->getParsedBody();
+        putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); //works
+        
+        $container = $app->getContainer();
+        $logger = $container->get('logger');
+        $manageAccountsModel = $container->get('manageAccountsModel');
+        $manageAccountsModel->setLogger($logger);
     
+            
+        $factory = new Factory();
+        $auth = $factory->createAuth();
+    
+        $tainted_parameters = $request->getParsedBody();
         $cleaned_parameters = cleanUserData($container, $tainted_parameters);
+
+
         //if one of the parameters does not meet requirements
-        
-        
         if(empty($cleaned_parameters)){
-          
+        
             return $response->withRedirect('/manage-accounts?error=true', 302);
         }
 
-        //store in database
-        $doctrine_wrapper = $container->get('doctrineWrapper');
-        $logger = $container->get('logger');
+        $userCredentials = [
+            'email' =>  $cleaned_parameters['username'] . "@placeholder.com",
+            'password' =>  $cleaned_parameters['password'],
+        ];
 
+        $manageAccountsModel->setFirebaseAuth($auth);
+        $manageAccountsModel->setCredentials($userCredentials);
+        $manageAccountsModel->setRole($cleaned_parameters['accountType']);
+        $manageAccountsModel->createUser();
 
-        // // Doctrine wrapper setup
-        $database_connection_settings = $container->get('settings')['doctrineSettings'];
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-        $query_builder = $database_connection->createQueryBuilder();
-        $doctrine_wrapper->setQueryBuilder($query_builder);
-        $doctrine_wrapper->setDoctrineLogger($logger);
+        if($manageAccountsModel->getFirebaseAuthResult() == false){
+            return $response->withRedirect('/manage-accounts?error=fireauth', 302);
+        }
+        
+        try{
+            
+            $env = parse_ini_file(realpath('../.env'));
 
+            $projectID = $env['FIREBASE_PROJECT_ID'];
+            $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
 
-        //check for duplicate users
-        $doctrine_wrapper->checkIfUsernameAvailable($cleaned_parameters['username']);
-        $is_username_available = $doctrine_wrapper->getQueryResult();
+            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+                'database' => '(default)',
+            ]);
 
-        if($is_username_available){
-            //store username
-
-            //hash password
-            $bcryptWrapper = $container->get('bcryptWrapper');
-
-            $cleaned_parameters['password'] = $bcryptWrapper->createHashedPassword($cleaned_parameters['password']);
-
-            $doctrine_wrapper->storeUserDetails($cleaned_parameters['username'], $cleaned_parameters['password'], $cleaned_parameters['accountType']);
+            $manageAccountsModel->setFirebaseFirestore($firestore);
+            $manageAccountsModel->createFirestoreUserDocument();
 
             if($cleaned_parameters['accountType'] == "customer"){
-
-                $doctrine_wrapper->createCustomer($cleaned_parameters['username']);
-                
+                $manageAccountsModel->createFirestoreCustomerDocument();
             }
-     
 
-        }else{
-            return $response->withRedirect('/add-user?usernameavailable=false', 302);
+        }catch(Exception $e){
+
+            if($logger != null){
+                $logger->error('FIREBASE_INIT_ERROR', array($e));
+                $logger->error('FIREBASE_INIT_ENV', array($env));
+            }
+
+            return $response->withRedirect('/manage-accounts?error=firestoreinit', 302);
+
         }
 
 
-        return $response->withRedirect('/manage-accounts', 302);
+        if($manageAccountsModel->getFirebaseFirestoreResult() == false){
+            return $response->withRedirect('/manage-accounts?error=firestore', 302);
+        }
+    
+
+        return $response->withRedirect('/manage-accounts?success=true', 302);
 
     }
 

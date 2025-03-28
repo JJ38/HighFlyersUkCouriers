@@ -78,19 +78,42 @@ input{
     box-shadow: 0px 0px 15px #00000022;
 }
 
-#updatebutton{
+.updateButton{
     background-color: #2881FF;
     color: white;
     padding: 0 20px;
 }
 
-#updatebutton:hover{
+.updateButton:hover{
     color:#2881FF;
     background-color: white;
 }
+
+.hidden{
+
+    display:none;
+
+}
+
 
 @media(max-width: 800px){
     .bookingInput{
         width: 100%;
     }
+}
+
+.loader {
+    display: block;
+    margin: auto; 
+    border: 5px solid #f3f3f3; /* Light grey */
+    border-top: 5px solid #3498db; /* Blue */
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

@@ -37,20 +37,39 @@ h2{
 }
 
 #loginButton{
- 
-    margin: 0 50%;
-    margin-top: 25px;
-    transform: translateX(-50%);
     font-family: 'Raleway';
     font-style: normal;
     font-weight: 500;
     font-size: 17px;
     color: white;
-    width: 150px;
-    height: 40px;
     background: #2881FF;
     border-radius: 16px;
     border: none;
+}
+
+#loginButtonWrapper{
+  position: relative;
+  margin: 0 50%;
+  margin-top: 25px;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 40px;
+}
+
+.loader {
+  display: none;
+  margin: auto; 
+  border: 5px solid #f3f3f3; /* Light grey */
+  border-top: 5px solid #3498db; /* Blue */
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 label{
@@ -59,13 +78,13 @@ label{
 }
 
 input{
+  
   height: 35px;
   width: 100%;
   border-radius: 6px;
   border: 1px solid #000000;;
   font-family: 'Raleway';
   color: black;
-  
   
 }
 

@@ -2,6 +2,8 @@
 
 namespace HighFlyersUkCouriers;
 
+
+
 class LoginModel
 {
     /** @var object */
@@ -14,6 +16,10 @@ class LoginModel
     private $session_wrapper;
     private $user_credentials;
     private $login_result;
+    private $auth;
+    private $ID_token;
+    private $verified_ID_Token;
+    private $account_type;
 
     public function __construct()
     {
@@ -44,6 +50,15 @@ class LoginModel
     public function setDoctrineWrapper($doctrine_wrapper) : void
     {
         $this->doctrine_wrapper = $doctrine_wrapper;
+    }
+
+
+    public function setAuth($auth) : void{
+        $this->auth = $auth;
+    }
+
+    public function setIDToken($ID_token) : void{
+        $this->ID_token = $ID_token;
     }
 
     /**
@@ -84,6 +99,16 @@ class LoginModel
     public function getResult() : bool
     {
         return $this->login_result;
+    }
+
+    public function getAccountType() : string
+    {
+        return $this->account_type;
+    }
+
+    public function getVerifiedIDToken()
+    {
+        return $this->verified_ID_Token;
     }
 
     /**
@@ -134,16 +159,69 @@ class LoginModel
             //check if admin
             $this->doctrine_wrapper->getAccountType($this->user_credentials['username']);
             $account_type = $this->doctrine_wrapper->getQueryResult();
+            $this->account_type = $account_type;
+            
+            //strip '@placeholder.com' out of username
+
+            $username = str_replace('@placeholder.com', '', $this->user_credentials['username']);
 
             // Adding to Session Var
-            $this->session_wrapper->setSessionVar('user', $this->user_credentials['username']);
+            $this->session_wrapper->setSessionVar('user', $username);
             $this->session_wrapper->setSessionVar('accountType', $account_type);
             // Log Successful Authentication
             if ($this->logger_handle !== null) {
                 $this->logEvent('User Authentication', array($this->user_credentials['username']));
             }
+        }else{
+
+            if ($this->logger_handle !== null) {
+                $this->logEvent('USE_AUTHENTICATION_ATTEMPT', array($this->user_credentials['username']));
+            }
         }
 
         $this->login_result = $login_result;
     }
+
+    public function verifyIDToken() : void
+    {
+        try {
+
+            $verified_ID_Token = $this->auth->verifyIdToken($this->ID_token);
+            $this->verified_ID_Token = $verified_ID_Token;
+            $this->login_result = true;
+
+            $uid = $verified_ID_Token->claims()->get('sub');
+            $email = $verified_ID_Token->claims()->get('email');
+            $custom_claims = $this->auth->getUser($uid)->customClaims;
+
+            $account_type = $custom_claims['role'];
+
+            if(empty($account_type)){
+                echo "custom role not set";
+                $account_type = " ";
+            }
+
+            if(empty($email)){
+                $email = " ";
+            }
+
+            $username = str_replace('@placeholder.com', '', $email);
+
+            $this->session_wrapper->setSessionVar('verified_ID_Token', $this->ID_token);
+            $this->session_wrapper->setSessionVar('accountType', $account_type);
+            $this->session_wrapper->setSessionVar('user',  $username);
+
+
+        } catch (\Exception $e) {
+
+            if ($this->logger_handle !== null) {
+                $this->logEvent('VERIFY_ID_TOKEN_ERROR', array($this->user_credentials['username'], $this->ID_token));
+                $this->logEvent('VERIFY_ID_TOKEN_ERROR_EXCEPTION', array($e));
+            }
+          
+            $this->login_result = false;
+
+        }
+    }
+
 }

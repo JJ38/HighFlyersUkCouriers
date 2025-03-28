@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>     
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+        
+        <title>{{ page_title }}</title>
+      <script type="module" crossorigin src="./assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
+      <script type="module" crossorigin src="./assets/index-dfc2d82f-DekqGqg_.js"></script>
+      <script type="module" crossorigin src="./assets/Firebase-DFDJhXei.js"></script>
+      <script type="module" crossorigin src="./assets/Logout-BtrfE2Gy.js"></script>
+      <link rel="stylesheet" crossorigin href="./assets/LiveLogisticsManager-BkqYhmN5.css">
+      <link rel="stylesheet" crossorigin href="./assets/Navbar-_3NclZQX.css">
+      <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
+      <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-oHciNmWq.css">
+    </head>
+    <body>
+      <div id="wrapper">
+        <header>
+          <div id="mobilenavmenu"  class="hideMobileMenu">
+            <div id="mobilenavwrapper">
+              <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+                <a class="logoutButton">Logout</a>
+                <a class="currentpage" href="/manage-orders">Bookings</a>
+                <a href="/content-manager">Content Manager</a>
+                <a href="/manage-accounts">Accounts</a>
+                <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+
+            </div>
+          </div>
+          <nav id="menu">
+            <div id="mobilenavtoggle">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <a class="navLinks logoutButton">Logout</a>
+            <a class="navLinks" href="/manage-orders">Bookings</a>
+            <a class="navLinks" href="/content-manager">Content Manager</a>
+            <a class="navLinks" href="/manage-accounts">Accounts</a>
+            <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+          </nav>
+     
+        </header>
+        <Section id="navbarMainContentWrapper">
+          <nav class="logisticsVerticalNavbar">
+            <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon selectedIconColour">
+              share_location
+            </span>
+            <a class="verticalNavbarLink" href="/shipments-logistics-manager">
+              <span id="shipmentLogisticsManagerButton" class="material-symbols-outlined navbarIcon" >
+                package_2
+              </span>
+            </a>
+          </nav>
+          <Section id="mainContent">
+            <Section id="liveLogisticsManagerWrapper">
+              <div id="driversWindow">
+                <h1 class="windowTitle">Drivers</h1>
+                <div class="driverInfoCardList">
+                  <div class="driverInfoCard">
+                    <div class="row">
+                      <div class="row flexOne noGap alignItemsCenter">
+                        <span class="material-symbols-outlined green">
+                          circle
+                        </span>
+                        <p class="driverStatus">En Route</p>
+                      </div>   
+                      <p class="driverName flexTwo">Alexander</p>    
+                    </div>
+                    <p class="runName">North East Scotland</p>
+                    <div class="row">
+                      <div class="column flexOne">
+                        <p class="runInfoTitle">Stops Remaining</p>
+                        <p class="runInfo">7</p>
+                      </div>
+                      <div class="column flexTwo">
+                        <p class="runInfoTitle">Next Stop</p>
+                        <p class="runInfo">10 Downing Street</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="driverInfoCard">
+                    <div class="row">
+                      <div class="row flexOne noGap alignItemsCenter">
+                        <span class="material-symbols-outlined green">
+                          circle
+                        </span>
+                        <p class="driverStatus">En Route</p>
+                      </div>   
+                      <p class="driverName flexTwo">Stephen</p>    
+                    </div>
+                    <p class="runName">Cumbria</p>
+                    <div class="row">
+                      <div class="column flexOne">
+                        <p class="runInfoTitle">Stops Remaining</p>
+                        <p class="runInfo">11</p>
+                      </div>
+                      <div class="column flexTwo">
+                        <p class="runInfoTitle">Next Stop</p>
+                        <p class="runInfo">8 Marston Close</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Section>
+            <Section id="driverRunDetailsWindow" class="hidden">
+              
+            </Section>
+    
+            <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map>
+            
+          </Section>
+        </Section>
+    </body>
+    <!-- <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&libraries=maps,marker&v=beta"}} defer></script> -->
+    <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+    <script type="text/javascript" src="/js/LiveLogisticsManager.js"></script>
+</html>
+

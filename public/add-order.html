@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="/css/Navbar.css" type="text/css">
+        <link rel="stylesheet" href="/css/AddOrder.css" type="text/css">
+        <link rel="stylesheet" href="/css/AutoComplete.css" type="text/css">   
+        <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">   
+        <script type="module" src="/js/AddOrders.js"></script>
+        <title>{{ page_title }}</title>
+    </head>
+    <body>
+  
+      <header>
+        <nav id="menu">
+          <a class="navLinks" href="/manage-orders">Back</a>
+        </nav>
+      </header>
+      <div id="maincontent">
+        <section class="formSection">
+          <form id="addOrderForm" class="contactUsForm" action="/add-order" method="post">
+            <table>
+              <tr>
+                <td>
+                  <label for="animalType">Bird/Animal type: </label>
+                </td>
+                <td>
+                  <input id="animalType" name="animalType" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="quantity">Quantity: </label>
+                </td>
+                <td>
+                  <input id="quantity" name="quantity" type="number" min="1" required>
+                </td>
+              </tr>
+
+            
+
+              <tr>
+                <td>
+                  <label for="email">Email Address: </label>
+                </td>
+                <td>
+                  <input id="email" name="email" type="email" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="username">Account: </label>
+                </td>
+                <td>
+                    <input id="username" name="username" type="text">
+                
+                </td>
+              </tr>
+
+              <tr>
+                <td>                 
+                    <label for="deliveryWeek">Delivery Week: </label>  
+                </td>
+                <td>
+                  {% if isAdmin == true %}
+                    <input id="deliveryWeek" name="deliveryWeek" type="number" min="1" max="53">
+                  {% endif %}
+                </td>
+              </tr>
+
+              
+              <tr>
+                <td>
+                  <label for="collectionName">Collection Name: </label>
+                </td>
+                <td>
+                  <input id="collectionName" name="collectionName" type="text" required>
+                </td>
+              </tr>
+            </table>
+
+            <section id="collectionAddressAutocomplete" class="bookingInput">
+              <label for="collectionName">Find Collection Address </label>
+              
+              <input id="collectionAddressAutocompleteInput" type="text" placeholder="Search for a place..." />
+              <div id="autocompleteResultsAnchor">
+                <div id="autocompleteResultsWrapperCollection" class="autocompleteResultsWrapper hidden">
+                  <div id="autocompleteTitleCollection" class="autocompleteTitle"></div>
+                  <ul id="autocompleteResultsCollection"></ul>                   
+                </div>
+              </div>
+          
+            </section>
+
+            <table>
+              <tr>
+                <td>
+                  <label for="collectionAddress1">Collection Address 1: </label>
+                </td>
+                <td>
+                  <input id="collectionAddress1" name="collectionAddress1" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="collectionAddress2">Collection Address 2: </label>
+                </td>
+                <td>
+                  <input id="collectionAddress2" name="collectionAddress2" type="text">
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="collectionAddress3">Collection Address 3: </label>
+                </td>
+                <td>
+                  <input id="collectionAddress3" name="collectionAddress3" type="text">
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="collectionPostcode">Collection Postcode: </label>
+                </td>
+                <td>
+                  <input id="collectionPostcode" name="collectionPostcode" type="text" required>
+                </td>
+              </tr>
+
+               <tr>
+                <td>
+                  <label for="collectionPhoneNumber">Collection Telephone number: </label>
+                </td>
+                <td>
+                  <input id="collectionPhoneNumber" name="collectionPhoneNumber" type="text" minlength="11" maxlength="11" required>
+                </td>
+              </tr>
+
+
+              <tr>
+                <td>
+                  <label for="deliveryName">Delivery Name: </label>
+                </td>
+                <td>
+                  <input id="deliveryName" name="deliveryName" type="text" required>
+                </td>
+              </tr>
+
+            </table>
+            <div id="deliveryAddressAutocomplete" class="bookingInput">
+              
+                <label for="deliveryName">Find Delivery Address </label>
+              
+                <input id="deliveryAddressAutocompleteInput" type="text" placeholder="Search for a place..." />
+                <div id="autocompleteResultsAnchor">
+                  <div id="autocompleteResultsWrapperDelivery" class="autocompleteResultsWrapper hidden">
+                    <div id="autocompleteTitleDelivery" class="autocompleteTitle"></div>
+                    <ul id="autocompleteResultsDelivery"></ul>                   
+                  </div>
+                </div>
+              
+          
+            </div>
+            <table>
+              <tr>
+                <td>
+                  <label for="deliveryAddress1">Delivery Address Line 1: </label>
+                </td>
+                <td>
+                  <input id="deliveryAddress1" name="deliveryAddress1" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="deliveryAddress2">Delivery Address Line 2: </label>
+                </td>
+                <td>
+                  <input id="deliveryAddress2" name="deliveryAddress2" type="text">
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="deliveryAddress3">Delivery Address Line 3: </label>
+                </td>
+                <td>
+                  <input id="deliveryAddress3" name="deliveryAddress3" type="text">
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="deliveryPostcode">Delivery Postcode: </label>
+                </td>
+                <td>
+                  <input id="deliveryPostcode" name="deliveryPostcode" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="deliveryPhoneNumber">Delivery Telephone Number: </label>
+                </td>
+                <td>
+                  <input id="deliveryPhoneNumber" name="deliveryPhoneNumber" type="text" minlength="11" maxlength="11" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="payment">Payment on Delivery or Collection?: </label>
+                </td>
+                <td>
+                  <select name="payment" id="payment" required>
+                    <option value=""> -- select an option -- </option>
+                    <option value="Collection">Collection</option>
+                    <option value="Delivery">Delivery</option>
+                    <option value="Account">Account</option>
+                  </select>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="message">Message: </label>
+                </td>
+                <td>
+                  <textarea id="message" name="message" rows="8" wrap="soft"></textarea>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="code">Code: </label>
+                </td>
+                <td>
+                  <input id="code" name="code" type="text">
+                </td>
+              </tr>
+            </table>
+            <div id="submitbuttonwrapper">
+              <div id="loadingsymbol"></div>
+              <input id="submitButton" type="button" value="Submit" aria-label="Submit">
+            </div>
+          </form>
+        </section>
+      </div>
+  </body>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrJDwcnDimqAZ5BZAwk7q9Iw-YE6-A9yY&callback=init&libraries=places&v=weekly" defer></script>
+  <script src="/js/AddressAutocomplete.js" ></script>
+</html>
+

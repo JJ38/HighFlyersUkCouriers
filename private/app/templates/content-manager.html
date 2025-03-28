@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>   
+    <title>{{ page_title }}</title>
+
+  <script type="module" crossorigin src="./assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
+  <script type="module" crossorigin src="./assets/index-dfc2d82f-DekqGqg_.js"></script>
+  <script type="module" crossorigin src="./assets/Firebase-DFDJhXei.js"></script>
+  <script type="module" crossorigin src="./assets/Logout-BtrfE2Gy.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/ContentManager-DudUOI_O.css">
+  <link rel="stylesheet" crossorigin href="./assets/Navbar-_3NclZQX.css">
+  <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
+</head>
+<body>
+    <div class="body">
+        <div class="rightclickmenu hidden" id="rightclickmenu">
+            <div class="rootchild list menuitem">Add >
+                <div class="listwrapper hidden">
+                    <div class="addoptions list menuitem">Before >     
+                        <div class="listwrapper hidden">
+                            <div id="beforetext" class="menuitem">Text</div>                             
+                        </div>                     
+                    </div>
+                    <div class="addoptions list menuitem">After >
+                        <div class="listwrapper hidden">
+                            <div id="aftertext" class="menuitem">Text</div>                             
+                        </div>
+                    </div>               
+                </div>
+            </div>                                      
+            <div class="rootchild menuitem" id="deleteoption">Delete</div>
+        </div>
+
+        <header> 
+            <div id="mobilenavmenu"  class="hideMobileMenu">
+                <div id="mobilenavwrapper">
+                  <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+                    <a class="logoutButton">Logout</a>
+                    <a href="/manage-orders">Bookings</a>
+                    <a class="currentpage" href="/content-manager">Content Manager</a>
+                    <a href="/manage-accounts">Accounts</a>
+                    <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+
+          
+                </div>
+            </div>
+            <nav id="contentmanagernav">
+                <div id="mobilenavtoggle">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <a class="logoutButton">Logout</a>
+                <a href="/manage-orders">Bookings</a>
+                <a href="/content-manager">Content Manager</a>
+                <a href="/manage-accounts">Accounts</a>
+                <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+              
+            </nav>
+        </header>
+        <div class="contentmanagermaincontent">
+            <div class="contentmanagerwrapper">                    
+                <div class="objecttreewindow window">
+                    <div class="selectpagewrapper">                          
+                        <form method="post" action="content-manager">
+                            <input id="editabledocumentvalue" type="hidden" name="editabledocumentvalue">
+                            <input id="fontlinks" type="hidden" name="fontlinks">
+                            <input id="filename" type="hidden" name="filename">
+                            <input is="save" type="button" onclick="savePage()" value="Save">
+                        </form>   
+                        <form id="selectpageform" name="selectpageform" method="get" action="content-manager">                                           
+                            <select form="selectpageform" name="selectedpage" onchange="this.form.submit()" class='selectpage'  id="selectpage">
+                                
+                                <option value="Homepage.html" selected >Homepage</option>
+                                <option value="Booking.html" selected >Booking</option>
+                                <option value="FAQ.html" selected >FAQ</option>
+                                <option value="Prices.html" selected >Prices</option>
+                                <option value="ContactUs.html" selected >Contact Us</option>
+                                <option value="AboutUs.html" selected >About Us</option>
+                        
+                            </select>
+                        </form>
+                    </div>
+                    <div class="objecttree">                            
+                    </div>
+                </div>
+                <div class="leftdraggable draggable">              
+                </div>
+                <div class="editablepage window">                      
+                    <div class="content">
+                        
+                        {{ filedata|raw }}
+                    </div>                                
+                </div>
+                <div class="rightdraggable draggable">
+                </div>
+                <div class="attributeeditor window">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/js/ContentManager.js"></script>
+{# <script type="text/javascript" src="/js/MobileNavigationBar.js"></script> #}
+</html>

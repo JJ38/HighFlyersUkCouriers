@@ -17,6 +17,8 @@ class ManageOrderModel
   private $is_admin;
   private $error_message;
   private $error_input_value;
+  private $add_order_model;
+  private $firebase_firestore;
 
 
   public function getOrderData() : array|null //for testing purposes
@@ -63,6 +65,16 @@ class ManageOrderModel
     $this->order_data = $order_data;
   }
 
+  public function setAddOrderModel($add_order_model) : void
+  {
+    $this->add_order_model = $add_order_model;
+  }
+
+  public function setFirebaseFirestore($firebase_firestore) : void
+  {
+    $this->firebase_firestore = $firebase_firestore;
+  }
+
   public function setIsAdmin($is_admin){
     $this->is_admin = $is_admin;
   }
@@ -96,7 +108,6 @@ class ManageOrderModel
     $this->order_data = $this->doctrine_wrapper->getQueryResult();
     $this->translateData();
 
-
   }
 
   public function fetchOrderDataByFieldAndMultipleValues(string $field_name, array $value) : void
@@ -117,221 +128,6 @@ class ManageOrderModel
     }
   }
 
-  public function generateHTMLFromData() : void
-  {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'code', 'added_by', 'printed', 'timestamp');
-    
-    $HTML = '';
-    $number_of_orders = count($this->order_data);
-    for ($i = 0; $i < $number_of_orders; $i++) {
-      $HTML = $HTML . '<tr>';
-
-      $HTML = $HTML . '<td><input type="checkbox" id="' . $this->order_data[$i]['id'] . '" name="' . $this->order_data[$i]['id'] . '" value="' . $this->order_data[$i]['id'] . '" onclick="highlightorder(this)"></td>';
-
-      for ($j = 0; $j < count($this->order_data[$i]); $j++) {
-        if($headers[$j] == "delivery_week"){
-
-          $week_colour = "white";
-
-          $week_number = intval($this->order_data[$i][$headers[$j]]);
-
-          switch ($week_number % 8) {
-            case 0:
-              $week_colour = "red";
-              break;
-
-            case 1:
-              $week_colour = "green";
-              break;
-
-            case 2:
-              $week_colour = "yellow";
-              break;
-
-            case 3:
-              $week_colour = "blue";
-              break;
-
-            case 4:
-              $week_colour = "#B5651D";
-              break;
-
-            case 5:
-              $week_colour = "#CBC3E3";
-              break;
-
-            case 6:
-              $week_colour = "pink";
-              break;
-
-            case 7:
-              $week_colour = "orange";
-              break;
-
-            default:
-              $week_colour = "white";
-
-        }
-
-          $HTML = $HTML . "<td style=\"background-color: {$week_colour}\">{$this->order_data[$i][$headers[$j]]}</td>";
-        }else{
-          $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
-        }
-      }
-
-      $HTML = $HTML . '<td class="orderbuttons">';
-      
-
-      $HTML = $HTML . '<a class="print"><button type="button">Print</button></a>';
-      $HTML = $HTML . '<a href="/view-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">View</button></a>';
-
-      if($this->is_admin || empty($this->order_data[$i]['username'])){
-        $HTML = $HTML . '<a href="/edit-order?id=' . $this->order_data[$i]['id'] .'"><button>Edit</button></a>';
-      }
-     
-
-      if($this->is_admin){
-        $HTML = $HTML . '<a href="/delete-order?id=' . $this->order_data[$i]['id'] .'"><button type="button">Delete</button></a>';
-       
-      }
-
-      $HTML = $HTML . '</TD></tr>';
-    }
-
-    $this->HTML_order_data = $HTML;
-
-  }
-
-  public function generateHTMLForEditData() : void
-  {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'code', 'added_by', 'printed', 'timestamp');
-    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Account', 'Delivery Week','Collection Name', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Collection Phone Number','Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Code', 'Added By', 'Printed', 'Timestamp');
-
-    $HTML = '';
-    $number_of_fields = count($this->order_data[0]);
-
-    //TODO: Accessibility
-    $HTML = $HTML . '<tr>';
-    $HTML = $HTML . '<td>' . 'ID' . '</td>'; //<label for="fname">First name:</label>
-    $HTML = $HTML . '<td>' . $this->order_data[0]['id'] . "</td>";
-    $HTML = $HTML . '</tr>';
-
-
-    for ($i = 1; $i < $number_of_fields - 1; $i++) {
-      $HTML = $HTML . '<tr>';
-      $HTML = $HTML . '<td>' . $form_fields[$i] . '</td>'; //<label for="fname">First name:</label>
-      if($form_fields[$i] == "Printed"){
-
-        $HTML = $HTML . '<td>' . '<select name="printed" id="printed" required="">';  
-
-        if($this->order_data[0][$headers[$i]] == "Printed"){
-          $HTML = $HTML . '<option value="Printed" selected>Printed</option><option value="Not Printed">Not Printed</option>';
-        }else{
-          $HTML = $HTML . '<option value="Printed">Printed</option><option value="Not Printed" selected>Not Printed</option>';
-
-        }
-
-        $HTML = $HTML . '</select>' . "</td>";
-
-      }else if($form_fields[$i] == "Added By"){
-      
-        $HTML = $HTML . '<td>' . $this->order_data[0]['added_by'] . "</td>";
-        
-
-      }else if($form_fields[$i] == "Delivery Week" && !$this->is_admin){  //if staff member
-      
-        $HTML = $HTML . '<td>' . $this->order_data[0]['delivery_week'] . "</td>";
-        
-      }
-
-      else if($form_fields[$i] == "Account" && !$this->is_admin){  //if staff member
-        
-        $HTML = $HTML . '<td>' . $this->order_data[0]['username'] . "</td>";
-        
-      }
-
-      
-      else if($form_fields[$i] == "Delivery Week"){ 
-        
-        $HTML = $HTML . '<td>' . "<input type=\"number\" id=\"" . $headers[$i] ."\"name=\"" . $headers[$i] . "\" value=\"" . $this->order_data[0][$headers[$i]] . "\" min=\"1\" max=\"53\"></td>";
-
-      }
-
-    
-
-      else if($form_fields[$i] == "Message"){ 
-        
-        $HTML = $HTML . '<td>' . "<textarea id=\"message\" name=\"message\" rows=\"8\" wrap=\"soft\">" . $this->order_data[0][$headers[$i]] . "</textarea></td>";
-
-      }
-      
-      else{
-
-        $HTML = $HTML . '<td>' . "<input type=\"text\" id=\"" . $headers[$i] ."\"name=\"" . $headers[$i] . "\" value=\"" . $this->order_data[0][$headers[$i]] . "\"></td>";
-      
-      }
-
-      $HTML = $HTML . '</tr>';
-    }
-
-    $HTML = $HTML . '<tr>';
-    $HTML = $HTML . '<td>' . 'Timestamp' . '</td>'; 
-    $HTML = $HTML . '<td>' . $this->order_data[0]['timestamp'] . "</td>";
-    $HTML = $HTML . '</tr>';
-
-    $this->HTML_order_data = $HTML;
-
-  }
-
-  public function generateHTMLForDeleteData() : void
-  {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'code', 'added_by', 'timestamp');
-    $form_fields = array('ID', 'Animal Type', 'Quantity', 'Email', 'Account', 'Delivery Week','Collection Name', 'Collection Address 1', 'Collection Address 2', 'Collection Address 3', 'Collection Postcode', 'Collection Phone Number','Delivery Name', 'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Postcode', 'Delivery Phone Number', 'Payment Option', 'Message', 'Code', 'Added By', 'Timestamp');
-    $HTML = '';
-    $number_of_fields = count($this->order_data[0]);
-
-    //TODO: Accessibility
-
-    for ($i = 0; $i < $number_of_fields - 1; $i++) {
-
-      $HTML = $HTML . '<tr>';
-      $HTML = $HTML . '<td>' . $form_fields[$i] . '</td>';
-
-      if($form_fields[$i] == "Message"){
-        $HTML = $HTML . '<td><p class="message">' . $this->order_data[0][$headers[$i]] . '</p>';
-      }else{
-         //<label for="fname">First name:</label>
-        $HTML = $HTML . '<td>' . $this->order_data[0][$headers[$i]];
-      }
-
-     
-      $HTML = $HTML . '</td></tr>';
-    }
-
-    $this->HTML_order_data = $HTML;
-  }
-
-  public function generateHTMLForMultipleDelete() : void
-  {
-    $headers = array('id', 'animal_type', 'quantity', 'email', 'username', 'delivery_week', 'collection_name', 'collection_address_1', 'collection_address_2', 'collection_address_3', 'collection_postcode', 'collection_phone_number', 'delivery_name', 'delivery_address_1', 'delivery_address_2', 'delivery_address_3', 'delivery_postcode', 'delivery_phone_number', 'payment_option', 'message', 'code', 'added_by', 'timestamp');
-    
-    $HTML = '';
-    $number_of_orders = count($this->order_data);
-    for ($i = 0; $i < $number_of_orders; $i++) {
-      $HTML = $HTML . '<tr>';
-
-      for ($j = 0; $j < count($this->order_data[$i]) - 1; $j++) { //-1 to account for not showing isprinted
-        $HTML = $HTML . "<td>{$this->order_data[$i][$headers[$j]]}</td>";
-      }
-
-      $HTML = $HTML . '</tr>';
-    }
-
-    $this->HTML_order_data = $HTML;
-
-  }
-
-
   public function cleanOrder($tainted_parameters, $app){
 
     $cleaned_parameters = array();
@@ -343,8 +139,8 @@ class ManageOrderModel
     $this->error_message = "error";
 
     //convert postcodes to uppercase
-    $tainted_parameters['collection_postcode'] = strtoupper($tainted_parameters['collection_postcode']);
-    $tainted_parameters['delivery_postcode'] = strtoupper($tainted_parameters['delivery_postcode']);
+    $tainted_parameters['collection_postcode'] = strtoupper($tainted_parameters['collectionPostcode']);
+    $tainted_parameters['delivery_postcode'] = strtoupper($tainted_parameters['deliveryPostcode']);
 
 
     $cleaned_parameters = array();
@@ -373,31 +169,31 @@ class ManageOrderModel
       return $cleaned_parameters;
     }
 
-    $sanitized_parameters['payment_option'] = $sanitizer->sanitizeString($tainted_parameters['payment_option']);
+    $sanitized_parameters['payment_option'] = $sanitizer->sanitizeString($tainted_parameters['payment']);
     $cleaned_parameters['payment_option'] = $validator->validatePaymentOption($sanitized_parameters['payment_option']);
     if(!$validator->getValidationResult()){
       $cleaned_parameters = array();
       $this->error_message = "invalid payment option";
-      $this->error_input_value = $tainted_parameters['payment_option'];
+      $this->error_input_value = $tainted_parameters['payment'];
       return $cleaned_parameters;
     }
 
-    $sanitized_parameters['delivery_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['delivery_phone_number']);
+    $sanitized_parameters['delivery_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['deliveryPhoneNumber']);
     $cleaned_parameters['delivery_phone_number'] = $validator->validatePhoneNumber($sanitized_parameters['delivery_phone_number']);
 
     if(!$validator->getValidationResult()){
       $cleaned_parameters = array();
       $this->error_message = "invalid delivery phone number";
-      $this->error_input_value = $tainted_parameters['delivery_phone_number'];
+      $this->error_input_value = $tainted_parameters['deliveryPhoneNumber'];
       return $cleaned_parameters;
     }
 
-    $sanitized_parameters['collection_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['collection_phone_number']);
+    $sanitized_parameters['collection_phone_number'] = $sanitizer->sanitizePhoneNumber($tainted_parameters['collectionPhoneNumber']);
     $cleaned_parameters['collection_phone_number'] = $validator->validatePhoneNumber($sanitized_parameters['collection_phone_number']);
     if(!$validator->getValidationResult()){
       $cleaned_parameters = array();
       $this->error_message = "invalid collection phone number";
-      $this->error_input_value = $tainted_parameters['collection_phone_number'];
+      $this->error_input_value = $tainted_parameters['collectionPhoneNumber'];
       return $cleaned_parameters;
     }
 
@@ -413,14 +209,14 @@ class ManageOrderModel
       $cleaned_parameters['username'] = "";
     }
       
-    if(array_key_exists('added_by', $tainted_parameters)){
-      $cleaned_parameters['added_by'] = $sanitizer->sanitizeString($tainted_parameters['added_by']);
+    if(array_key_exists('addedBy', $tainted_parameters)){
+      $cleaned_parameters['added_by'] = $sanitizer->sanitizeString($tainted_parameters['addedBy']);
     }else{
       $cleaned_parameters['added_by'] = "";
     }
       
-    if(array_key_exists('delivery_week', $tainted_parameters)){
-      $cleaned_parameters['delivery_week'] = $sanitizer->sanitizeString($tainted_parameters['delivery_week']);
+    if(array_key_exists('deliveryWeek', $tainted_parameters)){
+      $cleaned_parameters['delivery_week'] = $sanitizer->sanitizePositiveNumber($tainted_parameters['deliveryWeek']);
     }else{
       $cleaned_parameters['delivery_week'] = null;
     }
@@ -432,16 +228,16 @@ class ManageOrderModel
     }
 
 
-    $cleaned_parameters['animal_type'] = $sanitizer->sanitizeString($tainted_parameters['animal_type']);
-    $cleaned_parameters['collection_name'] = $sanitizer->sanitizeString($tainted_parameters['collection_name']);
-    $cleaned_parameters['collection_address_1'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_1']);
-    $cleaned_parameters['collection_address_2'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_2']);
-    $cleaned_parameters['collection_address_3'] = $sanitizer->sanitizeString($tainted_parameters['collection_address_3']);
+    $cleaned_parameters['animal_type'] = $sanitizer->sanitizeString($tainted_parameters['animalType']);
+    $cleaned_parameters['collection_name'] = $sanitizer->sanitizeString($tainted_parameters['collectionName']);
+    $cleaned_parameters['collection_address_1'] = $sanitizer->sanitizeString($tainted_parameters['collectionAddress1']);
+    $cleaned_parameters['collection_address_2'] = $sanitizer->sanitizeString($tainted_parameters['collectionAddress2']);
+    $cleaned_parameters['collection_address_3'] = $sanitizer->sanitizeString($tainted_parameters['collectionAddress3']);
     $cleaned_parameters['collection_postcode'] = $sanitizer->sanitizeString($tainted_parameters['collection_postcode']);
-    $cleaned_parameters['delivery_name'] = $sanitizer->sanitizeString($tainted_parameters['delivery_name']);
-    $cleaned_parameters['delivery_address_1'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_1']);
-    $cleaned_parameters['delivery_address_2'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_2']);
-    $cleaned_parameters['delivery_address_3'] = $sanitizer->sanitizeString($tainted_parameters['delivery_address_3']);
+    $cleaned_parameters['delivery_name'] = $sanitizer->sanitizeString($tainted_parameters['deliveryName']);
+    $cleaned_parameters['delivery_address_1'] = $sanitizer->sanitizeString($tainted_parameters['deliveryAddress1']);
+    $cleaned_parameters['delivery_address_2'] = $sanitizer->sanitizeString($tainted_parameters['deliveryAddress2']);
+    $cleaned_parameters['delivery_address_3'] = $sanitizer->sanitizeString($tainted_parameters['deliveryAddress3']);
     $cleaned_parameters['delivery_postcode'] = $sanitizer->sanitizeString($tainted_parameters['delivery_postcode']);
     $cleaned_parameters['message'] = $sanitizer->sanitizeString($tainted_parameters['message']);
     
@@ -462,8 +258,31 @@ class ManageOrderModel
 
       $delivery_week = $this->getDeliveryWeek('CUSTOMER');
 
+<<<<<<< HEAD
+      $tainted_order['animalType'] = $tainted_parameters['collection'][$i][0];
+      $tainted_order['quantity'] = $tainted_parameters['collection'][$i][1];
+      $tainted_order['collectionName'] = $tainted_parameters['collection'][$i][2];
+      $tainted_order['collectionAddress1'] = $tainted_parameters['collection'][$i][3];
+      $tainted_order['collectionAddress2'] = $tainted_parameters['collection'][$i][4];
+      $tainted_order['collectionAddress3'] = $tainted_parameters['collection'][$i][5];
+      $tainted_order['collectionPostcode'] = $tainted_parameters['collection'][$i][6];
+      $tainted_order['collectionPhoneNumber'] = $tainted_parameters['collection'][$i][7];
+  
+      $tainted_order['deliveryName'] = $tainted_parameters['delivery'][$i][0];
+      $tainted_order['deliveryAddress1'] = $tainted_parameters['delivery'][$i][1];
+      $tainted_order['deliveryAddress2'] = $tainted_parameters['delivery'][$i][2];
+      $tainted_order['deliveryAddress3'] = $tainted_parameters['delivery'][$i][3];
+      $tainted_order['deliveryPostcode'] = $tainted_parameters['delivery'][$i][4];
+      $tainted_order['deliveryPhoneNumber'] = $tainted_parameters['delivery'][$i][5];
+      
+      $tainted_order['email'] = $tainted_parameters['extra'][$i][0];
+      $tainted_order['payment'] = $tainted_parameters['extra'][$i][1];
+      $tainted_order['code'] = $tainted_parameters['extra'][$i][2];
+      $tainted_order['message'] = $tainted_parameters['extra'][$i][3];
+=======
       for($i = 1; $i < $number_of_orders + 1; $i++){
         $tainted_order = [];
+>>>>>>> master
 
         $tainted_order['animal_type'] = $tainted_parameters['collection'][$i][0];
         $tainted_order['quantity'] = $tainted_parameters['collection'][$i][1];
@@ -497,7 +316,12 @@ class ManageOrderModel
           return [];
         }
 
+<<<<<<< HEAD
+      $cleaned_order['delivery_week'] = intval($delivery_week);
+
+=======
         $cleaned_order['delivery_week'] = $delivery_week;
+>>>>>>> master
 
         $cleaned_orders[$i] = $cleaned_order;
       }
@@ -514,25 +338,29 @@ class ManageOrderModel
   }
 
 
-  public function storeMultipleOrders(){
+  public function storeMultipleOrders() : bool{
 
     $this->confirmed_orders = [];
+    $confirmed_orders = [];
 
     for($i = 1; $i < count($this->order_data) + 1; $i++){ 
 
-      //get delivery week
-
-      $this->doctrine_wrapper->storeOrderData($this->order_data[$i]);
-      $store_result = $this->getQueryResult();
-
-      $this->order_data[$i]['ID'] = $this->doctrine_wrapper->getLastInsertID();
+      $this->add_order_model->setOrderData($this->order_data[$i]);
+      $this->add_order_model->storeOrder();
+      $store_result = $this->add_order_model->getFirebaseFirestoreResult();
+      $this->order_data[$i]['ID'] = $this->add_order_model->getOrderID();
 
       if(!$store_result){
         return false;
       }
       //add order data to confirmed orders
-      $this->confirmed_orders[$i] = $this->order_data[$i];
+      
+      $confirmed_orders[$i] = $this->order_data[$i];
+    
     }
+
+
+    $this->confirmed_orders = $confirmed_orders;
 
     return true;
     
@@ -541,8 +369,6 @@ class ManageOrderModel
   public function updatePrinted(){
 
     for($i = 0; $i < count($this->order_data); $i++){ 
-
-      $this->doctrine_wrapper->updatePrinted($this->order_data[$i]);
 
       $store_result = $this->getQueryResult();
       if(!$store_result){
@@ -553,11 +379,10 @@ class ManageOrderModel
     }
 
     return true;
-    
   }
 
 
-  public function getDeliveryWeek($order_type){
+  public function getDeliveryWeek($order_type) : int{
 
     $current_date = new DateTime();
     $current_date->setTimezone(new DateTimeZone('Europe/London'));
@@ -612,11 +437,12 @@ class ManageOrderModel
       $delivery_date->modify('next monday');
     }
 
-    
-    
     // echo $current_date->format('M-d');
     //$current_date->modify('next tuesday');
-    return $delivery_date->format('W');
+
+    $delivery_week = intval($delivery_date->format('W'));
+
+    return $delivery_week; 
 
   }
 

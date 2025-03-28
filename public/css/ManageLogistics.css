@@ -19,11 +19,6 @@ header {
     flex: 0 1 auto;
 }
 
-nav {
-    padding: 30px;
-    border-bottom: solid 1px rgb(192, 192, 192);
-}
-
 nav > a{
  
     font-family: 'inter', sans-serif;

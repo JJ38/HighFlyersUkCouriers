@@ -112,7 +112,10 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
         $temp = [];
 
         foreach ($this->data as $item) {
+<<<<<<< HEAD
+=======
             /** @psalm-suppress MixedAssignment */
+>>>>>>> master
             $temp[] = $this->extractValue($item, $propertyOrMethod);
         }
 
@@ -165,6 +168,10 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
 
         usort(
             $collection->data,
+<<<<<<< HEAD
+            function (mixed $a, mixed $b) use ($propertyOrMethod, $order): int {
+                $aValue = $this->extractValue($a, $propertyOrMethod);
+=======
             /**
              * @param T $a
              * @param T $b
@@ -174,6 +181,7 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
                 $aValue = $this->extractValue($a, $propertyOrMethod);
 
                 /** @var mixed $bValue */
+>>>>>>> master
                 $bValue = $this->extractValue($b, $propertyOrMethod);
 
                 return ($aValue <=> $bValue) * ($order === Sort::Descending ? -1 : 1);
@@ -207,6 +215,9 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
     public function where(?string $propertyOrMethod, mixed $value): CollectionInterface
     {
         return $this->filter(
+<<<<<<< HEAD
+            fn (mixed $item): bool => $this->extractValue($item, $propertyOrMethod) === $value,
+=======
             /**
              * @param T $item
              */
@@ -216,6 +227,7 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
 
                 return $accessorValue === $value;
             },
+>>>>>>> master
         );
     }
 
@@ -229,7 +241,10 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
      */
     public function map(callable $callback): CollectionInterface
     {
+<<<<<<< HEAD
+=======
         /** @var Collection<TCallbackReturn> */
+>>>>>>> master
         return new Collection('mixed', array_map($callback, $this->data));
     }
 
@@ -244,7 +259,10 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
      */
     public function reduce(callable $callback, mixed $initial): mixed
     {
+<<<<<<< HEAD
+=======
         /** @var TCarry */
+>>>>>>> master
         return array_reduce($this->data, $callback, $initial);
     }
 
@@ -264,11 +282,16 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
         $diffAtoB = array_udiff($this->data, $other->toArray(), $this->getComparator());
         $diffBtoA = array_udiff($other->toArray(), $this->data, $this->getComparator());
 
+<<<<<<< HEAD
+        $collection = clone $this;
+        $collection->data = array_merge($diffAtoB, $diffBtoA);
+=======
         /** @var array<array-key, T> $diff */
         $diff = array_merge($diffAtoB, $diffBtoA);
 
         $collection = clone $this;
         $collection->data = $diff;
+>>>>>>> master
 
         return $collection;
     }
@@ -286,11 +309,16 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
     {
         $this->compareCollectionTypes($other);
 
+<<<<<<< HEAD
+        $collection = clone $this;
+        $collection->data = array_uintersect($this->data, $other->toArray(), $this->getComparator());
+=======
         /** @var array<array-key, T> $intersect */
         $intersect = array_uintersect($this->data, $other->toArray(), $this->getComparator());
 
         $collection = clone $this;
         $collection->data = $intersect;
+>>>>>>> master
 
         return $collection;
     }
@@ -359,6 +387,21 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
 
     private function getComparator(): Closure
     {
+<<<<<<< HEAD
+        return function (mixed $a, mixed $b): int {
+            // If the two values are object, we convert them to unique scalars.
+            // If the collection contains mixed values (unlikely) where some are objects
+            // and some are not, we leave them as they are.
+            // The comparator should still work and the result of $a < $b should
+            // be consistent but unpredictable since not documented.
+            if (is_object($a) && is_object($b)) {
+                $a = spl_object_id($a);
+                $b = spl_object_id($b);
+            }
+
+            return $a === $b ? 0 : ($a < $b ? 1 : -1);
+        };
+=======
         return /**
              * @param T $a
              * @param T $b
@@ -376,6 +419,7 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
 
                 return $a === $b ? 0 : ($a < $b ? 1 : -1);
             };
+>>>>>>> master
     }
 
     /**

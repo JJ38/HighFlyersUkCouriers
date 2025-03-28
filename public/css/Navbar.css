@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+
+}
+
+nav{
+  
+  display: flex;
+  padding-top: 1.5rem; 
+  padding-bottom: 1.5rem;
+  padding-left: 3em;
+  background-color: white;
+  border-bottom: solid 1px rgb(192,192,192);
+
+}
+
+a.navLinks{
+  
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.3rem;
+  color: black;
+  text-decoration: none;
+  margin: 0 1em;
+
+}
+
+a.navLinks:hover{
+  color: grey;
+}

@@ -3,12 +3,16 @@
 use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Dompdf\Dompdf; 
-use Mpdf\Mpdf;
+use MrShan0\PHPFirestore\FirestoreClient;
+use DateTime;
 
 $app->get('/customer-order', function (Request $request, Response $response) use ($app) : Response{
 
     $account_type = $request->getAttribute('accountType');
+
+    // Echo "<h1>This form is currently unavailable. Please order through the public form in the booking page or call us to book orders. Sorry for the inconvenience</h1>";
+
+    // return $response;
 
     if($account_type == "customer"){
 
@@ -56,47 +60,17 @@ $app->get('/customer-order', function (Request $request, Response $response) use
         
 
         // Get models + Wrappers
-        $container = $app->getContainer();
-        $doctrine_wrapper = $container->get('doctrineWrapper');
-        $session_wrapper = $container->get('sessionWrapper');
         $logger = $container->get('logger');
 
-        // // Doctrine wrapper setup
-        $database_connection_settings = $container->get('settings')['doctrineSettings'];
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-        $query_builder = $database_connection->createQueryBuilder();
-        $doctrine_wrapper->setQueryBuilder($query_builder);
-        $doctrine_wrapper->setDoctrineLogger($logger);
-
-        $username = $session_wrapper->getSessionVar('user');
-
-        $doctrine_wrapper->fetchCustomerDetails($username);
-        $customer_details = $doctrine_wrapper->getQueryResult();
     
+
+
         if($account_type == "customer"){
 
-            $env = parse_ini_file(realpath('../.env'));
 
-            $api_key = $env['MAPS_JAVASCRIPT_API_KEY'];
+        
 
-            return $this->view->render($response,'CustomerOrder.twig', array(
-                'places_api_key' => $api_key,
-                'page_title' => APP_TITLE,
-                'css_file' => CSS_PATH . "CustomerOrder.css",
-                'css_nav_file' => CSS_PATH . "NavigationBar.css",
-                'css_footer_file' => CSS_PATH . "Footer.css",
-                'asset_path' => ASSET_PATH,
-                'js_file' => JS_PATH . "CustomerOrder.js",
-                'email' => $customer_details[0]['email'],
-                'collection_name' => $customer_details[0]['collection_name'],
-                'collection_phone_number' => $customer_details[0]['collection_phone_number'],
-                'collection_address_1' => $customer_details[0]['collection_address_1'],
-                'collection_address_2' => $customer_details[0]['collection_address_2'],
-                'collection_address_3' => $customer_details[0]['collection_address_3'],
-                'collection_postcode' => $customer_details[0]['collection_postcode'],
-                'landing_page' => __FILE__,
-                'heading_1' => APP_TITLE,
-            ));
+            return $this->view->render($response,'customer-order.html');
         }
     
     }
@@ -111,6 +85,12 @@ $app->get('/customer-order', function (Request $request, Response $response) use
 
 
 $app->post('/customer-order', function (Request $request, Response $response) use ($app) : Response{
+
+
+
+    // Echo "<h1>This form is currently unavailable. Please order through the public form in the booking page or call us to book orders. Sorry for the inconvenience</h1>";
+
+    // return $response;
 
     $account_type = $request->getAttribute('accountType');
 
@@ -128,39 +108,74 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $session_wrapper = $container->get('sessionWrapper');
         $account_name = $session_wrapper->getSessionVar('user');
 
+
+        echo $account_name;
+
         $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $account_name);
 
+<<<<<<< HEAD
+
+
+        // return $response;
+=======
         // echo var_dump($cleaned_orders);
+>>>>>>> master
 
         if(empty($cleaned_orders)){
             return $response->withRedirect('/customer-order?error=true', 302);
         }
 
-       
         // Get models + Wrappers
         $container = $app->getContainer();
-        $doctrine_wrapper = $container->get('doctrineWrapper');
         $logger = $container->get('logger');
+        $add_order_model = $container->get('addOrderModel');
+        $session_wrapper = $container->get('sessionWrapper');
 
-        // Doctrine wrapper setup
-        $database_connection_settings = $container->get('settings')['doctrineSettings'];
-        $database_connection = DriverManager::getConnection($database_connection_settings);
-        $query_builder = $database_connection->createQueryBuilder();
-        $doctrine_wrapper->setQueryBuilder($query_builder);
-        $doctrine_wrapper->setDoctrineLogger($logger);
-        $doctrine_wrapper->setDatabaseConnection($database_connection);
+        
+        putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
 
 
-        $manage_order_model->setDoctrineWrapper($doctrine_wrapper);
+        try{
+            
+            $env = parse_ini_file(realpath('../.env'));
+        
+            $projectID = $env['FIREBASE_PROJECT_ID'];
+            $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+        
+            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+                'database' => '(default)',
+            ]);
+        
+            $add_order_model->setFirebaseFirestore($firestore);
+        
+        }catch(Exception $e){
+    
+            if($logger != null){
+                $logger->error('FIREBASE_INIT_ERROR', array($e));
+                $logger->error('FIREBASE_INIT_ENV', array($env));
+            }
+    
+            return $response->withRedirect('/manage-accounts?error=dberror', 302);
+    
+        }
+
+        $date_time = new DateTime();
+        $date_time->setTimezone(new DateTimeZone('Europe/London'));
+        $add_order_model->setDateTime($date_time);
+        $add_order_model->setLogger($logger);
+        $add_order_model->setSessionWrapper($session_wrapper);
+        $add_order_model->getOAuth2Token();
+    
         $manage_order_model->setOrderData($cleaned_orders);
+        $manage_order_model->setAddOrderModel($add_order_model);
 
-       
+        
         $store_result = $manage_order_model->storeMultipleOrders();
         $confirmed_orders = $manage_order_model->getConfirmedOrders();
-       
         $sanitizer = $container->get('sanitizer');
-
+        
         //send email
+
 
         $cleaned_email = $sanitizer->sanitizeEmail($allPostVars['profileemail']);
 

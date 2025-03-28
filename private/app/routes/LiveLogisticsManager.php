@@ -17,7 +17,7 @@ $app->get('/live-logistics-manager', function (Request $request, Response $respo
 
         $api_key = $env['MAPS_JAVASCRIPT_API_KEY'];
   
-        return $this->view->render($response,'LiveLogisticsManager.twig', array(
+        return $this->view->render($response,'live-logistics-manager.html', array(
                 'places_api_key' => $api_key,
                 'page_title' => APP_TITLE,
                 'css_file' => CSS_PATH . "ManageLogistics.css",
@@ -30,10 +30,7 @@ $app->get('/live-logistics-manager', function (Request $request, Response $respo
             ));
     }else{
 
-        echo var_dump($_GET);
-        echo var_dump($_SESSION);
-        echo"unauthenticated";
-        return $response;
+      
         return $response->withRedirect('loginpage', 302);
     }
 });

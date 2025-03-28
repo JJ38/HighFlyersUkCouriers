@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/dce6efa4ea.js"
+      crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/Navbar.css" type="text/css">
+    <link rel="stylesheet" href="/css/AddOrder.css" type="text/css">
+    <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
+    <title>{{ page_title }}</title>
+  </head>
+  <body>
+
+    <header>
+      <nav id="menu">
+        <a class="navLinks" href="/manage-orders">Back</a>
+      </nav>
+    </header>
+    <div id="maincontent">
+      <section class="formSection">
+        <form class="contactUsForm" action="/add-user" method="post">
+          <table>
+
+            <tr>
+              <td>
+                <label for="username">Username: </label>
+              </td>
+              <td>
+                <input id="username" name="username" type="text" required>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <label for="password">Password: </label>
+              </td>
+              <td>
+                <input id="password" name="password" type="text" minlength="8"
+                  required>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <label for="isadmin">Select account type: </label>
+              </td>
+              <td>
+                <select name="isadmin" id="isadmin" required>
+                  <option value> -- select an option -- </option>
+                  <option value="admin">Admin</option>
+                  <option value="staff">Staff</option>
+                  <option value="customer">Customer</option>
+                  <option value="customer">Driver</option>
+                </select>
+              </td>
+            </tr>
+          </table>
+
+          <input class="submitButton" type="submit" value="submit"
+            aria-label="Submit">
+        </form>
+      </section>
+    </div>
+
+  </body>
+  <script type="text/javascript" src="{{ js_file }}"></script>
+  <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
+</html>

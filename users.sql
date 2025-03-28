@@ -11,7 +11,7 @@ CREATE TABLE users (
 -- password : password
 --
 
-INSERT INTO `users` VALUES ('1', 'admin', 'root', '$2y$10$VgY8WN/wGt7EFjVxDxBnWOQ4CdYA.Ajc88Ecm0l4T4fztQJchpAey', '2022-01-01 00:00:00');
+INSERT INTO `users` VALUES ('89', 'admin', 'root', '$2y$10$VgY8WN/wGt7EFjVxDxBnWOQ4CdYA.Ajc88Ecm0l4T4fztQJchpAey', '2022-01-01 00:00:00');
 
 INSERT INTO `users` VALUES ('20', '0', 'newstaff', '$2y$10$93/qcZvAZWzfsB2BQCo7T.BFMB8lZVQSV.pP86f/5coRhbTCFD3i6', '2022-01-01 00:00:00');
 INSERT INTO `users` VALUES ('23', 'admin', 'anotheradmin', '$2y$10$Yl9rgteYgDrV1TdaG43apOpvmoz6sg0b8kq1KDqNh9sLncDguUzFO
@@ -22,12 +22,13 @@ INSERT INTO `users` VALUES ('23', 'admin', 'anotheradmin', '$2y$10$Yl9rgteYgDrV1
 
 
 INSERT INTO `users` VALUES ('20', 'admin', 'admin', '$2y$10$A1Bi/B0aNvO93GWiSVWGh.K5qJcJmPe.RHb2ZcXq8bCtOsHifCKbi', '2022-01-01 00:00:00');
-INSERT INTO `users` VALUES ('22', 'admin', 'James', '$2y$10$ixgQjDThEqjnN97xQVazYe9zwAaVAM.H9c9noJ.H89fpLtMt5Zg7K', '2022-01-01 00:00:00');
+INSERT INTO `users` VALUES ('94', 'customer', 'a c u s t o m e r 8 K', '$2y$10$VAKW0WsvXjdGTAXEKj8Ere.LuOmSJMyTiCUkPGBwpGfnxp0jScudy', '2022-01-01 00:00:00');
 
--- Password: password
+-- Password: password   $2y$10$b5ssz1GBdBLwhK3qT9uV7uTg5oquB7pScwoLBD5dKLMg.fjhn5Gu2    $2y$10$VAKW0WsvXjdGTAXEKj8Ere.LuOmSJMyTiCUkPGBwpGfnxp0jScudy
 
 INSERT INTO `users` VALUES ('25', 'admin', 'testadmin', '$2a$10$xF21I/sePoWfXrMKnn2v6uQQkwAoqwkujf6w0zvElbWYTM1ykZWU2
 ', '2022-01-01 00:00:00');
+
 
 
 CREATE DATABASE IF NOT EXISTS `highflyersukcouriers` COLLATE 'utf8_unicode_ci';

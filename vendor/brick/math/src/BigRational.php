@@ -8,6 +8,10 @@ use Brick\Math\Exception\DivisionByZeroException;
 use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NumberFormatException;
 use Brick\Math\Exception\RoundingNecessaryException;
+<<<<<<< HEAD
+use Override;
+=======
+>>>>>>> master
 
 /**
  * An arbitrarily large rational number.
@@ -57,6 +61,10 @@ final class BigRational extends BigNumber
     /**
      * @psalm-pure
      */
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     protected static function from(BigNumber $number): static
     {
         return $number->toBigRational();
@@ -320,16 +328,28 @@ final class BigRational extends BigNumber
         return new BigRational($numerator, $denominator, false);
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function compareTo(BigNumber|int|float|string $that) : int
     {
         return $this->minus($that)->getSign();
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function getSign() : int
     {
         return $this->numerator->getSign();
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toBigInteger() : BigInteger
     {
         $simplified = $this->simplified();
@@ -341,32 +361,56 @@ final class BigRational extends BigNumber
         return $simplified->numerator;
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toBigDecimal() : BigDecimal
     {
         return $this->numerator->toBigDecimal()->exactlyDividedBy($this->denominator);
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toBigRational() : BigRational
     {
         return $this;
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toScale(int $scale, RoundingMode $roundingMode = RoundingMode::UNNECESSARY) : BigDecimal
     {
         return $this->numerator->toBigDecimal()->dividedBy($this->denominator, $scale, $roundingMode);
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toInt() : int
     {
         return $this->toBigInteger()->toInt();
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function toFloat() : float
     {
         $simplified = $this->simplified();
         return $simplified->numerator->toFloat() / $simplified->denominator->toFloat();
     }
 
+<<<<<<< HEAD
+    #[Override]
+=======
+>>>>>>> master
     public function __toString() : string
     {
         $numerator   = (string) $this->numerator;
@@ -376,7 +420,11 @@ final class BigRational extends BigNumber
             return $numerator;
         }
 
+<<<<<<< HEAD
+        return $numerator . '/' . $denominator;
+=======
         return $this->numerator . '/' . $this->denominator;
+>>>>>>> master
     }
 
     /**

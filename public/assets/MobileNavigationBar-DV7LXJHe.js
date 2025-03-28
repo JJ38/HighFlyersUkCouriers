@@ -1,0 +1,1 @@
+const l=document.getElementById("mobilenavtoggle"),e=document.getElementById("mobilenavmenu"),t=document.getElementById("closemobilenavmenu");l.addEventListener("click",n=>{e.classList.toggle("hideMobileMenu")});t.addEventListener("click",n=>{e.classList.toggle("hideMobileMenu")});

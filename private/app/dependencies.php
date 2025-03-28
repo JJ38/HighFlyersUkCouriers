@@ -69,12 +69,25 @@ $container['manageOrderModel'] = function () {
   return new \HighFlyersUkCouriers\ManageOrderModel();
 };
 
-$container['manageAccountsModel'] = function () {
-  return new \HighFlyersUkCouriers\ManageAccountsModel();
+$container['addOrderModel'] = function () {
+  return new \HighFlyersUkCouriers\AddOrderModel();
 };
+
+$container['editOrderModel'] = function () {
+  return new \HighFlyersUkCouriers\EditOrderModel();
+};
+
+$container['deleteOrderModel'] = function () {
+  return new \HighFlyersUkCouriers\DeleteOrderModel();
+};
+
 
 $container['customerProfileModel'] = function () {
   return new \HighFlyersUkCouriers\CustomerProfileModel();
+};
+
+$container['manageAccountsModel'] = function () {
+  return new \HighFlyersUkCouriers\ManageAccountsModel();
 };
 
 $container['notFoundHandler'] = function ($container) {

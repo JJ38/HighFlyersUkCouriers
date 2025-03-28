@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/dce6efa4ea.js"
+      crossorigin="anonymous"></script>
+    
+
+    <title>{{ page_title }}</title>
+    <script type="module" crossorigin src="./assets/ManageAccounts-BvO5rD3v.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
+    <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-DekqGqg_.js">
+    <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
+    <link rel="modulepreload" crossorigin href="./assets/Firebase-DFDJhXei.js">
+    <link rel="modulepreload" crossorigin href="./assets/Logout-BtrfE2Gy.js">
+    <link rel="stylesheet" crossorigin href="./assets/ManageAccounts-DGbadoJu.css">
+    <link rel="stylesheet" crossorigin href="./assets/Navbar-_3NclZQX.css">
+    <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
+  </head>
+  <body>
+
+    <div id="wrapper">
+      <header>
+        <div id="mobilenavmenu" class="hideMobileMenu">
+          <div id="mobilenavwrapper">
+            <div id="closemobilenavmenu"><p
+                id="closenavtext">close</p><p>X</p></div>
+            <a class="logoutButton">Logout</a>
+            <a href="/manage-orders">Bookings</a>
+            <a href="/content-manager">Content Manager</a>
+            <a class="currentpage" href="/manage-accounts">Accounts</a>
+            <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+
+          </div>
+        </div>
+        <nav id="menu">
+          <div id="mobilenavtoggle">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <a class="navLinks logoutButton">Logout</a>
+          <a class="navLinks" href="/manage-orders">Bookings</a>
+          <a class="navLinks" href="/content-manager">Content Manager</a>
+          <a class="navLinks" href="/manage-accounts">Accounts</a>
+          <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+        </nav>
+      </header>
+      <div id="maincontent">
+        <div class="searchbar bubble">
+          <div class="searchoption">Filter</div>
+          <form action="/manage-accounts" method="get">
+            <select class="searchoption" name="field" id="filter">
+              <option disabled selected value> -- select an option -- </option>
+              <option value="id">ID</option>
+              <option value="username">Username</option>
+              <option value="account_type">Type</option>
+            </select>
+            <input class="searchoption" type="text" id="search" name="filter"
+              placeholder="search value">
+            <button class="searchoption" type="submit">Search</button>
+          </form>
+          <a href="/add-user">
+            <button class="searchoption" type="button">Add</button>
+          </a>
+        </div>
+        <div class="bubble">
+          <div class="userdata">
+            <table id="accountData">
+              <tr class="headerrow">
+                <th>Username</th>
+                <th>Type</th>
+                <th></th>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+
+</html>

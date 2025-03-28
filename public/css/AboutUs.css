@@ -8,6 +8,10 @@ html,body{
     margin: 0;
 }
 
+.menu{
+    padding-top: 2rem;
+  }
+
 div.underlineAboutUs{
     background-color: #2881FF;
     height: 3px;

@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+<<<<<<< HEAD
+## [0.12.3](https://github.com/brick/math/releases/tag/0.12.3) - 2025-02-28
+
+✨ **New features**
+
+- `BigDecimal::getPrecision()` Returns the number of significant digits in a decimal number
+
+## [0.12.2](https://github.com/brick/math/releases/tag/0.12.2) - 2025-02-26
+
+⚡️ **Performance improvements**
+
+- Division in `NativeCalculator` is now faster for small divisors, thanks to [@Izumi-kun](https://github.com/Izumi-kun) in [#87](https://github.com/brick/math/pull/87).
+
+👌 **Improvements**
+
+- Add missing `RoundingNecessaryException` to the `@throws` annotation of `BigNumber::of()`
+
+=======
+>>>>>>> master
 ## [0.12.1](https://github.com/brick/math/releases/tag/0.12.1) - 2023-11-29
 
 ⚡️ **Performance improvements**

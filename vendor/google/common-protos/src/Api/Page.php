@@ -36,9 +36,15 @@ class Page extends \Google\Protobuf\Internal\Message
      */
     protected $name = '';
     /**
+<<<<<<< HEAD
+     * The Markdown content of the page. You can use ```(== include {path}
+     * ==)``` to include content from a Markdown file. The content can be used
+     * to produce the documentation page such as HTML format page.
+=======
      * The Markdown content of the page. You can use <code>&#40;== include {path}
      * ==&#41;</code> to include content from a Markdown file. The content can be
      * used to produce the documentation page such as HTML format page.
+>>>>>>> master
      *
      * Generated from protobuf field <code>string content = 2;</code>
      */
@@ -73,9 +79,15 @@ class Page extends \Google\Protobuf\Internal\Message
      *           You can reference `Java` page using Markdown reference link syntax:
      *           `[Java][Tutorial.Java]`.
      *     @type string $content
+<<<<<<< HEAD
+     *           The Markdown content of the page. You can use ```(== include {path}
+     *           ==)``` to include content from a Markdown file. The content can be used
+     *           to produce the documentation page such as HTML format page.
+=======
      *           The Markdown content of the page. You can use <code>&#40;== include {path}
      *           ==&#41;</code> to include content from a Markdown file. The content can be
      *           used to produce the documentation page such as HTML format page.
+>>>>>>> master
      *     @type array<\Google\Api\Page>|\Google\Protobuf\Internal\RepeatedField $subpages
      *           Subpages of this page. The order of subpages specified here will be
      *           honored in the generated docset.
@@ -139,9 +151,15 @@ class Page extends \Google\Protobuf\Internal\Message
     }
 
     /**
+<<<<<<< HEAD
+     * The Markdown content of the page. You can use ```(== include {path}
+     * ==)``` to include content from a Markdown file. The content can be used
+     * to produce the documentation page such as HTML format page.
+=======
      * The Markdown content of the page. You can use <code>&#40;== include {path}
      * ==&#41;</code> to include content from a Markdown file. The content can be
      * used to produce the documentation page such as HTML format page.
+>>>>>>> master
      *
      * Generated from protobuf field <code>string content = 2;</code>
      * @return string
@@ -152,9 +170,15 @@ class Page extends \Google\Protobuf\Internal\Message
     }
 
     /**
+<<<<<<< HEAD
+     * The Markdown content of the page. You can use ```(== include {path}
+     * ==)``` to include content from a Markdown file. The content can be used
+     * to produce the documentation page such as HTML format page.
+=======
      * The Markdown content of the page. You can use <code>&#40;== include {path}
      * ==&#41;</code> to include content from a Markdown file. The content can be
      * used to produce the documentation page such as HTML format page.
+>>>>>>> master
      *
      * Generated from protobuf field <code>string content = 2;</code>
      * @param string $var

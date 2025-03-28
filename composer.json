@@ -8,14 +8,16 @@
       "slim/slim": "^3.12",
       "slim/psr7": "^1.6.1",
       "slim/twig-view": "^2.4",
-      "monolog/monolog": "^2",
       "doctrine/orm": "^2.6",
       "phpmailer/phpmailer": "^6.7",
-      "kreait/firebase-php":"^7.0" 
+      "kreait/firebase-php": "^5.26",
+      "bensontrent/firestore-php": "^3.1",
+      "monolog/monolog": "^3.8" 
     },
     "config": {
         "platform": {
              "php": "8.1"
         }
     }
+    
 }

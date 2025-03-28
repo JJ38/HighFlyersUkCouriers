@@ -8,13 +8,13 @@ $app->get('/', function (Request $request, Response $response) use ($app) : Resp
 
     
 
-    return $this->view->render($response,'NewHomepage.twig', array(
+    return $this->view->render($response,'index.html', array(
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "NewHomepage.css",
             'css_nav_file' => CSS_PATH . "NavigationBar.css",
             'css_footer_file' => CSS_PATH . "Footer.css",
             'asset_path' => ASSET_PATH,
-            'js_file' => JS_PATH . "NewHomepage.js",
+            'js_file' => JS_PATH . "Homepage.js",
             'landing_page' => __FILE__,
             'heading_1' => APP_TITLE,
             'links'=> array(
@@ -29,3 +29,4 @@ $app->get('/', function (Request $request, Response $response) use ($app) : Resp
             ),
         ));
 })->setName('');
+//C:\Program Files\php-8.0.6-Win32-vs16-x64
