@@ -113,13 +113,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
 
         $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $account_name);
 
-<<<<<<< HEAD
-
-
-        // return $response;
-=======
         // echo var_dump($cleaned_orders);
->>>>>>> master
 
         if(empty($cleaned_orders)){
             return $response->withRedirect('/customer-order?error=true', 302);
