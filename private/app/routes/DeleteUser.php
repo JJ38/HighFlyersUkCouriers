@@ -76,23 +76,6 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
 
     $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
-    // try{
-
-    //   $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
-
-    //   //create firestore  
-    //   $env = parse_ini_file(realpath('../.env'));
-
-    //   $projectID = $env['FIREBASE_PROJECT_ID'];
-    //   $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
-
-    //   $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-    //       'database' => '(default)',
-    //   ], $client);
-
-    // }catch(Exception $e){
-    //   return  $response->withRedirect('manage-accounts?error=true', 302);
-    // }
 
     if($firestore == null){
       return  $response->withRedirect('manage-accounts?error=true', 302);

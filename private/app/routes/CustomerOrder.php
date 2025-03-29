@@ -112,6 +112,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $logger = $container->get('logger');
         $add_order_model = $container->get('addOrderModel');
         $session_wrapper = $container->get('sessionWrapper');
+        $authentication_model = $container->get('authenticationModel');
 
         
         putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
@@ -121,37 +122,47 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $add_order_model->setDateTime($date_time);
         $add_order_model->setLogger($logger);
         $add_order_model->setSessionWrapper($session_wrapper);
-        $add_order_model->fetchOAuth2Token();
-
-        $accessToken = $add_order_model->getOAuth2Token();
-
-        try{
-
-            $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
-            
-            $env = parse_ini_file(realpath('../.env'));
-        
-            $projectID = $env['FIREBASE_PROJECT_ID'];
-            $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
-        
-            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-                'database' => '(default)',
-            ], $client);
-        
-            $add_order_model->setFirebaseFirestore($firestore);
-        
-        }catch(Exception $e){
     
-            if($logger != null){
-                $logger->error('FIREBASE_INIT_ERROR', array($e));
-                $logger->error('FIREBASE_INIT_ENV', array($env));
-            }
-    
-            return $response->withRedirect('/manage-accounts?error=dberror', 302);
-    
-        }
 
+        $authentication_model->setLogger($logger);
+        $authentication_model->fetchOAuth2Token();
       
+        $accessToken = $authentication_model->getOAuth2Token();
+        $firestore = $authentication_model->getAuthenticatedFirebaseClient();
+      
+
+        // try{
+
+        //     $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
+            
+        //     $env = parse_ini_file(realpath('../.env'));
+        
+        //     $projectID = $env['FIREBASE_PROJECT_ID'];
+        //     $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+        
+        //     $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+        //         'database' => '(default)',
+        //     ], $client);
+        
+        
+        // }catch(Exception $e){
+    
+        //     if($logger != null){
+        //         $logger->error('FIREBASE_INIT_ERROR', array($e));
+        //         $logger->error('FIREBASE_INIT_ENV', array($env));
+        //     }
+    
+        //     return $response->withRedirect('/manage-accounts?error=dberror', 302);
+    
+        // }
+
+
+        if($firestore == null){
+            return $response->withRedirect('/manage-accounts?error=dberror', 302);
+        }
+      
+        $add_order_model->setFirebaseFirestore($firestore);
+        $add_order_model->setOAuth2Token($accessToken);
     
         $manage_order_model->setOrderData($cleaned_orders);
         $manage_order_model->setAddOrderModel($add_order_model);
@@ -162,7 +173,6 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $sanitizer = $container->get('sanitizer');
         
         //send email
-
 
         $cleaned_email = $sanitizer->sanitizeEmail($allPostVars['profileemail']);
 
