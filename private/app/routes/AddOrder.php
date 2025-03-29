@@ -144,9 +144,6 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   }
 
 
-  
-
-
   //store data
   $add_order_model->storeOrder();
   $query_result = $add_order_model->getFirebaseFirestoreResult();

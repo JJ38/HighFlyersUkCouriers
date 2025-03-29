@@ -97,8 +97,19 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
         if($manageAccountsModel->getFirebaseAuthResult() == false){
             return $response->withRedirect('/manage-accounts?error=fireauth', 302);
         }
+
+
+        $add_order_model = $container->get('addOrderModel');
+
+        $add_order_model->setLogger($logger);
+        $add_order_model->fetchOAuth2Token();
+
+        $accessToken = $add_order_model->getOAuth2Token();
+
         
         try{
+
+            $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
             
             $env = parse_ini_file(realpath('../.env'));
 
@@ -107,7 +118,7 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
 
             $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
                 'database' => '(default)',
-            ]);
+            ], $client);
 
             $manageAccountsModel->setFirebaseFirestore($firestore);
             $manageAccountsModel->createFirestoreUserDocument();
@@ -154,6 +165,8 @@ function cleanUserData($container, $tainted_user_data) : array{
     $cleaned_parameters['username'] = $sanitizer->sanitizeUsername($tainted_user_data['username']);
    
     $cleaned_parameters['accountType'] = $sanitizer->sanitizeAccountType($tainted_user_data['isadmin']);
+
+    $cleaned_parameters['username'] = str_replace(" ", "", $cleaned_parameters['username']);
 
     return $cleaned_parameters;
 

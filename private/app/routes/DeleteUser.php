@@ -55,6 +55,7 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
     
     $container = $app->getContainer();
     $session_wrapper = $container->get('sessionWrapper');
+    $logger = $container->get('logger');
     $uid = $session_wrapper->getSessionVar('delete_user_id');
     $session_wrapper->unsetSessionVar('delete_user_id');
 
@@ -68,8 +69,17 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
     //create Auth
     $auth = $factory->createAuth();
 
-    
+    $add_order_model = $container->get('addOrderModel');
+
+    $add_order_model->setLogger($logger);
+    $add_order_model->fetchOAuth2Token();
+
+    $accessToken = $add_order_model->getOAuth2Token();
+
     try{
+
+      $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
+
       //create firestore  
       $env = parse_ini_file(realpath('../.env'));
 
@@ -78,14 +88,13 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
 
       $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
           'database' => '(default)',
-      ]);
+      ], $client);
 
     }catch(Exception $e){
       return  $response->withRedirect('manage-accounts?error=true', 302);
     }
     
     //setup manage accounts model
-    $logger = $container->get('logger');
     $manage_accounts_model = $container->get('manageAccountsModel');
 
     $manage_accounts_model->setLogger($logger);
@@ -94,22 +103,14 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
     $manage_accounts_model->setUID($cleaned_user_id);
     $manage_accounts_model->deleteUser();
 
-    // if($customer_account){
-
-    //   $manage_accounts_model->deleteCustomerDocument();
-
-    // }
-    
-
     if($manage_accounts_model->getDeleteUserResult() == false){
       return  $response->withRedirect('manage-accounts?error=true', 302);
     }
 
-
     return $response->withRedirect('/manage-accounts?deleted=true', 302);
 
-
   }
+
   return $response->withRedirect('/loginpage', 302);
 
 
