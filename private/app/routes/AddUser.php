@@ -99,43 +99,23 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
         }
 
 
-        $add_order_model = $container->get('addOrderModel');
+        $authentication_model = $container->get('authenticationModel');
+  
+        $authentication_model->setLogger($logger);
+        $authentication_model->fetchOAuth2Token();
 
-        $add_order_model->setLogger($logger);
-        $add_order_model->fetchOAuth2Token();
+        $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
-        $accessToken = $add_order_model->getOAuth2Token();
-
-        
-        try{
-
-            $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
-            
-            $env = parse_ini_file(realpath('../.env'));
-
-            $projectID = $env['FIREBASE_PROJECT_ID'];
-            $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
-
-            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-                'database' => '(default)',
-            ], $client);
-
-            $manageAccountsModel->setFirebaseFirestore($firestore);
-            $manageAccountsModel->createFirestoreUserDocument();
-
-            if($cleaned_parameters['accountType'] == "customer"){
-                $manageAccountsModel->createFirestoreCustomerDocument();
-            }
-
-        }catch(Exception $e){
-
-            if($logger != null){
-                $logger->error('FIREBASE_INIT_ERROR', array($e));
-                $logger->error('FIREBASE_INIT_ENV', array($env));
-            }
-
+        if($firestore == null){
             return $response->withRedirect('/manage-accounts?error=firestoreinit', 302);
+        }
 
+
+        $manageAccountsModel->setFirebaseFirestore($firestore);
+        $manageAccountsModel->createFirestoreUserDocument();
+
+        if($cleaned_parameters['accountType'] == "customer"){
+            $manageAccountsModel->createFirestoreCustomerDocument();
         }
 
 

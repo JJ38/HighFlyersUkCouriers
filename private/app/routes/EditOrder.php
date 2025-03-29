@@ -88,32 +88,6 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
   
       $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
-      // try{
-                
-      //   $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
-            
-      //   $env = parse_ini_file(realpath('../.env'));
-    
-      //   $projectID = $env['FIREBASE_PROJECT_ID'];
-      //   $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
-    
-      //   $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-      //       'database' => '(default)',
-      //   ], $client);
-
-      //   $edit_order_model->setFirebaseFirestore($firestore);
-
-      // }catch(Exception $e){
-
-      //     if($logger != null){
-      //         $logger->error('FIREBASE_INIT_ERROR', array($e));
-      //         $logger->error('FIREBASE_INIT_ENV', array($env));
-      //     }
-
-      //     return $response->withRedirect('/manage-accounts?error=dberror', 302);
-
-      // }
-
       if($firestore == null){
         return $response->withRedirect('/manage-accounts?error=dberror', 302);
       }

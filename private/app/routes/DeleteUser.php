@@ -69,28 +69,32 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
     //create Auth
     $auth = $factory->createAuth();
 
-    $add_order_model = $container->get('addOrderModel');
+    $authentication_model = $container->get('authenticationModel');
+  
+    $authentication_model->setLogger($logger);
+    $authentication_model->fetchOAuth2Token();
 
-    $add_order_model->setLogger($logger);
-    $add_order_model->fetchOAuth2Token();
+    $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
-    $accessToken = $add_order_model->getOAuth2Token();
+    // try{
 
-    try{
+    //   $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
 
-      $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
+    //   //create firestore  
+    //   $env = parse_ini_file(realpath('../.env'));
 
-      //create firestore  
-      $env = parse_ini_file(realpath('../.env'));
+    //   $projectID = $env['FIREBASE_PROJECT_ID'];
+    //   $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
 
-      $projectID = $env['FIREBASE_PROJECT_ID'];
-      $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+    //   $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+    //       'database' => '(default)',
+    //   ], $client);
 
-      $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-          'database' => '(default)',
-      ], $client);
+    // }catch(Exception $e){
+    //   return  $response->withRedirect('manage-accounts?error=true', 302);
+    // }
 
-    }catch(Exception $e){
+    if($firestore == null){
       return  $response->withRedirect('manage-accounts?error=true', 302);
     }
     
