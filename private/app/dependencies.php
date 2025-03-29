@@ -90,6 +90,10 @@ $container['manageAccountsModel'] = function () {
   return new \HighFlyersUkCouriers\ManageAccountsModel();
 };
 
+$container['authenticationModel'] = function () {
+  return new \HighFlyersUkCouriers\AuthenticationModel();
+};
+
 $container['notFoundHandler'] = function ($container) {
   return function ($request, $response) use ($container) {
       return  $response->withRedirect('/', 302);

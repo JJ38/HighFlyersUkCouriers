@@ -22,6 +22,7 @@ $app->post('/login-legacy', function (Request $request, Response $response) use 
     $bcrypt_wrapper = $container->get('bcryptWrapper');
     $doctrine_wrapper = $container->get('doctrineWrapper');
     $session_wrapper = $container->get('sessionWrapper');
+    $authentication_model = $container->get('authenticationModel');
     $logger = $container->get('logger');
 
    
@@ -90,31 +91,22 @@ $app->post('/login-legacy', function (Request $request, Response $response) use 
         return $response;
     }
 
-    try{
-        
-      $env = parse_ini_file(realpath('../.env'));
 
-      $projectID = $env['FIREBASE_PROJECT_ID'];
-      $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+    $authentication_model->setLogger($logger);
+    $authentication_model->fetchOAuth2Token();
 
-      $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-          'database' => '(default)',
-      ]);
+    $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
-      $manageAccountsModel->setFirebaseFirestore($firestore);
-      $manageAccountsModel->createFirestoreUserDocument();
 
-    }catch(Exception $e){
-
-        if($logger != null){
-            $logger->error('FIREBASE_INIT_ERROR', array($e));
-            $logger->error('FIREBASE_INIT_ENV', array($env));
-        }
+    if($firestore == null){
 
         $response = $response->withStatus(500);
         return $response;
 
     }
+
+    $manageAccountsModel->setFirebaseFirestore($firestore);
+    $manageAccountsModel->createFirestoreUserDocument();
 
 
     if($account_type == "customer"){

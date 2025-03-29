@@ -29,6 +29,10 @@ class AddOrderModel
         return $this->access_token;
     }
 
+    public function setOAuth2Token($access_token){
+        $this->access_token = $access_token;
+    }
+
     public function setFirebaseFirestore($firebase_firestore) : void{
         $this->firebase_firestore = $firebase_firestore;
     } 

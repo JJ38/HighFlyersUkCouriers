@@ -13,21 +13,7 @@ $app->get('/edit-order[/id]', function (Request $request, Response $response) us
 
       $allGetVars = $request->getQueryParams();
       $container = $app->getContainer();
-      
-
-
-      //set delivery week if staff member as wont be submitted in form as staff members shouldnt be able to change delivery week
-      // if($account_type == "staff"){ 
-      //   if(array_key_exists('delivery_week', $order_data[0])){
-
-      //     if(empty($order_data[0]['delivery_week'])){
-      //       $delivery_week = "";          
-      //     }else{
-      //       $delivery_week = $order_data[0]['delivery_week'];
-      //     }
-      //     $session_wrapper->setSessionVar('delivery_week', $delivery_week);
-      //   }
-      // }
+  
 
     }else{
       return  $response->withRedirect('manage-orders', 302);
@@ -58,6 +44,7 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
 
       $container = $app->getContainer();
       $session_wrapper = $app->getContainer()->get('sessionWrapper');
+      $authentication_model = $app->getContainer()->get('authenticationModel');
 
 
       if($account_type == "staff"){ 
@@ -67,11 +54,6 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
      
       $manage_order_model = $container->get('manageOrderModel');
       $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
-
-      // echo "<pre>";
-      // var_dump($tainted_parameters);
-      // echo "</pre>";
-      // return $response;
 
      
       //if one of the parameters does not meet requirements
@@ -95,44 +77,49 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
       //store in database
       $logger = $container->get('logger');
       $edit_order_model = $container->get('editOrderModel');
-      $add_order_model = $container->get('addOrderModel');
-    
+
+      
       $edit_order_model->setLogger($logger);
       $edit_order_model->setOrderData($cleaned_parameters);
 
-      $add_order_model->setLogger($logger);
-      $add_order_model->fetchOAuth2Token();
+       
+      $authentication_model->setLogger($logger);
+      $authentication_model->fetchOAuth2Token();
+  
+      $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
-      $accessToken = $add_order_model->getOAuth2Token();
-
-      try{
+      // try{
                 
-        $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
+      //   $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
             
-        $env = parse_ini_file(realpath('../.env'));
+      //   $env = parse_ini_file(realpath('../.env'));
     
-        $projectID = $env['FIREBASE_PROJECT_ID'];
-        $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+      //   $projectID = $env['FIREBASE_PROJECT_ID'];
+      //   $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
     
-        $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-            'database' => '(default)',
-        ], $client);
+      //   $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+      //       'database' => '(default)',
+      //   ], $client);
 
-        $edit_order_model->setFirebaseFirestore($firestore);
+      //   $edit_order_model->setFirebaseFirestore($firestore);
 
-      }catch(Exception $e){
+      // }catch(Exception $e){
 
-          if($logger != null){
-              $logger->error('FIREBASE_INIT_ERROR', array($e));
-              $logger->error('FIREBASE_INIT_ENV', array($env));
-          }
+      //     if($logger != null){
+      //         $logger->error('FIREBASE_INIT_ERROR', array($e));
+      //         $logger->error('FIREBASE_INIT_ENV', array($env));
+      //     }
 
-          return $response->withRedirect('/manage-accounts?error=dberror', 302);
+      //     return $response->withRedirect('/manage-accounts?error=dberror', 302);
 
+      // }
+
+      if($firestore == null){
+        return $response->withRedirect('/manage-accounts?error=dberror', 302);
       }
 
    
-
+      $edit_order_model->setFirebaseFirestore($firestore);
       $edit_order_model->updateOrder();
       $query_result = $edit_order_model->getFirebaseFirestoreResult();
 

@@ -103,6 +103,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   //store in database
   
   $add_order_model = $container->get('addOrderModel');
+  $authentication_model = $container->get('authenticationModel');
   $session_wrapper = $container->get('sessionWrapper');
 
   $date_time = new DateTime();
@@ -113,39 +114,24 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $add_order_model->setLogger($logger);
   $add_order_model->setOrderData($cleaned_parameters);
   $add_order_model->setSessionWrapper($session_wrapper);
-  $add_order_model->fetchOAuth2Token();
 
-  $accessToken = $add_order_model->getOAuth2Token();
+  $authentication_model->setLogger($logger);
+  $authentication_model->fetchOAuth2Token();
 
-  try{
+  $accessToken = $authentication_model->getOAuth2Token();
+  $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
-    $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
-            
-    $env = parse_ini_file(realpath('../.env'));
 
-    $projectID = $env['FIREBASE_PROJECT_ID'];
-    $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
-
-    $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-        'database' => '(default)',
-    ], $client);
-
-    $add_order_model->setFirebaseFirestore($firestore);
-
-  }catch(Exception $e){
-
-      if($logger != null){
-          $logger->error('FIREBASE_INIT_ERROR', array($e));
-          $logger->error('FIREBASE_INIT_ENV', array($env));
-      }
-
-      return $response->withRedirect('/manage-accounts?error=dberror', 302);
-
+  if($firestore == null){
+    return $response->withRedirect('/manage-accounts?error=dberror', 302);
   }
 
-
+  $add_order_model->setFirebaseFirestore($firestore);
   //store data
+  $add_order_model->setOAuth2Token($accessToken);
   $add_order_model->storeOrder();
+
+
   $query_result = $add_order_model->getFirebaseFirestoreResult();
 
   if($logger != null){
