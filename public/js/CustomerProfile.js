@@ -1,6 +1,7 @@
 import { db, auth, getDocument, updateDocument } from "/js/Firebase.js";
 import { doc } from "firebase/firestore";
 import { onAuthStateChanged, updatePassword } from "firebase/auth";
+import { showNotification } from "/js/Notification.js";
 
 const email = document.getElementById('email');
 const collectionName = document.getElementById('collectionName');
@@ -43,7 +44,7 @@ function addEventListeners(){
   
       //update customer profile;
       if(uid == null || db == null){
-        alert("error updating profile");
+        showNotification("Error!", "Error updating profile")
         return;
       }
   
@@ -52,7 +53,8 @@ function addEventListeners(){
       updateDocument(docRef, customerProfile);
       
       updateLoader.style.display = "none";
-      alert("Your profile has been updated");
+      showNotification("Success!", "Your profile was updated successfully")
+
   
     });
 
@@ -69,7 +71,7 @@ onAuthStateChanged(auth, (user) => {
     uid = user.uid;
 
     if(uid == null || db == null){
-      alert("Error fetching profile");
+      showNotification("Error!", "Error fetching profile")
     }
   
     const docRef = doc(db, "Customers", uid);
@@ -132,12 +134,13 @@ function updateUserPassword(){
 
   //check if password and confirm password are equal. if they're not return
   if(!(password.value == confirmPassword.value)){
-    alert("password and confirm password are not equal");
+
+    showNotification("Error!", "Password and confirm password are not equal")
     return;
   }
  
   if(auth == null){
-    alert("error updating password");
+    showNotification("Error!", "Error updating password - unauthenticated")
     return;
   }
 
@@ -146,10 +149,11 @@ function updateUserPassword(){
 
   updatePassword(user, newPassword).then(() => {
     // Update successful.
-    alert("password updated successfully");
+    showNotification("Success!", "Password updated successfully")
   }).catch((error) => {
     // An error ocurred
-    alert("error updating password firebase");
+    showNotification("Error!", "Error updating password - Please re-login to update your password")
+
     console.log(error);
     
   });

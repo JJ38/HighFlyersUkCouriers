@@ -83,7 +83,7 @@ function shouldShowNotification(key, value){
         case 'partiallyDeleted':
 
             if(value != null){
-                showNotification("Error!", "Error failed to delete order " + value)
+                showNotification("Error!", "Error failed to delete order " + value);
             }
 
             break;
@@ -91,7 +91,7 @@ function shouldShowNotification(key, value){
         case 'error':
 
             if(value == "dbconnection"){
-                showNotification("Error!", "Error connection to database!")
+                showNotification("Error!", "Error connection to database!");
             }
         
         default:
@@ -101,7 +101,7 @@ function shouldShowNotification(key, value){
 
 }
 
-function showNotification(title, message){
+export function showNotification(title, message){
 
     //generate HTML
     const notificationContainer = document.createElement('div');
@@ -119,6 +119,7 @@ function showNotification(title, message){
     closeSymbol.addEventListener('click', () => {
         notificationContainer.remove();
     });
+
     notificationContainer.appendChild(closeSymbol);
 
     const progressBar = document.createElement('div');

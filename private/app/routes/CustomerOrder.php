@@ -26,7 +26,6 @@ $app->get('/customer-order', function (Request $request, Response $response) use
         if(!empty($allGetVars)){   
     
            
-    
             if(!empty($allGetVars['updated'])){
                 $cleaned_updated = $santizer->sanitizeString($allGetVars['updated']);
                 if($cleaned_updated == "true"){
@@ -55,15 +54,6 @@ $app->get('/customer-order', function (Request $request, Response $response) use
                 }
             }
         }
-
-        
-        
-
-        // Get models + Wrappers
-        $logger = $container->get('logger');
-
-    
-
 
         if($account_type == "customer"){
 
@@ -129,32 +119,6 @@ $app->post('/customer-order', function (Request $request, Response $response) us
       
         $accessToken = $authentication_model->getOAuth2Token();
         $firestore = $authentication_model->getAuthenticatedFirebaseClient();
-      
-
-        // try{
-
-        //     $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
-            
-        //     $env = parse_ini_file(realpath('../.env'));
-        
-        //     $projectID = $env['FIREBASE_PROJECT_ID'];
-        //     $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
-        
-        //     $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-        //         'database' => '(default)',
-        //     ], $client);
-        
-        
-        // }catch(Exception $e){
-    
-        //     if($logger != null){
-        //         $logger->error('FIREBASE_INIT_ERROR', array($e));
-        //         $logger->error('FIREBASE_INIT_ENV', array($env));
-        //     }
-    
-        //     return $response->withRedirect('/manage-accounts?error=dberror', 302);
-    
-        // }
 
 
         if($firestore == null){

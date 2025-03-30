@@ -18,7 +18,8 @@ for(const logoutButton of logoutButtons){
         
             signOut(auth).then(() => {
                 // Sign-out successful.
-                window.location.href = window.location.origin + "/logout";
+                console.log("awdwad");
+                // window.location.href = window.location.origin + "/logout";
               }).catch((error) => {
                 // An error happened
                 console.log(error);
