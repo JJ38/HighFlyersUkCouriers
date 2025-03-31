@@ -11,13 +11,15 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 
+        <!-- <script type="text/javascript" src="/js/MobileNavigationBar.js"></script> -->
         
         <title>{{ page_title }}</title>
-      <script type="module" crossorigin src="./assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
-      <script type="module" crossorigin src="./assets/index-dfc2d82f-DekqGqg_.js"></script>
-      <script type="module" crossorigin src="./assets/Firebase-DFDJhXei.js"></script>
-      <script type="module" crossorigin src="./assets/Logout-BtrfE2Gy.js"></script>
-      <link rel="stylesheet" crossorigin href="./assets/LiveLogisticsManager-BkqYhmN5.css">
+      <script type="module" crossorigin src="./assets/LiveLogisticsManager-CAtilOAO.js"></script>
+      <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
+      <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-DekqGqg_.js">
+      <link rel="modulepreload" crossorigin href="./assets/Firebase-DFDJhXei.js">
+      <link rel="modulepreload" crossorigin href="./assets/Logout-i2xQnhwl.js">
+      <link rel="stylesheet" crossorigin href="./assets/LiveLogisticsManager-KiEt3Mjz.css">
       <link rel="stylesheet" crossorigin href="./assets/Navbar-_3NclZQX.css">
       <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
       <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-oHciNmWq.css">
@@ -65,52 +67,18 @@
             <Section id="liveLogisticsManagerWrapper">
               <div id="driversWindow">
                 <h1 class="windowTitle">Drivers</h1>
-                <div class="driverInfoCardList">
-                  <div class="driverInfoCard">
-                    <div class="row">
-                      <div class="row flexOne noGap alignItemsCenter">
-                        <span class="material-symbols-outlined green">
-                          circle
-                        </span>
-                        <p class="driverStatus">En Route</p>
-                      </div>   
-                      <p class="driverName flexTwo">Alexander</p>    
-                    </div>
-                    <p class="runName">North East Scotland</p>
-                    <div class="row">
-                      <div class="column flexOne">
-                        <p class="runInfoTitle">Stops Remaining</p>
-                        <p class="runInfo">7</p>
-                      </div>
-                      <div class="column flexTwo">
-                        <p class="runInfoTitle">Next Stop</p>
-                        <p class="runInfo">10 Downing Street</p>
-                      </div>
-                    </div>
+                <div id="driverList" class="driverCardList">
+                  <div id="enRouteDriverList" class="driverCardList">
+
                   </div>
-                  <div class="driverInfoCard">
-                    <div class="row">
-                      <div class="row flexOne noGap alignItemsCenter">
-                        <span class="material-symbols-outlined green">
-                          circle
-                        </span>
-                        <p class="driverStatus">En Route</p>
-                      </div>   
-                      <p class="driverName flexTwo">Stephen</p>    
-                    </div>
-                    <p class="runName">Cumbria</p>
-                    <div class="row">
-                      <div class="column flexOne">
-                        <p class="runInfoTitle">Stops Remaining</p>
-                        <p class="runInfo">11</p>
-                      </div>
-                      <div class="column flexTwo">
-                        <p class="runInfoTitle">Next Stop</p>
-                        <p class="runInfo">8 Marston Close</p>
-                      </div>
-                    </div>
+                  <div id="completedDriverList" class="driverCardList">
+
+                  </div>
+                  <div id="offlineDriverList" class="driverCardList">
+
                   </div>
                 </div>
+               
               </div>
             </Section>
             <Section id="driverRunDetailsWindow" class="hidden">
@@ -123,7 +91,6 @@
         </Section>
     </body>
     <!-- <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&libraries=maps,marker&v=beta"}} defer></script> -->
-    <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
-    <script type="text/javascript" src="/js/LiveLogisticsManager.js"></script>
+    
 </html>
 
