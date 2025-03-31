@@ -12,13 +12,11 @@ let latestOrderID;
 let snapshotQuery;
 let orderData = [];
 
-
 export async function getInitialData(){
 
     const orderData = getOrderData(query(collection(db, "Orders"), orderBy('ID', 'desc'), limit(20)));
     return orderData;
 }
-
 
 export async function loadAdditionalOrders(){
     
