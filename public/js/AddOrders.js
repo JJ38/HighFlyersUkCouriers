@@ -2,6 +2,8 @@ const email = document.getElementById('email');
 const submitButton = document.getElementById('submitButton');
 const addOrderForm = document.getElementById('addOrderForm');
 const loadingSymbol = document.getElementById('loadingsymbol');
+const deliveryPhoneNumber = document.getElementById('deliveryPhoneNumber');
+const collectionPhoneNumber = document.getElementById('collectionPhoneNumber'); 
 
 addEventListeners()
 
@@ -38,12 +40,28 @@ function addEventListeners(){
 
 function validateForm(){ 
 
+    const isNumber = new RegExp('^[0-9]*$');
     const isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
+    const deliveryTelephoneNumber = deliveryPhoneNumber.value.replace(" ", "");
+    const collectionTelephoneNumber = collectionPhoneNumber.value.replace(" ", "");
+
+    //validate phone numbers
+    
+    if(!isNumber.test(deliveryTelephoneNumber) || deliveryTelephoneNumber.length != 11){
+        return "Delivery Telephone is not a valid phone number. Please enter an 11 digit phone number";
+    }
+
+    if(!isNumber.test(collectionTelephoneNumber) || collectionTelephoneNumber.length != 11){
+        return "Collection Telephone is not a valid phone number. Please enter an 11 digit phone number";
+    }
+
+    //validate email
+
     if(!email.value.match(isEmail)){
-        
         return "Email is not valid";
     }
+
 
     return null;
 
