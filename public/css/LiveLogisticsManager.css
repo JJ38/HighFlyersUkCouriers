@@ -14,7 +14,7 @@ gmp-map{
     /* min-width: 0; */
 }
 
-.driverInfoCard{
+.driverCard{
     display: flex;
     flex-direction: column;
     gap: 15px;

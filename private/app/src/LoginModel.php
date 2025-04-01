@@ -197,7 +197,11 @@ class LoginModel
             $account_type = $custom_claims['role'];
 
             if(empty($account_type)){
-                echo "custom role not set";
+
+                if ($this->logger_handle !== null) {
+                    $this->logEvent('CUSTOM_CLAIMS_ERROR', array($this->user_credentials['username'], $custom_claims));
+                }
+               
                 $account_type = " ";
             }
 
