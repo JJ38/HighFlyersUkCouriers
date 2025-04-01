@@ -2,8 +2,6 @@
 #driversWindow{
     display: flex;
     flex-direction: column;
-    gap: 25px;
-    padding: 30px;
     height: 100%;
     box-sizing: border-box;
     background-color: white;
@@ -37,6 +35,9 @@ gmp-map{
     display: flex;
     flex-direction: column;
     gap: 15px;
+    padding: 30px;
+    overflow-y: scroll;
+   
 }
     
 
@@ -45,6 +46,7 @@ gmp-map{
     text-align: left;
     font-size: 32px;
     font-weight: 600;
+    padding: 30px 30px 0px 30px;
     
 }
 

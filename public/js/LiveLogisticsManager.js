@@ -1,10 +1,9 @@
 import { db, getDocuments } from "/js/Firebase.js";
 import { query, collection, doc, onSnapshot} from "firebase/firestore";
 
+const driverList = document.getElementById("driverList");
 
-const enRouteDriverList = document.getElementById("enRouteDriverList");
-const completedDriverList = document.getElementById("completedDriverList");
-const offlineDriverList = document.getElementById("offlineDriverList");
+let numberOfDrivers;
 
 let map;
 
@@ -14,10 +13,28 @@ let completedDriverStructList = [];
 let offlineDriverStructList = [];
 let driverStructList = [];
 
+let subscriptionListeners = [];
+
 let initialQuery = false;
 
 //initMap();
 fetchDriverInfo();
+
+async function fetchDriverInfo(){
+
+  const driverData = await getDocuments(query(collection(db, "Drivers")));
+  numberOfDrivers = driverData.docs.length;
+
+  for(let i = 0; i < numberOfDrivers; i++){
+
+    //get document id
+    const documentID = driverData.docs[i].id
+    //setup listener on document
+    addListenerToDocument(query(doc(db, 'Drivers', documentID)));
+
+  }
+
+}
 
 async function initMap() {
 
@@ -30,37 +47,31 @@ async function initMap() {
 
 }
 
-async function fetchDriverInfo(){
-
-  const driverData = await getDocuments(query(collection(db, "Drivers")));
-
-  for(let i = 0; i < driverData.docs.length; i++){
-
-    //get document id
-    const documentID = driverData.docs[i].id
-    //setup listener on document
-    addListenerToDocument(query(doc(db, 'Drivers', documentID)));
-
-  }
-
-}
-
 
 function addListenerToDocument(docRef){
 
-  const unsub = onSnapshot(docRef, (doc) => {
+  onSnapshot(docRef, (doc) => {
 
-    console.log("Current data: ", doc.data());
-    //parses driver data and adds it to corrosponding driver list based on status
+    //parses driver data and add its to driverScructList
     const driverStruct = parseDriverInfo(doc.data(), docRef);
-    const driverCard = createDriverCard(driverStruct);
-    buildDriverListUI(driverStruct);
-    
+    createDriverCard(driverStruct);      
+
+    //update UI
+    updateDriverListUI(driverStruct);
+
   });
 
 }
 
 function updateDriverCard(oldDriverStruct, newDriverStruct){
+
+  //update values of driver struct
+  oldDriverStruct.driverStatus = newDriverStruct.driverStatus;
+  oldDriverStruct.nextStop = newDriverStruct.nextStop;
+  oldDriverStruct.nextStopTitle = newDriverStruct.nextStopTitle;
+  oldDriverStruct.statusColour = newDriverStruct.statusColour;
+  oldDriverStruct.stopsTitle = newDriverStruct.stopTitle;
+  oldDriverStruct.stopsRemaining = newDriverStruct.stopsRemaining;
 
   //remove old children
   oldDriverStruct.driverCard.innerHTML = "";
@@ -82,108 +93,96 @@ async function fetchDriverRuns(){
 
 }
 
+const sortAlphabetically = (a, b) => {
 
-const sortAlphabetically = 
-
-  (a, b) => {
-
-    if (a.runName < b.runName) {
-      return -1;
-    }
-    if (a.runName > b.runName) {
-      return 1;
-    }
-
-    return 0;
+  if (a.runName < b.runName) {
+    return -1;
   }
 
+  if (a.runName > b.runName) {
+    return 1;
+  }
 
-function buildDriverListUI(driverStruct){
+  return 0;
+}
+
+function updateDriverListUI(driverStruct){
 
   const indexOfDriverCard = driverStructList.findIndex((driver) => driver.driverID == driverStruct.driverID)
 
+  //If in driver list already
   if(indexOfDriverCard > - 1){
 
-    //does the card need updating or does the list need rebuilding as its status has changed
+    console.log("In List");
+
     const newDriverStatus = driverStruct.driverStatus;
     const oldDriverStatus = driverStructList[indexOfDriverCard].driverStatus;
 
-    if(newDriverStatus == oldDriverStatus){
-      //update card only
-      updateDriverCard(driverStructList[indexOfDriverCard], driverStruct);
-      return;
-    }
-    else{
-      //update list
-      orderDriverList();
-    }
+    updateDriverCard(driverStructList[indexOfDriverCard], driverStruct);
 
-    driverStructList[indexOfDriverCard] = driverStruct;
+    //does the card need updating or does the list need rebuilding as its status has changed
+    if(newDriverStatus != oldDriverStatus){
+
+       //update position of card in list
+       orderDriverList();
+    }
 
   }else{
 
     driverStructList.push(driverStruct);
     orderDriverList();
+  
   }
-
-  //remove current driver cards
-  enRouteDriverList.innerHTML = "";
-  completedDriverList.innerHTML = "";
-  offlineDriverList.innerHTML = "";
-
-  console.log(enRouteDriverStructList);
-
-  //build En Route drivers
-  enRouteDriverStructList.forEach((x) => { enRouteDriverList.appendChild(createDriverCard(x)) });
-
-  //build Completed drivers
-  completedDriverStructList.forEach((x) => { completedDriverList.appendChild(createDriverCard(x)) });
-
-  //build Offline drivers
-  offlineDriverStructList.forEach((x) => { offlineDriverList.appendChild(createDriverCard(x)) });
 
 }
 
 function orderDriverList(){
+  
+  //if the all data about drivers has'nt been recieved
+  if(numberOfDrivers != driverStructList.length){
+    return;
+  }
 
-  console.log("rebuilding driver list");
+  console.log("orderDriverList");
 
   enRouteDriverStructList = [];
   completedDriverStructList = [];
   offlineDriverStructList = [];
 
-  //Seperate drivers into each list based on driverstatus
+  //seperate each driver into list based of status
   for(const driver of driverStructList){
-
-    console.log(driver);
 
     switch(driver.driverStatus){
 
       case 'En Route':
-
         enRouteDriverStructList.push(driver);
         break;
-
+      
       case 'Completed':
-
         completedDriverStructList.push(driver);
         break;
-
+      
       case 'Offline':
-
         offlineDriverStructList.push(driver);
         break;
+
     }
 
-  }
+  }  
 
+  //Organise each sublist alphabetically
   enRouteDriverStructList.sort(sortAlphabetically);
   completedDriverStructList.sort(sortAlphabetically);
   offlineDriverStructList.sort(sortAlphabetically);
 
-  console.log(enRouteDriverStructList);
-  console.log(completedDriverStructList);
-  console.log(offlineDriverStructList);
+  driverStructList = [];
+  driverStructList = driverStructList.concat(enRouteDriverStructList);
+  driverStructList = driverStructList.concat(completedDriverStructList);
+  driverStructList = driverStructList.concat(offlineDriverStructList);
+
+  console.log(Object.assign({}, driverStructList));
+  driverStructList.forEach((driver) => { driverList.appendChild(driver.driverCard) });
+
 
 } 
 
@@ -315,13 +314,10 @@ function createDriverCard(driverStruct){
   driverCard.appendChild(runName);
   driverCard.appendChild(bottomRow);
 
-  // //add driver card struct so it can be accessed and mutated later
+  //add driver card struct so it can be accessed and mutated later
   driverStruct.driverCard = driverCard;
-  console.log(driverStruct);
+
   addDriverCardEventListener(driverCard);
-
-
-  return driverCard;
 
 }
 
