@@ -1,11 +1,9 @@
 
-#driversWindow{
+.driversWindow{
     display: flex;
     flex-direction: column;
     height: 100%;
-    box-sizing: border-box;
-    background-color: white;
-
+    border-right: 1px solid var(--borderColour);
 }
 
 .placeholder{

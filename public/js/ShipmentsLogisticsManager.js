@@ -1,4 +1,20 @@
+
+const liveLogisticsManagerButton = document.getElementById("liveLogisticsManagerButton");
+const shipmentLogisticsManagerButton = document.getElementById("shipmentLogisticsManagerButton");
+const unassignedOrdersButton = document.getElementById("unassignedOrdersCard");
+const runCards = document.querySelectorAll('.runCard');
+
+let selectableCards = Array.from(runCards);
+selectableCards = selectableCards.concat(unassignedOrdersButton);
+
+let currentSelectedRun = null;
+
 let map;
+
+console.log(selectableCards);
+
+initMap();
+addEventListeners();
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
@@ -9,29 +25,31 @@ async function initMap() {
   });
 }
 
-initMap();
+function addEventListeners(){
 
+  if(selectableCards != null){
 
-const LiveLogisticsManagerButton = document.getElementById("liveLogisticsManagerButton");
-const ShipmentLogisticsManagerButton = document.getElementById("shipmentLogisticsManagerButton");
+    for(let i = 0; i < selectableCards.length; i++){
+      console.log(selectableCards[i]);
+      selectableCards[i].addEventListener('click', () => {
 
-let runCards = document.getElementsByClassName('runCard');
-let currentSelectedRun = null;
-
-for (let i = 0; i < runCards.length; i++){
-  runCards[i].addEventListener('click', () => {
+        console.log("clicked");
         
         if(currentSelectedRun != null){
           currentSelectedRun.classList.remove('selectedRunCard');
         }
+      
+        selectableCards[i].classList.add('selectedRunCard');
+      
+        currentSelectedRun = selectableCards[i];
+      
+      });
+    }
 
-        runCards[i].classList.add('selectedRunCard');
+  }
 
-        currentSelectedRun = runCards[i];
-        
-        console.log("Get info about run from Firebase");
 
-    
 
-    });
 }
+
+
