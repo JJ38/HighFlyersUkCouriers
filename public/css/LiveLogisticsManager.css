@@ -5,6 +5,11 @@
     height: 100%;
     box-sizing: border-box;
     background-color: white;
+
+}
+
+.placeholder{
+    height: 100px;
 }
 
 gmp-map{
@@ -37,9 +42,18 @@ gmp-map{
     gap: 15px;
     padding: 30px;
     overflow-y: scroll;
-   
+    height: 100%;
+
 }
-    
+
+.mainContent{
+    height: 100%;
+}
+
+.liveLogisticsManagerWrapper{
+    flex: 1;
+}
+
 
 .windowTitle{
     color: #000000;
@@ -90,7 +104,7 @@ gmp-map{
 
 
 .driverName{
-    font-size: 24px;
+    font-size: 1.2rem;
     font-weight: 400;
 }
 

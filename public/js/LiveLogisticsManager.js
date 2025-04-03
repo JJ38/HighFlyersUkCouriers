@@ -183,10 +183,7 @@ function orderDriverList(){
   console.log(Object.assign({}, driverStructList));
   driverStructList.forEach((driver) => { driverList.appendChild(driver.driverCard) });
 
-
 } 
-
-
 
 
 function parseDriverInfo(driverData, ID){
