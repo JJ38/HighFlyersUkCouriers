@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/Navbar.css" type="text/css">
+    <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">    
+    <link rel="stylesheet" href="/css/ManageLogistics.css" type="text/css">  
+    <link rel="stylesheet" href="/css/logisticsSettings.css" type="text/css">  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <script src="/js/LogisticsSettings"></script>
+    <title>HighFlyersUkCouriers</title>
+</head>
+<body>
+    <header>
+        <div id="mobilenavmenu"  class="hideMobileMenu">
+          <div id="mobilenavwrapper">
+            <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+              <a class="logoutButton">Logout</a>
+              <a class="currentpage" href="/manage-orders">Bookings</a>
+              <a href="/content-manager">Content Manager</a>
+              <a href="/manage-accounts">Accounts</a>
+              <a class="navLinks" href="/manage-logistics">Logistics</a>
+
+          </div>
+        </div>
+        <nav id="menu">
+          <div id="mobilenavtoggle">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <a class="navLinks logoutButton">Logout</a>
+          <a class="navLinks" href="/manage-orders">Bookings</a>
+          <a class="navLinks" href="/content-manager">Content Manager</a>
+          <a class="navLinks" href="/manage-accounts">Accounts</a>
+          <a class="navLinks" href="/manage-logistics">Logistics</a>
+        </nav>
+    </header>
+    
+    <Section id="navbarMainContentWrapper">
+        <nav class="logisticsVerticalNavbar">
+            <a class="verticalNavbarLink" href="/live-logistics-manager">
+                <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon">
+                    share_location
+                </span>
+            </a>
+            <a class="verticalNavbarLink" href="/shipments-logistics-manager">
+                <span id="shipmentLogisticsManagerButton" class="material-symbols-outlined navbarIcon" >
+                    package_2
+                </span>
+            </a>
+            <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon selectedIconColour">
+                settings
+            </span>
+          </a>
+        </nav>
+    </Section>
+    
+</body>
+</html>
