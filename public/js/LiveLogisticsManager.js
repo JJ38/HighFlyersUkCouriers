@@ -63,6 +63,7 @@ function addListenerToDocument(docRef){
 
 }
 
+
 function updateDriverCard(oldDriverStruct, newDriverStruct){
 
   //update values of driver struct

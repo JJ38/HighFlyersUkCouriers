@@ -23,7 +23,10 @@ p{
 }
 
 .mainContent{
+    display: flex;
+    flex-direction: row;
     height: 100%;
+    width: 100%;
 }
 
 .runCard{
@@ -154,6 +157,18 @@ select{
     font-size: 2rem !important;
     color:#FFF600;
     -webkit-text-stroke: 1px black;
+}
+
+.dependantContent{
+    background-color: pink;
+    flex: 1;
+    /* width: 100%; */
+}
+
+.unassignedOrdersView{
+
+    /* background-color: pink; */
+
 }
 
 .hidden{

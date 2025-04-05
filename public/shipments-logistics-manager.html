@@ -19,6 +19,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 
         <script type="module" src="/js/Logout.js"></script>
+        <!-- <script type="text/javascript" src="/js/MobileNavigationBar.js"></script> -->
+        <script type="module" src="/js/ShipmentsLogisticsManager.js"></script>
         
         <title>HighFlyersUkCouriers</title>
     </head>
@@ -86,180 +88,32 @@
                 <p class="unassignedOrdersTitle">Unassigned</p>
                 <p class="numberOfUnassignedOrders">#19</p>
               </div>
-              <div class="runCardList">
-                <div class="runCard">
-                  <p class="runName">Cumbria</p>
-                  <div class="row runInfoWrapper">
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        calendar_month
-                      </span>
-                      <p>32</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        location_on
-                      </span>
-                      <p>19</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        local_gas_station
-                      </span>
-                      <p>£85</p>
-                    </div>
-                  </div>
-                  <div class="row runInfoWrapper">
-                    <p class="runInfoTitle">AssignedDriver: </p>
-                    <p class="runInfo">Stephen</p>
-                  </div>
-                </div>
-                <div class="runCard">
-                  <p class="runName">South Yorks</p>
-                  <div class="row runInfoWrapper">
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        calendar_month
-                      </span>
-                      <p>32</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        location_on
-                      </span>
-                      <p>21</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        local_gas_station
-                      </span>
-                      <p>£95</p>
-                    </div>
-                  </div>
-                  <div class="row runInfoWrapper">
-                    <p class="runInfoTitle">AssignedDriver: </p>
-                    <p class="runInfo">Alexander</p>
-                  </div>
-                </div>
-                <div class="runCard">
-                  <p class="runName">South Yorks</p>
-                  <div class="row runInfoWrapper">
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        calendar_month
-                      </span>
-                      <p>32</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        location_on
-                      </span>
-                      <p>21</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        local_gas_station
-                      </span>
-                      <p>£95</p>
-                    </div>
-                  </div>
-                  <div class="row runInfoWrapper">
-                    <p class="runInfoTitle">AssignedDriver: </p>
-                    <p class="runInfo">Alexander</p>
-                  </div>
-                </div>
-                <div class="runCard">
-                  <p class="runName">South Yorks</p>
-                  <div class="row runInfoWrapper">
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        calendar_month
-                      </span>
-                      <p>32</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        location_on
-                      </span>
-                      <p>21</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        local_gas_station
-                      </span>
-                      <p>£95</p>
-                    </div>
-                  </div>
-                  <div class="row runInfoWrapper">
-                    <p class="runInfoTitle">AssignedDriver: </p>
-                    <p class="runInfo">Alexander</p>
-                  </div>
-                </div>
-                <div class="runCard">
-                  <p class="runName">South Yorks</p>
-                  <div class="row runInfoWrapper">
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        calendar_month
-                      </span>
-                      <p>32</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        location_on
-                      </span>
-                      <p>21</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        local_gas_station
-                      </span>
-                      <p>£95</p>
-                    </div>
-                  </div>
-                  <div class="row runInfoWrapper">
-                    <p class="runInfoTitle">AssignedDriver: </p>
-                    <p class="runInfo">Alexander</p>
-                  </div>
-                </div>
-                <div class="runCard">
-                  <p class="runName">South Yorks</p>
-                  <div class="row runInfoWrapper">
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        calendar_month
-                      </span>
-                      <p>32</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        location_on
-                      </span>
-                      <p>21</p>
-                    </div>
-                    <div class="row">
-                      <span class="material-symbols-rounded runInfoIcon">
-                        local_gas_station
-                      </span>
-                      <p>£95</p>
-                    </div>
-                  </div>
-                  <div class="row runInfoWrapper">
-                    <p class="runInfoTitle">AssignedDriver: </p>
-                    <p class="runInfo">Alexander</p>
-                  </div>
-                </div>
+              <div id="runCardList" class="runCardList">
+              
               </div>                 
             </Section>
+            
           </Section>
-          <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map>
-          
+          <Section id="dependantContent" class="dependantContent">
+              
+            <div id="unassignOrdersView">
+              
+              <div id="filterWrapper"></div>
+              <table id="unassignedOrdersTable">
+
+              </table>
+                
+            </div>
+
+            <div id="selectedRunView">
+              <!-- <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map> -->
+        
+            </div>
+          </Section>
         </Section>
       </Section>
     </body>
     <!-- <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&libraries=maps,marker&v=beta"}} defer></script> -->
-    <script type="text/javascript" src="{{js_file}}"></script>
-    <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
-    <script type="text/javascript" src="/js/ShipmentsLogisticsManager.js"></script>
+    
 </html>
 
