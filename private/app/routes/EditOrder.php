@@ -28,8 +28,6 @@ $app->get('/edit-order[/id]', function (Request $request, Response $response) us
             'heading_1' => APP_TITLE,
             
         ));
-
-   
 });
 
 
@@ -39,13 +37,11 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
     
     if($account_type == "admin" || $account_type == "staff"){
 
-
       $tainted_parameters = $request->getParsedBody();
 
       $container = $app->getContainer();
       $session_wrapper = $app->getContainer()->get('sessionWrapper');
       $authentication_model = $app->getContainer()->get('authenticationModel');
-
 
       if($account_type == "staff"){ 
         $tainted_parameters['delivery_week'] = $session_wrapper->getSessionVar('delivery_week');
@@ -55,7 +51,11 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
       $manage_order_model = $container->get('manageOrderModel');
       $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
 
-     
+      // echo "<pre>";
+      // var_dump($tainted_parameters);
+      // echo "</pre>";
+
+      // return $response;
       //if one of the parameters does not meet requirements
 
       if(empty($cleaned_parameters)){
@@ -65,13 +65,12 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
 
       $cleaned_parameters['docRef'] = $tainted_parameters['docRef'];
 
-     //convert printed value to int
+      //convert printed value to int
 
       if($cleaned_parameters['printed'] == "Printed"){
         $cleaned_parameters['printed'] = 1;
       }else{
         $cleaned_parameters['printed'] = 0;
-
       }
 
       //store in database

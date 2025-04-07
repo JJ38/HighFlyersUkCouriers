@@ -1,8 +1,28 @@
-import { db, getDocuments } from "/js/Firebase.js";
+import { db, getDocuments, auth } from "/js/Firebase.js";
 import { where, query, collection } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const ID = parseInt(new URLSearchParams(document.location.search).get("id"));
 const q = query(collection(db, "Orders"), where("ID", "==", ID));
+
+let role;
+
+onAuthStateChanged(auth, (user) => {
+
+  if (user) {
+
+    auth.currentUser.getIdTokenResult().then(async (getIdTokenResult) => {
+      console.log(getIdTokenResult.claims.role);   
+      role = getIdTokenResult.claims.role;
+      
+    });
+
+
+  } else {
+
+  }
+  
+});
 
 getDocuments(q).then((documentSnapshots) => {
 
@@ -16,12 +36,10 @@ getDocuments(q).then((documentSnapshots) => {
 
     const sortedOrderData = sortOrderData(orderData);
 
+    console.log(table.children[0].children);
+    let index = 0;
+
     for(var fields in sortedOrderData){
-
-        const tableRow = document.createElement('tr');
-
-        const field = document.createElement('td');
-        field.innerText = fields;
 
         const data = document.createElement('td');
 
@@ -45,7 +63,6 @@ getDocuments(q).then((documentSnapshots) => {
                 printedOpt.value = "Printed";
                 printedOpt.innerText = "Printed";
 
-
                 const notPrintedOpt = document.createElement('option');
                 notPrintedOpt.value = "Not Printed";
                 notPrintedOpt.innerText = "Not Printed";
@@ -56,7 +73,6 @@ getDocuments(q).then((documentSnapshots) => {
                     notPrintedOpt.selected = false;
                 }
 
-
                 input.appendChild(notPrintedOpt);
                 input.appendChild(printedOpt);
 
@@ -65,6 +81,54 @@ getDocuments(q).then((documentSnapshots) => {
                 break;
             }
 
+            case "username":
+            {
+        
+                const input = document.createElement('input');
+                input.type = "text";
+                input.value = sortedOrderData[fields];
+                input.name = fields;
+                data.appendChild(input);
+
+                break;
+            }
+
+            case "deliveryWeek":
+            {
+                const input = document.createElement('input');
+                input.value = sortedOrderData[fields];
+
+                if(role == "admin"){
+                    input.type = "number";
+                }else{
+                    input.type = "hidden";
+                }
+
+                input.name = fields;
+                data.appendChild(input);
+                break;
+            }
+
+            case "quantity":
+
+                const input = document.createElement('input');
+                input.type = "number";
+                input.value = sortedOrderData[fields];
+                input.name = fields;
+                data.appendChild(input);
+
+                break;
+
+            case "email":
+            {
+                const input = document.createElement('input');
+                input.type = "email";
+                input.value = sortedOrderData[fields];
+                input.name = fields;
+                data.appendChild(input);
+                break;
+            }
+            
             default:
             {
                 const input = document.createElement('input');
@@ -72,15 +136,17 @@ getDocuments(q).then((documentSnapshots) => {
                 input.value = sortedOrderData[fields];
                 input.name = fields;
                 data.appendChild(input);
+
             }
         }
 
-        tableRow.appendChild(field);
-        tableRow.appendChild(data);    
-        
-        table.appendChild(tableRow);
+        table.children[0].children[index].appendChild(data);
 
+        index++;
     }
+
+    console.log(orderData);
+    // for()
 
     const docRef = document.createElement('input');
     docRef.type = "hidden";
@@ -98,7 +164,7 @@ function sortOrderData(orderFields){
         animalType: orderFields['animalType'],
         quantity: orderFields['quantity'],
         email: orderFields['email'],
-        account: orderFields['account'],
+        username: orderFields['account'],
         deliveryWeek: orderFields['deliveryWeek'],
         
         collectionName: orderFields['collectionName'],

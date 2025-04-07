@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, getDocs, getDoc, updateDoc, doc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
+
 const firebaseConfig = {
     apiKey: "AIzaSyBHkjHITuk2opFgiG2wG36WJE6CDmb4tK4",
     authDomain: "highflyersukcouriers-a9c17.firebaseapp.com",
