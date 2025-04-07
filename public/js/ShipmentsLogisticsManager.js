@@ -1,12 +1,13 @@
 
-import { db, getDocuments } from "/js/Firebase.js";
-import { query, collection } from "firebase/firestore";
+import { db, getDocuments, getDocument } from "/js/Firebase.js";
+import { query, collection, where, limit, doc } from "firebase/firestore";
 
 const liveLogisticsManagerButton = document.getElementById("liveLogisticsManagerButton");
 const shipmentLogisticsManagerButton = document.getElementById("shipmentLogisticsManagerButton");
 const unassignedOrdersButton = document.getElementById("unassignedOrdersCard");
 // const runCards = document.querySelectorAll('.runCard');
 const runCardList = document.getElementById("runCardList");
+const selectedShipment = document.getElementById('shipmentGroups');
 
 
 // let selectableCards = Array.from(runCards);
@@ -19,7 +20,7 @@ let runStructList = [];
 
 
 // initMap();
-// addEventListeners();
+addEventListeners();
 addEventListener(unassignedOrdersButton);
 init();
 
@@ -38,10 +39,42 @@ const sortAlphabetically = (a, b) => {
 
 }
 
+const fetchRun = async (documentID) => {
+
+  const runData = await getDocument(query(doc(db, 'Runs', documentID)));
+  console.log(runData.data());
+  const runStruct = parseRunInfo(runData.data());
+  createRunCard(runStruct);
+  addEventListener(runStruct.runCard);
+  runStructList.push(runStruct);
+
+}
+
 async function init(){
 
-  await fetchShipmentRuns();
+  if(selectedShipment == null){
+    console.log("selected shipment == null");
+    return;
+  }
+
+  const shipmentName = selectedShipment.value;
+  updateRunsList(shipmentName);
+
+}
+
+async function updateRunsList(shipmentName){
+
+  runStructList = [];
+
+  await fetchShipment(shipmentName);
+
   runStructList.sort(sortAlphabetically);
+
+  runCardList.innerHTML = "";
+
+  if(runStructList.length == 0){
+    runCardList.innerText = "No runs in shipment";
+  }
   
   for(let i = 0; i < runStructList.length; i++){
 
@@ -51,31 +84,59 @@ async function init(){
 
 }
 
-async function fetchShipmentRuns(){
+function addEventListeners(){
 
-  const shipmentData = await getDocuments(query(collection(db, "Runs")));
-  const numberOfRuns = shipmentData.docs.length;
+  if(selectedShipment != null){
 
-  for(let i = 0; i < numberOfRuns; i++){
+    selectedShipment.addEventListener('change', () => {
+      
+      updateRunsList(selectedShipment.value);
 
-    const runStruct = parseRunInfo(shipmentData.docs[i].data());
-    createRunCard(runStruct);
-    addEventListener(runStruct.runCard);
-    runStructList.push(runStruct);
+    });
 
-  } 
+  }
 
 }
 
-function parseRunInfo(runDocument){
+async function fetchShipment(selectedShipment){
+
+  const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", selectedShipment), limit(1)));
+
+  console.log(shipmentData.empty);
+  if(shipmentData.empty){
+    console.log("shipment doesnt exist");
+    return;
+  }
+
+  const shipmentRunsDocumentIDs = shipmentData.docs[0].data()['runs'];
+ 
+  const numberOfRuns = shipmentRunsDocumentIDs.length;
+
+  // Promise.all()
+
+  let promises = [];
+
+  for(let i = 0; i < numberOfRuns; i++){
+
+    promises.push(fetchRun(shipmentRunsDocumentIDs[i]));
+
+  } 
+  
+  await Promise.all(promises);
+  console.log("promise.all  completed");
+}
+
+
+
+function parseRunInfo(runData){
   
   const runStruct = {
 
-    assignedDriver: runDocument['assignedDriver'],
-    fuelCost: runDocument['fuelCost'],
-    totalStops: runDocument['totalStops'],
-    runName: runDocument['runName'],
-    runWeek: runDocument['runWeek'],
+    assignedDriver: runData['assignedDriver'],
+    fuelCost: runData['fuelCost'],
+    totalStops: runData['totalStops'],
+    runName: runData['runName'],
+    runWeek: runData['runWeek'],
  
   }
 
