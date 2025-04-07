@@ -35,7 +35,6 @@ export default defineConfig({
           ManageOrders: resolve(root, 'manage-orders.html'),
           ShipmentsLogisticsManager: resolve(root, 'shipments-logistics-manager.html'),
           ViewOrder: resolve(root, 'view-order.html'),
-
         },
         output: {
           // assetFileNames: "assets/[name][extname]",

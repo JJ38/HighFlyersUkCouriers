@@ -131,7 +131,8 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
     return $response->withRedirect('loginpage', 302);
 
 
-})->setName('add-user');
+});
+
 
 
 function cleanUserData($container, $tainted_user_data) : array{

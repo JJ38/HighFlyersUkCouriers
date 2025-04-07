@@ -101,4 +101,4 @@ $app->post('/delete-user', function (Request $request, Response $response) use (
   return $response->withRedirect('/loginpage', 302);
 
 
-})->setName('edit-orders');
+});

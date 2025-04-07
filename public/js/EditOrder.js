@@ -98,7 +98,7 @@ function sortOrderData(orderFields){
         animalType: orderFields['animalType'],
         quantity: orderFields['quantity'],
         email: orderFields['email'],
-        account: orderFields['account'],
+        username: orderFields['account'],
         deliveryWeek: orderFields['deliveryWeek'],
         
         collectionName: orderFields['collectionName'],
