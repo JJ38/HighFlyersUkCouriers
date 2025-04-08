@@ -42,7 +42,7 @@ $app->post('/delete-order', function (Request $request, Response $response) use 
 
   $account_type = $request->getAttribute('accountType');
 
-  if($account_type == "admin" || $account_type == "staff"){
+  if($account_type == "admin"){
 
     $allGetVars = $request->getParsedBody();
     $docRef = $allGetVars['docRef'];

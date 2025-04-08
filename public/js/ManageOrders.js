@@ -30,6 +30,7 @@ let isPrinted = "";
 let role;
 let initialQuery = true;
 let fetchingOrders = false;
+let username;
 
 addListeners();
 
@@ -40,6 +41,7 @@ onAuthStateChanged(auth, (user) => {
     auth.currentUser.getIdTokenResult().then(async (getIdTokenResult) => {
       console.log(getIdTokenResult.claims.role);   
       role = getIdTokenResult.claims.role;
+      username = auth.currentUser.email.replace("@placeholder.com", "");
     
       loadOrders();
       loadingSymbol.classList.add('hidden');
@@ -100,8 +102,6 @@ async function getOrdersByFilter(selectedSearchOption){
 
 async function loadOrders(){
 
-  
-
   let orderData = null;
 
   if(fetchingOrders){
@@ -123,11 +123,9 @@ async function loadOrders(){
 
   //append order data to table
   addOrdersToTable(orderData, false);
-
   fetchingOrders = false;
 
 }
-
 
 
 function roleBasedAccess(){
@@ -172,20 +170,11 @@ function roleBasedAccess(){
     }
 
   }
-
+  console.log(username);
   if(role == "staff"){
 
-    //show delete buttons on public orders only
-    const editButton = document.querySelectorAll(".publicEditOrderButton");
+  
     
-    if(editButton != null){
-    
-      for(let i = 0 ; i < editButton.length; i++){
-
-        editButton[i].classList.remove("hidden");
-        
-      }
-    }
 
   }
 
@@ -325,35 +314,42 @@ function getOrderButtons(orderData){
   viewButton.type= "button";
   viewLink.appendChild(viewButton);
 
-  const editLink = document.createElement('a');
-  editLink.href = "/edit-order?id=" + orderData["ID"];
-  const editButton = document.createElement('button');
-  editButton.innerText = "Edit";
-  editButton.type= "button";
-  editButton.classList.add("editButton");
-  editButton.classList.add("hidden");
-  editLink.appendChild(editButton);
-
-  //mark as public order
-  if(orderData['account'] == ""){
-    editButton.classList.add("publicEditOrderButton");
-  }
-
-  const deleteLink = document.createElement('a');
-  deleteLink.href = "/delete-order?id=" + orderData["ID"];
-
-  const deleteButton = document.createElement('button');
-  deleteButton.innerText = "Delete";
-  deleteButton.type= "button";
-  deleteButton.classList.add("hidden");
-  deleteButton.classList.add("deleteButton");
-  deleteLink.appendChild(deleteButton);
-
-
   buttonWrapper.appendChild(printLink);
   buttonWrapper.appendChild(viewLink);
-  buttonWrapper.appendChild(editLink);
-  buttonWrapper.appendChild(deleteLink);
+
+  if(username == orderData["addedBy"] || role == "admin"){
+
+    const editLink = document.createElement('a');
+    editLink.href = "/edit-order?id=" + orderData["ID"];
+    const editButton = document.createElement('button');
+    editButton.innerText = "Edit";
+    editButton.type= "button";
+    editButton.classList.add("editButton");
+    editLink.appendChild(editButton);
+    buttonWrapper.appendChild(editLink);
+
+  }
+
+  // //mark as public order
+  // if(orderData['account'] == ""){
+  //   editButton.classList.add("publicEditOrderButton");
+  // }
+
+  if(role == "admin"){
+
+    const deleteLink = document.createElement('a');
+    deleteLink.href = "/delete-order?id=" + orderData["ID"];
+
+    const deleteButton = document.createElement('button');
+    deleteButton.innerText = "Delete";
+    deleteButton.type= "button";
+    deleteButton.classList.add("hidden");
+    deleteButton.classList.add("deleteButton");
+    deleteLink.appendChild(deleteButton);
+    buttonWrapper.appendChild(deleteLink);
+  }
+
+
   buttonWrapper.classList = "orderbuttons";
 
   return buttonWrapper;
