@@ -1,13 +1,13 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, getDocs, getDoc, updateDoc, doc, onSnapshot } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { firebaseConfig } from "/js/FirebaseSettings.js";
+import { firebaseConfig, databaseName } from "/js/FirebaseSettings.js";
 
 
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app); 
-export const db = getFirestore(app);
+export const db = getFirestore(app, databaseName);
 export async function getDocuments(q){
 
    return await getDocs(q); 
