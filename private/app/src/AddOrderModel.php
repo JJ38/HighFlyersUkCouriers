@@ -53,78 +53,6 @@ class AddOrderModel
         $this->date_time = $date_time;
     }
 
-
-    public function fetchOAuth2Token(){
-
-
-        function base64url_encode($data) { 
-            return rtrim(strtr(base64_encode($data), '+/', '-_'), '='); 
-        }
-        
-        //Google's Documentation of Creating a JWT: https://developers.google.com/identity/protocols/OAuth2ServiceAccount#authorizingrequests
-        
-        //{Base64url encoded JSON header}
-        $jwtHeader = base64url_encode(json_encode(array(
-            "alg" => "RS256",
-            "typ" => "JWT"
-        )));
-
-        //{Base64url encoded JSON claim set}
-        $now = time();
-        $jwtClaim = base64url_encode(json_encode(array(
-            "iss" => "firebase-adminsdk-fbsvc@highflyersukcouriers-a9c17.iam.gserviceaccount.com",
-            "scope" => "https://www.googleapis.com/auth/datastore",
-            "aud" => "https://oauth2.googleapis.com/token",
-            "exp" => $now + 3600,
-            "iat" => $now
-        )));
-
-
-        $env = parse_ini_file(realpath('../.env'));
-        $private_key = $env['SERVICE_ACCOUNT_PRIVATE_KEY'];
-
-        $new_private_key = str_replace('\n', "\n", $private_key); //important for formatting. Key wont work otherwise
-
-        //The base string for the signature: {Base64url encoded JSON header}.{Base64url encoded JSON claim set}
-        $encryption_result = openssl_sign(
-            $jwtHeader.".".$jwtClaim,
-            $jwtSig,
-            $new_private_key,
-            "sha256WithRSAEncryption"
-        );
-
-        $jwtSign = base64url_encode($jwtSig);
-        
-        //{Base64url encoded JSON header}.{Base64url encoded JSON claim set}.{Base64url encoded signature}
-        $jwtAssertion = $jwtHeader.".".$jwtClaim.".".$jwtSign;
-
-        $this->logger->error("JWT", array($jwtAssertion));
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, 'https://oauth2.googleapis.com/token');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=" . $jwtAssertion);
-
-        $headers = array();
-        $headers[] = 'Content-Type: application/x-www-form-urlencoded';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
-        }
-
-        $result_arr = json_decode($result, true);
-        $access_token = $result_arr['access_token'];
-        curl_close($ch);
-
-        $this->access_token = $access_token;
-
-    }
-
-
     private function incrementOrderID() : int{
 
         $accessToken = null;
@@ -137,10 +65,13 @@ class AddOrderModel
             
             $ch = curl_init();
 
-            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/(default)/documents:commit?key=AIzaSyDNBL3PpPTm6l69jVFbL');
+            $env = parse_ini_file(realpath('../.env'));
+            $database_name = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
+
+            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/' . $database_name . '/documents:commit?key=AIzaSyDNBL3PpPTm6l69jVFbL');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"writes\":[{\"transform\":{\"document\":\"projects/highflyersukcouriers-a9c17/databases/(default)/documents/MetaData/IDTRACKER\",\"fieldTransforms\":[{\"fieldPath\":\"ID\",\"increment\":{\"integerValue\":1}}]}}]}");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"writes\":[{\"transform\":{\"document\":\"projects/highflyersukcouriers-a9c17/databases/" . $database_name . "/documents/MetaData/IDTRACKER\",\"fieldTransforms\":[{\"fieldPath\":\"ID\",\"increment\":{\"integerValue\":1}}]}}]}");
             curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
             
             $headers = array();

@@ -4,6 +4,7 @@ namespace HighFlyersUkCouriers;
 
 use MrShan0\PHPFirestore\FirestoreClient;
 use GuzzleHttp\Client;
+use Kreait\Firebase\Project\ProjectId;
 
 class AuthenticationModel
 {
@@ -120,10 +121,12 @@ class AuthenticationModel
             $projectID = $env['FIREBASE_PROJECT_ID'];
             $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
         
-            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-                'database' => '(default)',
-            ], $client);
+            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [] , $client);
 
+            FirestoreClient::setConfig([
+                'database' => $env['FIREBASE_FIRESTORE_DATABASE_NAME'],
+                'projectId' => $projectID,
+            ]);
             
         }catch(\Exception $e){
 

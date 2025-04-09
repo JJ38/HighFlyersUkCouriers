@@ -121,7 +121,6 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $accessToken = $authentication_model->getOAuth2Token();
   $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
-
   if($firestore == null){
     return $response->withRedirect('/manage-accounts?error=dberror', 302);
   }
