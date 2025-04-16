@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-GB">
   <head>
+    <meta name="description" content="Book in an order">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
@@ -16,7 +17,7 @@
     
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrJDwcnDimqAZ5BZAwk7q9Iw-YE6-A9yY&libraries=places&v=weekly" defer></script>
     
-    <title>HighFlyersUKCourier</title>
+    <title>HighFlyersUKCouriers</title>
     
   </head>
   <body>
@@ -112,9 +113,8 @@
             <section class="bookingInput"></section>
 
             <section id="collectionAddressAutocomplete" class="bookingInput">
-              <label for="collectionName">Find Collection Address </label>
-              
-              <input id="collectionAddressAutocompleteInput" type="text" placeholder="Search for a place..." />
+              <label for="findCollectionAddress">Find Collection Address </label>
+              <input id="collectionAddressAutocompleteInput" name="findCollectionAddress" type="text" placeholder="Search for a place..." />
               <div id="autocompleteResultsAnchor">
                 <div id="autocompleteResultsWrapperCollection" class="autocompleteResultsWrapper hidden">
                   <div class="autocompleteTitleWrapper">
@@ -149,8 +149,8 @@
             </section>
 
             <section class="bookingInput">
-              <label for="email">Collection Telephone Number</label>
-              <input id="collectionTelephone" name="collectionPhoneNumber" type="text" minlength="11" maxlength="12" required="">
+              <label for="collectionTelephone">Collection Telephone Number</label>
+              <input id="collectionTelephone" name="collectionTelephone" type="text" minlength="11" maxlength="12" required="">
             </section>
           </section>
           <h2>
@@ -167,9 +167,9 @@
 
 
             <section id="deliveryAddressAutocomplete" class="bookingInput">
-              <label for="deliveryName">Find Delivery Address </label>
+              <label for="findDeliveryAddress">Find Delivery Address </label>
               
-              <input id="deliveryAddressAutocompleteInput" type="text" placeholder="Search for a place..." />
+              <input id="deliveryAddressAutocompleteInput" type="text" name="findDeliveryAddress" placeholder="Search for a place..." />
               <div id="autocompleteResultsAnchor">
                 <div id="autocompleteResultsWrapperDelivery" class="autocompleteResultsWrapper hidden">
                   <div class="autocompleteTitleWrapper">
@@ -246,8 +246,8 @@
 
       </div>
       <div class="facebookicon">
-        <a href="https://www.facebook.com/HighFlyersUKCourier">
-          <i class="fa-brands fa-facebook"></i>
+        <a href="https://www.facebook.com/HighFlyersUKCourier" aria-label="HighFlyersUkCouriers Facebook Page">
+          <i class="fa-brands fa-facebook" alt="facebook icon"></i>
         </a>
       </div>
       <div class="copyright">
