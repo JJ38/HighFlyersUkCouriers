@@ -43,13 +43,48 @@ h4{
 
     border: 1px solid #9A9A9A;
     border-radius: 5px;
-    padding: 7px 7px;
+    padding: 7px 20px 7px 7px;
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     font-weight: 300;
     font-style: normal;
     background-color: #FCFCFC;
-    max-width: 200px;
+    max-width: 150px;
+}
+
+.fuelcostinputwrapper{
+    position: relative;
+    width: min-content;
+}
+
+
+.pence{
+    position: absolute;
+    top: -1px;
+    right: 10px;
+    font-size: 1rem;
+
+}
+
+.updatefuelcostbutton{
+
+    width: min-content;
+    padding: 8px;
+    background: white;
+    color: #2881FF;
+    border: none;
+    border-radius: 5px;
+    border: solid 1px #C5C5C5;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.updatefuelcostbutton:hover{
+
+    color: white;
+    background: #2881FF;
+    cursor: pointer;
+
 }
 
 .subsection{
@@ -105,6 +140,14 @@ h4{
     
 }
 
+.unassignedareacodeswrapper > .areacodepill:hover{
+
+    background-color: black;
+    color: white;
+    cursor: pointer;
+
+}
+
 
 .areacodepill > p{
     font-weight: 600;
@@ -123,18 +166,25 @@ h4{
     border: 1px solid #C5C5C5;
     padding: 13px;
     border-radius: 5px;
+    background-color: white;
+    color:#2881FF;
+}
 
+.rundefinitionbutton:hover{
+    background-color: #2881FF;
+    color: white;
+    cursor: pointer;
 }
 
 .rundefinitionbutton > p {
-    color: #2881FF;
+    color: inherit;
     line-height: 1rem;
 }
 
 .plus{
     font-size: 24px;
-    
 }
+
 
 .run{
     display: flex;
@@ -164,6 +214,7 @@ h4{
 .removeareacodebutton:hover{
     background-color: black;
     color: white;
+    cursor: pointer;
 }
 
 .areacodewrapper{
@@ -198,12 +249,16 @@ h4{
 .add:hover{
     background-color: #2881FF;
     color: white;
+    cursor: pointer;
     
 }
 
 .delete:hover{
     background-color: red;
     color: white;
+    cursor: pointer;
 }
 
-
+.hidden{
+    display: none;
+}
