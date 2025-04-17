@@ -126,6 +126,8 @@ function updateFuelCost(){
     updateDocument(doc(db, 'Settings', 'fuelcost'), {fuelcost: parseInt(fuelInput)}).then(() => {
 
         showNotification("Success!", "Fuel cost has been updated");
+        currentFuelCost = fuelInput;
+        updateFuelCostButton.classList.add('hidden');
 
     }).catch(() => {
 
