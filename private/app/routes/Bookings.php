@@ -72,10 +72,6 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   
   $manage_order_model = $container->get('manageOrderModel');
 
- 
-
-  //$cleaned_parameters = cleanBookingForm($app, $tainted_parameters);
-
   $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
 
   //if one of the parameters does not meet requirements
