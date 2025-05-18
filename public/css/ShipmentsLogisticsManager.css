@@ -23,10 +23,53 @@ p{
 }
 
 .mainContent{
-    display: flex;
+    display: flex;;
     flex-direction: row;
     height: 100%;
     width: 100%;
+}
+
+
+.createShipmentWidget{
+
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    background-color: white;
+    gap: 10px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    padding: 2rem;
+    border-radius: 5px;
+    width: fit-content;
+    height: fit-content;
+    z-index: 2;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    
+}
+
+.createShipmentContentWrapper{
+
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+}
+
+.shipmentWidgetInput{
+
+    padding: 5px;
+    font-size: 1rem;
+
+}
+
+.shipmentWidgetButton{
+
+    font-size: 1rem;
+    padding: 2px;
+
 }
 
 .runCard{
@@ -65,7 +108,7 @@ p{
     
 }
 
-select{
+.selectShipment{
     width: 100%;
     border-radius: 15px;
     padding: 10px;
@@ -173,4 +216,9 @@ select{
 
 .hidden{
     display: none;
+}
+
+.flex-col{
+    display: flex;
+    flex-direction: column;
 }

@@ -5,6 +5,12 @@ import { query, collection, where, limit, doc } from "firebase/firestore";
 const liveLogisticsManagerButton = document.getElementById("liveLogisticsManagerButton");
 const shipmentLogisticsManagerButton = document.getElementById("shipmentLogisticsManagerButton");
 const unassignedOrdersButton = document.getElementById("unassignedOrdersCard");
+
+const createShipmentWidget = document.getElementById("create_shipment_widget");
+const cancelCreateShipmentButton = document.getElementById("cancel_create_shipment");
+const saveCreateShipmentButton = document.getElementById("save_create_shipment");
+
+
 // const runCards = document.querySelectorAll('.runCard');
 const runCardList = document.getElementById("runCardList");
 const selectedShipment = document.getElementById('shipmentGroups');
@@ -62,6 +68,70 @@ async function init(){
 
 }
 
+
+function addEventListeners(){
+
+  if(selectedShipment != null){
+
+    selectedShipment.addEventListener('input', () => {
+      //change
+      console.log("select");
+      if(selectedShipment.value == "CREATE_SHIPMENT"){
+
+        createShipment();
+        return;
+      }
+
+      updateRunsList(selectedShipment.value);
+
+    });
+
+  }
+
+  if(cancelCreateShipmentButton != null){
+
+    cancelCreateShipmentButton.addEventListener('click', () => {
+
+        hideCreateShipmentUI();
+
+    });
+
+  }
+
+  
+  if(saveCreateShipmentButton != null){
+
+    saveCreateShipmentButton.addEventListener('click', () => {
+
+      
+    });
+
+  }
+
+}
+
+
+function createShipment(){
+
+  //show ui for creating shipment
+  showCreateShipmentUI();
+
+}
+
+function showCreateShipmentUI(){
+
+  createShipmentWidget.classList.remove('hidden');
+
+}
+
+function hideCreateShipmentUI(){
+
+  selectedShipment.value = "";
+  createShipmentWidget.classList.add('hidden');
+
+}
+
+
 async function updateRunsList(shipmentName){
 
   runStructList = [];
@@ -84,19 +154,6 @@ async function updateRunsList(shipmentName){
 
 }
 
-function addEventListeners(){
-
-  if(selectedShipment != null){
-
-    selectedShipment.addEventListener('change', () => {
-      
-      updateRunsList(selectedShipment.value);
-
-    });
-
-  }
-
-}
 
 async function fetchShipment(selectedShipment){
 

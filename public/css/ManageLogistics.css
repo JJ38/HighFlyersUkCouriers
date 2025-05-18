@@ -48,6 +48,7 @@ a.verticalNavbarLink{
 #navbarMainContentWrapper{
 
     display:flex;
+    position: relative;
     flex-direction: row;
     height: 100%;
 }

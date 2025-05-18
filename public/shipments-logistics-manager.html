@@ -52,6 +52,41 @@
     
       </header>
       <Section id="navbarMainContentWrapper">
+
+        <div id="create_shipment_widget" class="createShipmentWidget hidden">
+
+          <h1>Create New Shipment</h1>
+
+          <div class="createShipmentContentWrapper">
+
+            <div class="flex-col">
+              <label for="shipment_name">Shipment Name</label>
+              <input class="shipmentWidgetInput" type="text" name="shipment_name" id="shipment_name">
+            </div>
+
+            <div class="flex-col">
+              <label for="shipment_delivery_week">Week</label>
+              <input class="shipmentWidgetInput" type="number" name="shipment_delivery_week" id="shipment_delivery_week">
+            </div>
+            
+            <div class="flex-col">
+              <label for="shipment_run_type">Run Type</label>
+              <select type="text" name="shipment_run_type" id="shipment_run_type">
+                <option value="collection">Collection</option>
+                <option value="delivery">Delivery</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div>
+
+            <button id="cancel_create_shipment" class="shipmentWidgetButton">Cancel</button>
+            <button id="save_create_shipment" class="shipmentWidgetButton">Save</button>
+          
+          </div>
+        </div>
+
         <nav class="logisticsVerticalNavbar">
           <a class="verticalNavbarLink" href="/live-logistics-manager">
               <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon">
@@ -68,14 +103,17 @@
           </a>
         </nav>
         <Section class="mainContent">
+
           <Section class="shipmentsLogisticsManagerWrapper">
             <Section class="shipmentsWindow">
               <h1 class="windowTitle">Shipments</h1>
               <div class="selectWrapper" >
                 <label for="shipmentGroups" hidden="hidden">Shipment</label>
-                <select id="shipmentGroups" name="shipmentGroups">
-                  <option selected value="Wednesday Collections">Collections Week 14</option>  
+                <select id="shipmentGroups" class="selectShipment" name="shipmentGroups">
+                  <option selected value="">-- select a shipment --</option>  
+                  <option value="Wednesday Collections">Collections Week 14</option>  
                   <option value="Thursday Deliverys">Deliverys Week 14</option>
+                  <option value="CREATE_SHIPMENT">Create Shipment</option>
                 </select>
                 <span class="material-symbols-rounded dropDownIcon">
                   arrow_drop_down_circle
