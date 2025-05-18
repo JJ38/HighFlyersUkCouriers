@@ -1,12 +1,10 @@
 <?php
 
-use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use MrShan0\PHPFirestore\FirestoreClient;
 use Datetime;
 use DateTimeZone;
-use Google\Service\Datastore;
+
 
 $app->get('/bookings[/invalidform]', function (Request $request, Response $response, $args) use ($app) : Response{
 

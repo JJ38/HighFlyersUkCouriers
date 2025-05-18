@@ -60,8 +60,6 @@ class AddOrderModel
         try{    
 
             $accessToken = $this->access_token;
-
-            $this->logger->error("OAUTH2_TOKEN", array($accessToken));
             
             $ch = curl_init();
 
@@ -79,7 +77,6 @@ class AddOrderModel
             $headers[] = 'Accept: application/json';
             $headers[] = 'Content-Type: application/json';
 
-        
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             
             $result = curl_exec($ch);
@@ -176,6 +173,7 @@ class AddOrderModel
 
             $this->firebase_firestore_result = true;
 
+
         }catch(\Exception $e){
 
             $this->firebase_firestore_result = false;
@@ -190,7 +188,275 @@ class AddOrderModel
 
         }
 
+    }
 
+
+    private function beginTransaction(){
+
+        $accessToken = null;
+
+        try{    
+
+            $accessToken = $this->access_token;
+            // $accessToken = null;
+            
+            $ch = curl_init();
+
+            $env = parse_ini_file(realpath('../.env'));
+            $database_name = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
+            
+            //https://firebase.google.com/docs/firestore/reference/rest/v1beta1/projects.databases.documents/beginTransaction?apix_params=%7B%22database%22%3A%22projects%2Fhighflyersukcouriers-a9c17%2Fdatabases%2F(default)%22%2C%22resource%22%3A%7B%7D%7D
+            //POST https://firestore.googleapis.com/v1beta1/{database=projects/*/databases/*}/documents:beginTransaction
+
+            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/' . $database_name . '/documents:beginTransaction?key=AIzaSyDNBL3PpPTm6l69jVFbL');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+            
+            $headers = array();
+            $headers[] = 'Authorization: Bearer ' . $accessToken;
+            $headers[] = 'Accept: application/json';
+            $headers[] = 'Content-Type: application/json';
+
+        
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+
+                echo 'Error:' . curl_error($ch);
+                curl_close($ch);
+
+                $this->logger->error("FIREBASE_REST_API_ERROR", array($ch));
+
+                return -1;
+            }
+
+            curl_close($ch);
+
+            $result_arr = json_decode($result, true);
+         
+            var_dump($result_arr);
+
+            if(key_exists('error', $result_arr)){
+
+                if ($this->logger !== null) {
+                    $this->logger->error("FIREBASE_FIRESTORE_BEGIN_TRANSACTION_ERROR", $result_arr);
+                }
+
+                return false;
+            }
+
+            if(!key_exists('transaction', $result_arr)){
+
+                if ($this->logger !== null) {
+                    $this->logger->error("FIREBASE_FIRESTORE_BEGIN_TRANSACTION_ERROR", $result_arr);
+                }
+
+                return false;
+            }
+
+            return $result_arr['transaction'];
+
+        }catch(\Exception $e){
+
+            $this->firebase_firestore_result = false;
+
+            if ($this->logger !== null) {
+                $this->logger->error("FIREBASE_FIRESTORE_BEGIN_TRANSACTION_ERROR", array($e));
+            }
+
+        }
+
+        return -1;
+        
+
+    }
+
+//     {
+//   "writes": [
+//     {
+//       "update": {
+//         "name": "projects/YOUR_PROJECT_ID/databases/(default)/documents/orders/order1",
+//         "fields": {
+//           "status": { "stringValue": "pending" }
+//         }
+//       }
+//     },
+//     {
+//       "update": {
+//         "name": "projects/YOUR_PROJECT_ID/databases/(default)/documents/orders/order2",
+//         "fields": {
+//           "status": { "stringValue": "pending" }
+//         }
+//       }
+//     },
+//     {
+//       "update": {
+//         "name": "projects/YOUR_PROJECT_ID/databases/(default)/documents/orders/order3",
+//         "fields": {
+//           "status": { "stringValue": "pending" }
+//         }
+//       }
+//     }
+//   ],
+//   "transaction": "CiYxNWI..."  // from step 1
+// }
+
+
+
+    //commit transaction
+    private function commitTransaction($transactionID){
+
+        $accessToken = null;
+
+        try{    
+
+            $accessToken = $this->access_token;
+
+            $ch = curl_init();
+
+            $env = parse_ini_file(realpath('../.env'));
+            $database_name = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
+
+            //https://firebase.google.com/docs/firestore/reference/rest/v1beta1/projects.databases.documents/commit?apix_params=%7B%22database%22%3A%22projects%2Fhighflyersukcouriers-a9c17%2Fdatabases%2F(default)%22%2C%22resource%22%3A%7B%7D%7D
+            //POST https://firestore.googleapis.com/v1beta1/{database=projects/*/databases/*}/documents:commit
+
+
+            //create json for write
+
+            
+
+
+
+
+            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/' . $database_name . '/documents:commit?key=AIzaSyDNBL3PpPTm6l69jVFbL');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"transaction\":\"" .  $transactionID . "\"}");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+            
+            $headers = array();
+            $headers[] = 'Authorization: Bearer ' . $accessToken;
+            $headers[] = 'Accept: application/json';
+            $headers[] = 'Content-Type: application/json';
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+
+                echo 'Error:' . curl_error($ch);
+                curl_close($ch);
+
+                $this->logger->error("FIREBASE_REST_API_ERROR", array($ch));
+
+                return -1;
+            }
+
+            curl_close($ch);
+
+            $result_arr = json_decode($result, true);
+         
+            echo "{\"transaction\":\"" .  $transactionID . "\"}";
+            var_dump($result_arr);
+
+            if(key_exists('error', $result_arr)){
+
+                if ($this->logger !== null) {
+                    $this->logger->error("FIREBASE_FIRESTORE_COMMIT_TRANSACTION_ERROR", $result_arr);
+                }
+
+                return false;
+            }
+
+            return true;
+
+        }catch(\Exception $e){
+
+            $this->firebase_firestore_result = false;
+
+            if ($this->logger !== null) {
+                $this->logger->error("FIREBASE_FIRESTORE_COMMIT_TRANSACTION_ERROR", array($e));
+            }
+
+        }
+
+        return -1;   
+
+    }
+
+
+    //commit transaction
+    private function rollbackTransaction($transactionID){
+
+        $accessToken = null;
+
+        try{    
+
+            $accessToken = $this->access_token;
+            // $accessToken = null;
+            
+            $ch = curl_init();
+
+            $env = parse_ini_file(realpath('../.env'));
+            $database_name = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
+
+            //https://firebase.google.com/docs/firestore/reference/rest/v1beta1/projects.databases.documents/rollback
+            //POST https://firestore.googleapis.com/v1beta1/{database=projects/*/databases/*}/documents:rollback
+
+            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/' . $database_name . '/documents:rollback?key=AIzaSyDNBL3PpPTm6l69jVFbL');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"transaction\":\"" .  $transactionID . "\"}");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+            
+            $headers = array();
+            $headers[] = 'Authorization: Bearer ' . $accessToken;
+            $headers[] = 'Accept: application/json';
+            $headers[] = 'Content-Type: application/json';
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+
+                echo 'Error:' . curl_error($ch);
+                curl_close($ch);
+
+                $this->logger->error("FIREBASE_REST_API_ERROR", array($ch));
+
+                return -1;
+            }
+
+            curl_close($ch);
+
+            $result_arr = json_decode($result, true);
+         
+            var_dump($result_arr);
+
+            if(key_exists('error', $result_arr)){
+
+                if ($this->logger !== null) {
+                    $this->logger->error("FIREBASE_FIRESTORE_ROLLBACK_TRANSACTION_ERROR", $result_arr);
+                }
+
+                return false;
+            }
+
+            return true;
+
+        }catch(\Exception $e){
+
+            $this->firebase_firestore_result = false;
+
+            if ($this->logger !== null) {
+                $this->logger->error("FIREBASE_FIRESTORE_ROLLBACK_TRANSACTION_ERROR", array($e));
+            }
+
+        }
+
+        return -1;   
 
     }
 

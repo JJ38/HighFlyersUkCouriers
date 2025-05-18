@@ -12,11 +12,12 @@
       "phpmailer/phpmailer": "^6.7",
       "kreait/firebase-php": "^5.26",
       "bensontrent/firestore-php": "^3.1",
-      "monolog/monolog": "^3.8" 
+      "monolog/monolog": "^3.8",
+      "grpc/grpc": "1.38" 
     },
     "config": {
         "platform": {
-             "php": "8.1"
+             "php": "8.2"
         }
     }
     

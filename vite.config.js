@@ -33,6 +33,7 @@ export default defineConfig({
           LoginPage: resolve(root, 'loginpage.html'),
           ManageAccounts: resolve(root, 'manage-accounts.html'),
           ManageOrders: resolve(root, 'manage-orders.html'),
+          LogisticsSettings: resolve(root, 'logistics-settings.html'),
           ShipmentsLogisticsManager: resolve(root, 'shipments-logistics-manager.html'),
           ViewOrder: resolve(root, 'view-order.html'),
         },

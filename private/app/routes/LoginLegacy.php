@@ -8,13 +8,11 @@ use Kreait\Firebase\Factory;
 $app->post('/login-legacy', function (Request $request, Response $response) use ($app) : Response
 {   
 
-
     $tainted_parameters = $request->getParsedBody();
     $cleaned_parameters = cleanLoginData($app, $tainted_parameters);
   
     $response->getBody()->write($cleaned_parameters['username']);
     $response->getBody()->write($cleaned_parameters['password']);
-
 
     // Get models + Wrappers
     $container = $app->getContainer();
@@ -44,11 +42,12 @@ $app->post('/login-legacy', function (Request $request, Response $response) use 
     $login_result = $login_model->getResult();
 
     if(!$login_result){
+        
         //if legacy account doesnt exist
         $response->getBody()->write(" Legacy account does not exist");
         $response = $response->withStatus(401); //invalid credentials
         return $response;
-      //authenticate front end
+        //authenticate front end
 
     }
 

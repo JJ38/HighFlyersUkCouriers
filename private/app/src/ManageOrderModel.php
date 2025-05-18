@@ -343,10 +343,8 @@ class ManageOrderModel
     $current_date = new DateTime();
     $current_date->setTimezone(new DateTimeZone('Europe/London'));
 
-
     $delivery_date = new DateTime();
     $delivery_date->setTimezone(new DateTimeZone('Europe/London'));
-
 
     //public cutoff sunday 4pm
     //customer cutoff monday 12pm
