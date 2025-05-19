@@ -106,26 +106,36 @@
 
           <Section class="shipmentsLogisticsManagerWrapper">
             <Section class="shipmentsWindow">
+
               <h1 class="windowTitle">Shipments</h1>
+
               <div class="selectWrapper" >
-                <label for="shipmentGroups" hidden="hidden">Shipment</label>
-                <select id="shipmentGroups" class="selectShipment" name="shipmentGroups">
+
+                <label for="select_shipment" hidden="hidden">Shipment</label>
+                <select id="select_shipment" class="selectShipment" name="select_shipment">
+                 
                   <option selected value="">-- select a shipment --</option>  
-                  <option value="Wednesday Collections">Collections Week 14</option>  
-                  <option value="Thursday Deliverys">Deliverys Week 14</option>
-                  <option value="CREATE_SHIPMENT">Create Shipment</option>
+                  <option value="CREATE_SHIPMENT">-- create a shipment --</option>
+               
                 </select>
+
                 <span class="material-symbols-rounded dropDownIcon">
                   arrow_drop_down_circle
                 </span>
+
               </div>
+
               <div id="unassignedOrdersCard" class="unassignedOrdersCard">
+
                 <span class="warningIcon material-symbols-outlined ">
                   report
                 </span>
+
                 <p class="unassignedOrdersTitle">Unassigned</p>
                 <p class="numberOfUnassignedOrders">#19</p>
+                
               </div>
+
               <div id="runCardList" class="runCardList">
               
               </div>                 

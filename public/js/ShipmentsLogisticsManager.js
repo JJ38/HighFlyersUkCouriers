@@ -16,7 +16,7 @@ const saveCreateShipmentButton = document.getElementById("save_create_shipment")
 
 // const runCards = document.querySelectorAll('.runCard');
 const runCardList = document.getElementById("runCardList");
-const selectedShipment = document.getElementById('shipmentGroups');
+const selectedShipment = document.getElementById('select_shipment');
 
 
 // let selectableCards = Array.from(runCards);
@@ -61,13 +61,19 @@ const fetchRun = async (documentID) => {
 
 async function init(){
 
-  if(selectedShipment == null){
-    console.log("selected shipment == null");
-    return;
-  }
+  //fetch shipments 
+  const shipments = await getDocuments(query(collection(db, 'Shipments')));
 
-  const shipmentName = selectedShipment.value;
-  updateRunsList(shipmentName);
+  for(let i = 0; i < shipments.docs.length; i++){
+
+    console.log(shipments.docs[i].data());
+    //add option to select element
+    const shipmentOption = document.createElement('option');
+    shipmentOption.value = shipments.docs[i].data()['shipmentName'];
+    shipmentOption.innerText = shipments.docs[i].data()['shipmentName'];
+
+    selectedShipment.appendChild(shipmentOption);
+  }
 
 }
 
@@ -85,6 +91,7 @@ function addEventListeners(){
         return;
       }
 
+      console.log(selectedShipment.value);
       updateRunsList(selectedShipment.value);
 
     });
@@ -239,6 +246,8 @@ async function updateRunsList(shipmentName){
 
   await fetchShipment(shipmentName);
 
+  console.log(runStructList);
+
   runStructList.sort(sortAlphabetically);
 
   runCardList.innerHTML = "";
@@ -302,14 +311,12 @@ async function fetchShipment(selectedShipment){
 
   const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", selectedShipment), limit(1)));
 
-  console.log(shipmentData.empty);
   if(shipmentData.empty){
     console.log("shipment doesnt exist");
     return;
   }
 
   const shipmentRunsDocumentIDs = shipmentData.docs[0].data()['runs'];
- 
   const numberOfRuns = shipmentRunsDocumentIDs.length;
 
   // Promise.all()
@@ -334,7 +341,7 @@ function parseRunInfo(runData){
 
     assignedDriver: runData['assignedDriver'],
     fuelCost: runData['fuelCost'],
-    totalStops: runData['totalStops'],
+    stops: runData['stops'],
     runName: runData['runName'],
     runWeek: runData['runWeek'],
  
@@ -411,7 +418,7 @@ function createRunCard(runStruct){
   totalStopsIcon.classList = "material-symbols-rounded runInfoIcon";
 
   const totalStops = document.createElement('p');
-  totalStops.innerText = runStruct.totalStops;
+  totalStops.innerText = runStruct.stops.length;
 
   totalStopsWrapper.appendChild(totalStopsIcon);
   totalStopsWrapper.appendChild(totalStops);
