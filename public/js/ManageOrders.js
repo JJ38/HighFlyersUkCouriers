@@ -60,9 +60,6 @@ orderDataWrapper.addEventListener('scroll', (event) => {
   const scrollHeight = event.target.scrollHeight;
   const scrollTop = event.target.scrollTop; 
 
-  console.log(scrollHeight - scrollTop - orderDataWrapperHeight < 100);
-  console.log(orderDataWrapperHeight);
-
   if(scrollHeight - scrollTop - orderDataWrapperHeight < 100){
     console.log("loadorders");
     loadOrders();
@@ -88,14 +85,7 @@ searchButton.addEventListener('click', async () => {
   //append order data to table
   addOrdersToTable(orderData, false);
 
-  //getOrdersByFilter(searchOption.value, searchValue.value);
-
 });
-
-
-async function getOrdersByFilter(selectedSearchOption){
-  
-}
 
 
 async function loadOrders(){

@@ -1,12 +1,15 @@
-
 import { db, getDocuments, getDocument } from "/js/Firebase.js";
-import { query, collection, where, limit, doc } from "firebase/firestore";
+import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch } from "firebase/firestore";
 
 const liveLogisticsManagerButton = document.getElementById("liveLogisticsManagerButton");
 const shipmentLogisticsManagerButton = document.getElementById("shipmentLogisticsManagerButton");
 const unassignedOrdersButton = document.getElementById("unassignedOrdersCard");
 
 const createShipmentWidget = document.getElementById("create_shipment_widget");
+const shipmentDeliveryWeekInput = document.getElementById('shipment_delivery_week');
+const shipmentTypeInput = document.getElementById('shipment_run_type');
+const shipmentNameInput = document.getElementById('shipment_name');
+
 const cancelCreateShipmentButton = document.getElementById("cancel_create_shipment");
 const saveCreateShipmentButton = document.getElementById("save_create_shipment");
 
@@ -101,9 +104,10 @@ function addEventListeners(){
   
   if(saveCreateShipmentButton != null){
 
-    saveCreateShipmentButton.addEventListener('click', () => {
+    saveCreateShipmentButton.addEventListener('click', async () => {
 
-      
+      await generateShipment();
+
     });
 
   }
@@ -118,16 +122,113 @@ function createShipment(){
 
 }
 
+
 function showCreateShipmentUI(){
 
   createShipmentWidget.classList.remove('hidden');
 
 }
 
+
 function hideCreateShipmentUI(){
 
   selectedShipment.value = "";
   createShipmentWidget.classList.add('hidden');
+
+}
+
+
+async function generateShipment(){
+
+  //fetch postcode run definitions
+  const docRef = doc(db, 'Settings', 'runDefinitions');
+  const runDefinitions = await getDocument(docRef);
+  console.log(runDefinitions.data());
+
+  //get runs by delivery week
+  const q = query(collection(db, "Orders"), orderBy('ID', 'asc'), where("deliveryWeek", "==", parseInt(shipmentDeliveryWeekInput.value)));
+  const orderData = await getDocuments(q);
+  console.log(orderData.docs);
+
+  //organise orders into defined runs based on runtype and postcode
+  generateRuns(runDefinitions.data(), orderData.docs);
+
+  const storeShipmentResult = await storeShipment();
+  console.log(storeShipmentResult);
+
+}
+
+
+function generateRuns(runDefinitions, orderData){
+
+  runStructList = [];
+
+  const runType = shipmentTypeInput.value == 'collection' ? 'collectionPostcode' : 'deliveryPostcode';
+
+  for(let i = 0; i < orderData.length; i++){
+   
+    //find corrosponding key in rundefinitions and get value
+    const orderPostcode = orderData[i].data()[runType];
+
+    if(orderPostcode != null){
+
+      let runName = null;
+
+      if(runDefinitions[orderPostcode.substring(0,4)] != null){
+
+        console.log(runDefinitions[orderPostcode.substring(0,4)] + " - " +  orderPostcode.substring(0,4));
+        runName = runDefinitions[orderPostcode.substring(0,4)];
+
+      }else if(runDefinitions[orderPostcode.substring(0,3)] != null){
+
+        console.log(runDefinitions[orderPostcode.substring(0,3)] + " - " +  orderPostcode.substring(0,3));
+        runName = runDefinitions[orderPostcode.substring(0,3)];
+
+      }else if(runDefinitions[orderPostcode.substring(0,2)] != null){
+
+        console.log(runDefinitions[orderPostcode.substring(0,2)] + " - " +  orderPostcode.substring(0,3));
+        runName = runDefinitions[orderPostcode.substring(0,2)];
+
+      }
+
+      addOrderToRun(runName, orderData[i]);
+
+    }
+
+  }
+
+  console.log(runStructList);
+
+}
+
+
+function addOrderToRun(runName, orderData){
+
+  //does run exist in run list
+  let run = runStructList.find((run) => {
+    return run.runName === runName;
+  })
+
+  if(run == null){
+
+    run = {
+
+      assignedDriver: "",
+      fuelCost: "",
+      totalStops: "",
+      runName: runName,
+      runWeek: parseInt(shipmentDeliveryWeekInput.value),
+      stops: []
+
+    }
+
+    run.stops.push(orderData.id);
+    runStructList.push(run);
+
+    return;
+  }
+
+  run.stops.push(orderData.id);
 
 }
 
@@ -151,6 +252,48 @@ async function updateRunsList(shipmentName){
     runCardList.appendChild(runStructList[i].runCard);
 
   }
+
+}
+
+
+async function storeShipment(){
+
+  const batch = writeBatch(db);
+
+  let runDocRefs = [];
+
+  for(let i = 0; i < runStructList.length; i++){
+
+    console.log(runStructList[i]);
+    const runRef = doc(collection(db, 'Runs'));
+    runDocRefs.push(runRef.id);
+    batch.set(runRef, runStructList[i]);
+
+  }
+
+  const shipmentRef = doc(collection(db, "Shipments"));
+  batch.set(shipmentRef,  {
+
+    runs: runDocRefs,
+    shipmentName: shipmentNameInput.value
+
+  });
+
+  // Commit the batch
+
+  try{
+
+    console.log("attempt to commit batch");
+    await batch.commit();
+    return true;
+
+  }catch(e){
+
+    console.log(e);
+
+  }
+
+  return false;
 
 }
 

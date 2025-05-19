@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, getDocs, getDoc, updateDoc, doc, onSnapshot } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { firebaseConfig, databaseName } from "/js/FirebaseSettings.js";
 
 
@@ -17,7 +17,6 @@ export async function getDocument(q){
 
     return await getDoc(q); 
 }
-
 
 export async function updateDocument(docRef, fieldsToUpdate){
 
