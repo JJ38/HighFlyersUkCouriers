@@ -4,6 +4,7 @@ import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch } fro
 const liveLogisticsManagerButton = document.getElementById("liveLogisticsManagerButton");
 const shipmentLogisticsManagerButton = document.getElementById("shipmentLogisticsManagerButton");
 const unassignedOrdersButton = document.getElementById("unassignedOrdersCard");
+const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
 
 const createShipmentWidget = document.getElementById("create_shipment_widget");
 const shipmentDeliveryWeekInput = document.getElementById('shipment_delivery_week');
@@ -51,10 +52,13 @@ const sortAlphabetically = (a, b) => {
 const fetchRun = async (documentID) => {
 
   const runData = await getDocument(query(doc(db, 'Runs', documentID)));
-  console.log(runData.data());
   const runStruct = parseRunInfo(runData.data());
-  createRunCard(runStruct);
-  addEventListener(runStruct.runCard);
+
+  if(runStruct.runName != null){
+    createRunCard(runStruct);
+    addEventListener(runStruct.runCard);
+  }
+
   runStructList.push(runStruct);
 
 }
@@ -83,15 +87,13 @@ function addEventListeners(){
   if(selectedShipment != null){
 
     selectedShipment.addEventListener('input', () => {
-      //change
-      console.log("select");
+  
       if(selectedShipment.value == "CREATE_SHIPMENT"){
 
         createShipment();
         return;
       }
 
-      console.log(selectedShipment.value);
       updateRunsList(selectedShipment.value);
 
     });
@@ -258,7 +260,33 @@ async function updateRunsList(shipmentName){
   
   for(let i = 0; i < runStructList.length; i++){
 
-    runCardList.appendChild(runStructList[i].runCard);
+    if(runStructList[i].runName != null){
+
+      runCardList.appendChild(runStructList[i].runCard);
+
+    }else{
+      //manage unassigned runs
+      updateUnnassignedOrders(runStructList[i]);
+
+    }
+
+  }
+
+}
+
+
+function updateUnnassignedOrders(unassignedOrders){
+
+  if(unassignedOrders.stops.length > 0){
+    //show unassigned runs card
+    unassignedOrdersButton.classList.remove('hidden');
+    //update unassigned runs number
+    numberOfUnassignedOrders.innerText = "#" + unassignedOrders.stops.length;
+  }
+
+  for(let i = 0; i < unassignedOrders.stops.length; i++){
+
+    console.log(unassignedOrders.stops[i]);
 
   }
 
@@ -319,8 +347,6 @@ async function fetchShipment(selectedShipment){
   const shipmentRunsDocumentIDs = shipmentData.docs[0].data()['runs'];
   const numberOfRuns = shipmentRunsDocumentIDs.length;
 
-  // Promise.all()
-
   let promises = [];
 
   for(let i = 0; i < numberOfRuns; i++){
@@ -330,9 +356,8 @@ async function fetchShipment(selectedShipment){
   } 
   
   await Promise.all(promises);
-  console.log("promise.all  completed");
-}
 
+}
 
 
 function parseRunInfo(runData){
