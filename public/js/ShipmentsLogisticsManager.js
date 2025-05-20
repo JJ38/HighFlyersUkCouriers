@@ -63,21 +63,9 @@ const fetchRun = async (documentID) => {
 
 }
 
-async function init(){
+function init(){
 
-  //fetch shipments 
-  const shipments = await getDocuments(query(collection(db, 'Shipments')));
-
-  for(let i = 0; i < shipments.docs.length; i++){
-
-    console.log(shipments.docs[i].data());
-    //add option to select element
-    const shipmentOption = document.createElement('option');
-    shipmentOption.value = shipments.docs[i].data()['shipmentName'];
-    shipmentOption.innerText = shipments.docs[i].data()['shipmentName'];
-
-    selectedShipment.appendChild(shipmentOption);
-  }
+  updateSelectShipment();
 
 }
 
@@ -128,9 +116,16 @@ function addEventListeners(){
 
       const generateShipmentResult = await generateShipment();
 
-      if(generateShipmentResult){
-        showNotification("Success!", "Successfully created shipment")
+      if(!generateShipmentResult){
+
+        showNotification("Error!", "Error creating shipment");
+        
       }
+
+      updateSelectShipment(shipmentNameInput.value);
+      updateRunsList(shipmentNameInput.value);
+      showNotification("Success!", "Successfully created shipment");
+      hideSelectUI(createShipmentWidget);
 
     });
 
@@ -158,8 +153,11 @@ function addEventListeners(){
         if(!deleteShipmentDocumentResult){
           alert("error deleting shipment");
         }
-
+        
+        updateSelectShipment();
+        updateRunsList();
         showNotification("Success!", "Successfully deleted shipment");
+        hideSelectUI(deleteShipmentWidget);
 
       }else{
         alert("Please select a shipment to delete");
@@ -186,12 +184,52 @@ function hideSelectUI(element){
 
 }
 
+
+async function updateSelectShipment(shipmentName){
+
+  selectedShipment.innerHTML = "";
+
+  const selectShipmentOption = document.createElement('option');
+  selectShipmentOption.value = "";
+  selectShipmentOption.innerText = "-- select a shipment --";
+  selectedShipment.appendChild(selectShipmentOption);
+
+  const shipments = await getDocuments(query(collection(db, 'Shipments')));
+
+  for(let i = 0; i < shipments.docs.length; i++){
+
+    //add option to select element
+    const shipmentOption = document.createElement('option');
+    shipmentOption.value = shipments.docs[i].data()['shipmentName'];
+    shipmentOption.innerText = shipments.docs[i].data()['shipmentName'];
+    if(shipmentName == shipments.docs[i].data()['shipmentName']){
+      shipmentOption.selected = true;
+    }
+
+    selectedShipment.appendChild(shipmentOption);
+
+  }
+
+  const createShipmentOption = document.createElement('option');
+  createShipmentOption.value = "CREATE_SHIPMENT";
+  createShipmentOption.innerText = "-- create a shipment --";
+  selectedShipment.appendChild(createShipmentOption);
+
+  const deleteShipmentOption = document.createElement('option');
+  deleteShipmentOption.value = "DELETE_SHIPMENT";
+  deleteShipmentOption.innerText = "-- delete a shipment --";
+  selectedShipment.appendChild(deleteShipmentOption);
+
+}
+
+
 async function generateDeleteWidget(){
 
   const docRef = query(collection(db, "Shipments"));
   const shipments = await getDocuments(docRef);
 
-  console.log(shipments.docs);
+  selectDeleteShipment.innerHTML = "";
+
   for(let i = 0; i < shipments.docs.length; i++){
 
     const shipmentName = shipments.docs[i].data()['shipmentName'];
@@ -221,8 +259,6 @@ async function deleteShipmentDocument(id){
     return false;
 
   }
-  
-  console.log(shipmentDocument);
 
   const batch = writeBatch(db);
   const shipmentRunsDocumentIDs = shipmentDocument.data()['runs'];
@@ -230,7 +266,6 @@ async function deleteShipmentDocument(id){
   //add runs in shipment document to batch
   for(let i = 0; i < shipmentRunsDocumentIDs.length; i++){
 
-    console.log(shipmentRunsDocumentIDs[i]);
     const runRef = doc(db, "Runs", shipmentRunsDocumentIDs[i]);
     batch.delete(runRef);
 
@@ -259,7 +294,6 @@ async function generateShipment(){
   //fetch postcode run definitions
   const docRef = doc(db, 'Settings', 'runDefinitions');
   const runDefinitions = await getDocument(docRef);
-  console.log(runDefinitions.data());
 
   //get runs by delivery week
   const q = query(collection(db, "Orders"), orderBy('ID', 'asc'), where("deliveryWeek", "==", parseInt(shipmentDeliveryWeekInput.value)));
@@ -292,17 +326,14 @@ function generateRuns(runDefinitions, orderData){
 
       if(runDefinitions[orderPostcode.substring(0,4)] != null){
 
-        console.log(runDefinitions[orderPostcode.substring(0,4)] + " - " +  orderPostcode.substring(0,4));
         runName = runDefinitions[orderPostcode.substring(0,4)];
 
       }else if(runDefinitions[orderPostcode.substring(0,3)] != null){
 
-        console.log(runDefinitions[orderPostcode.substring(0,3)] + " - " +  orderPostcode.substring(0,3));
         runName = runDefinitions[orderPostcode.substring(0,3)];
 
       }else if(runDefinitions[orderPostcode.substring(0,2)] != null){
 
-        console.log(runDefinitions[orderPostcode.substring(0,2)] + " - " +  orderPostcode.substring(0,3));
         runName = runDefinitions[orderPostcode.substring(0,2)];
 
       }
@@ -331,7 +362,6 @@ function addOrderToRun(runName, orderData){
 
       assignedDriver: "",
       fuelCost: "",
-      totalStops: "",
       runName: runName,
       runWeek: parseInt(shipmentDeliveryWeekInput.value),
       stops: [],
@@ -353,15 +383,20 @@ function addOrderToRun(runName, orderData){
 
 async function updateRunsList(shipmentName){
 
+  runCardList.innerHTML = "";
+  if(shipmentName == null){
+
+    unassignedOrdersButton.classList.add('hidden');
+    return;
+
+  }
+
+
   runStructList = [];
 
   await fetchShipment(shipmentName);
 
-  console.log(runStructList);
-
   runStructList.sort(sortAlphabetically);
-
-  runCardList.innerHTML = "";
 
   if(runStructList.length == 0){
     runCardList.innerText = "No runs in shipment";
@@ -386,16 +421,22 @@ async function updateRunsList(shipmentName){
 
 function updateUnnassignedOrders(unassignedOrders){
 
-  if(unassignedOrders.stops.length > 0){
-    //show unassigned runs card
-    unassignedOrdersButton.classList.remove('hidden');
-    //update unassigned runs number
-    numberOfUnassignedOrders.innerText = "#" + unassignedOrders.stops.length;
+  if(unassignedOrders.stops.length == 0){
+
+    unassignedOrdersButton.classList.add('hidden');
+    return;
+
   }
+
+  //show unassigned runs card
+  unassignedOrdersButton.classList.remove('hidden');
+  //update unassigned runs number
+  numberOfUnassignedOrders.innerText = "#" + unassignedOrders.stops.length;
+ 
 
   for(let i = 0; i < unassignedOrders.stops.length; i++){
 
-    console.log(unassignedOrders.stops[i]);
+    // console.log(unassignedOrders.stops[i]);
 
   }
 

@@ -215,6 +215,19 @@ p{
 
 }
 
+.runDetailsContainer{
+    background-color: white;
+    width: 350px;
+    border-radius: 0 20px 0px 0px;
+    height: 100%;
+}
+
+.runDetailsButton{
+    padding: 3px;
+    background-color: white;
+    border: 0;
+}
+
 .hidden{
     display: none;
 }

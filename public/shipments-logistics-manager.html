@@ -139,11 +139,7 @@
 
                 <label for="select_shipment" hidden="hidden">Shipment</label>
                 <select id="select_shipment" class="selectShipment" name="select_shipment">
-                 
-                  <option selected value="">-- select a shipment --</option>  
-                  <option value="CREATE_SHIPMENT">-- create a shipment --</option>
-                  <option value="DELETE_SHIPMENT">-- delete a shipment --</option>
-               
+                       
                 </select>
 
                 <span class="material-symbols-rounded dropDownIcon">
@@ -180,10 +176,18 @@
                 
             </div>
 
-            <div id="selectedRunView">
-              <!-- <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map> -->
-        
+            <div id="selectedRunView" class="runDetailsContainer">
+              
+              <div>
+
+                <button id="runDetailsManageButton" class="runDetailsButton">Manage</button>
+                <button id="runDetailsAddButton" class="runDetailsButton">Add</button>
+
+              </div>
+
             </div>
+             <!-- <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map> -->
+
           </Section>
         </Section>
       </Section>
