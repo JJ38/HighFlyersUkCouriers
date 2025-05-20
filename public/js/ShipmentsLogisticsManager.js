@@ -1,9 +1,7 @@
-import { db, getDocuments, getDocument } from "/js/Firebase.js";
+import { db, getDocuments, getDocument, bulkReadTransaction } from "/js/Firebase.js";
 import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 
-const liveLogisticsManagerButton = document.getElementById("liveLogisticsManagerButton");
-const shipmentLogisticsManagerButton = document.getElementById("shipmentLogisticsManagerButton");
 const unassignedOrdersButton = document.getElementById("unassignedOrdersCard");
 const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
 
@@ -21,6 +19,9 @@ const selectDeleteShipment = document.getElementById('select_delete_shipment');
 
 const runCardList = document.getElementById("runCardList");
 const selectedShipment = document.getElementById('select_shipment');
+
+const selectedRunView = document.getElementById('selected_run_view');
+const runStopsContainer = document.getElementById('run_stops_container');
 
 
 let currentSelectedRun = null;
@@ -89,6 +90,7 @@ function addEventListeners(){
         return;
       }
 
+      selectedRunView.classList.add('hidden');
       updateRunsList(selectedShipment.value);
 
     });
@@ -141,7 +143,6 @@ function addEventListeners(){
 
   }
 
-  
   if(confirmDeleteShipmentButton != null){
 
     confirmDeleteShipmentButton.addEventListener('click', async () => {
@@ -179,7 +180,7 @@ function showUI(element){
 
 function hideSelectUI(element){
 
-  selectedShipment.value = "";
+  selectedShipment.value = "SELECT_SHIPMENT";
   element.classList.add('hidden');
 
 }
@@ -190,7 +191,7 @@ async function updateSelectShipment(shipmentName){
   selectedShipment.innerHTML = "";
 
   const selectShipmentOption = document.createElement('option');
-  selectShipmentOption.value = "";
+  selectShipmentOption.value = "SELECT_SHIPMENT";
   selectShipmentOption.innerText = "-- select a shipment --";
   selectedShipment.appendChild(selectShipmentOption);
 
@@ -285,7 +286,6 @@ async function deleteShipmentDocument(id){
 
   }
 
-
 }
 
 
@@ -338,7 +338,7 @@ function generateRuns(runDefinitions, orderData){
 
       }
 
-      addOrderToRun(runName, orderData[i]);
+      addOrderToRun(runName, orderData[i], shipmentTypeInput.value);
 
     }
 
@@ -349,7 +349,7 @@ function generateRuns(runDefinitions, orderData){
 }
 
 
-function addOrderToRun(runName, orderData){
+function addOrderToRun(runName, orderData, stopType){
 
   //does run exist in run list
   let run = runStructList.find((run) => {
@@ -370,13 +370,22 @@ function addOrderToRun(runName, orderData){
 
     }
 
-    run.stops.push(orderData.id);
+    run.stops.push(
+    {
+      orderID: orderData.id,
+      stopType: stopType //collection or delivery
+    });
+      
     runStructList.push(run);
 
     return;
   }
 
-  run.stops.push(orderData.id);
+  run.stops.push(
+  {
+    orderID: orderData.id,
+    stopType: stopType //collection or delivery
+  });
 
 }
 
@@ -390,7 +399,6 @@ async function updateRunsList(shipmentName){
     return;
 
   }
-
 
   runStructList = [];
 
@@ -639,8 +647,175 @@ function createRunCard(runStruct){
   runCard.appendChild(runName);
   runCard.appendChild(runIconsWrapper);
   runCard.appendChild(driverInfoWrapper);
+
+
+  runCard.addEventListener(('click'), async () => {
+
+
+    const orders = await getRunStops(runStruct.stops);
+    mergeStopsWithOrderData(runStruct.stops, orders);
+    updateStopList(runStruct.stops);
+    showUI(selectedRunView);
+
+  });
+
   
   runStruct.runCard = runCard;
+
+}
+
+
+async function getRunStops(stops){
+
+  console.log(stops);
+  //fetch order data
+
+  const orderIDs = [];
+
+  for(let i = 0; i < stops.length; i++){
+
+    orderIDs.push(stops[i]['orderID']);
+
+  }
+
+  const orders = await bulkReadTransaction(orderIDs, 'Orders');
+  console.log(orders);
+
+  if(orders === false){
+
+    alert("error fetching stops for that run")
+    return;
+  }
+
+  return orders;
+
+}
+
+
+function updateStopList(stops){
+
+  console.log(stops);
+
+  runStopsContainer.innerHTML = "";
+
+  for(let i = 0; i < stops.length; i++){
+
+    runStopsContainer.appendChild(createStopCard(stops[i]['stopData'], i + 1));
+
+  }
+
+}
+
+
+function mergeStopsWithOrderData(stops, orders){
+
+  for(let i = 0; i < stops.length; i++){
+
+    for(let j = 0; j < orders.length; j++){
+
+      if(stops[i].orderID == orders[j].id){
+
+        //to include in every stop type
+        const stopData = {};
+        const orderData = orders[j].data();
+
+        console.log(stops[i].stopType);
+        console.log(orderData);
+
+        stopData['message'] = orderData['message'];
+        stopData['email'] = orderData['email'];
+        stopData['animalType'] = orderData['animalType'];
+        stopData['ID'] = orderData['ID'];
+        stopData['quantity'] = orderData['quantity'];
+        
+        if(stops[i].stopType == "collection"){
+          //add collection data to stop
+          stopData['address1'] = orderData['collectionAddress1'];
+          stopData['address2'] = orderData['collectionAddress2'];
+          stopData['address3'] = orderData['collectionAddress3'];
+          stopData['name'] = orderData['collectionName'];
+          stopData['postcode'] = orderData['collectionPostcode'];
+          stopData['phoneNumber'] = orderData['collectionPhoneNumber'];
+
+        }else if(stops[i].stopType == "delivery"){
+          //add delivery data to stop
+          stopData['address1'] = orderData['deliveryAddress1'];
+          stopData['address2'] = orderData['deliveryAddress2'];
+          stopData['address3'] = orderData['deliveryAddress3'];
+          stopData['name'] = orderData['deliveryName'];
+          stopData['postcode'] = orderData['deliveryPostcode'];
+          stopData['phoneNumber'] = orderData['deliveryPhoneNumber'];
+
+        }
+
+        stops[i]['stopData'] = stopData;
+
+      }
+
+    }
+
+  }
+
+}
+
+
+function createStopCard(stopData, stopNumberValue){
+
+    console.log(stopData);
+    console.log(stopNumberValue);
+
+
+    const stopContainer = document.createElement('div');
+    stopContainer.classList = "stopContainer";
+
+
+    const stopNumber = document.createElement('p');
+    stopNumber.classList = "stopNumber";
+    stopNumber.innerText = stopNumberValue;
+
+    const stopCard = document.createElement('div');
+    stopCard.classList = "stopCard";
+
+
+    const stopCustomerName = document.createElement('p');
+    stopCustomerName.classList = "stopCustomerName";
+    stopCustomerName.innerText = stopData['name'];
+
+    const stopAddressLine1 = document.createElement('p');
+    stopAddressLine1.classList = "stopAddressLine1";
+    stopAddressLine1.innerText = stopData['address1'];
+
+
+    const stopAddressWrapper = document.createElement('div');
+    stopAddressWrapper.classList = "stopAddressWrapper";
+
+    const stopAddressLine2 = document.createElement('p');
+    stopAddressLine2.classList = "stopAddressLine2";
+    stopAddressLine2.innerHTML = stopData['address2'] + ",&nbsp;";
+
+    const stopAddressLine3 = document.createElement('p');
+    stopAddressLine3.classList = "stopAddressLine3";
+    stopAddressLine3.innerHTML = stopData['address3'] + ",&nbsp;";
+
+    const stopPostcode = document.createElement('p');
+    stopPostcode.classList = "stopPostcode";
+    stopPostcode.innerText = stopData['postcode'];
+
+    
+    stopAddressWrapper.appendChild(stopAddressLine2);
+    stopAddressWrapper.appendChild(stopAddressLine3);
+    stopAddressWrapper.appendChild(stopPostcode);
+
+
+    stopCard.appendChild(stopCustomerName);
+    stopCard.appendChild(stopAddressLine1);
+    stopCard.appendChild(stopAddressWrapper);
+
+
+    stopContainer.appendChild(stopNumber);
+    stopContainer.appendChild(stopCard);
+
+    return stopContainer;
 
 }
 
