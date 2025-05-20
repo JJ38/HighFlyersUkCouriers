@@ -1,5 +1,6 @@
 import { db, getDocuments, getDocument } from "/js/Firebase.js";
 import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch } from "firebase/firestore";
+import { showNotification } from "/js/Notification.js"
 
 const liveLogisticsManagerButton = document.getElementById("liveLogisticsManagerButton");
 const shipmentLogisticsManagerButton = document.getElementById("shipmentLogisticsManagerButton");
@@ -10,18 +11,17 @@ const createShipmentWidget = document.getElementById("create_shipment_widget");
 const shipmentDeliveryWeekInput = document.getElementById('shipment_delivery_week');
 const shipmentTypeInput = document.getElementById('shipment_run_type');
 const shipmentNameInput = document.getElementById('shipment_name');
-
 const cancelCreateShipmentButton = document.getElementById("cancel_create_shipment");
 const saveCreateShipmentButton = document.getElementById("save_create_shipment");
 
+const deleteShipmentWidget = document.getElementById("delete_shipment_widget");
+const cancelDeleteShipmentButton = document.getElementById("cancel_delete_shipment");
+const confirmDeleteShipmentButton = document.getElementById("confirm_delete_shipment");
+const selectDeleteShipment = document.getElementById('select_delete_shipment');
 
-// const runCards = document.querySelectorAll('.runCard');
 const runCardList = document.getElementById("runCardList");
 const selectedShipment = document.getElementById('select_shipment');
 
-
-// let selectableCards = Array.from(runCards);
-// selectableCards = selectableCards.concat(unassignedOrdersButton);
 
 let currentSelectedRun = null;
 let map;
@@ -90,7 +90,14 @@ function addEventListeners(){
   
       if(selectedShipment.value == "CREATE_SHIPMENT"){
 
-        createShipment();
+        showUI(createShipmentWidget);
+        return;
+      }
+
+      if(selectedShipment.value == "DELETE_SHIPMENT"){
+
+        generateDeleteWidget();
+        showUI(deleteShipmentWidget);
         return;
       }
 
@@ -104,18 +111,59 @@ function addEventListeners(){
 
     cancelCreateShipmentButton.addEventListener('click', () => {
 
-        hideCreateShipmentUI();
+        hideSelectUI(createShipmentWidget);
+
+    });
+
+  }
+
+  if(saveCreateShipmentButton != null){
+
+    saveCreateShipmentButton.addEventListener('click', async () => {
+
+      if(shipmentNameInput.value == "default"){
+        alert('"default" is an invalid name for a shipment. Please choose a different name')
+        return;
+      }
+
+      const generateShipmentResult = await generateShipment();
+
+      if(generateShipmentResult){
+        showNotification("Success!", "Successfully created shipment")
+      }
+
+    });
+
+  }
+
+  if(cancelDeleteShipmentButton != null){
+
+    cancelDeleteShipmentButton.addEventListener('click', () => {
+
+      hideSelectUI(deleteShipmentWidget);
 
     });
 
   }
 
   
-  if(saveCreateShipmentButton != null){
+  if(confirmDeleteShipmentButton != null){
 
-    saveCreateShipmentButton.addEventListener('click', async () => {
+    confirmDeleteShipmentButton.addEventListener('click', async () => {
 
-      await generateShipment();
+      if(selectDeleteShipment.value != "default"){
+
+        const deleteShipmentDocumentResult = deleteShipmentDocument(selectDeleteShipment.value);
+        
+        if(!deleteShipmentDocumentResult){
+          alert("error deleting shipment");
+        }
+
+        showNotification("Success!", "Successfully deleted shipment");
+
+      }else{
+        alert("Please select a shipment to delete");
+      }
 
     });
 
@@ -124,25 +172,84 @@ function addEventListeners(){
 }
 
 
-function createShipment(){
+function showUI(element){
 
-  //show ui for creating shipment
-  showCreateShipmentUI();
-
-}
-
-
-function showCreateShipmentUI(){
-
-  createShipmentWidget.classList.remove('hidden');
+  element.classList.remove('hidden');
 
 }
 
 
-function hideCreateShipmentUI(){
+function hideSelectUI(element){
 
   selectedShipment.value = "";
-  createShipmentWidget.classList.add('hidden');
+  element.classList.add('hidden');
+
+}
+
+async function generateDeleteWidget(){
+
+  const docRef = query(collection(db, "Shipments"));
+  const shipments = await getDocuments(docRef);
+
+  console.log(shipments.docs);
+  for(let i = 0; i < shipments.docs.length; i++){
+
+    const shipmentName = shipments.docs[i].data()['shipmentName'];
+    const option = document.createElement('option');
+    option.value = shipments.docs[i].id;
+    option.text = shipmentName;
+
+    selectDeleteShipment.appendChild(option);
+
+  }
+
+}
+
+
+async function deleteShipmentDocument(id){
+
+  //fetch shipment document
+  const shipmentRef = doc(db, 'Shipments', id);
+  let shipmentDocument;
+
+  try{
+
+    shipmentDocument = await getDocument(shipmentRef);
+    
+  }catch(e){
+
+    return false;
+
+  }
+  
+  console.log(shipmentDocument);
+
+  const batch = writeBatch(db);
+  const shipmentRunsDocumentIDs = shipmentDocument.data()['runs'];
+
+  //add runs in shipment document to batch
+  for(let i = 0; i < shipmentRunsDocumentIDs.length; i++){
+
+    console.log(shipmentRunsDocumentIDs[i]);
+    const runRef = doc(db, "Runs", shipmentRunsDocumentIDs[i]);
+    batch.delete(runRef);
+
+  }
+
+  //add shipment document to batch
+  batch.delete(shipmentRef);
+
+  try{
+
+    await batch.commit();
+    return true;
+
+  }catch(e){
+
+    return false;
+
+  }
+
 
 }
 
@@ -163,7 +270,7 @@ async function generateShipment(){
   generateRuns(runDefinitions.data(), orderData.docs);
 
   const storeShipmentResult = await storeShipment();
-  console.log(storeShipmentResult);
+  return storeShipmentResult;
 
 }
 
@@ -227,7 +334,9 @@ function addOrderToRun(runName, orderData){
       totalStops: "",
       runName: runName,
       runWeek: parseInt(shipmentDeliveryWeekInput.value),
-      stops: []
+      stops: [],
+      orderedStops: [],
+      lockedStops: [],
 
     }
 
@@ -301,7 +410,6 @@ async function storeShipment(){
 
   for(let i = 0; i < runStructList.length; i++){
 
-    console.log(runStructList[i]);
     const runRef = doc(collection(db, 'Runs'));
     runDocRefs.push(runRef.id);
     batch.set(runRef, runStructList[i]);

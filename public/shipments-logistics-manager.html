@@ -10,6 +10,8 @@
         <link rel="stylesheet" href="/css/ShipmentsLogisticsManager.css" type="text/css">
         <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">    
         <link rel="stylesheet" href="/css/ManageLogistics.css" type="text/css">  
+        <link rel="stylesheet" href="/css/Notification.css" type="text/css">  
+
         
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
@@ -70,7 +72,7 @@
             </div>
             
             <div class="flex-col">
-              <label for="shipment_run_type">Run Type</label>
+              <label for="shipment_run_type">Run Type:</label>
               <select type="text" name="shipment_run_type" id="shipment_run_type">
                 <option value="collection">Collection</option>
                 <option value="delivery">Delivery</option>
@@ -86,6 +88,30 @@
           
           </div>
         </div>
+
+
+        <div id="delete_shipment_widget" class="createShipmentWidget hidden">
+
+          <h1>Delete Shipment</h1>
+
+          <div class="createShipmentContentWrapper">
+
+            <label for="select_delete_shipment">Select shipment to delete:</label>
+            <select type="text" name="select_delete_shipment" id="select_delete_shipment">
+              <option selected value="default">-- select shipment to delete --</option>
+            </select>
+
+          </div>
+
+          <div>
+
+            <button id="cancel_delete_shipment" class="shipmentWidgetButton">Cancel</button>
+            <button id="confirm_delete_shipment" class="shipmentWidgetButton">Confirm</button>
+          
+          </div>
+
+        </div>
+
 
         <nav class="logisticsVerticalNavbar">
           <a class="verticalNavbarLink" href="/live-logistics-manager">
@@ -116,6 +142,7 @@
                  
                   <option selected value="">-- select a shipment --</option>  
                   <option value="CREATE_SHIPMENT">-- create a shipment --</option>
+                  <option value="DELETE_SHIPMENT">-- delete a shipment --</option>
                
                 </select>
 
