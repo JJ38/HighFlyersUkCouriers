@@ -1,5 +1,5 @@
-import { markOrdersAsPrinted, getInitialData, loadAdditionalOrders, sortOrderData, getFilterOrders, filterSearch } from "/js/FirebaseManageOrders.js";
-import { auth } from "/js/Firebase.js";
+import { markOrdersAsPrinted, getInitialData, loadAdditionalOrders, sortOrderData, getFilterOrders } from "/js/FirebaseManageOrders.js";
+import { auth, filterSearch } from "/js/Firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
 
 const massActionButtons = document.getElementById('massActionButtons');

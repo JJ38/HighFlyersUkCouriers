@@ -1,6 +1,6 @@
 
 import { db } from "/js/Firebase.js";
-import { collection, getDocs, startAfter, where, query, limit, orderBy, onSnapshot, writeBatch, doc, or} from "firebase/firestore";
+import { collection, getDocs, startAfter, where, query, limit, orderBy, onSnapshot, writeBatch, doc } from "firebase/firestore";
 import { addOrdersToTable } from "/js/ManageOrders.js";
 
 let lastVisibleID = null;
@@ -34,56 +34,6 @@ export async function getFilterOrders(q){
     return orderData;
 }
 
-
-
-export function filterSearch(searchOption, searchValue){
-
-    let q;
-    console.log(searchOption);
-    console.log(searchValue);
-
-    switch(searchOption){
-
-        case "ID":
-        case "quantity":
-        
-            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", parseInt(searchValue)));
-         
-            break;
-
-        case "deliveryWeek":
-
-            console.log(q);
-            q = query(collection(db, "Orders"), orderBy('ID', 'asc'), or(where(searchOption, "==", searchValue), where(searchOption, "==", parseInt(searchValue))));
-           
-            break
-
-        case "printed":
-
-            let translatedSearchValue = "";
-
-            if(searchValue.toLowerCase() == "printed"){
-
-                translatedSearchValue = 1;
-
-            }else if(searchValue.value.toLowerCase() == "not printed"){
-
-                translatedSearchValue = 0;
-                
-            }   
-
-            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", translatedSearchValue));
-
-            break;
-
-        default:
-            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", searchValue));
-            break;
-    }
-
-    return q;
-
-}
 
 window.onresize = (event) => {
     orderDataWrapperHeight = orderDataWrapper.getBoundingClientRect().height;

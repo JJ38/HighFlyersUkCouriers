@@ -1,4 +1,4 @@
-import { db, getDocuments, getDocument, bulkReadTransaction } from "/js/Firebase.js";
+import { db, getDocuments, getDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
 import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 
@@ -23,7 +23,11 @@ const selectedShipment = document.getElementById('select_shipment');
 const selectedRunView = document.getElementById('selected_run_view');
 const runStopsContainer = document.getElementById('run_stops_container');
 
+const searchButton = document.getElementById('search_button');
 const addOrderTable = document.getElementById('table_body');
+const addOrderSearchInput = document.getElementById('add_order_search_input');
+const addOrderSearchFilter = document.getElementById('add_order_search_filter');
+
 
 let currentSelectedRun = null;
 let map;
@@ -68,7 +72,7 @@ const fetchRun = async (documentID) => {
 function init(){
 
   updateSelectShipment();
-  showAddOrderTable();
+  getOrders(query(collection(db, 'Orders'), orderBy('ID', 'desc'), limit(20)));
 
 }
 
@@ -169,6 +173,31 @@ function addEventListeners(){
     });
 
   }
+
+  if(searchButton != null){
+
+    searchButton.addEventListener('click', () => {
+    
+      if(addOrderSearchInput.value == ""){
+
+        alert("enter a search value to fitler orders by");
+
+      }
+
+      if(addOrderSearchFilter.value == ""){
+
+        alert("enter a field to filter orders by");
+
+      }
+
+      getOrders(filterSearch(addOrderSearchFilter.value, addOrderSearchInput.value));
+
+    });
+
+  } 
+
+  console.log(searchButton);
+
 
 }
 
@@ -659,10 +688,10 @@ function mergeStopsWithOrderData(stops, orders){
 }
 
 
-async function showAddOrderTable(){
+async function getOrders(query){
 
   //fetch orders
-  const orderData = await getDocuments(query(collection(db, 'Orders'), orderBy('ID', 'desc'), limit(20)));
+  const orderData = await getDocuments(query);
 
   if(orderData.empty){
     console.log("no orders to show");
@@ -671,10 +700,12 @@ async function showAddOrderTable(){
 
   console.log(orderData);
 
+  //clear table 
+  addOrderTable.innerHTML = "";
+
   for(let i = 0; i < orderData.docs.length; i++){
 
-    console.log(orderData.docs[i].data());
-    createTableOrderCard(orderData.docs[i].data());
+    addOrderTable.appendChild(createTableOrderCard(orderData.docs[i].data()));
 
   }
 
@@ -721,14 +752,21 @@ function createTableOrderCard(orderData){
 
   tableRow.appendChild(tableData(orderData['deliveryPhoneNumber']));
   tableRow.appendChild(tableData(orderData['payment']));
-  tableRow.appendChild(tableData(orderData['message']));
+
+ 
+  const td = document.createElement('td');
+  const div = document.createElement('div');
+  div.innerText = orderData['message'];
+  td.appendChild(div);
+  tableRow.appendChild(td);
+
   tableRow.appendChild(tableData(orderData['code']));
 
   const rowBackground = tableData("");
   rowBackground.classList = "tableRowBackground";
   tableRow.appendChild(rowBackground);
 
-  addOrderTable.appendChild(tableRow);
+  return tableRow;
 
 }
 

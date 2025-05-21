@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, getDocs, getDoc, updateDoc, doc, onSnapshot, runTransaction } from "firebase/firestore";
+import { getFirestore, getDocs, getDoc, updateDoc, doc, query, orderBy, where, collection, runTransaction, or } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { firebaseConfig, databaseName } from "/js/FirebaseSettings.js";
 
@@ -52,5 +52,56 @@ export async function bulkReadTransaction(docIDs, collectionPath){
     }
 
     return false;
+
+}
+
+
+
+export function filterSearch(searchOption, searchValue){
+
+    let q;
+    console.log(searchOption);
+    console.log(searchValue);
+
+    switch(searchOption){
+
+        case "ID":
+        case "quantity":
+        
+            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", parseInt(searchValue)));
+         
+            break;
+
+        case "deliveryWeek":
+
+            console.log(q);
+            q = query(collection(db, "Orders"), orderBy('ID', 'asc'), or(where(searchOption, "==", searchValue), where(searchOption, "==", parseInt(searchValue))));
+           
+            break
+
+        case "printed":
+
+            let translatedSearchValue = "";
+
+            if(searchValue.toLowerCase() == "printed"){
+
+                translatedSearchValue = 1;
+
+            }else if(searchValue.value.toLowerCase() == "not printed"){
+
+                translatedSearchValue = 0;
+                
+            }   
+
+            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", translatedSearchValue));
+
+            break;
+
+        default:
+            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", searchValue));
+            break;
+    }
+
+    return q;
 
 }
