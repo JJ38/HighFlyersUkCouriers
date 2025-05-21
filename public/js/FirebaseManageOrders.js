@@ -3,7 +3,6 @@ import { db } from "/js/Firebase.js";
 import { collection, getDocs, startAfter, where, query, limit, orderBy, onSnapshot, writeBatch, doc, or} from "firebase/firestore";
 import { addOrdersToTable } from "/js/ManageOrders.js";
 
-
 let lastVisibleID = null;
 let fetchingOrders = false;
 let initialQuery = true;

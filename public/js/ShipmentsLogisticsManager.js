@@ -23,6 +23,7 @@ const selectedShipment = document.getElementById('select_shipment');
 const selectedRunView = document.getElementById('selected_run_view');
 const runStopsContainer = document.getElementById('run_stops_container');
 
+const addOrderTable = document.getElementById('table_body');
 
 let currentSelectedRun = null;
 let map;
@@ -67,6 +68,7 @@ const fetchRun = async (documentID) => {
 function init(){
 
   updateSelectShipment();
+  showAddOrderTable();
 
 }
 
@@ -563,6 +565,221 @@ function addEventListener(runCard){
   }
 }
 
+async function getRunStops(stops){
+
+  console.log(stops);
+  //fetch order data
+
+  const orderIDs = [];
+
+  for(let i = 0; i < stops.length; i++){
+
+    orderIDs.push(stops[i]['orderID']);
+
+  }
+
+  const orders = await bulkReadTransaction(orderIDs, 'Orders');
+  console.log(orders);
+
+  if(orders === false){
+
+    alert("error fetching stops for that run")
+    return;
+  }
+
+  return orders;
+
+}
+
+
+function updateStopList(stops){
+
+  console.log(stops);
+
+  runStopsContainer.innerHTML = "";
+
+  for(let i = 0; i < stops.length; i++){
+
+    runStopsContainer.appendChild(createStopCard(stops[i]['stopData'], i + 1));
+
+  }
+
+}
+
+
+function mergeStopsWithOrderData(stops, orders){
+
+  for(let i = 0; i < stops.length; i++){
+
+    for(let j = 0; j < orders.length; j++){
+
+      if(stops[i].orderID == orders[j].id){
+
+        //to include in every stop type
+        const stopData = {};
+        const orderData = orders[j].data();
+
+        console.log(stops[i].stopType);
+        console.log(orderData);
+
+        stopData['message'] = orderData['message'];
+        stopData['email'] = orderData['email'];
+        stopData['animalType'] = orderData['animalType'];
+        stopData['ID'] = orderData['ID'];
+        stopData['quantity'] = orderData['quantity'];
+        
+        if(stops[i].stopType == "collection"){
+          //add collection data to stop
+          stopData['address1'] = orderData['collectionAddress1'];
+          stopData['address2'] = orderData['collectionAddress2'];
+          stopData['address3'] = orderData['collectionAddress3'];
+          stopData['name'] = orderData['collectionName'];
+          stopData['postcode'] = orderData['collectionPostcode'];
+          stopData['phoneNumber'] = orderData['collectionPhoneNumber'];
+
+        }else if(stops[i].stopType == "delivery"){
+          //add delivery data to stop
+          stopData['address1'] = orderData['deliveryAddress1'];
+          stopData['address2'] = orderData['deliveryAddress2'];
+          stopData['address3'] = orderData['deliveryAddress3'];
+          stopData['name'] = orderData['deliveryName'];
+          stopData['postcode'] = orderData['deliveryPostcode'];
+          stopData['phoneNumber'] = orderData['deliveryPhoneNumber'];
+
+        }
+
+        stops[i]['stopData'] = stopData;
+
+      }
+
+    }
+
+  }
+
+}
+
+
+async function showAddOrderTable(){
+
+  //fetch orders
+  const orderData = await getDocuments(query(collection(db, 'Orders'), orderBy('ID', 'desc'), limit(20)));
+
+  if(orderData.empty){
+    console.log("no orders to show");
+    return;
+  }
+
+  console.log(orderData);
+
+  for(let i = 0; i < orderData.docs.length; i++){
+
+    console.log(orderData.docs[i].data());
+    createTableOrderCard(orderData.docs[i].data());
+
+  }
+
+  //create table order card
+
+}
+
+
+function createTableOrderCard(orderData){
+
+  const tableRow = document.createElement('tr');
+  tableRow.classList = "tableDataRow";
+
+  tableRow.appendChild(tableData(""));
+
+  tableRow.appendChild(tableData(orderData['ID']));
+  tableRow.appendChild(tableData(orderData['animalType']));
+  tableRow.appendChild(tableData(orderData['quantity']));
+  tableRow.appendChild(tableData(orderData['account']));
+  tableRow.appendChild(tableData(orderData['deliveryWeek']));
+  tableRow.appendChild(tableData(orderData['collectionName']));
+
+  tableRow.appendChild(
+    createTableAddress(
+      orderData['collectionAddress1'],
+      orderData['collectionAddress2'],
+      orderData['collectionAddress3'],
+      orderData['collectionPostcode'],
+    )
+  );
+  
+  tableRow.appendChild(tableData(orderData['collectionPhoneNumber']));
+  tableRow.appendChild(tableData(orderData['deliveryName']));
+
+  
+  tableRow.appendChild(
+    createTableAddress(
+      orderData['deliveryAddress1'],
+      orderData['deliveryAddress2'],
+      orderData['deliveryAddress3'],
+      orderData['deliveryPostcode'],
+    )
+  );
+
+  tableRow.appendChild(tableData(orderData['deliveryPhoneNumber']));
+  tableRow.appendChild(tableData(orderData['payment']));
+  tableRow.appendChild(tableData(orderData['message']));
+  tableRow.appendChild(tableData(orderData['code']));
+
+  const rowBackground = tableData("");
+  rowBackground.classList = "tableRowBackground";
+  tableRow.appendChild(rowBackground);
+
+  addOrderTable.appendChild(tableRow);
+
+}
+
+
+function createTableAddress(addressLine1, addressLine2, addressLine3, addressPostcode){
+
+  const tableData = document.createElement('td');
+
+  const wrapper = document.createElement('div');
+  wrapper.classList = "tableAddressWrapper";
+
+  const address1 = document.createElement('p');
+  address1.innerHTML = addressLine1
+  address1.classList = "tableAddressLineMain";
+
+  const secondaryAddressWrapper = document.createElement('div');
+  secondaryAddressWrapper.classList = "tableAddressLineSecondary";
+  
+  const address2 = document.createElement('p');
+  address2.innerHTML = addressLine2 + ",&nbsp;";
+
+  const address3 = document.createElement('p');
+  address3.innerHTML = addressLine3 + ",&nbsp;";
+
+  const postcode = document.createElement('p');
+  postcode.innerText = addressPostcode;
+
+  secondaryAddressWrapper.appendChild(address2);
+  secondaryAddressWrapper.appendChild(address3);
+  secondaryAddressWrapper.appendChild(postcode);
+  
+  wrapper.appendChild(address1);
+  wrapper.appendChild(secondaryAddressWrapper);
+
+  tableData.appendChild(wrapper);
+
+  return tableData;
+
+}
+
+
+function tableData(value){
+
+  const tableData = document.createElement('td');
+  tableData.innerHTML = value;
+
+  return tableData;
+
+}
+
+
 function createRunCard(runStruct){
 
   const runCard = document.createElement('div');
@@ -663,101 +880,6 @@ function createRunCard(runStruct){
   runStruct.runCard = runCard;
 
 }
-
-
-async function getRunStops(stops){
-
-  console.log(stops);
-  //fetch order data
-
-  const orderIDs = [];
-
-  for(let i = 0; i < stops.length; i++){
-
-    orderIDs.push(stops[i]['orderID']);
-
-  }
-
-  const orders = await bulkReadTransaction(orderIDs, 'Orders');
-  console.log(orders);
-
-  if(orders === false){
-
-    alert("error fetching stops for that run")
-    return;
-  }
-
-  return orders;
-
-}
-
-
-function updateStopList(stops){
-
-  console.log(stops);
-
-  runStopsContainer.innerHTML = "";
-
-  for(let i = 0; i < stops.length; i++){
-
-    runStopsContainer.appendChild(createStopCard(stops[i]['stopData'], i + 1));
-
-  }
-
-}
-
-
-function mergeStopsWithOrderData(stops, orders){
-
-  for(let i = 0; i < stops.length; i++){
-
-    for(let j = 0; j < orders.length; j++){
-
-      if(stops[i].orderID == orders[j].id){
-
-        //to include in every stop type
-        const stopData = {};
-        const orderData = orders[j].data();
-
-        console.log(stops[i].stopType);
-        console.log(orderData);
-
-        stopData['message'] = orderData['message'];
-        stopData['email'] = orderData['email'];
-        stopData['animalType'] = orderData['animalType'];
-        stopData['ID'] = orderData['ID'];
-        stopData['quantity'] = orderData['quantity'];
-        
-        if(stops[i].stopType == "collection"){
-          //add collection data to stop
-          stopData['address1'] = orderData['collectionAddress1'];
-          stopData['address2'] = orderData['collectionAddress2'];
-          stopData['address3'] = orderData['collectionAddress3'];
-          stopData['name'] = orderData['collectionName'];
-          stopData['postcode'] = orderData['collectionPostcode'];
-          stopData['phoneNumber'] = orderData['collectionPhoneNumber'];
-
-        }else if(stops[i].stopType == "delivery"){
-          //add delivery data to stop
-          stopData['address1'] = orderData['deliveryAddress1'];
-          stopData['address2'] = orderData['deliveryAddress2'];
-          stopData['address3'] = orderData['deliveryAddress3'];
-          stopData['name'] = orderData['deliveryName'];
-          stopData['postcode'] = orderData['deliveryPostcode'];
-          stopData['phoneNumber'] = orderData['deliveryPhoneNumber'];
-
-        }
-
-        stops[i]['stopData'] = stopData;
-
-      }
-
-    }
-
-  }
-
-}
-
 
 function createStopCard(stopData, stopNumberValue){
 

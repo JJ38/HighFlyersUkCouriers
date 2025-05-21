@@ -363,13 +363,15 @@ p{
 
 .headerRow{
 
+    position: sticky;
     font-weight: 600;
-    /* text-wrap: nowrap; */
-  
+    top:0;
+    z-index: 2;
 }
 
 th{
 
+    font-size: 1.2rem;
     text-wrap: nowrap;
 
 }
@@ -392,14 +394,12 @@ th{
 
 }
 
-
 th,td{
 
-    padding: 10px 20px;
+    padding: 20px 20px;
     vertical-align: top;
 
 }
-
 
 td > p{
 
@@ -413,7 +413,6 @@ td > div{
     max-width: 500px;
 
 }
-
 
 .tableRowBackground{
 
@@ -478,7 +477,6 @@ td > div{
     padding: 8px;
 
 }
-
 
 .filterButton{
 

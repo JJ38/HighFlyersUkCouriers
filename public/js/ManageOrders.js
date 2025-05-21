@@ -90,8 +90,6 @@ searchButton.addEventListener('click', async () => {
 
 async function loadOrders(){
 
-  
-
   let orderData = null;
 
   if(fetchingOrders){
