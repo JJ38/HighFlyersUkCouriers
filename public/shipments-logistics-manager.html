@@ -176,7 +176,7 @@
                 
             </div>
 
-            <div id="selected_run_view" class="runDetailsContainer hidden">
+            <div id="selected_run_view" class="runDetailsContainer">
               
               <div class="runDetailsButtonWrapper">
 
@@ -186,20 +186,175 @@
               </div>
 
 
-              <div id="run_stops_container">
+              <div id="run_stops_container" class="runStopsContainer hidden">
 
-                <div class="stopContainer">
+              </div>
+
+
+              <div id="add_run_details" class="addRunDetails">
+
+                <div class="tableActionContainer">
+
+                  <div class="orderFiltersContainer">
+
+                    <input id="add_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
+
+                    <select name="" id="add_order_search_filter" class="addOrderSearchFilter">
+
+                      <option value="ID">ID</option>
+                      <option value="animalType">Animal Type</option>
+                      <option value="quantity">Quantity</option>
+                      <option value="email">Email</option>
+                      <option value="account">Account</option>
+                      <option value="deliveryWeek">Delivery Week</option>
+                      <option value="collectionPhoneNumber">Phone Number</option>
+                      <option value="collectionName">Collection Name</option>
+                      <option value="collectionAddress1">Collection Address 1</option>
+                      <option value="collectionAddress2">Collection Address 2</option>
+                      <option value="collectionAddress3">Collection Address 3</option>
+                      <option value="collectionPostcode">Collection Postcode</option>
+                      <option value="deliveryName">Delivery Name</option>
+                      <option value="deliveryAddress1">Delivery Address 1</option>
+                      <option value="deliveryAddress2">Delivery Address 2</option>
+                      <option value="deliveryAddress3">Delivery Address 3</option>
+                      <option value="deliveryPostcode">Delivery Postcode</option>
+                      <option value="deliveryPhoneNumber">Delivery Phone Number</option>
+                      <option value="payment">Payment</option>
+                      <option value="message">Message</option>
+                      <option value="code">Code</option>
+                      <option value="addedBy">Added By</option>
+                      <option value="printed">Printed</option>
+
+                    </select>
+
+                  </div>
+
+                  <div class="orderButtonsContainer">
+
+                    <button id="add_order_button" class="addOrderButton filterButton">Add Order</button>
+                    <button id="select_all_button" class="selectAddButton filterButton">select all</button>
+
+                  </div>
 
                 </div>
 
-              </div>
+                <div class="tableContainer">
+
+                  <table id="order_table" class="orderTable">
+
+                    <tbody class="tableHeaderContainer">
+
+                      <tr class="headerRow">               
+                        <th></th>
+                        <th>ID</th>
+                        <th>Animal</th>
+                        <th>Quantity</th>
+                        <th>Account</th>
+                        <th>Week</th>
+                        <th>Collection Name</th>
+                        <th>Collection Address</th>
+                        <th>Collection Phone Number</th>
+                        <th>Delivery Name</th>
+                        <th>Delivery Address</th>
+                        <th>Delivery Phone Number</th>
+                        <th>Payment</th>
+                        <th>Message</th>
+                        <th>Code</th>
+                        <th id="topright"></th>
+                        <th class="tableRowBackground"></th>
+                      </tr>
+
+                    </tbody>
+
+                    <tbody id="table_body" class="tableBody">
+
+                      <tr></tr>
+                      <tr></tr>
+                      <tr></tr>
+
+                      <tr class="tableDataRow">
+                        <td></td>
+                        <td>1</td>
+                        <td>Pigeon</td>
+                        <td>12</td>
+                        <td>Tumley Lofts</td>
+                        <td>15</td>
+                        <td>John Doe</td>
+                        <td>
+                          <div class="tableAddressWrapper">
+                            <p class="tableAddressLineMain">8 Marston Close</p>
+                            <div class="tableAddressLineSecondary">
+                              <p>Beaworthy,</p>
+                              <p>Devon,</p>
+                              <p>EX21 5AA</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td>07842133519</td>
+                        <td>John Smith</td>
+                        <td>
+                          <div class="tableAddressWrapper">
+                            <p class="tableAddressLineMain">10 Kenilworth</p>
+                            <div class="tableAddressLineSecondary">
+                              <p>Ripley,</p>
+                              <p>Derbyshire,</p>
+                              <p>DE5 3GY</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td>07842133519</td>
+                        <td>Collection</td>
+                        <td><div>Please phone before you arrive awdaw daw awd awdwa wadwad awd awdawd aw awawd awdaw wad awd awd wad wad wadaw d</div></td>
+                        <td>Gx017284</td>
+                        <td class="tableRowBackground"></td>
+                      </tr>
+
+                      <tr class="tableDataRow">
+                        <td></td>
+                        <td>awdawdawd ID</td>
+                        <td>awdawda al Type</td>
+                        <td>awdawda tity</td>
+                        <td>awdawda l</td>
+                        <td>awdawda very Week</td>
+                        <td>awdawda ection Name</td>
+                        <td>awdawda ection Address</td>
+                        <td>awdawda ection Phone Number</td>
+                        <td>awdawda very Name</td>
+                        <td>awdawda very Address</td>
+                        <td>awdawda very Phone Number</td>
+                        <td>awdawda ent</td>
+                        <td>awdawda age</td>
+                        <td>awdawda </td>
+                        <td class="tableRowBackground"></td>
+                      </tr>
+
+                      <tr class="tableDataRow">
+                        <td></td>
+                        <td>awdawdawd ID</td>
+                        <td>awdawda al Type</td>
+                        <td>awdawda tity</td>
+                        <td>awdawda l</td>
+                        <td>awdawda very Week</td>
+                        <td>awdawda ection Name</td>
+                        <td>awdawda ection Address</td>
+                        <td>awdawda ection Phone Number</td>
+                        <td>awdawda very Name</td>
+                        <td>awdawda very Address</td>
+                        <td>awdawda very Phone Number</td>
+                        <td>awdawda ent</td>
+                        <td>awdawda age</td>
+                        <td>awdawda </td>
+                        <td class="tableRowBackground"></td>
+                      </tr>
 
 
-              <div id="addRunDetails" class="hidden">
+                    </tbody>
+                  </table>
+
+                 </div>
 
               </div>
               
-
             </div>
              <!-- <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map> -->
 
