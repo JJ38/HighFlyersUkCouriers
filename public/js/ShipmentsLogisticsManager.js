@@ -22,6 +22,11 @@ const selectedShipment = document.getElementById('select_shipment');
 
 const selectedRunView = document.getElementById('selected_run_view');
 const runStopsContainer = document.getElementById('run_stops_container');
+const addRunDetailsContainer = document.getElementById('add_run_details');
+
+
+const manageTabButton = document.getElementById('run_details_manage_button');
+const addTabButton = document.getElementById('run_details_add_button');
 
 const searchButton = document.getElementById('search_button');
 const addOrderTable = document.getElementById('table_body');
@@ -196,11 +201,55 @@ function addEventListeners(){
 
   } 
 
-  console.log(searchButton);
+  if(addTabButton != null){
+
+    addTabButton.addEventListener('click', () => {
+
+      showAddOrderTable();
+
+    });
+
+  }
+
+  if(manageTabButton != null){
+
+    manageTabButton.addEventListener('click', () => {
+
+      showRuns();
+   
+    });
+
+  }
 
 
 }
 
+
+function showRuns(){
+
+  showUI(runStopsContainer);
+  showUI(selectedRunView);
+  hideUI(addRunDetailsContainer);
+
+  manageTabButton.classList.add('selectedRunDetailsButton');
+  addTabButton.classList.remove('selectedRunDetailsButton');
+
+  selectedRunView.classList.add('fit-content');
+
+}
+
+function showAddOrderTable(){
+
+  showUI(addRunDetailsContainer);
+  showUI(selectedRunView);
+  hideUI(runStopsContainer);
+
+  addTabButton.classList.add('selectedRunDetailsButton');
+  manageTabButton.classList.remove('selectedRunDetailsButton');
+
+  selectedRunView.classList.remove('fit-content');
+
+}
 
 function showUI(element){
 
@@ -208,11 +257,17 @@ function showUI(element){
 
 }
 
+function hideUI(element){
+
+  element.classList.add('hidden');
+
+} 
+
 
 function hideSelectUI(element){
 
   selectedShipment.value = "SELECT_SHIPMENT";
-  element.classList.add('hidden');
+  hideUI(element);
 
 }
 
@@ -906,11 +961,10 @@ function createRunCard(runStruct){
 
   runCard.addEventListener(('click'), async () => {
 
-
     const orders = await getRunStops(runStruct.stops);
     mergeStopsWithOrderData(runStruct.stops, orders);
     updateStopList(runStruct.stops);
-    showUI(selectedRunView);
+    showRuns();
 
   });
 

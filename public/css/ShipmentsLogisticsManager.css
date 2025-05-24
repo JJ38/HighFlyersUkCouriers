@@ -513,3 +513,7 @@ td > div{
     display: flex;
     flex-direction: column;
 }
+
+.fit-content{
+    width: fit-content;
+}
