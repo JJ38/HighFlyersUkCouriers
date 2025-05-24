@@ -2,8 +2,10 @@ import { db, getDocuments, getDocument, bulkReadTransaction, filterSearch } from
 import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 
-const unassignedOrdersButton = document.getElementById("unassignedOrdersCard");
 const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
+const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
+const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
+const unassignedOrderTable = document.getElementById('unassigned_order_table');
 
 const createShipmentWidget = document.getElementById("create_shipment_widget");
 const shipmentDeliveryWeekInput = document.getElementById('shipment_delivery_week');
@@ -19,6 +21,7 @@ const selectDeleteShipment = document.getElementById('select_delete_shipment');
 
 const runCardList = document.getElementById("runCardList");
 const selectedShipment = document.getElementById('select_shipment');
+
 
 const selectedRunView = document.getElementById('selected_run_view');
 const runStopsContainer = document.getElementById('run_stops_container');
@@ -42,7 +45,6 @@ let runStructList = [];
 
 // initMap();
 addEventListeners();
-addEventListener(unassignedOrdersButton);
 init();
 
 
@@ -67,7 +69,8 @@ const fetchRun = async (documentID) => {
 
   if(runStruct.runName != null){
     createRunCard(runStruct);
-    addEventListener(runStruct.runCard);
+  }else{
+    createUnassignedOrdersButton(runStruct);
   }
 
   runStructList.push(runStruct);
@@ -221,7 +224,6 @@ function addEventListeners(){
 
   }
 
-
 }
 
 
@@ -230,6 +232,7 @@ function showRuns(){
   showUI(runStopsContainer);
   showUI(selectedRunView);
   hideUI(addRunDetailsContainer);
+  hideUI(unassignedOrdersContainer);
 
   manageTabButton.classList.add('selectedRunDetailsButton');
   addTabButton.classList.remove('selectedRunDetailsButton');
@@ -243,11 +246,27 @@ function showAddOrderTable(){
   showUI(addRunDetailsContainer);
   showUI(selectedRunView);
   hideUI(runStopsContainer);
+  hideUI(unassignedOrdersContainer);
 
   addTabButton.classList.add('selectedRunDetailsButton');
   manageTabButton.classList.remove('selectedRunDetailsButton');
 
   selectedRunView.classList.remove('fit-content');
+
+}
+
+
+function showUnassignedOrdersTable(){
+
+  hideUI(addRunDetailsContainer);
+  hideUI(selectedRunView);
+  hideUI(runStopsContainer);
+  showUI(unassignedOrdersContainer);
+
+  manageTabButton.classList.add('selectedRunDetailsButton');
+  addTabButton.classList.remove('selectedRunDetailsButton');
+
+  selectedRunView.classList.add('fit-content');
 
 }
 
@@ -268,6 +287,18 @@ function hideSelectUI(element){
 
   selectedShipment.value = "SELECT_SHIPMENT";
   hideUI(element);
+
+}
+
+function selectCard(runCard){
+
+  if(currentSelectedRun != null){
+    currentSelectedRun.classList.remove('selectedRunCard');
+  }
+
+  runCard.classList.add('selectedRunCard');
+
+  currentSelectedRun = runCard;
 
 }
 
@@ -476,15 +507,22 @@ function addOrderToRun(runName, orderData, stopType){
 }
 
 
-async function updateRunsList(shipmentName){
+function clearShipmentUI(){
 
   runCardList.innerHTML = "";
-  if(shipmentName == null){
+  unassignedOrderTable.innerHTML = "";
+  unassignedOrdersCardWrapper.innerHTML = "";
 
-    unassignedOrdersButton.classList.add('hidden');
-    return;
+  hideUI(runStopsContainer);
+  hideUI(selectedRunView);
+  hideUI(addRunDetailsContainer);
+  hideUI(unassignedOrdersContainer);
 
-  }
+}
+
+async function updateRunsList(shipmentName){
+
+  clearShipmentUI();
 
   runStructList = [];
 
@@ -504,8 +542,8 @@ async function updateRunsList(shipmentName){
 
     }else{
       //manage unassigned runs
-      updateUnnassignedOrders(runStructList[i]);
-
+      // updateUnnassignedOrders(runStructList[i]);
+      unassignedOrdersCardWrapper.appendChild(runStructList[i].runCard);
     }
 
   }
@@ -527,13 +565,6 @@ function updateUnnassignedOrders(unassignedOrders){
   //update unassigned runs number
   numberOfUnassignedOrders.innerText = "#" + unassignedOrders.stops.length;
  
-
-  for(let i = 0; i < unassignedOrders.stops.length; i++){
-
-    // console.log(unassignedOrders.stops[i]);
-
-  }
-
 }
 
 
@@ -628,26 +659,6 @@ async function initMap() {
   });
 }
 
-function addEventListener(runCard){
-
-  if(runCard != null){
-
-    runCard.addEventListener('click', () => {
-
-      console.log("clicked");
-      
-      if(currentSelectedRun != null){
-        currentSelectedRun.classList.remove('selectedRunCard');
-      }
-    
-      runCard.classList.add('selectedRunCard');
-    
-      currentSelectedRun = runCard;
-    
-    });
-    
-  }
-}
 
 async function getRunStops(stops){
 
@@ -703,15 +714,15 @@ function mergeStopsWithOrderData(stops, orders){
         const stopData = {};
         const orderData = orders[j].data();
 
-        console.log(stops[i].stopType);
-        console.log(orderData);
-
         stopData['message'] = orderData['message'];
         stopData['email'] = orderData['email'];
         stopData['animalType'] = orderData['animalType'];
         stopData['ID'] = orderData['ID'];
         stopData['quantity'] = orderData['quantity'];
-        
+        stopData['payment'] = orderData['payment'];
+        stopData['code'] = orderData['code'];
+
+
         if(stops[i].stopType == "collection"){
           //add collection data to stop
           stopData['address1'] = orderData['collectionAddress1'];
@@ -732,6 +743,8 @@ function mergeStopsWithOrderData(stops, orders){
 
         }
 
+
+
         stops[i]['stopData'] = stopData;
 
       }
@@ -747,16 +760,18 @@ async function getOrders(query){
 
   //fetch orders
   const orderData = await getDocuments(query);
+  addOrderTable.innerHTML = "";
 
   if(orderData.empty){
     console.log("no orders to show");
+
     return;
   }
 
   console.log(orderData);
 
   //clear table 
-  addOrderTable.innerHTML = "";
+
 
   for(let i = 0; i < orderData.docs.length; i++){
 
@@ -966,10 +981,105 @@ function createRunCard(runStruct){
     updateStopList(runStruct.stops);
     showRuns();
 
+    selectCard(runCard);
+
   });
 
   
   runStruct.runCard = runCard;
+
+}
+
+
+function createUnassignedOrdersButton(runStruct){
+
+  const unassignedOrdersCard = document.createElement('div');
+  unassignedOrdersCard.classList = "unassignedOrdersCard";
+
+  const reportIcon = document.createElement('span');
+  reportIcon.classList = "warningIcon material-symbols-outlined";
+  reportIcon.innerText = "report";
+
+  const title = document.createElement('p');
+  title.classList = "unassignedOrdersTitle";
+  title.innerText = "Unassigned";
+
+  const noOfUnassignedOrders = document.createElement('p');
+  noOfUnassignedOrders.classList = "numberOfUnassignedOrders";
+  noOfUnassignedOrders.innerText = "#" + runStruct.stops.length;
+
+
+  unassignedOrdersCard.appendChild(reportIcon);
+  unassignedOrdersCard.appendChild(title);
+  unassignedOrdersCard.appendChild(noOfUnassignedOrders);
+  
+
+  unassignedOrdersCard.addEventListener('click', async () => {
+
+    selectCard(unassignedOrdersCard);
+    const orders = await getRunStops(runStruct.stops);
+
+    console.log(orders);
+    mergeStopsWithOrderData(runStruct.stops, orders);
+    console.log(runStruct.stops);
+    for(let i = 0; i < runStruct.stops.length; i++){
+
+      unassignedOrderTable.appendChild(createUnassignedOrdersTableCard(runStruct.stops[i]));
+
+    }
+    // mergeStopsWithOrderData(runStruct.stops, orders);
+    showUnassignedOrdersTable();
+
+  });
+
+
+  runStruct.runCard = unassignedOrdersCard;
+
+}
+
+
+function createUnassignedOrdersTableCard(stopData){
+
+  console.log(stopData);
+
+  const tableRow = document.createElement('tr');
+  tableRow.classList = "tableDataRow";
+
+  tableRow.appendChild(tableData(""));
+
+  tableRow.appendChild(tableData(stopData['stopData']['ID']));
+  tableRow.appendChild(tableData(stopData['stopData']['animalType']));
+  tableRow.appendChild(tableData(stopData['stopData']['quantity']));
+  tableRow.appendChild(tableData(stopData['stopType']));
+
+  tableRow.appendChild(tableData(stopData['stopData']['name']));
+
+  tableRow.appendChild(
+    createTableAddress(
+      stopData['stopData']['address1'],
+      stopData['stopData']['address2'],
+      stopData['stopData']['address3'],
+      stopData['stopData']['postcode'],
+    )
+  );
+
+  tableRow.appendChild(tableData(stopData['stopData']['phoneNumber']));
+  tableRow.appendChild(tableData(stopData['stopData']['payment']));
+
+ 
+  const td = document.createElement('td');
+  const div = document.createElement('div');
+  div.innerText = stopData['stopData']['message'];
+  td.appendChild(div);
+  tableRow.appendChild(td);
+
+  tableRow.appendChild(tableData(stopData['stopData']['code']));
+
+  const rowBackground = tableData("");
+  rowBackground.classList = "tableRowBackground";
+  tableRow.appendChild(rowBackground);
+
+  return tableRow;
 
 }
 

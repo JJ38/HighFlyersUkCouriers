@@ -148,34 +148,132 @@
 
               </div>
 
-              <div id="unassignedOrdersCard" class="unassignedOrdersCard hidden">
+              <div id="unassigned_orders_card_wrapper">
+                
 
-                <span class="warningIcon material-symbols-outlined ">
-                  report
-                </span>
-
-                <p class="unassignedOrdersTitle">Unassigned</p>
-                <p id="number_of_unassigned_orders" class="numberOfUnassignedOrders">#19</p>
-
-              </div>
-
+              </div>   
+              
               <div id="runCardList" class="runCardList">
               
-              </div>                 
+              </div> 
+
             </Section>
             
           </Section>
           <Section id="dependant_content" class="dependantContent">
-              
-            <div id="unassigned_orders_view">
-              
-              <div id="filter_wrapper"></div>
-              <table id="unassigned_orders_table">
 
-              </table>
-                
+            <div id="unassigned_orders_details" class="runDetailsContainer hidden">
+
+                <div class="tableActionContainer">
+
+                  <div class="orderFiltersContainer">
+
+                    <input id="unassigned_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
+
+                    <select name="" id="unassigned_order_search_filter" class="addOrderSearchFilter">
+
+                      <option value="ID">ID</option>
+                      <option value="animalType">Animal Type</option>
+                      <option value="quantity">Quantity</option>
+                      <option value="email">Email</option>
+                      <option value="account">Account</option>
+                      <option value="deliveryWeek">Delivery Week</option>
+                      <option value="collectionPhoneNumber">Phone Number</option>
+                      <option value="collectionName">Collection Name</option>
+                      <option value="collectionAddress1">Collection Address 1</option>
+                      <option value="collectionAddress2">Collection Address 2</option>
+                      <option value="collectionAddress3">Collection Address 3</option>
+                      <option value="collectionPostcode">Collection Postcode</option>
+                      <option value="deliveryName">Delivery Name</option>
+                      <option value="deliveryAddress1">Delivery Address 1</option>
+                      <option value="deliveryAddress2">Delivery Address 2</option>
+                      <option value="deliveryAddress3">Delivery Address 3</option>
+                      <option value="deliveryPostcode">Delivery Postcode</option>
+                      <option value="deliveryPhoneNumber">Delivery Phone Number</option>
+                      <option value="payment">Payment</option>
+                      <option value="message">Message</option>
+                      <option value="code">Code</option>
+                      <option value="addedBy">Added By</option>
+                      <option value="printed">Printed</option>
+
+                    </select>
+
+                    <button id="" class="selectAddButton filterButton">Search</button>
+
+                  </div>
+
+                  <div class="orderButtonsContainer">
+
+                    <button id="add_order_button" class="addOrderButton filterButton">Add Order</button>
+
+                  </div>
+
+                </div>
+
+                <div class="tableContainer">
+
+                  <table id="unassigned_order_table" class="orderTable">
+
+                    <tbody class="tableHeaderContainer">
+
+                      <tr class="headerRow">               
+                        <th></th>
+                        <th>ID</th>
+                        <th>Animal</th>
+                        <th>Quantity</th>
+
+                        <th>Stop Type</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Phone Number</th>
+                        <th>Payment</th>
+                        <th>Message</th>
+                        <th>Code</th>
+                        <th></th>
+                        <th class="tableRowBackground"></th>
+                      </tr>
+
+                    </tbody>
+
+                    <tbody id="unassigned_orders_table_body" class="tableBody">
+
+                      <tr></tr>
+                      <tr></tr>
+                      <tr></tr>
+
+                      <!-- <tr class="tableDataRow">
+                        <td></td>
+                        <td>1</td>
+                        <td>Pigeon</td>
+                        <td>12</td>
+                        <td>Tumley Lofts</td>
+                        <td>15</td>
+                        <td>Collection</td>
+                        <td>John Doe</td>
+                        <td>
+                          <div class="tableAddressWrapper">
+                            <p class="tableAddressLineMain">8 Marston Close</p>
+                            <div class="tableAddressLineSecondary">
+                              <p>Beaworthy,</p>
+                              <p>Devon,</p>
+                              <p>EX21 5AA</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td>07842133519</td>
+                        <td>Collection</td>
+                        <td><div>Please phone before you arrive awdaw daw awd awdwa wadwad awd awdawd aw awawd awdaw wad awd awd wad wad wadaw d</div></td>
+                        <td>Gx017284</td>
+                        <td class="tableRowBackground"></td>
+                      </tr> -->
+
+                    </tbody>
+                  </table>
+
+                </div>
+
             </div>
-
+              
             <div id="selected_run_view" class="runDetailsContainer hidden">
               
               <div class="runDetailsButtonWrapper">
@@ -191,7 +289,7 @@
               </div>
 
 
-              <div id="add_run_details" class="addRunDetails hidden">
+              <div id="add_run_details" class="runDetails hidden">
 
                 <div class="tableActionContainer">
 
@@ -316,7 +414,7 @@
                  </div>
 
               </div>
-              
+
             </div>
              <!-- <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map> -->
 
