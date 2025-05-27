@@ -324,3 +324,22 @@ export function createUnassignedOrdersButton(runStruct){
 }
 
 
+export function createAddStopButton(){
+
+  const addStopButton = document.createElement('div');
+  addStopButton.classList = "addStopButton";
+
+  const reportIcon = document.createElement('span');
+  reportIcon.classList = "addIcon material-symbols-outlined";
+  reportIcon.innerText = "add";
+
+  const title = document.createElement('p');
+  title.classList = "unassignedOrdersTitle";
+  title.innerText = "Add Stop";
+
+  addStopButton.appendChild(reportIcon);
+  addStopButton.appendChild(title);
+
+  return addStopButton;
+
+}

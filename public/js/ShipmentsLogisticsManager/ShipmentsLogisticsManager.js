@@ -1,13 +1,15 @@
 import { db, getDocuments, getDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
 import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
-import { createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
+import { createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 
 const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
 const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
 const unassignedOrderTable = document.getElementById('unassigned_order_table');
 const unassignedOrderTableBody = document.getElementById('unassigned_orders_table_body');
+
+const addStopButtonWrapper = document.getElementById('add_stop_button_wrapper');
 
 const createShipmentWidget = document.getElementById("create_shipment_widget");
 const shipmentDeliveryWeekInput = document.getElementById('shipment_delivery_week');
@@ -28,10 +30,6 @@ const selectedShipment = document.getElementById('select_shipment');
 const selectedRunView = document.getElementById('selected_run_view');
 const runStopsContainer = document.getElementById('run_stops_container');
 const addRunDetailsContainer = document.getElementById('add_run_details');
-
-
-const manageTabButton = document.getElementById('run_details_manage_button');
-const addTabButton = document.getElementById('run_details_add_button');
 
 const searchButton = document.getElementById('search_button');
 const addOrderTable = document.getElementById('table_body');
@@ -243,26 +241,6 @@ function addEventListeners(){
 
   } 
 
-  if(addTabButton != null){
-
-    addTabButton.addEventListener('click', () => {
-
-      showAddOrderTable();
-
-    });
-
-  }
-
-  if(manageTabButton != null){
-
-    manageTabButton.addEventListener('click', () => {
-
-      showRuns();
-   
-    });
-
-  }
-
 }
 
 
@@ -272,9 +250,6 @@ function showRuns(){
   showUI(selectedRunView);
   hideUI(addRunDetailsContainer);
   hideUI(unassignedOrdersContainer);
-
-  manageTabButton.classList.add('selectedRunDetailsButton');
-  addTabButton.classList.remove('selectedRunDetailsButton');
 
   selectedRunView.classList.add('fit-content');
 
@@ -287,9 +262,6 @@ function showAddOrderTable(){
   hideUI(runStopsContainer);
   hideUI(unassignedOrdersContainer);
 
-  addTabButton.classList.add('selectedRunDetailsButton');
-  manageTabButton.classList.remove('selectedRunDetailsButton');
-
   selectedRunView.classList.remove('fit-content');
 
 }
@@ -301,9 +273,6 @@ function showUnassignedOrdersTable(){
   hideUI(selectedRunView);
   hideUI(runStopsContainer);
   showUI(unassignedOrdersContainer);
-
-  manageTabButton.classList.add('selectedRunDetailsButton');
-  addTabButton.classList.remove('selectedRunDetailsButton');
 
   selectedRunView.classList.add('fit-content');
 
@@ -551,6 +520,7 @@ function clearShipmentUI(){
   runCardList.innerHTML = "";
   unassignedOrderTableBody.innerHTML = "";
   unassignedOrdersCardWrapper.innerHTML = "";
+  addStopButtonWrapper.innerHTML = "";
 
   hideUI(runStopsContainer);
   hideUI(selectedRunView);
@@ -586,6 +556,18 @@ async function updateRunsList(shipmentName){
     }
 
   }
+
+  //add add stop button
+  const addStopButton = createAddStopButton();
+
+  addStopButton.addEventListener('click', () => {
+
+    console.log(shipmentName);
+    showAddOrderTable();
+
+  });
+
+  addStopButtonWrapper.appendChild(addStopButton);
 
 }
 
