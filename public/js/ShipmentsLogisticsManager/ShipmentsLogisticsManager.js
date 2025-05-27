@@ -35,6 +35,8 @@ const searchButton = document.getElementById('search_button');
 const addOrderTable = document.getElementById('table_body');
 const addOrderSearchInput = document.getElementById('add_order_search_input');
 const addOrderSearchFilter = document.getElementById('add_order_search_filter');
+const assignStopButton = document.getElementById('assign_stop_button');
+const addStopButton = document.getElementById('add_stop_button');
 
 
 let currentSelectedRun = null;
@@ -92,10 +94,8 @@ const fetchRun = async (documentID) => {
 
         selectCard(unassignedOrdersButton);
         const orders = await getRunStops(runStruct.stops);
-
-        console.log(orders);
         mergeStopsWithOrderData(runStruct.stops, orders);
-        console.log(runStruct.stops);
+
         for(let i = 0; i < runStruct.stops.length; i++){
 
             unassignedOrderTable.appendChild(createUnassignedOrdersTableCard(runStruct.stops[i]));
@@ -239,7 +239,54 @@ function addEventListeners(){
 
     });
 
-  } 
+  }
+  
+  if(assignStopButton != null){
+
+    assignStopButton.addEventListener('click', () => {
+
+      //check for selected order
+      const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=assignStopCheckbox]');
+
+      const orderIDs = [];
+
+      selectedCheckBoxes.forEach((x) => {
+
+        orderIDs.push(x.value);
+
+      });
+
+      console.log(orderIDs);
+
+      // assignOrdersToRuns()
+
+    });
+
+  }
+
+
+  if(addStopButton != null){
+
+    addStopButton.addEventListener('click', () => {
+
+      //check for selected order
+      const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=addStopCheckbox]');
+
+      const orderIDs = [];
+
+      selectedCheckBoxes.forEach((x) => {
+
+        orderIDs.push(x.value);
+
+      });
+
+      console.log(orderIDs);
+
+      //addStopToShipment();
+
+    });
+
+  }
 
 }
 
@@ -423,7 +470,6 @@ async function generateShipment(){
   //get runs by delivery week
   const q = query(collection(db, "Orders"), orderBy('ID', 'asc'), where("deliveryWeek", "==", parseInt(shipmentDeliveryWeekInput.value)));
   const orderData = await getDocuments(q);
-  console.log(orderData.docs);
 
   //organise orders into defined runs based on runtype and postcode
   generateRuns(runDefinitions.data(), orderData.docs);
@@ -468,8 +514,6 @@ function generateRuns(runDefinitions, orderData){
     }
 
   }
-
-  console.log(runStructList);
 
 }
 
@@ -551,19 +595,19 @@ async function updateRunsList(shipmentName){
 
     }else{
       //manage unassigned runs
-      // updateUnnassignedOrders(runStructList[i]);
+      
       unassignedOrdersCardWrapper.appendChild(runStructList[i].runCard);
     }
 
   }
 
-  //add add stop button
+  //append add stop button
   const addStopButton = createAddStopButton();
 
   addStopButton.addEventListener('click', () => {
 
-    console.log(shipmentName);
     showAddOrderTable();
+    //getAllStopsInShipment(shipmentName);
 
   });
 
@@ -571,22 +615,43 @@ async function updateRunsList(shipmentName){
 
 }
 
+// async function getAllStopsInShipment(shipmentName){
 
-function updateUnnassignedOrders(unassignedOrders){
+//   //fetch shipment
+//   const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", shipmentName), limit(1)));
 
-  if(unassignedOrders.stops.length == 0){
+//   console.log(shipmentData.docs[0].data()['runs']);
+//   const runIDs = shipmentData.docs[0].data()['runs'];
+//   // const runData = await getDocument(query(doc(db, 'Runs', documentID)));
 
-    unassignedOrdersButton.classList.add('hidden');
-    return;
+//   let promises = [];
 
-  }
+//   for(let i = 0; i < runIDs.length; i++){
 
-  //show unassigned runs card
-  unassignedOrdersButton.classList.remove('hidden');
-  //update unassigned runs number
-  numberOfUnassignedOrders.innerText = "#" + unassignedOrders.stops.length;
- 
-}
+//     promises.push(getDocument(query(doc(db, 'Runs', runIDs[i]))));
+
+//   }
+
+//   const runDocuments = await Promise.all(promises);
+//   console.log(runDocuments);
+
+//   const stops = [];
+
+//   for(let i = 0; i < runDocuments.length; i++){
+//     console.log(runDocuments[i].data()['stops']);
+
+//       for(let j = 0; j < runDocuments[i].data()['stops'].length; j++){
+//         console.log(runDocuments[i].data()['stops'][j]);
+//         stops.push(runDocuments[i].data()['stops'][j]);
+
+//       }
+
+//   }
+
+//   console.log(stops);
+
+// }
+
 
 
 async function storeShipment(){
@@ -683,9 +748,6 @@ async function initMap() {
 
 async function getRunStops(stops){
 
-  console.log(stops);
-  //fetch order data
-
   const orderIDs = [];
 
   for(let i = 0; i < stops.length; i++){
@@ -695,7 +757,6 @@ async function getRunStops(stops){
   }
 
   const orders = await bulkReadTransaction(orderIDs, 'Orders');
-  console.log(orders);
 
   if(orders === false){
 
@@ -796,7 +857,7 @@ async function getOrders(query){
 
   for(let i = 0; i < orderData.docs.length; i++){
 
-    addOrderTable.appendChild(createTableOrderCard(orderData.docs[i].data()));
+    addOrderTable.appendChild(createTableOrderCard(orderData.docs[i]));
 
   }
 

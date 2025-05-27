@@ -105,10 +105,20 @@ export function createStopCard(stopData, stopNumberValue){
 
 export function createUnassignedOrdersTableCard(stopData){
 
+  console.log(stopData);
+
   const tableRow = document.createElement('tr');
   tableRow.classList = "tableDataRow";
 
-  tableRow.appendChild(tableData(""));
+  const x = document.createElement('td');
+  const checkBox = document.createElement("input");
+  checkBox.setAttribute("type", "checkbox");
+  checkBox.value = stopData['orderID'];
+  checkBox.classList = "assignStopCheckbox";
+
+  x.appendChild(checkBox);
+
+  tableRow.appendChild(x);
 
   tableRow.appendChild(tableData(stopData['stopData']['ID']));
   tableRow.appendChild(tableData(stopData['stopData']['animalType']));
@@ -147,12 +157,22 @@ export function createUnassignedOrdersTableCard(stopData){
 }
 
 
-export function createTableOrderCard(orderData){
+export function createTableOrderCard(doc){
+
+  const orderData = doc.data();
 
   const tableRow = document.createElement('tr');
   tableRow.classList = "tableDataRow";
 
-  tableRow.appendChild(tableData(""));
+  const x = document.createElement('td');
+  const checkBox = document.createElement("input");
+  checkBox.setAttribute("type", "checkbox");
+  checkBox.value = doc.id;
+  checkBox.classList = "addStopCheckbox";
+
+  x.appendChild(checkBox);
+
+  tableRow.appendChild(x);
 
   tableRow.appendChild(tableData(orderData['ID']));
   tableRow.appendChild(tableData(orderData['animalType']));
