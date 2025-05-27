@@ -1,11 +1,13 @@
 import { db, getDocuments, getDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
 import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
+import { createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 
 const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
 const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
 const unassignedOrderTable = document.getElementById('unassigned_order_table');
+const unassignedOrderTableBody = document.getElementById('unassigned_orders_table_body');
 
 const createShipmentWidget = document.getElementById("create_shipment_widget");
 const shipmentDeliveryWeekInput = document.getElementById('shipment_delivery_week');
@@ -68,9 +70,46 @@ const fetchRun = async (documentID) => {
   const runStruct = parseRunInfo(runData.data());
 
   if(runStruct.runName != null){
-    createRunCard(runStruct);
+    
+    const runCard = createRunCard(runStruct);
+
+    runStruct.runCard = runCard;
+    
+    runCard.addEventListener('click', async () => {
+
+      const orders = await getRunStops(runStruct.stops);
+      mergeStopsWithOrderData(runStruct.stops, orders);
+      updateStopList(runStruct.stops);
+      showRuns();
+
+      selectCard(runCard);
+
+    });
+
   }else{
-    createUnassignedOrdersButton(runStruct);
+
+    const unassignedOrdersButton = createUnassignedOrdersButton(runStruct);
+
+    unassignedOrdersButton.addEventListener('click', async () => {
+
+        selectCard(unassignedOrdersButton);
+        const orders = await getRunStops(runStruct.stops);
+
+        console.log(orders);
+        mergeStopsWithOrderData(runStruct.stops, orders);
+        console.log(runStruct.stops);
+        for(let i = 0; i < runStruct.stops.length; i++){
+
+            unassignedOrderTable.appendChild(createUnassignedOrdersTableCard(runStruct.stops[i]));
+
+        }
+        // mergeStopsWithOrderData(runStruct.stops, orders);
+        showUnassignedOrdersTable();
+
+    });
+
+    runStruct.runCard = unassignedOrdersButton;
+
   }
 
   runStructList.push(runStruct);
@@ -510,7 +549,7 @@ function addOrderToRun(runName, orderData, stopType){
 function clearShipmentUI(){
 
   runCardList.innerHTML = "";
-  unassignedOrderTable.innerHTML = "";
+  unassignedOrderTableBody.innerHTML = "";
   unassignedOrdersCardWrapper.innerHTML = "";
 
   hideUI(runStopsContainer);
@@ -784,362 +823,10 @@ async function getOrders(query){
 }
 
 
-function createTableOrderCard(orderData){
 
-  const tableRow = document.createElement('tr');
-  tableRow.classList = "tableDataRow";
 
-  tableRow.appendChild(tableData(""));
 
-  tableRow.appendChild(tableData(orderData['ID']));
-  tableRow.appendChild(tableData(orderData['animalType']));
-  tableRow.appendChild(tableData(orderData['quantity']));
-  tableRow.appendChild(tableData(orderData['account']));
-  tableRow.appendChild(tableData(orderData['deliveryWeek']));
-  tableRow.appendChild(tableData(orderData['collectionName']));
 
-  tableRow.appendChild(
-    createTableAddress(
-      orderData['collectionAddress1'],
-      orderData['collectionAddress2'],
-      orderData['collectionAddress3'],
-      orderData['collectionPostcode'],
-    )
-  );
-  
-  tableRow.appendChild(tableData(orderData['collectionPhoneNumber']));
-  tableRow.appendChild(tableData(orderData['deliveryName']));
 
-  
-  tableRow.appendChild(
-    createTableAddress(
-      orderData['deliveryAddress1'],
-      orderData['deliveryAddress2'],
-      orderData['deliveryAddress3'],
-      orderData['deliveryPostcode'],
-    )
-  );
 
-  tableRow.appendChild(tableData(orderData['deliveryPhoneNumber']));
-  tableRow.appendChild(tableData(orderData['payment']));
-
- 
-  const td = document.createElement('td');
-  const div = document.createElement('div');
-  div.innerText = orderData['message'];
-  td.appendChild(div);
-  tableRow.appendChild(td);
-
-  tableRow.appendChild(tableData(orderData['code']));
-
-  const rowBackground = tableData("");
-  rowBackground.classList = "tableRowBackground";
-  tableRow.appendChild(rowBackground);
-
-  return tableRow;
-
-}
-
-
-function createTableAddress(addressLine1, addressLine2, addressLine3, addressPostcode){
-
-  const tableData = document.createElement('td');
-
-  const wrapper = document.createElement('div');
-  wrapper.classList = "tableAddressWrapper";
-
-  const address1 = document.createElement('p');
-  address1.innerHTML = addressLine1
-  address1.classList = "tableAddressLineMain";
-
-  const secondaryAddressWrapper = document.createElement('div');
-  secondaryAddressWrapper.classList = "tableAddressLineSecondary";
-  
-  const address2 = document.createElement('p');
-  address2.innerHTML = addressLine2 + ",&nbsp;";
-
-  const address3 = document.createElement('p');
-  address3.innerHTML = addressLine3 + ",&nbsp;";
-
-  const postcode = document.createElement('p');
-  postcode.innerText = addressPostcode;
-
-  secondaryAddressWrapper.appendChild(address2);
-  secondaryAddressWrapper.appendChild(address3);
-  secondaryAddressWrapper.appendChild(postcode);
-  
-  wrapper.appendChild(address1);
-  wrapper.appendChild(secondaryAddressWrapper);
-
-  tableData.appendChild(wrapper);
-
-  return tableData;
-
-}
-
-
-function tableData(value){
-
-  const tableData = document.createElement('td');
-  tableData.innerHTML = value;
-
-  return tableData;
-
-}
-
-
-function createRunCard(runStruct){
-
-  const runCard = document.createElement('div');
-  runCard.classList = "runCard";
-
-  const runName = document.createElement('p');
-  runName.classList = "runName";
-  runName.innerText = runStruct.runName;
-
-  const runIconsWrapper = document.createElement('div');
-  runIconsWrapper.classList = "row runInfoWrapper";
-  
-
-
-  const runWeekWrapper = document.createElement('div');
-  runWeekWrapper.classList = "row";
-
-  const calendarIcon = document.createElement('span');
-  calendarIcon.classList = "material-symbols-rounded runInfoIcon";
-  calendarIcon.innerText = "calendar_month";
-
-  const weekNumber = document.createElement('p');
-  weekNumber.innerText = runStruct.runWeek;
-
-  runWeekWrapper.appendChild(calendarIcon);
-  runWeekWrapper.appendChild(weekNumber);
-
-
-
-  const totalStopsWrapper = document.createElement('div');
-  totalStopsWrapper.classList = "row";
-
-  const totalStopsIcon = document.createElement('span');
-  totalStopsIcon.innerText = "location_on";
-  totalStopsIcon.classList = "material-symbols-rounded runInfoIcon";
-
-  const totalStops = document.createElement('p');
-  totalStops.innerText = runStruct.stops.length;
-
-  totalStopsWrapper.appendChild(totalStopsIcon);
-  totalStopsWrapper.appendChild(totalStops);
-
-
-
-  const fuelCostWrapper = document.createElement('div');
-  fuelCostWrapper.classList = "row";
-
-  const fuelCostIcon = document.createElement('span');
-  fuelCostIcon.classList = "material-symbols-rounded runInfoIcon";
-  fuelCostIcon.innerText = "local_gas_station";
-
-  const fuelCost = document.createElement('p');
-  fuelCost.innerText = "£" + runStruct.fuelCost;
-
-  fuelCostWrapper.appendChild(fuelCostIcon);
-  fuelCostWrapper.appendChild(fuelCost);
-
-
-
-  runIconsWrapper.appendChild(runWeekWrapper);
-  runIconsWrapper.appendChild(totalStopsWrapper);
-  runIconsWrapper.appendChild(fuelCostWrapper);
-
-
-
-  const driverInfoWrapper = document.createElement('div');
-  driverInfoWrapper.classList = "row runInfoWrapper";
-
-  const assignedDriverTitle = document.createElement('p');
-  assignedDriverTitle.classList = "runInfoTitle";
-  assignedDriverTitle.innerText = "AssignedDriver: ";
-
-  const assignedDriver = document.createElement('p');
-  assignedDriver.classList = "runInfo";
-  assignedDriver.innerText = runStruct.assignedDriver;
-
-  driverInfoWrapper.appendChild(assignedDriverTitle);
-  driverInfoWrapper.appendChild(assignedDriver);
-
-
-
-  runCard.appendChild(runName);
-  runCard.appendChild(runIconsWrapper);
-  runCard.appendChild(driverInfoWrapper);
-
-
-  runCard.addEventListener(('click'), async () => {
-
-    const orders = await getRunStops(runStruct.stops);
-    mergeStopsWithOrderData(runStruct.stops, orders);
-    updateStopList(runStruct.stops);
-    showRuns();
-
-    selectCard(runCard);
-
-  });
-
-  
-  runStruct.runCard = runCard;
-
-}
-
-
-function createUnassignedOrdersButton(runStruct){
-
-  const unassignedOrdersCard = document.createElement('div');
-  unassignedOrdersCard.classList = "unassignedOrdersCard";
-
-  const reportIcon = document.createElement('span');
-  reportIcon.classList = "warningIcon material-symbols-outlined";
-  reportIcon.innerText = "report";
-
-  const title = document.createElement('p');
-  title.classList = "unassignedOrdersTitle";
-  title.innerText = "Unassigned";
-
-  const noOfUnassignedOrders = document.createElement('p');
-  noOfUnassignedOrders.classList = "numberOfUnassignedOrders";
-  noOfUnassignedOrders.innerText = "#" + runStruct.stops.length;
-
-
-  unassignedOrdersCard.appendChild(reportIcon);
-  unassignedOrdersCard.appendChild(title);
-  unassignedOrdersCard.appendChild(noOfUnassignedOrders);
-  
-
-  unassignedOrdersCard.addEventListener('click', async () => {
-
-    selectCard(unassignedOrdersCard);
-    const orders = await getRunStops(runStruct.stops);
-
-    console.log(orders);
-    mergeStopsWithOrderData(runStruct.stops, orders);
-    console.log(runStruct.stops);
-    for(let i = 0; i < runStruct.stops.length; i++){
-
-      unassignedOrderTable.appendChild(createUnassignedOrdersTableCard(runStruct.stops[i]));
-
-    }
-    // mergeStopsWithOrderData(runStruct.stops, orders);
-    showUnassignedOrdersTable();
-
-  });
-
-
-  runStruct.runCard = unassignedOrdersCard;
-
-}
-
-
-function createUnassignedOrdersTableCard(stopData){
-
-  console.log(stopData);
-
-  const tableRow = document.createElement('tr');
-  tableRow.classList = "tableDataRow";
-
-  tableRow.appendChild(tableData(""));
-
-  tableRow.appendChild(tableData(stopData['stopData']['ID']));
-  tableRow.appendChild(tableData(stopData['stopData']['animalType']));
-  tableRow.appendChild(tableData(stopData['stopData']['quantity']));
-  tableRow.appendChild(tableData(stopData['stopType']));
-
-  tableRow.appendChild(tableData(stopData['stopData']['name']));
-
-  tableRow.appendChild(
-    createTableAddress(
-      stopData['stopData']['address1'],
-      stopData['stopData']['address2'],
-      stopData['stopData']['address3'],
-      stopData['stopData']['postcode'],
-    )
-  );
-
-  tableRow.appendChild(tableData(stopData['stopData']['phoneNumber']));
-  tableRow.appendChild(tableData(stopData['stopData']['payment']));
-
- 
-  const td = document.createElement('td');
-  const div = document.createElement('div');
-  div.innerText = stopData['stopData']['message'];
-  td.appendChild(div);
-  tableRow.appendChild(td);
-
-  tableRow.appendChild(tableData(stopData['stopData']['code']));
-
-  const rowBackground = tableData("");
-  rowBackground.classList = "tableRowBackground";
-  tableRow.appendChild(rowBackground);
-
-  return tableRow;
-
-}
-
-function createStopCard(stopData, stopNumberValue){
-
-    console.log(stopData);
-    console.log(stopNumberValue);
-
-
-    const stopContainer = document.createElement('div');
-    stopContainer.classList = "stopContainer";
-
-
-    const stopNumber = document.createElement('p');
-    stopNumber.classList = "stopNumber";
-    stopNumber.innerText = stopNumberValue;
-
-    const stopCard = document.createElement('div');
-    stopCard.classList = "stopCard";
-
-
-    const stopCustomerName = document.createElement('p');
-    stopCustomerName.classList = "stopCustomerName";
-    stopCustomerName.innerText = stopData['name'];
-
-    const stopAddressLine1 = document.createElement('p');
-    stopAddressLine1.classList = "stopAddressLine1";
-    stopAddressLine1.innerText = stopData['address1'];
-
-
-    const stopAddressWrapper = document.createElement('div');
-    stopAddressWrapper.classList = "stopAddressWrapper";
-
-    const stopAddressLine2 = document.createElement('p');
-    stopAddressLine2.classList = "stopAddressLine2";
-    stopAddressLine2.innerHTML = stopData['address2'] + ",&nbsp;";
-
-    const stopAddressLine3 = document.createElement('p');
-    stopAddressLine3.classList = "stopAddressLine3";
-    stopAddressLine3.innerHTML = stopData['address3'] + ",&nbsp;";
-
-    const stopPostcode = document.createElement('p');
-    stopPostcode.classList = "stopPostcode";
-    stopPostcode.innerText = stopData['postcode'];
-
-    
-    stopAddressWrapper.appendChild(stopAddressLine2);
-    stopAddressWrapper.appendChild(stopAddressLine3);
-    stopAddressWrapper.appendChild(stopPostcode);
-
-
-    stopCard.appendChild(stopCustomerName);
-    stopCard.appendChild(stopAddressLine1);
-    stopCard.appendChild(stopAddressWrapper);
-
-
-    stopContainer.appendChild(stopNumber);
-    stopContainer.appendChild(stopCard);
-
-    return stopContainer;
-
-}
 
