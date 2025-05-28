@@ -55,7 +55,7 @@
       </header>
       <Section id="navbarMainContentWrapper">
 
-        <div id="create_shipment_widget" class="createShipmentWidget hidden">
+        <div id="create_shipment_widget" class="createShipmentWidget widget hidden">
 
           <h1>Create New Shipment</h1>
 
@@ -90,7 +90,7 @@
         </div>
 
 
-        <div id="delete_shipment_widget" class="createShipmentWidget hidden">
+        <div id="delete_shipment_widget" class="createShipmentWidget widget hidden">
 
           <h1>Delete Shipment</h1>
 
@@ -112,6 +112,27 @@
 
         </div>
 
+
+        <div id="assign_stops_widget" class="assignStopsWidget widget ">
+
+          <select name="" id="select_assign_stops_run">
+            <option value="">awdawd</option>
+          </select>
+
+
+        </div>
+
+
+        <div id="add_stops_widget" class="addStopsWidget widget hidden">
+
+          <select name="" id="select_add_stops_run">
+            
+            <option value="Collection">Collection</option>
+            <option value="Delivery">Delivery</option>
+
+          </select>
+
+        </div>
 
         <nav class="logisticsVerticalNavbar">
           <a class="verticalNavbarLink" href="/live-logistics-manager">
@@ -310,7 +331,7 @@
 
                   <div class="orderButtonsContainer">
 
-                    <button id="add_stop_button" class="addOrderButton filterButton">Add Stop</button>
+                    <button id="add_stop_button" class="addOrderButton filterButton">Add Stop(s)</button>
 
                   </div>
 

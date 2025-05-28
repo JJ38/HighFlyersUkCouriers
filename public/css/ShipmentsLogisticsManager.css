@@ -35,21 +35,27 @@ p{
 
     display: flex;
     flex-direction: column;
-    position: absolute;
-    background-color: white;
-    border: 1px solid black;
+    
     gap: 10px;
     font-size: 1.3rem;
     font-weight: 600;
     padding: 2rem;
-    border-radius: 5px;
+    transform: translate(-50%, -50%);
+    
+}
+
+.widget{
+
+    position: absolute;
+    background-color: white;
+    border: 1px solid black;
     width: fit-content;
     height: fit-content;
+    border-radius: 5px;
     z-index: 5;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
-    
+
 }
 
 .createShipmentContentWrapper{
@@ -535,6 +541,20 @@ td > div{
 .selectAddButton{
 
     background-color: white;
+
+}
+
+.assignStopWidget{
+
+    position: absolute;
+    background-color: pink;
+
+}
+
+.addStopWidget{
+
+    position: absolute;
+    background-color: red;
 
 }
 

@@ -23,6 +23,12 @@ const cancelDeleteShipmentButton = document.getElementById("cancel_delete_shipme
 const confirmDeleteShipmentButton = document.getElementById("confirm_delete_shipment");
 const selectDeleteShipment = document.getElementById('select_delete_shipment');
 
+const assignStopsWidget = document.getElementById('assign_stops_widget');
+const selectAssignStopsRun = document.getElementById('select_assign_stops_run');
+
+const addStopsWidget = document.getElementById('add_stops_widget');
+const selectAddStopsRun = document.getElementById('select_add_stops_run');
+
 const runCardList = document.getElementById("runCardList");
 const selectedShipment = document.getElementById('select_shipment');
 
@@ -64,9 +70,8 @@ const sortAlphabetically = (a, b) => {
 
 }
 
-const fetchRun = async (documentID) => {
+function parseRunData(runData){
 
-  const runData = await getDocument(query(doc(db, 'Runs', documentID)));
   const runStruct = parseRunInfo(runData.data());
 
   if(runStruct.runName != null){
@@ -243,7 +248,7 @@ function addEventListeners(){
   
   if(assignStopButton != null){
 
-    assignStopButton.addEventListener('click', () => {
+    assignStopButton.addEventListener('click', async () => {
 
       //check for selected order
       const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=assignStopCheckbox]');
@@ -258,7 +263,9 @@ function addEventListeners(){
 
       console.log(orderIDs);
 
-      // assignOrdersToRuns()
+      const shipmentData = await fetchShipment(selectedShipment.value);
+      const runData = await fetchRunsInShipment(shipmentData.docs[0].data()['runs']);
+      console.log(runData);      
 
     });
 
@@ -282,7 +289,7 @@ function addEventListeners(){
 
       console.log(orderIDs);
 
-      //addStopToShipment();
+      // addStopToShipment();
 
     });
 
@@ -579,7 +586,7 @@ async function updateRunsList(shipmentName){
 
   runStructList = [];
 
-  await fetchShipment(shipmentName);
+  await selectShipment(shipmentName);
 
   runStructList.sort(sortAlphabetically);
 
@@ -695,28 +702,21 @@ async function storeShipment(){
 }
 
 
-async function fetchShipment(selectedShipment){
+async function selectShipment(selectedShipment){
 
-  const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", selectedShipment), limit(1)));
+  const shipmentData = await fetchShipment(selectedShipment);
 
-  if(shipmentData.empty){
-    console.log("shipment doesnt exist");
-    return;
+  const runIDs = shipmentData.docs[0].data()['runs'];
+
+  const runData = await fetchRunsInShipment(runIDs);
+
+  for(let i = 0; i < runData.length; i++){
+
+    parseRunData(runData[i]);
+
   }
-
-  const shipmentRunsDocumentIDs = shipmentData.docs[0].data()['runs'];
-  const numberOfRuns = shipmentRunsDocumentIDs.length;
-
-  let promises = [];
-
-  for(let i = 0; i < numberOfRuns; i++){
-
-    promises.push(fetchRun(shipmentRunsDocumentIDs[i]));
-
-  } 
   
-  await Promise.all(promises);
-
+  console.log(runData);
 }
 
 
@@ -865,9 +865,43 @@ async function getOrders(query){
 
 }
 
+async function fetchShipment(shipmentName){
 
+  const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", shipmentName), limit(1)));
 
+  if(shipmentData.empty){
+    console.log("shipment doesnt exist");
+    return;
+  }
 
+  console.log(shipmentData);
+
+  return shipmentData;
+
+}
+
+async function fetchRunsInShipment(runIDs){
+
+  const numberOfRuns = runIDs.length;
+
+  let promises = [];
+
+  for(let i = 0; i < numberOfRuns; i++){
+
+    promises.push(fetchRun(runIDs[i]));
+
+  } 
+  
+  return await Promise.all(promises);
+
+}
+
+async function fetchRun(runID){
+
+  const runData = await getDocument(query(doc(db, 'Runs', runID)));
+  return runData;
+
+}
 
 
 
