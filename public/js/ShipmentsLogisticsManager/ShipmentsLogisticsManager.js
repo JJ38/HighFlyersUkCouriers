@@ -1,7 +1,7 @@
 import { db, getDocuments, getDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
-import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch } from "firebase/firestore";
+import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch, documentId } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
-import { createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
+import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 
 const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -25,9 +25,13 @@ const selectDeleteShipment = document.getElementById('select_delete_shipment');
 
 const assignStopsWidget = document.getElementById('assign_stops_widget');
 const selectAssignStopsRun = document.getElementById('select_assign_stops_run');
+const cancelAssignStopsWidgetButton = document.getElementById('cancel_assign_stops_button');
+const assignStopsWidgetButton = document.getElementById('assign_stops_widget_button');
 
 const addStopsWidget = document.getElementById('add_stops_widget');
 const selectAddStopsRun = document.getElementById('select_add_stops_run');
+const cancelAddStopsWidgetButton = document.getElementById('cancel_add_stops_button');
+const addStopsWidgetButton = document.getElementById('add_stops_widget_button');
 
 const runCardList = document.getElementById("runCardList");
 const selectedShipment = document.getElementById('select_shipment');
@@ -44,7 +48,7 @@ const addOrderSearchFilter = document.getElementById('add_order_search_filter');
 const assignStopButton = document.getElementById('assign_stop_button');
 const addStopButton = document.getElementById('add_stop_button');
 
-
+let currentShipmentUnassignedOrders;
 let currentSelectedRun = null;
 let map;
 
@@ -72,7 +76,7 @@ const sortAlphabetically = (a, b) => {
 
 function parseRunData(runData){
 
-  const runStruct = parseRunInfo(runData.data());
+  const runStruct = parseRunInfo(runData);
 
   if(runStruct.runName != null){
     
@@ -101,6 +105,8 @@ function parseRunData(runData){
         const orders = await getRunStops(runStruct.stops);
         mergeStopsWithOrderData(runStruct.stops, orders);
 
+        unassignedOrderTableBody.innerHTML = "";
+
         for(let i = 0; i < runStruct.stops.length; i++){
 
             unassignedOrderTable.appendChild(createUnassignedOrdersTableCard(runStruct.stops[i]));
@@ -113,6 +119,8 @@ function parseRunData(runData){
 
     runStruct.runCard = unassignedOrdersButton;
 
+    //set unassigned stops doc id for current shipment
+    currentShipmentUnassignedOrders = runStruct.documentId;
   }
 
   runStructList.push(runStruct);
@@ -250,22 +258,13 @@ function addEventListeners(){
 
     assignStopButton.addEventListener('click', async () => {
 
-      //check for selected order
-      const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=assignStopCheckbox]');
-
-      const orderIDs = [];
-
-      selectedCheckBoxes.forEach((x) => {
-
-        orderIDs.push(x.value);
-
-      });
-
-      console.log(orderIDs);
-
       const shipmentData = await fetchShipment(selectedShipment.value);
       const runData = await fetchRunsInShipment(shipmentData.docs[0].data()['runs']);
-      console.log(runData);      
+
+      console.log(runData);
+      updateSelectRunAssignStops(runData);
+
+      showUI(assignStopsWidget);
 
     });
 
@@ -291,6 +290,69 @@ function addEventListeners(){
 
       // addStopToShipment();
 
+    });
+
+  }
+
+  if(assignStopsWidgetButton != null){
+
+    assignStopsWidgetButton.addEventListener('click', async () => {
+
+       //check for selected order
+      const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=assignStopCheckbox]');
+
+      const orderIDs = [];
+
+      selectedCheckBoxes.forEach((x) => {
+
+        orderIDs.push(x.value);
+
+      });
+
+      const result = await assignStopsToRun(selectAssignStopsRun.value, orderIDs);
+
+      //rebuild ui
+      updateRunsList(selectedShipment.value);
+      
+      if(result){
+
+        showNotification("Success!", "Stop(s) successfully assigned to run");
+
+      }else{
+
+        showNotification("Error!", "Error assigning stop(s) to run");
+
+      }
+
+    });
+
+  }
+
+  if(cancelAssignStopsWidgetButton != null){
+
+    cancelAssignStopsWidgetButton.addEventListener('click', () => {
+
+      hideUI(assignStopsWidget);
+      
+    });
+
+  }
+
+   if(addStopsWidgetButton != null){
+
+    addStopsWidgetButton.addEventListener('click', () => {
+
+
+
+    });
+
+  }
+
+  if(cancelAddStopsWidgetButton != null){
+
+    cancelAddStopsWidgetButton.addEventListener('click', () => {
+
+      
     });
 
   }
@@ -361,6 +423,32 @@ function selectCard(runCard){
   runCard.classList.add('selectedRunCard');
 
   currentSelectedRun = runCard;
+
+}
+
+//updates select options in assign run widget
+function updateSelectRunAssignStops(runData){
+
+  const runs = [];
+
+  for(let i = 0; i < runData.length; i++){
+
+    runs.push(parseRunInfo(runData[i]));
+
+  }
+
+  runs.sort(sortAlphabetically);
+
+  selectAssignStopsRun.innerHTML = "";
+
+  for(let i = 0; i < runs.length; i++){
+
+    if(runs[i].runName != null){
+      selectAssignStopsRun.appendChild(createOption(runs[i].runName, runs[i].documentId));
+    
+    }
+
+  }
 
 }
 
@@ -720,10 +808,12 @@ async function selectShipment(selectedShipment){
 }
 
 
-function parseRunInfo(runData){
-  
-  const runStruct = {
+function parseRunInfo(doc){
 
+  const runData = doc.data();
+
+  const runStruct = {
+    documentId: doc.id,
     assignedDriver: runData['assignedDriver'],
     fuelCost: runData['fuelCost'],
     stops: runData['stops'],
@@ -731,7 +821,7 @@ function parseRunInfo(runData){
     runWeek: runData['runWeek'],
  
   }
-
+  
   return runStruct;
 
 }
@@ -850,18 +940,11 @@ async function getOrders(query){
     return;
   }
 
-  console.log(orderData);
-
-  //clear table 
-
-
   for(let i = 0; i < orderData.docs.length; i++){
 
     addOrderTable.appendChild(createTableOrderCard(orderData.docs[i]));
 
   }
-
-  //create table order card
 
 }
 
@@ -873,8 +956,6 @@ async function fetchShipment(shipmentName){
     console.log("shipment doesnt exist");
     return;
   }
-
-  console.log(shipmentData);
 
   return shipmentData;
 
@@ -903,7 +984,91 @@ async function fetchRun(runID){
 
 }
 
+async function assignStopsToRun(runID, stops){
 
+  console.log(runID);
+  console.log(stops);
+
+  const batch = writeBatch(db);
+  //remove stops from unassigned run document
+
+  const unassignedStopsRef = doc(db, 'Runs', currentShipmentUnassignedOrders); 
+  
+  let unassignedOrdersDocument;
+
+  try{
+
+    unassignedOrdersDocument = await getDocument(unassignedStopsRef);
+    console.log(unassignedOrdersDocument);
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  const unassignedStops = unassignedOrdersDocument.data()['stops'];
+
+  const removedStops = unassignedStops.filter((unassignedStop) => {
+
+    return !stops.includes(unassignedStop.orderID);
+
+  });
+
+  console.log(removedStops);
+
+
+  batch.update(unassignedStopsRef, {"stops": removedStops})
+
+  //add runs to run document
+
+
+  const stopsToAdd = unassignedStops.filter((unassignedStop) => {
+
+    return stops.includes(unassignedStop.orderID);
+
+  });
+  
+  console.log(stopsToAdd);
+
+  const runRef = doc(db, 'Runs', runID); 
+  
+  let runDocument;
+
+  
+  try{
+
+    runDocument = await getDocument(runRef);
+    console.log(runDocument);
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  console.log( runDocument.data()['stops']);
+  const newStops = runDocument.data()['stops'].concat(stopsToAdd);
+  console.log(newStops);
+
+  batch.update(runRef, {"stops": newStops})
+
+  try{
+
+    await batch.commit()
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+  }
+
+  return true;
+
+
+} 
 
 
 

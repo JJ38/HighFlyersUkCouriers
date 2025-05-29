@@ -55,7 +55,7 @@
       </header>
       <Section id="navbarMainContentWrapper">
 
-        <div id="create_shipment_widget" class="createShipmentWidget widget hidden">
+        <div id="create_shipment_widget" class="widget hidden">
 
           <h1>Create New Shipment</h1>
 
@@ -90,7 +90,7 @@
         </div>
 
 
-        <div id="delete_shipment_widget" class="createShipmentWidget widget hidden">
+        <div id="delete_shipment_widget" class="widget hidden">
 
           <h1>Delete Shipment</h1>
 
@@ -113,24 +113,40 @@
         </div>
 
 
-        <div id="assign_stops_widget" class="assignStopsWidget widget ">
+        <div id="assign_stops_widget" class="assignStopsWidget widget hidden">
+
+          <h2>Assign Stops</h2>
 
           <select name="" id="select_assign_stops_run">
             <option value="">awdawd</option>
           </select>
+          
+          <div>
 
+            <button id="cancel_assign_stops_button" class="shipmentWidgetButton">Cancel</button>
+            <button id="assign_stops_widget_button" class="shipmentWidgetButton">Assign Stops</button>
 
+          </div>
+          
         </div>
 
 
         <div id="add_stops_widget" class="addStopsWidget widget hidden">
 
           <select name="" id="select_add_stops_run">
-            
+
             <option value="Collection">Collection</option>
             <option value="Delivery">Delivery</option>
 
           </select>
+
+             
+          <div>
+
+            <button id="cancel_add_stops_button" class="shipmentWidgetButton">Cancel</button>
+            <button id="add_stops_button" class="shipmentWidgetButton">Add Stops</button>
+
+          </div>
 
         </div>
 

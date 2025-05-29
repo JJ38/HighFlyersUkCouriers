@@ -105,8 +105,6 @@ export function createStopCard(stopData, stopNumberValue){
 
 export function createUnassignedOrdersTableCard(stopData){
 
-  console.log(stopData);
-
   const tableRow = document.createElement('tr');
   tableRow.classList = "tableDataRow";
 
@@ -361,5 +359,16 @@ export function createAddStopButton(){
   addStopButton.appendChild(title);
 
   return addStopButton;
+
+}
+
+
+export function createOption(text, value){
+
+  const option = document.createElement('option');
+  option.innerText = text;
+  option.value = value;
+
+  return option;
 
 }
