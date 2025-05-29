@@ -105,11 +105,12 @@ function parseRunData(runData){
         const orders = await getRunStops(runStruct.stops);
         mergeStopsWithOrderData(runStruct.stops, orders);
 
+        console.log("unassignedOrderTableBody.innerHTML = ");
         unassignedOrderTableBody.innerHTML = "";
 
         for(let i = 0; i < runStruct.stops.length; i++){
 
-            unassignedOrderTable.appendChild(createUnassignedOrdersTableCard(runStruct.stops[i]));
+            unassignedOrderTableBody.appendChild(createUnassignedOrdersTableCard(runStruct.stops[i]));
 
         }
         // mergeStopsWithOrderData(runStruct.stops, orders);
@@ -261,7 +262,6 @@ function addEventListeners(){
       const shipmentData = await fetchShipment(selectedShipment.value);
       const runData = await fetchRunsInShipment(shipmentData.docs[0].data()['runs']);
 
-      console.log(runData);
       updateSelectRunAssignStops(runData);
 
       showUI(assignStopsWidget);
@@ -275,20 +275,7 @@ function addEventListeners(){
 
     addStopButton.addEventListener('click', () => {
 
-      //check for selected order
-      const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=addStopCheckbox]');
-
-      const orderIDs = [];
-
-      selectedCheckBoxes.forEach((x) => {
-
-        orderIDs.push(x.value);
-
-      });
-
-      console.log(orderIDs);
-
-      // addStopToShipment();
+      showUI(addStopsWidget);
 
     });
 
@@ -324,6 +311,8 @@ function addEventListeners(){
 
       }
 
+      hideUI(assignStopsWidget);
+
     });
 
   }
@@ -338,11 +327,40 @@ function addEventListeners(){
 
   }
 
-   if(addStopsWidgetButton != null){
+  if(addStopsWidgetButton != null){
 
-    addStopsWidgetButton.addEventListener('click', () => {
+    addStopsWidgetButton.addEventListener('click', async () => {
 
+      //check for selected order
+      const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=addStopCheckbox]');
 
+      const orderIDs = [];
+
+      selectedCheckBoxes.forEach((x) => {
+
+        orderIDs.push(x.value);
+
+      });
+
+      const stopType = selectAddStopsRun.value
+
+      //returns true or a string
+      const result = await assignStopsToShipment(orderIDs, stopType);
+
+      console.log(result);
+      if(result !== true){
+
+        showNotification("Error!", result);
+        return;
+
+      }else{
+        
+        showNotification("Success!", "Successfully added stop(s) to " + selectedShipment.value);
+
+      }
+
+      hideUI(addStopsWidget);
+      updateRunsList(selectedShipment.value);
 
     });
 
@@ -352,6 +370,7 @@ function addEventListeners(){
 
     cancelAddStopsWidgetButton.addEventListener('click', () => {
 
+      hideUI(addStopsWidget);
       
     });
 
@@ -415,6 +434,17 @@ function hideSelectUI(element){
 }
 
 function selectCard(runCard){
+
+  console.log(runCard);
+
+  //deselect card without selecting a new one
+  if(!runCard){
+
+    currentSelectedRun.classList.remove('selectedRunCard');
+    currentSelectedRun = null;
+    return;
+
+  }
 
   if(currentSelectedRun != null){
     currentSelectedRun.classList.remove('selectedRunCard');
@@ -701,8 +731,8 @@ async function updateRunsList(shipmentName){
 
   addStopButton.addEventListener('click', () => {
 
+    selectCard(false);
     showAddOrderTable();
-    //getAllStopsInShipment(shipmentName);
 
   });
 
@@ -803,8 +833,7 @@ async function selectShipment(selectedShipment){
     parseRunData(runData[i]);
 
   }
-  
-  console.log(runData);
+
 }
 
 
@@ -860,8 +889,6 @@ async function getRunStops(stops){
 
 
 function updateStopList(stops){
-
-  console.log(stops);
 
   runStopsContainer.innerHTML = "";
 
@@ -986,20 +1013,15 @@ async function fetchRun(runID){
 
 async function assignStopsToRun(runID, stops){
 
-  console.log(runID);
-  console.log(stops);
-
   const batch = writeBatch(db);
   //remove stops from unassigned run document
 
   const unassignedStopsRef = doc(db, 'Runs', currentShipmentUnassignedOrders); 
-  
   let unassignedOrdersDocument;
 
   try{
 
     unassignedOrdersDocument = await getDocument(unassignedStopsRef);
-    console.log(unassignedOrdersDocument);
 
   }catch(e){
 
@@ -1016,31 +1038,22 @@ async function assignStopsToRun(runID, stops){
 
   });
 
-  console.log(removedStops);
-
-
   batch.update(unassignedStopsRef, {"stops": removedStops})
 
   //add runs to run document
-
 
   const stopsToAdd = unassignedStops.filter((unassignedStop) => {
 
     return stops.includes(unassignedStop.orderID);
 
   });
-  
-  console.log(stopsToAdd);
 
   const runRef = doc(db, 'Runs', runID); 
-  
   let runDocument;
-
   
   try{
 
     runDocument = await getDocument(runRef);
-    console.log(runDocument);
 
   }catch(e){
 
@@ -1049,10 +1062,7 @@ async function assignStopsToRun(runID, stops){
 
   }
 
-  console.log( runDocument.data()['stops']);
   const newStops = runDocument.data()['stops'].concat(stopsToAdd);
-  console.log(newStops);
-
   batch.update(runRef, {"stops": newStops})
 
   try{
@@ -1067,8 +1077,135 @@ async function assignStopsToRun(runID, stops){
 
   return true;
 
-
 } 
 
 
+//assigns stops to the unassighed run within the currently selected shipment
+async function assignStopsToShipment(orderIDs, stopType){
+
+  let runData;
+
+  try{
+
+    const shipmentData = await fetchShipment(selectedShipment.value);
+    runData = await fetchRunsInShipment(shipmentData.docs[0].data()['runs']);
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  const unassignedRun = runData.find((runDocument) => {
+
+    return runDocument.data().runName == null;
+
+  });
+
+  if(unassignedRun == null){
+
+    return false;
+
+  }
+
+  if(orderIDs.length == 0){
+
+    return false;
+
+  }
+
+  const stopsToAdd = [];
+
+  for(let i = 0; i < orderIDs.length; i++){
+
+    stopsToAdd.push(
+      {
+        orderID: orderIDs[i],
+        stopType: stopType 
+      }
+    );
+
+  }
+
+  //check if stop is already in shipment 
+
+  //returns false or a string
+  const result = isStopInShipment(runData, stopsToAdd);
+  
+  if(result !== false){
+
+    return result;
+
+  }
+
+  try{
+
+    const batch = writeBatch(db);
+
+    const runRef = doc(db, 'Runs', unassignedRun.id);
+
+    const newStops = stopsToAdd.concat(unassignedRun.data()['stops']);
+    batch.update(runRef, {"stops": newStops})
+
+    batch.commit();
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  return true;
+
+}
+
+
+function isStopInShipment(runDocuments, stopsToAdd){
+
+  console.log(runDocuments);
+  console.log(stopsToAdd);
+
+  for(let i = 0; i < runDocuments.length; i++){
+
+    const runStops = runDocuments[i].data()['stops'];
+
+    for(let j = 0; j < runStops.length; j++){
+    
+      if(isStopInArray(stopsToAdd, runStops[j])){
+        
+        let runName = runDocuments[i].data().runName; 
+        if(runDocuments[i].data().runName == null){
+          runName = "Unassigned";
+        }
+
+        return "Stop already in " + runName + " run";
+      }
+
+    }
+
+  }
+
+  return false;
+
+}
+
+function isStopInArray(arr, stop) {
+
+  for(let i = 0; i < arr.length; i++){
+
+    if(arr[i].orderID === stop.orderID){
+      
+      if(arr[i].stopType === stop.stopType){
+        return true;
+      }
+
+    }
+
+  }
+
+  return false;
+
+};
 
