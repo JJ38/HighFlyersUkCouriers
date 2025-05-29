@@ -47,61 +47,133 @@ function createTableAddress(addressLine1, addressLine2, addressLine3, addressPos
 }
 
 
-export function createStopCard(stopData, stopNumberValue){
+export function createStopCard(stop, stopMetaDataContainer, lockButtonWrapper, stopNumber){
 
-    const stopContainer = document.createElement('div');
-    stopContainer.classList = "stopContainer";
+  const stopData = stop['stopData'];
 
-
-    const stopNumber = document.createElement('p');
-    stopNumber.classList = "stopNumber";
-    stopNumber.innerText = stopNumberValue;
-
-    const stopCard = document.createElement('div');
-    stopCard.classList = "stopCard";
+  const stopContainer = document.createElement('div');
+  stopContainer.classList = "stopContainer";
 
 
-    const stopCustomerName = document.createElement('p');
-    stopCustomerName.classList = "stopCustomerName";
-    stopCustomerName.innerText = stopData['name'];
-
-    const stopAddressLine1 = document.createElement('p');
-    stopAddressLine1.classList = "stopAddressLine1";
-    stopAddressLine1.innerText = stopData['address1'];
+  const stopCard = document.createElement('div');
+  stopCard.classList = "stopCard";
 
 
-    const stopAddressWrapper = document.createElement('div');
-    stopAddressWrapper.classList = "stopAddressWrapper";
+  const stopCustomerName = document.createElement('p');
+  stopCustomerName.classList = "stopCustomerName";
+  stopCustomerName.innerText = stopData['name'];
 
-    const stopAddressLine2 = document.createElement('p');
-    stopAddressLine2.classList = "stopAddressLine2";
-    stopAddressLine2.innerHTML = stopData['address2'] + ",&nbsp;";
-
-    const stopAddressLine3 = document.createElement('p');
-    stopAddressLine3.classList = "stopAddressLine3";
-    stopAddressLine3.innerHTML = stopData['address3'] + ",&nbsp;";
-
-    const stopPostcode = document.createElement('p');
-    stopPostcode.classList = "stopPostcode";
-    stopPostcode.innerText = stopData['postcode'];
-
-    
-    stopAddressWrapper.appendChild(stopAddressLine2);
-    stopAddressWrapper.appendChild(stopAddressLine3);
-    stopAddressWrapper.appendChild(stopPostcode);
+  const stopAddressLine1 = document.createElement('p');
+  stopAddressLine1.classList = "stopAddressLine1";
+  stopAddressLine1.innerText = stopData['address1'];
 
 
-    stopCard.appendChild(stopCustomerName);
-    stopCard.appendChild(stopAddressLine1);
-    stopCard.appendChild(stopAddressWrapper);
+  const stopAddressWrapper = document.createElement('div');
+  stopAddressWrapper.classList = "stopAddressWrapper";
+
+  const stopAddressLine2 = document.createElement('p');
+  stopAddressLine2.classList = "stopAddressLine2";
+  stopAddressLine2.innerHTML = stopData['address2'] + ",&nbsp;";
+
+  const stopAddressLine3 = document.createElement('p');
+  stopAddressLine3.classList = "stopAddressLine3";
+  stopAddressLine3.innerHTML = stopData['address3'] + ",&nbsp;";
+
+  const stopPostcode = document.createElement('p');
+  stopPostcode.classList = "stopPostcode";
+  stopPostcode.innerText = stopData['postcode'];
 
 
-    stopContainer.appendChild(stopNumber);
-    stopContainer.appendChild(stopCard);
 
-    return stopContainer;
+  stopAddressWrapper.appendChild(stopAddressLine2);
+  stopAddressWrapper.appendChild(stopAddressLine3);
+  stopAddressWrapper.appendChild(stopPostcode);
+
+
+  stopCard.appendChild(stopMetaDataContainer);
+  stopCard.appendChild(stopCustomerName);
+  stopCard.appendChild(stopAddressLine1);
+  stopCard.appendChild(stopAddressWrapper);
+  stopCard.appendChild(lockButtonWrapper);
+
+
+  stopContainer.appendChild(stopNumber);
+  stopContainer.appendChild(stopCard);
+
+
+  stopContainer.addEventListener('click', () => {
+
+
+  });
+
+
+  return stopContainer;
 
 }
+
+
+export function createStopMetaData(stop){
+
+  const stopData = stop['stopData'];
+
+  const stopMetaDataContainer = document.createElement('div');
+  stopMetaDataContainer.classList = "stopMetaDataContainer hidden";
+
+  const orderID = document.createElement('p');
+  orderID.innerText = "#" + stopData['ID'];
+
+  const stopType = document.createElement('p');
+  stopType.innerText = stop['stopType'] == "collection" ? "Collection" : stop['stopType'] == "delivery" ? "Delivery" : stop['stopType'];
+
+  stopMetaDataContainer.appendChild(orderID);
+  stopMetaDataContainer.appendChild(stopType);
+
+  return stopMetaDataContainer;
+
+}
+
+export function createStopLockButton(isLocked){
+
+  const lockButtonWrapper = document.createElement('div');
+  lockButtonWrapper.classList = "lockButtonWrapper hidden"; 
+
+  const lockIcon = document.createElement('span');
+  lockIcon.classList = "lock material-symbols-outlined"
+  lockIcon.innerText = "lock";
+
+  const lockOpenIcon = document.createElement('span');
+  lockOpenIcon.classList = "lockOpen material-symbols-outlined";
+  lockOpenIcon.innerText = "lock_open";
+
+  if(isLocked){
+
+    lockIcon.classList.add('hidden');
+
+  }else{
+
+    lockOpenIcon.classList.add('hidden');
+
+  }
+
+  
+  lockButtonWrapper.appendChild(lockIcon);
+  lockButtonWrapper.appendChild(lockOpenIcon);
+
+
+  return lockButtonWrapper;
+
+}
+
+export function createStopNumber(stopNumberValue){
+
+  const stopNumber = document.createElement('p');
+  stopNumber.classList = "stopNumber";
+  stopNumber.innerText = stopNumberValue;
+
+  return stopNumber;
+
+}
+
 
 export function createUnassignedOrdersTableCard(stopData){
 

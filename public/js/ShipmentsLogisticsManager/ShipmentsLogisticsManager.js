@@ -2,6 +2,7 @@ import { db, getDocuments, getDocument, bulkReadTransaction, filterSearch } from
 import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch, documentId } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
+import { createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 
 const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -48,8 +49,13 @@ const addOrderSearchFilter = document.getElementById('add_order_search_filter');
 const assignStopButton = document.getElementById('assign_stop_button');
 const addStopButton = document.getElementById('add_stop_button');
 
+
 let currentShipmentUnassignedOrders;
 let currentSelectedRun = null;
+
+let currentlyStopMetaData = null;
+let currentlyStopLockButton = null;
+
 let map;
 
 let runStructList = [];
@@ -894,9 +900,60 @@ function updateStopList(stops){
 
   for(let i = 0; i < stops.length; i++){
 
-    runStopsContainer.appendChild(createStopCard(stops[i]['stopData'], i + 1));
+    const stopCard = getStopCard(stops[i], i);
+
+    runStopsContainer.appendChild(stopCard);
 
   }
+
+}
+
+function getStopCard(stop, stopNumberValue){
+
+  const stopMetaData = createStopMetaData(stop);
+
+  const locked = isLocked(stop);
+  const stopLockButton = createStopLockButton(locked);
+
+  const stopNumber = createStopNumber(stopNumberValue + 1);
+
+  const stopCard = createStopCard(stop, stopMetaData, stopLockButton, stopNumber);
+
+  stopCard.addEventListener('click', () => {
+
+    selectStop(stopMetaData, stopLockButton);
+
+  });
+
+  return stopCard;
+
+}
+
+function selectStop(stopMetaData, stopLockButton){
+
+  if(currentlyStopMetaData != null){
+    hideUI(currentlyStopMetaData);
+  }
+
+  if(currentlyStopLockButton != null){
+    hideUI(currentlyStopLockButton);
+  }
+
+  showUI(stopMetaData);
+  showUI(stopLockButton);
+
+  currentlyStopMetaData = stopMetaData;
+  currentlyStopLockButton = stopLockButton;
+
+}
+
+function isLocked(stop){
+
+  if(stop['lockedPosition'] > 0){
+    return true;
+  }
+
+  return false;
 
 }
 
