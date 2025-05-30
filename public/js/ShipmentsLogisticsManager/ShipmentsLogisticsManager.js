@@ -175,12 +175,12 @@ function addEventListeners(){
         cardBeingDragged.classList.remove('ontop');
         cardBeingDragged.style.top = "";
 
-
       }
 
       if(mimicCard != null){
 
-        mimicCard.remove();
+        mimicCard.replaceWith(cardBeingDragged);
+        // mimicCard.remove();
       
       }
 
@@ -911,8 +911,8 @@ function updateStopList(stops){
     const stopContainer = getStopContainer(stops[i], i);
 
     // addDragDetectionZones(stopCard);
-    const dragZoneTop = getDragDetectionZone("top", stops[i], stopContainer);
-    const dragZoneBottom= getDragDetectionZone("bottom", stops[i], stopContainer);
+    const dragZoneTop = getDragDetectionZone("top");
+    const dragZoneBottom= getDragDetectionZone("bottom");
 
     stopContainer.appendChild(dragZoneTop);
     stopContainer.appendChild(dragZoneBottom);
@@ -923,7 +923,7 @@ function updateStopList(stops){
 
 }
 
-function getDragDetectionZone(detectionZoneType, stop, cardToMimic){
+function getDragDetectionZone(detectionZoneType){
 
   const dragDetectionZone = createDragDetectionZone(detectionZoneType);
   
@@ -935,17 +935,18 @@ function getDragDetectionZone(detectionZoneType, stop, cardToMimic){
         return;
       }
 
-      console.log(stop['stopData']['name'] + " " + detectionZoneType);
       //remove mimic card
       if(mimicCard != null){
         mimicCard.remove();
       }
 
-      const stopCard = dragDetectionZone.parentNode;
-
       //Creates direct copy of node including ID's
-      mimicCard = cardToMimic.cloneNode(true);
+      mimicCard = cardBeingDragged.cloneNode(true);
+      mimicCard.classList.remove('absolute');
+      mimicCard.style.top = "";
       mimicCard.classList.add('invisible');
+
+      const stopCard = dragDetectionZone.parentNode;
 
       if(detectionZoneType == "top"){
 
