@@ -49,6 +49,7 @@ const addOrderSearchFilter = document.getElementById('add_order_search_filter');
 const assignStopButton = document.getElementById('assign_stop_button');
 const addStopButton = document.getElementById('add_stop_button');
 
+const stopCardLongClickTime = 1000;
 
 let currentShipmentUnassignedOrders;
 let currentSelectedRun = null;
@@ -56,7 +57,15 @@ let currentSelectedRun = null;
 let currentlyStopMetaData = null;
 let currentlyStopLockButton = null;
 
+let lastMouseDown = 0;
+let lastMouseUp = 0;
+
+let isCardBeingDragged = false;
+let cardBeingDragged;
+let mouseMoveCallback;
+
 let map;
+
 
 let runStructList = [];
 
@@ -79,6 +88,7 @@ const sortAlphabetically = (a, b) => {
   return 0;
 
 }
+
 
 function parseRunData(runData){
 
@@ -111,7 +121,6 @@ function parseRunData(runData){
         const orders = await getRunStops(runStruct.stops);
         mergeStopsWithOrderData(runStruct.stops, orders);
 
-        console.log("unassignedOrderTableBody.innerHTML = ");
         unassignedOrderTableBody.innerHTML = "";
 
         for(let i = 0; i < runStruct.stops.length; i++){
@@ -143,6 +152,34 @@ function init(){
 
 
 function addEventListeners(){
+
+  window.addEventListener('mousedown', () => {
+
+    lastMouseDown = Date.now();
+
+  });
+
+  window.addEventListener('mouseup', () => {
+
+    lastMouseUp = Date.now();
+
+    if(isCardBeingDragged){
+
+      if(cardBeingDragged != null){
+
+        cardBeingDragged.classList.remove('absolute');
+        cardBeingDragged.classList.remove('ontop');
+
+      }
+
+      window.removeEventListener('mousemove', mouseMoveCallback);
+
+      isCardBeingDragged = false;
+
+    }
+
+  });
+
 
   if(selectedShipment != null){
 
@@ -353,7 +390,6 @@ function addEventListeners(){
       //returns true or a string
       const result = await assignStopsToShipment(orderIDs, stopType);
 
-      console.log(result);
       if(result !== true){
 
         showNotification("Error!", result);
@@ -440,8 +476,6 @@ function hideSelectUI(element){
 }
 
 function selectCard(runCard){
-
-  console.log(runCard);
 
   //deselect card without selecting a new one
   if(!runCard){
@@ -746,45 +780,6 @@ async function updateRunsList(shipmentName){
 
 }
 
-// async function getAllStopsInShipment(shipmentName){
-
-//   //fetch shipment
-//   const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", shipmentName), limit(1)));
-
-//   console.log(shipmentData.docs[0].data()['runs']);
-//   const runIDs = shipmentData.docs[0].data()['runs'];
-//   // const runData = await getDocument(query(doc(db, 'Runs', documentID)));
-
-//   let promises = [];
-
-//   for(let i = 0; i < runIDs.length; i++){
-
-//     promises.push(getDocument(query(doc(db, 'Runs', runIDs[i]))));
-
-//   }
-
-//   const runDocuments = await Promise.all(promises);
-//   console.log(runDocuments);
-
-//   const stops = [];
-
-//   for(let i = 0; i < runDocuments.length; i++){
-//     console.log(runDocuments[i].data()['stops']);
-
-//       for(let j = 0; j < runDocuments[i].data()['stops'].length; j++){
-//         console.log(runDocuments[i].data()['stops'][j]);
-//         stops.push(runDocuments[i].data()['stops'][j]);
-
-//       }
-
-//   }
-
-//   console.log(stops);
-
-// }
-
-
-
 async function storeShipment(){
 
   const batch = writeBatch(db);
@@ -919,13 +914,74 @@ function getStopCard(stop, stopNumberValue){
 
   const stopCard = createStopCard(stop, stopMetaData, stopLockButton, stopNumber);
 
-  stopCard.addEventListener('click', () => {
 
-    selectStop(stopMetaData, stopLockButton);
+  stopCard.addEventListener('mousedown', (e) => {
+
+    const mousedownTime = Date.now();
+
+    setTimeout(() => {
+
+      //has there been a mouseup within the timeout time
+      if(mousedownTime - lastMouseUp > 0){
+
+        const stopListYOffset = runStopsContainer.getBoundingClientRect().y;
+        const stopCardYOffset = stopCard.getBoundingClientRect().y;
+        
+        const grabPositionOffset = e.clientY - stopCardYOffset;
+        const top = e.clientY - stopListYOffset - grabPositionOffset;
+
+        setTop(top ,stopCard)
+        stopCardDragAndMove(stopCard, grabPositionOffset);
+
+      }
+
+    }, stopCardLongClickTime);
+
+  });
+
+  stopCard.addEventListener('mouseup', () => {
+
+    const mouseupTime = Date.now();
+
+    if(mouseupTime - lastMouseDown < stopCardLongClickTime){
+
+      selectStop(stopMetaData, stopLockButton);
+
+    }
 
   });
 
   return stopCard;
+
+}
+
+
+function stopCardDragAndMove(stopCard, grabPositionOffset){
+
+  isCardBeingDragged = true;
+  cardBeingDragged = stopCard;
+
+  stopCard.classList.add('absolute');
+  stopCard.classList.add('ontop');
+
+  mouseMoveCallback = (e) => { moveStopCard(e.clientY, stopCard, grabPositionOffset)} ;
+
+  window.addEventListener('mousemove', mouseMoveCallback);
+
+}
+
+function moveStopCard(mouseY, stopCard, grabPositionOffset){
+
+  const stopListYOffset = runStopsContainer.getBoundingClientRect().y;
+  const top = mouseY - stopListYOffset - grabPositionOffset;
+
+  setTop(top, stopCard);
+
+}
+
+function setTop(top, element){
+
+  element.style.top = top + "px";
 
 }
 
@@ -1220,9 +1276,6 @@ async function assignStopsToShipment(orderIDs, stopType){
 
 
 function isStopInShipment(runDocuments, stopsToAdd){
-
-  console.log(runDocuments);
-  console.log(stopsToAdd);
 
   for(let i = 0; i < runDocuments.length; i++){
 

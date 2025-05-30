@@ -242,6 +242,7 @@ p{
 
 .runDetailsContainer{
     display: flex;
+    position: relative;
     flex-direction: column;
     padding: 15px 20px 15px 20px;
     background-color: white;
@@ -575,6 +576,24 @@ td > div{
 
 .hidden{
     display: none !important;
+}
+
+.pink{
+
+    background-color: pink !important;
+
+}
+
+.absolute{
+
+    position: absolute;
+
+}
+
+.ontop{
+
+    z-index: 10;
+
 }
 
 .flex-col{
