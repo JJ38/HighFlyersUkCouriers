@@ -444,3 +444,13 @@ export function createOption(text, value){
   return option;
 
 }
+
+
+export function createDragDetectionZone(classList){
+
+  const dragZone = document.createElement('div');
+  dragZone.classList = "dragDetectionZone " + classList;
+
+  return dragZone;
+
+}

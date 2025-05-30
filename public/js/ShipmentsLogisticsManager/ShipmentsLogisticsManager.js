@@ -2,7 +2,7 @@ import { db, getDocuments, getDocument, bulkReadTransaction, filterSearch } from
 import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch, documentId } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
+import { createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 
 const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -63,6 +63,8 @@ let lastMouseUp = 0;
 let isCardBeingDragged = false;
 let cardBeingDragged;
 let mouseMoveCallback;
+let mouseDown = false;
+let mimicCard;
 
 let map;
 
@@ -155,12 +157,14 @@ function addEventListeners(){
 
   window.addEventListener('mousedown', () => {
 
+    mouseDown = true;
     lastMouseDown = Date.now();
 
   });
 
   window.addEventListener('mouseup', () => {
 
+    mouseDown = false;
     lastMouseUp = Date.now();
 
     if(isCardBeingDragged){
@@ -169,7 +173,15 @@ function addEventListeners(){
 
         cardBeingDragged.classList.remove('absolute');
         cardBeingDragged.classList.remove('ontop');
+        cardBeingDragged.style.top = "";
 
+
+      }
+
+      if(mimicCard != null){
+
+        mimicCard.remove();
+      
       }
 
       window.removeEventListener('mousemove', mouseMoveCallback);
@@ -895,15 +907,66 @@ function updateStopList(stops){
 
   for(let i = 0; i < stops.length; i++){
 
-    const stopCard = getStopCard(stops[i], i);
+    // const wrapper = document.createElement('div');
+    const stopContainer = getStopContainer(stops[i], i);
 
-    runStopsContainer.appendChild(stopCard);
+    // addDragDetectionZones(stopCard);
+    const dragZoneTop = getDragDetectionZone("top", stops[i], stopContainer);
+    const dragZoneBottom= getDragDetectionZone("bottom", stops[i], stopContainer);
+
+    stopContainer.appendChild(dragZoneTop);
+    stopContainer.appendChild(dragZoneBottom);
+
+    runStopsContainer.appendChild(stopContainer);
 
   }
 
 }
 
-function getStopCard(stop, stopNumberValue){
+function getDragDetectionZone(detectionZoneType, stop, cardToMimic){
+
+  const dragDetectionZone = createDragDetectionZone(detectionZoneType);
+  
+  dragDetectionZone.addEventListener('mouseover', () => {
+
+    if(isCardBeingDragged){
+
+      if(dragDetectionZone.parentNode == cardBeingDragged){
+        return;
+      }
+
+      console.log(stop['stopData']['name'] + " " + detectionZoneType);
+      //remove mimic card
+      if(mimicCard != null){
+        mimicCard.remove();
+      }
+
+      const stopCard = dragDetectionZone.parentNode;
+
+      //Creates direct copy of node including ID's
+      mimicCard = cardToMimic.cloneNode(true);
+      mimicCard.classList.add('invisible');
+
+      if(detectionZoneType == "top"){
+
+        //create mimic card and add in position of card
+        stopCard.before(mimicCard);
+
+      }else{
+
+        stopCard.after(mimicCard);
+
+      }
+
+    }
+
+  });
+
+  return dragDetectionZone;
+
+}
+
+function getStopContainer(stop, stopNumberValue){
 
   const stopMetaData = createStopMetaData(stop);
 
@@ -958,8 +1021,10 @@ function getStopCard(stop, stopNumberValue){
 
 function stopCardDragAndMove(stopCard, grabPositionOffset){
 
+ 
   isCardBeingDragged = true;
   cardBeingDragged = stopCard;
+ 
 
   stopCard.classList.add('absolute');
   stopCard.classList.add('ontop');
@@ -975,7 +1040,27 @@ function moveStopCard(mouseY, stopCard, grabPositionOffset){
   const stopListYOffset = runStopsContainer.getBoundingClientRect().y;
   const top = mouseY - stopListYOffset - grabPositionOffset;
 
+  //get center of card pos
+  const position = getPositionOfElement(stopCard);
+
   setTop(top, stopCard);
+
+}
+
+function getPositionOfElement(element){
+
+  const elementBounds = element.getBoundingClientRect();
+
+  const width = elementBounds.width;
+  const height = elementBounds.height;
+
+  const top = elementBounds.y;
+  const left = elementBounds.x;
+
+  const xPos = left - (width/2);
+  const yPos = top - (height/2);
+
+  return [xPos, yPos];
 
 }
 
