@@ -671,14 +671,14 @@ td > div{
 .top{
 
     top:0px;
-    background-color: #ffff0080 !important;
+    /* background-color: #ffff0080 !important; */
 
 }
 
 .bottom{
 
     bottom:0px;
-    background-color: #ffc0cb80 !important;
+    /* background-color: #ffc0cb80 !important; */
 
 }
 

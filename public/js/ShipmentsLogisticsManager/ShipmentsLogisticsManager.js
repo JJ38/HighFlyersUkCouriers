@@ -171,26 +171,7 @@ function addEventListeners(){
 
     if(isCardBeingDragged){
 
-      if(cardBeingDragged != null){
-
-        cardBeingDragged.classList.remove('absolute');
-        cardBeingDragged.classList.remove('ontop');
-        cardBeingDragged.style.top = "";
-
-      }
-
-      if(mimicCard != null){
-
-        mimicCard.replaceWith(cardBeingDragged);
-        // mimicCard.remove();
-      
-      }
-
-      disableDragZones();
-
-      window.removeEventListener('mousemove', mouseMoveCallback);
-
-      isCardBeingDragged = false;
+      dropStopCard();
 
     }
 
@@ -1136,7 +1117,6 @@ async function toggleLockStop(stopBeingToggleLocked, runStruct){
     return true;
   })
 
-
   runStruct.stops = updatedStops;
 
   //remove stopData field from stops before storing as this data is fetched using foreign key
@@ -1152,7 +1132,6 @@ async function toggleLockStop(stopBeingToggleLocked, runStruct){
 }
 
 function updateLockIcon(isLocked, lockIcon, lockOpenIcon){
-
 
   //the new state to set
   if(isLocked){
@@ -1188,6 +1167,85 @@ function stopCardDragAndMove(stopCard, grabPositionOffset){
   window.addEventListener('mousemove', mouseMoveCallback);
 
   //add initial mimic card
+
+
+}
+
+
+function dropStopCard(){
+
+  console.log("stop card dropped");
+  console.log(mimicCard.parentNode.children);
+
+  const positionGrabbed = getGrabPosition();
+  console.log(positionGrabbed);
+
+  const positionDropped = getPositionDropped();
+  console.log(positionDropped);
+
+  if(cardBeingDragged != null){
+
+      cardBeingDragged.classList.remove('absolute');
+      cardBeingDragged.classList.remove('ontop');
+      cardBeingDragged.style.top = "";
+
+  }
+
+  if(mimicCard != null){
+
+    mimicCard.replaceWith(cardBeingDragged);
+    // mimicCard.remove();
+
+  }
+
+  disableDragZones();
+
+  window.removeEventListener('mousemove', mouseMoveCallback);
+
+  isCardBeingDragged = false;
+
+}
+
+
+function getGrabPosition(){
+
+  const stopCardList =  Array.from(mimicCard.parentNode.children).filter((element) => {
+
+    if(element.classList.contains('stopNumberWrapper')){
+      return false;
+    }
+
+    if(element === mimicCard){
+      return false;
+    }
+
+    return true;
+
+  });
+
+  return indexOfElementInArray(stopCardList, cardBeingDragged) + 1;
+
+}
+
+
+function getPositionDropped(){
+
+  const stopList = Array.from(mimicCard.parentNode.children).filter((element) => {
+
+    if(element.classList.contains('stopNumberWrapper')){
+      return false;
+    }
+
+    if(element === cardBeingDragged){
+      return false;
+    }
+  
+    return true;
+  
+  }); 
+
+  
+  return indexOfElementInArray(stopList, mimicCard) + 1;
 
 
 }
@@ -1582,6 +1640,20 @@ function isStopInArray(arr, stop) {
   return false;
 
 };
+
+function indexOfElementInArray(arr, element){
+
+  for(let i = 0; i < arr.length; i++){
+
+    if(arr[i] === element){
+      return i;
+    }
+  }
+
+  return -1
+
+}
+
 
 function compareStops(a, b){
 
