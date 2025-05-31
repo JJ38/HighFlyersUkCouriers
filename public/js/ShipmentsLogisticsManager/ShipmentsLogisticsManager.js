@@ -1,8 +1,8 @@
-import { db, getDocuments, getDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
-import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch, documentId } from "firebase/firestore";
+import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
+import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch, documentId, updateDoc } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createStopContainer, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
+import { createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 
 const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -66,6 +66,7 @@ let cardBeingDragged;
 let mouseMoveCallback;
 let mouseDown = false;
 let mimicCard;
+let dragZones = [];
 
 let map;
 
@@ -105,9 +106,9 @@ function parseRunData(runData){
     
     runCard.addEventListener('click', async () => {
 
-      const orders = await getRunStops(runStruct.stops);
+      const orders = await getRunStopsOrderData(runStruct.stops);
       mergeStopsWithOrderData(runStruct.stops, orders);
-      updateStopList(runStruct.stops);
+      updateStopList(runStruct);
       showRuns();
 
       selectCard(runCard);
@@ -121,7 +122,7 @@ function parseRunData(runData){
     unassignedOrdersButton.addEventListener('click', async () => {
 
         selectCard(unassignedOrdersButton);
-        const orders = await getRunStops(runStruct.stops);
+        const orders = await getRunStopsOrderData(runStruct.stops);
         mergeStopsWithOrderData(runStruct.stops, orders);
 
         unassignedOrderTableBody.innerHTML = "";
@@ -184,6 +185,8 @@ function addEventListeners(){
         // mimicCard.remove();
       
       }
+
+      disableDragZones();
 
       window.removeEventListener('mousemove', mouseMoveCallback);
 
@@ -482,7 +485,6 @@ function hideUI(element){
 
 } 
 
-
 function hideSelectUI(element){
 
   selectedShipment.value = "SELECT_SHIPMENT";
@@ -690,7 +692,7 @@ function generateRuns(runDefinitions, orderData){
 
       }
 
-      addOrderToRun(runName, orderData[i], shipmentTypeInput.value);
+      addStopToRun(runName, orderData[i], shipmentTypeInput.value, i + 1);
 
     }
 
@@ -699,7 +701,7 @@ function generateRuns(runDefinitions, orderData){
 }
 
 
-function addOrderToRun(runName, orderData, stopType){
+function addStopToRun(runName, orderData, stopType, stopNumber){
 
   //does run exist in run list
   let run = runStructList.find((run) => {
@@ -714,16 +716,16 @@ function addOrderToRun(runName, orderData, stopType){
       fuelCost: "",
       runName: runName,
       runWeek: parseInt(shipmentDeliveryWeekInput.value),
-      stops: [],
-      orderedStops: [],
-      lockedStops: [],
+      stops: [],     
 
     }
 
     run.stops.push(
     {
       orderID: orderData.id,
-      stopType: stopType //collection or delivery
+      stopType: stopType, //collection or delivery
+      isLocked: false,
+      stopNumber: stopNumber
     });
       
     runStructList.push(run);
@@ -734,7 +736,9 @@ function addOrderToRun(runName, orderData, stopType){
   run.stops.push(
   {
     orderID: orderData.id,
-    stopType: stopType //collection or delivery
+    stopType: stopType, //collection or delivery
+    isLocked: false,
+    stopNumber: stopNumber
   });
 
 }
@@ -836,6 +840,24 @@ async function storeShipment(){
 
 }
 
+async function updateRun(documentId, fieldsToUpdate){
+
+  const runRef = doc(db, 'Runs', documentId);
+
+  try{
+
+    await updateDocument(runRef, fieldsToUpdate);
+    
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  return true;
+}
+
 
 async function selectShipment(selectedShipment){
 
@@ -882,7 +904,7 @@ async function initMap() {
 }
 
 
-async function getRunStops(stops){
+async function getRunStopsOrderData(stops){
 
   const orderIDs = [];
 
@@ -905,14 +927,15 @@ async function getRunStops(stops){
 }
 
 
-function updateStopList(stops){
+function updateStopList(runStruct){
 
+  const stops = runStruct.stops
   runStopsContainer.innerHTML = "";
 
   for(let i = 0; i < stops.length; i++){
 
     const stopNumber = createStopNumber(i + 1);
-    const stopContainer = getStopContainer(stops[i]);
+    const stopContainer = getStopCard(stops[i], runStruct);
     
     runStopsContainer.appendChild(stopNumber);
     runStopsContainer.appendChild(stopContainer);
@@ -939,46 +962,20 @@ function getDragDetectionZone(detectionZoneType){
       }
 
       //Creates direct copy of node including ID's
-      mimicCard = cardBeingDragged.cloneNode(true);
-      mimicCard.classList.remove('absolute');
-      mimicCard.style.top = "";
-      mimicCard.classList.add('invisible');
-      mimicCard.classList.add('z-index-1');
-
       mimicCard = getMimicCard(); 
 
       //the card thats being hovered over
       const stopCardWrapper = dragDetectionZone.parentNode;
-      const numberElementBelow = stopCardWrapper.nextSibling;
-      const numberElementAbove = stopCardWrapper.previousSibling;
-
-      // console.log(numberElementAbove.innerText);
-      
-
-      //does require card/number positions to swap
-      // if()
 
       removeNumbersFromStopsList();
 
-
       if(detectionZoneType == "top"){
 
-        //create mimic card and add in position of card
         stopCardWrapper.before(mimicCard);
-
-        // const numberAboveClone = numberElementAbove.cloneNode(true);
-
-        // numberElementAbove.remove();
-        // stopCardWrapper.before(numberAboveClone);
 
       }else{
 
         stopCardWrapper.after(mimicCard);
-
-        // const numberBelowClone = numberElementBelow.cloneNode(true);
-
-        // numberElementBelow.remove();
-        // stopCardWrapper.after(numberBelowClone);
 
       }
 
@@ -1000,8 +997,6 @@ function addNumbersToStopsList(){
 
     return stopCard != cardBeingDragged;
   });
-
-  console.log(filteredStopCards);
 
   for(let i = 0; i < filteredStopCards.length; i++){
 
@@ -1038,30 +1033,55 @@ function getMimicCard(){
 
 }
 
-function getStopContainer(stop){
 
-  const stopCard = getStopCard(stop);
-
-  // const stopContainer = createStopContainer(stopNumber, stopCard);
-
-  return stopCard;
-
-}
-
-
-function getStopCard(stop){
-
-  const locked = isLocked(stop);
+function getStopCard(stop, runStruct){
+  
   const stopMetaData = createStopMetaData(stop);
-  const stopLockButton = createStopLockButton(locked);
 
+  const lockIcon = createLockIcon();
+  const lockOpenIcon = createOpenLockIcon();
+
+  const stopLockButton = createStopLockButton(stop['isLocked'], lockIcon, lockOpenIcon);
+ 
   const stopCard = createStopCard(stop, stopMetaData, stopLockButton);
 
   const dragZoneTop = getDragDetectionZone("top");
   const dragZoneBottom= getDragDetectionZone("bottom");
 
+  dragZones.push(dragZoneTop);
+  dragZones.push(dragZoneBottom);
+
   stopCard.appendChild(dragZoneTop);
   stopCard.appendChild(dragZoneBottom);
+
+  stopLockButton.addEventListener('click', async () => {
+
+    //loading symbol for lock
+    if(stopLockButton.classList.contains("nonClickable")){
+      console.log("click blocked");
+      return;
+    }
+
+    stopLockButton.classList.add('nonClickable');
+
+    await toggleLockStop(stop, runStruct);
+    updateLockIcon(stop['isLocked'], lockIcon, lockOpenIcon);
+
+    stopLockButton.classList.remove('nonClickable');
+
+  });
+
+  stopLockButton.addEventListener('mouseup', (e) => {
+
+    e.stopPropagation();
+
+  });
+
+  stopLockButton.addEventListener('mousedown', (e) => {
+
+    e.stopPropagation();
+
+  });
 
   stopCard.addEventListener('mousedown', (e) => {
 
@@ -1099,15 +1119,62 @@ function getStopCard(stop){
 
   });
 
+ 
+
   return stopCard;
 
 }
 
+async function toggleLockStop(stopBeingToggleLocked, runStruct){
+
+  const updatedStops = runStruct.stops.filter((stop) => {
+    
+    if(compareStops(stop, stopBeingToggleLocked)){
+      stop['isLocked'] = !stop['isLocked'];
+    }
+
+    return true;
+  })
+
+
+  runStruct.stops = updatedStops;
+
+  //remove stopData field from stops before storing as this data is fetched using foreign key
+  for(let i = 0; i < updatedStops.length; i++){
+
+    delete updatedStops[i].stopData;
+
+  }
+
+  const result = await updateRun(runStruct.documentId, {stops: updatedStops});
+  console.log(result);
+
+}
+
+function updateLockIcon(isLocked, lockIcon, lockOpenIcon){
+
+
+  //the new state to set
+  if(isLocked){
+
+    hideUI(lockOpenIcon);
+    showUI(lockIcon);
+
+  }else{
+
+    showUI(lockOpenIcon);
+    hideUI(lockIcon);
+
+  }
+
+}
 
 function stopCardDragAndMove(stopCard, grabPositionOffset){
  
   isCardBeingDragged = true;
   cardBeingDragged = stopCard;
+
+  enableDragZones();
 
   mimicCard = getMimicCard();
 
@@ -1124,6 +1191,28 @@ function stopCardDragAndMove(stopCard, grabPositionOffset){
 
 
 }
+
+
+function enableDragZones(){
+
+  for(let i = 0; i < dragZones.length; i++){
+
+    dragZones[i].classList.remove('hidden');
+
+  }
+
+}
+
+function disableDragZones(){
+
+  for(let i = 0; i < dragZones.length; i++){
+
+    dragZones[i].classList.add('hidden');
+
+  }
+
+}
+
 
 function moveStopCard(mouseY, stopCard, grabPositionOffset){
 
@@ -1162,6 +1251,18 @@ function setTop(top, element){
 
 function selectStop(stopMetaData, stopLockButton){
 
+  if(currentlyStopMetaData == stopMetaData && currentlyStopLockButton == stopLockButton){
+    //deselect 
+    currentlyStopMetaData = null; 
+    currentlyStopLockButton = null;
+
+    hideUI(stopMetaData);
+    hideUI(stopLockButton);
+
+    return;
+
+  }
+
   if(currentlyStopMetaData != null){
     hideUI(currentlyStopMetaData);
   }
@@ -1175,16 +1276,6 @@ function selectStop(stopMetaData, stopLockButton){
 
   currentlyStopMetaData = stopMetaData;
   currentlyStopLockButton = stopLockButton;
-
-}
-
-function isLocked(stop){
-
-  if(stop['lockedPosition'] > 0){
-    return true;
-  }
-
-  return false;
 
 }
 
@@ -1230,10 +1321,8 @@ function mergeStopsWithOrderData(stops, orders){
 
         }
 
-
-
         stops[i]['stopData'] = stopData;
-
+    
       }
 
     }
@@ -1493,4 +1582,20 @@ function isStopInArray(arr, stop) {
   return false;
 
 };
+
+function compareStops(a, b){
+
+  if(a.orderID === b.orderID){
+
+    if(a.stopType === b.stopType){
+
+      return true
+    }
+
+  }
+
+  return false;
+
+}
+
 

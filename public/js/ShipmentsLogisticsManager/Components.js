@@ -143,36 +143,47 @@ export function createStopMetaData(stop){
 
 }
 
-export function createStopLockButton(isLocked){
+export function createStopLockButton(isLocked, lockIcon, lockOpenIcon){
 
   const lockButtonWrapper = document.createElement('div');
   lockButtonWrapper.classList = "lockButtonWrapper hidden"; 
 
-  const lockIcon = document.createElement('span');
-  lockIcon.classList = "lock material-symbols-outlined"
-  lockIcon.innerText = "lock";
-
-  const lockOpenIcon = document.createElement('span');
-  lockOpenIcon.classList = "lockOpen material-symbols-outlined";
-  lockOpenIcon.innerText = "lock_open";
-
   if(isLocked){
-
-    lockIcon.classList.add('hidden');
-
-  }else{
 
     lockOpenIcon.classList.add('hidden');
 
+  }else{
+
+    lockIcon.classList.add('hidden');
+
   }
 
-  
+
   lockButtonWrapper.appendChild(lockIcon);
   lockButtonWrapper.appendChild(lockOpenIcon);
 
 
   return lockButtonWrapper;
 
+}
+
+export function createLockIcon(){
+
+  const lockIcon = document.createElement('span');
+  lockIcon.classList = "lock material-symbols-outlined"
+  lockIcon.innerText = "lock";
+
+  return lockIcon;
+
+}
+
+export function createOpenLockIcon(){
+
+  const lockOpenIcon = document.createElement('span');
+  lockOpenIcon.classList = "lockOpen material-symbols-outlined";
+  lockOpenIcon.innerText = "lock_open";
+
+  return lockOpenIcon;
 }
 
 export function createStopNumber(stopNumberValue){
@@ -465,7 +476,7 @@ export function createOption(text, value){
 export function createDragDetectionZone(classList){
 
   const dragZone = document.createElement('div');
-  dragZone.classList = "dragDetectionZone " + classList;
+  dragZone.classList = "dragDetectionZone hidden " + classList;
 
   return dragZone;
 
