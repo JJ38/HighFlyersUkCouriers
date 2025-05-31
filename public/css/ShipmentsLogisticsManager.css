@@ -282,6 +282,8 @@ p{
     height: 100%;
     width: fit-content;
     overflow-y: scroll;
+    overflow-x: hidden;
+
 }
 
 .dragDetectionZone{
@@ -292,34 +294,48 @@ p{
     z-index: 20;
 }
 
+.runInfoWrapper{
+
+    display: flex;
+    max-width: 350px;
+    height: 100%;
+
+}
+
 .stopContainer{
+
+    display: flex;
+    gap: 10px;
+
+}
+
+.stopCardWrapper{
 
     position: relative;
     display: flex;
     gap: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding: 10px;
+    padding-left: 35px;
     margin-right: 20px;
     /* z-index: 1; */
-
+    width: 100%;
     -webkit-user-select: none; /* Safari */
     -ms-user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
 
 }
 
-.stopNumberWrapper{
+.stopNumber{
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    position: absolute;
+    color: #2881FF;
+    font-size: 1.5rem;
 
 }
 
-.stopNumber{
+.stopNumberWrapper{
 
-    color: #2881FF;
-    font-size: 1.5rem;
+    position: relative;
 
 }
 
@@ -627,6 +643,12 @@ td > div{
 
     bottom:0px;
     /* background-color: #ffc0cb80 !important; */
+
+}
+
+.z-index-1{
+
+    z-index: 1;
 
 }
 

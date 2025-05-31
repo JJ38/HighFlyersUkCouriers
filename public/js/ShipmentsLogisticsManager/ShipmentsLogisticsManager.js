@@ -2,7 +2,7 @@ import { db, getDocuments, getDocument, bulkReadTransaction, filterSearch } from
 import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch, documentId } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
+import { createStopContainer, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 
 const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -41,6 +41,7 @@ const selectedShipment = document.getElementById('select_shipment');
 const selectedRunView = document.getElementById('selected_run_view');
 const runStopsContainer = document.getElementById('run_stops_container');
 const addRunDetailsContainer = document.getElementById('add_run_details');
+const runInfoWrapper = document.getElementById('run_info_wrapper');
 
 const searchButton = document.getElementById('search_button');
 const addOrderTable = document.getElementById('table_body');
@@ -437,6 +438,7 @@ function showRuns(){
 
   showUI(runStopsContainer);
   showUI(selectedRunView);
+  showUI(runInfoWrapper);
   hideUI(addRunDetailsContainer);
   hideUI(unassignedOrdersContainer);
 
@@ -450,6 +452,7 @@ function showAddOrderTable(){
   showUI(selectedRunView);
   hideUI(runStopsContainer);
   hideUI(unassignedOrdersContainer);
+  hideUI(runInfoWrapper);
 
   selectedRunView.classList.remove('fit-content');
 
@@ -488,6 +491,7 @@ function hideSelectUI(element){
 }
 
 function selectCard(runCard){
+
 
   //deselect card without selecting a new one
   if(!runCard){
@@ -907,16 +911,10 @@ function updateStopList(stops){
 
   for(let i = 0; i < stops.length; i++){
 
-    // const wrapper = document.createElement('div');
-    const stopContainer = getStopContainer(stops[i], i);
-
-    // addDragDetectionZones(stopCard);
-    const dragZoneTop = getDragDetectionZone("top");
-    const dragZoneBottom= getDragDetectionZone("bottom");
-
-    stopContainer.appendChild(dragZoneTop);
-    stopContainer.appendChild(dragZoneBottom);
-
+    const stopNumber = createStopNumber(i + 1);
+    const stopContainer = getStopContainer(stops[i]);
+    
+    runStopsContainer.appendChild(stopNumber);
     runStopsContainer.appendChild(stopContainer);
 
   }
@@ -945,19 +943,46 @@ function getDragDetectionZone(detectionZoneType){
       mimicCard.classList.remove('absolute');
       mimicCard.style.top = "";
       mimicCard.classList.add('invisible');
+      mimicCard.classList.add('z-index-1');
 
-      const stopCard = dragDetectionZone.parentNode;
+      mimicCard = getMimicCard(); 
+
+      //the card thats being hovered over
+      const stopCardWrapper = dragDetectionZone.parentNode;
+      const numberElementBelow = stopCardWrapper.nextSibling;
+      const numberElementAbove = stopCardWrapper.previousSibling;
+
+      // console.log(numberElementAbove.innerText);
+      
+
+      //does require card/number positions to swap
+      // if()
+
+      removeNumbersFromStopsList();
+
 
       if(detectionZoneType == "top"){
 
         //create mimic card and add in position of card
-        stopCard.before(mimicCard);
+        stopCardWrapper.before(mimicCard);
+
+        // const numberAboveClone = numberElementAbove.cloneNode(true);
+
+        // numberElementAbove.remove();
+        // stopCardWrapper.before(numberAboveClone);
 
       }else{
 
-        stopCard.after(mimicCard);
+        stopCardWrapper.after(mimicCard);
+
+        // const numberBelowClone = numberElementBelow.cloneNode(true);
+
+        // numberElementBelow.remove();
+        // stopCardWrapper.after(numberBelowClone);
 
       }
+
+      addNumbersToStopsList();
 
     }
 
@@ -967,17 +992,76 @@ function getDragDetectionZone(detectionZoneType){
 
 }
 
-function getStopContainer(stop, stopNumberValue){
 
-  const stopMetaData = createStopMetaData(stop);
+function addNumbersToStopsList(){
+
+  const stopCards = runStopsContainer.querySelectorAll('.stopCardWrapper');
+  const filteredStopCards = Array.from(stopCards).filter((stopCard) => {
+
+    return stopCard != cardBeingDragged;
+  });
+
+  console.log(filteredStopCards);
+
+  for(let i = 0; i < filteredStopCards.length; i++){
+
+    filteredStopCards[i].before(createStopNumber(i + 1));
+
+  }
+  
+
+}
+
+
+function removeNumbersFromStopsList(){
+
+  const stopNumbers = runStopsContainer.querySelectorAll('.stopNumberWrapper');
+
+  for(let i = 0; i < stopNumbers.length; i++){
+
+    stopNumbers[i].remove();
+
+  }
+
+}
+
+
+function getMimicCard(){
+
+  const mimicCard = cardBeingDragged.cloneNode(true);
+  mimicCard.classList.remove('absolute');
+  mimicCard.style.top = "";
+  mimicCard.classList.add('invisible');
+  mimicCard.classList.add('z-index-1');
+
+  return mimicCard;
+
+}
+
+function getStopContainer(stop){
+
+  const stopCard = getStopCard(stop);
+
+  // const stopContainer = createStopContainer(stopNumber, stopCard);
+
+  return stopCard;
+
+}
+
+
+function getStopCard(stop){
 
   const locked = isLocked(stop);
+  const stopMetaData = createStopMetaData(stop);
   const stopLockButton = createStopLockButton(locked);
 
-  const stopNumber = createStopNumber(stopNumberValue + 1);
+  const stopCard = createStopCard(stop, stopMetaData, stopLockButton);
 
-  const stopCard = createStopCard(stop, stopMetaData, stopLockButton, stopNumber);
+  const dragZoneTop = getDragDetectionZone("top");
+  const dragZoneBottom= getDragDetectionZone("bottom");
 
+  stopCard.appendChild(dragZoneTop);
+  stopCard.appendChild(dragZoneBottom);
 
   stopCard.addEventListener('mousedown', (e) => {
 
@@ -1021,18 +1105,23 @@ function getStopContainer(stop, stopNumberValue){
 
 
 function stopCardDragAndMove(stopCard, grabPositionOffset){
-
  
   isCardBeingDragged = true;
   cardBeingDragged = stopCard;
- 
 
+  mimicCard = getMimicCard();
+
+  stopCard.before(mimicCard);
+ 
   stopCard.classList.add('absolute');
   stopCard.classList.add('ontop');
 
   mouseMoveCallback = (e) => { moveStopCard(e.clientY, stopCard, grabPositionOffset)} ;
 
   window.addEventListener('mousemove', mouseMoveCallback);
+
+  //add initial mimic card
+
 
 }
 

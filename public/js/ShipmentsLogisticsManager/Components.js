@@ -46,13 +46,25 @@ function createTableAddress(addressLine1, addressLine2, addressLine3, addressPos
 
 }
 
-
-export function createStopCard(stop, stopMetaDataContainer, lockButtonWrapper, stopNumber){
-
-  const stopData = stop['stopData'];
+export function createStopContainer(stopNumber, stopCard){
 
   const stopContainer = document.createElement('div');
   stopContainer.classList = "stopContainer";
+
+  stopContainer.appendChild(stopNumber);
+  stopContainer.appendChild(stopCard);
+
+  return stopContainer;  
+
+}
+
+
+export function createStopCard(stop, stopMetaDataContainer, lockButtonWrapper){
+
+  const stopData = stop['stopData'];
+
+  const stopCardWrapper = document.createElement('div');
+  stopCardWrapper.classList = "stopCardWrapper";
 
 
   const stopCard = document.createElement('div');
@@ -97,17 +109,16 @@ export function createStopCard(stop, stopMetaDataContainer, lockButtonWrapper, s
   stopCard.appendChild(lockButtonWrapper);
 
 
-  stopContainer.appendChild(stopNumber);
-  stopContainer.appendChild(stopCard);
+  stopCardWrapper.appendChild(stopCard);
 
 
-  stopContainer.addEventListener('click', () => {
+  stopCardWrapper.addEventListener('click', () => {
 
 
   });
 
 
-  return stopContainer;
+  return stopCardWrapper;
 
 }
 
@@ -166,11 +177,16 @@ export function createStopLockButton(isLocked){
 
 export function createStopNumber(stopNumberValue){
 
+  const wrapper = document.createElement('div');
+  wrapper.classList = "stopNumberWrapper";
+
   const stopNumber = document.createElement('p');
   stopNumber.classList = "stopNumber";
   stopNumber.innerText = stopNumberValue;
 
-  return stopNumber;
+  wrapper.appendChild(stopNumber);
+
+  return wrapper;
 
 }
 
