@@ -3,6 +3,7 @@ import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch, docu
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
+import { join } from "lodash";
 
 const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -53,6 +54,7 @@ const addStopButton = document.getElementById('add_stop_button');
 const stopCardLongClickTime = 1000;
 
 let currentShipmentUnassignedOrders;
+let currentSelectedRunCard = null;
 let currentSelectedRun = null;
 
 let currentlyStopMetaData = null;
@@ -106,9 +108,15 @@ function parseRunData(runData){
     
     runCard.addEventListener('click', async () => {
 
-      const orders = await getRunStopsOrderData(runStruct.stops);
-      mergeStopsWithOrderData(runStruct.stops, orders);
-      updateStopList(runStruct);
+      //fetch run to make sure client is showing the correct state and order of stops.
+      const runDocument = await fetchRun(runStruct.documentId);
+      const runObject = parseRunInfo(runDocument);
+
+      console.log(runObject);
+
+      const orders = await getRunStopsOrderData(runObject.stops);
+      mergeStopsWithOrderData(runObject.stops, orders);
+      updateStopList(runObject);
       showRuns();
 
       selectCard(runCard);
@@ -479,19 +487,19 @@ function selectCard(runCard){
   //deselect card without selecting a new one
   if(!runCard){
 
-    currentSelectedRun.classList.remove('selectedRunCard');
-    currentSelectedRun = null;
+    currentSelectedRunCard.classList.remove('selectedRunCard');
+    currentSelectedRunCard = null;
     return;
 
   }
 
-  if(currentSelectedRun != null){
-    currentSelectedRun.classList.remove('selectedRunCard');
+  if(currentSelectedRunCard != null){
+    currentSelectedRunCard.classList.remove('selectedRunCard');
   }
 
   runCard.classList.add('selectedRunCard');
 
-  currentSelectedRun = runCard;
+  currentSelectedRunCard = runCard;
 
 }
 
@@ -673,7 +681,7 @@ function generateRuns(runDefinitions, orderData){
 
       }
 
-      addStopToRun(runName, orderData[i], shipmentTypeInput.value, i + 1);
+      generateStopForRun(runName, orderData[i], shipmentTypeInput.value);
 
     }
 
@@ -682,7 +690,7 @@ function generateRuns(runDefinitions, orderData){
 }
 
 
-function addStopToRun(runName, orderData, stopType, stopNumber){
+function generateStopForRun(runName, orderData, stopType){
 
   //does run exist in run list
   let run = runStructList.find((run) => {
@@ -706,7 +714,7 @@ function addStopToRun(runName, orderData, stopType, stopNumber){
       orderID: orderData.id,
       stopType: stopType, //collection or delivery
       isLocked: false,
-      stopNumber: stopNumber
+      stopNumber: 1
     });
       
     runStructList.push(run);
@@ -719,7 +727,7 @@ function addStopToRun(runName, orderData, stopType, stopNumber){
     orderID: orderData.id,
     stopType: stopType, //collection or delivery
     isLocked: false,
-    stopNumber: stopNumber
+    stopNumber: run.stops.length + 1
   });
 
 }
@@ -910,16 +918,30 @@ async function getRunStopsOrderData(stops){
 
 function updateStopList(runStruct){
 
+  currentSelectedRun = runStruct;
+
   const stops = runStruct.stops
   runStopsContainer.innerHTML = "";
 
+  console.log(runStruct);
+
   for(let i = 0; i < stops.length; i++){
 
-    const stopNumber = createStopNumber(i + 1);
-    const stopContainer = getStopCard(stops[i], runStruct);
-    
-    runStopsContainer.appendChild(stopNumber);
-    runStopsContainer.appendChild(stopContainer);
+    // console.log(i);
+    for(let j = 0; j < stops.length; j++){
+
+      // console.log(stops[j]);
+      if(stops[j].stopNumber == i + 1){
+
+        const stopNumber = createStopNumber(stops[j].stopNumber);
+        const stopCard = getStopCard(stops[j], runStruct);
+
+        runStopsContainer.appendChild(stopNumber);
+        runStopsContainer.appendChild(stopCard);
+
+      }
+
+    }
 
   }
 
@@ -1172,16 +1194,82 @@ function stopCardDragAndMove(stopCard, grabPositionOffset){
 }
 
 
-function dropStopCard(){
+async function dropStopCard(){
 
-  console.log("stop card dropped");
-  console.log(mimicCard.parentNode.children);
+  //get position of each stopm in list 
 
-  const positionGrabbed = getGrabPosition();
-  console.log(positionGrabbed);
+  const stopCardList =  Array.from(cardBeingDragged.parentNode.children).filter((element) => {
 
-  const positionDropped = getPositionDropped();
-  console.log(positionDropped);
+    if(element.classList.contains('stopNumberWrapper')){
+      return false;
+    }
+
+    if(element === cardBeingDragged){
+      return false;
+    }
+
+    return true;
+
+  });
+
+  const updatedStops = []
+
+  for(let i = 0; i < stopCardList.length; i++){
+
+    const orderID = parseInt(stopCardList[i].querySelector('.orderID').innerText.replace('#', ''));
+    const stopType = stopCardList[i].querySelector('.stopType').innerText.toLowerCase();
+
+    for(let j = 0; j < currentSelectedRun.stops.length; j++){
+
+      if(currentSelectedRun.stops[j].stopData.ID === orderID){
+
+        if(currentSelectedRun.stops[j].stopType === stopType){
+
+          const stopCopy = Object.assign({}, currentSelectedRun.stops[j]);
+          stopCopy.stopNumber = i + 1;
+
+          updatedStops.push(stopCopy);
+        
+        }
+
+      }
+
+    }
+
+  }
+
+
+  // console.log(updatedStops);
+  // console.log(currentSelectedRun.stops);
+
+  const updateDatabaseStops = [];
+  // // console.log(updateDatabaseStops === currentSelectedRun.stops);
+
+  for(let i = 0; i < updatedStops.length; i++){
+
+    const stopCopy = Object.assign({}, updatedStops[i]);
+    delete stopCopy.stopData;
+
+    updateDatabaseStops.push(stopCopy);
+
+  }
+
+  // console.log(updateDatabaseStops);
+  
+  //update the database
+  const result = await updateRun(currentSelectedRun.documentId, {stops: updateDatabaseStops});
+ 
+  if(!result){
+
+    showNotification("Error!", "Error updating stops orders");
+
+    return false;
+  }
+
+  //update client side order as database has updated successfully
+
+  currentSelectedRun.stops = updatedStops;
+
 
   if(cardBeingDragged != null){
 
@@ -1441,8 +1529,15 @@ async function fetchRunsInShipment(runIDs){
 
 async function fetchRun(runID){
 
-  const runData = await getDocument(query(doc(db, 'Runs', runID)));
-  return runData;
+  try{
+
+    const runData = await getDocument(query(doc(db, 'Runs', runID)));
+    return runData;
+
+  }catch(e){
+
+    return false;
+  }
 
 }
 

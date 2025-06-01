@@ -131,9 +131,11 @@ export function createStopMetaData(stop){
   stopMetaDataContainer.classList = "stopMetaDataContainer hidden";
 
   const orderID = document.createElement('p');
+  orderID.classList = "orderID";
   orderID.innerText = "#" + stopData['ID'];
 
   const stopType = document.createElement('p');
+  stopType.classList = "stopType";
   stopType.innerText = stop['stopType'] == "collection" ? "Collection" : stop['stopType'] == "delivery" ? "Delivery" : stop['stopType'];
 
   stopMetaDataContainer.appendChild(orderID);
