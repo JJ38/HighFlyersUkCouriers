@@ -1,14 +1,12 @@
 import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
-import { query, collection, where, limit, orderBy, doc, addDoc, writeBatch, documentId, updateDoc } from "firebase/firestore";
+import { query, collection, where, limit, orderBy, doc, writeBatch } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
-import { join } from "lodash";
 
-const numberOfUnassignedOrders = document.getElementById('number_of_unassigned_orders');
+
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
 const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
-const unassignedOrderTable = document.getElementById('unassigned_order_table');
 const unassignedOrderTableBody = document.getElementById('unassigned_orders_table_body');
 
 const addStopButtonWrapper = document.getElementById('add_stop_button_wrapper');
@@ -62,11 +60,12 @@ let currentlyStopLockButton = null;
 
 let lastMouseDown = 0;
 let lastMouseUp = 0;
+let mouseDown = false;
 
 let isCardBeingDragged = false;
 let cardBeingDragged;
 let mouseMoveCallback;
-let mouseDown = false;
+
 let mimicCard;
 let dragZones = [];
 
@@ -1591,6 +1590,15 @@ async function assignStopsToRun(runID, stops){
     return false;
 
   }
+
+  const currentNumberOfStops = runDocument.data()['stops'].length 
+
+  for(let i = 0; i < stopsToAdd.length; i++){
+
+    stopsToAdd[i].stopNumber = currentNumberOfStops + i + 1;
+
+  }
+
 
   const newStops = runDocument.data()['stops'].concat(stopsToAdd);
   batch.update(runRef, {"stops": newStops})
