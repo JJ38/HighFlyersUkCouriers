@@ -111,8 +111,6 @@ function parseRunData(runData){
       const runDocument = await fetchRun(runStruct.documentId);
       const runObject = parseRunInfo(runDocument);
 
-      console.log(runObject);
-
       const orders = await getRunStopsOrderData(runObject.stops);
       mergeStopsWithOrderData(runObject.stops, orders);
       updateStopList(runObject);
@@ -1066,10 +1064,19 @@ function getStopCard(stop, runStruct){
 
     stopLockButton.classList.add('nonClickable');
 
-    await toggleLockStop(stop, runStruct);
-    updateLockIcon(stop['isLocked'], lockIcon, lockOpenIcon);
+    const result = await toggleLockStop(stop, runStruct);
 
     stopLockButton.classList.remove('nonClickable');
+
+    if(!result){
+
+      showNotification("Error!", "Error updating lock on stop");
+      return;
+
+    }
+
+    updateLockIcon(stop['isLocked'], lockIcon, lockOpenIcon);
+
 
   });
 
@@ -1129,26 +1136,42 @@ function getStopCard(stop, runStruct){
 
 async function toggleLockStop(stopBeingToggleLocked, runStruct){
 
-  const updatedStops = runStruct.stops.filter((stop) => {
-    
-    if(compareStops(stop, stopBeingToggleLocked)){
-      stop['isLocked'] = !stop['isLocked'];
+  const updatedStops = [];
+
+  for(let i = 0; i < runStruct.stops.length; i++){
+
+    const stopCopy = Object.assign({}, runStruct.stops[i]);
+
+    if(compareStops(stopCopy, stopBeingToggleLocked)){
+
+      stopCopy['isLocked'] = !stopCopy['isLocked'];
+
     }
 
-    return true;
-  })
-
-  runStruct.stops = updatedStops;
-
-  //remove stopData field from stops before storing as this data is fetched using foreign key
-  for(let i = 0; i < updatedStops.length; i++){
-
-    delete updatedStops[i].stopData;
+    updatedStops.push(stopCopy);
 
   }
 
-  const result = await updateRun(runStruct.documentId, {stops: updatedStops});
-  console.log(result);
+  const databaseStops = updatedStops.map((stop) => {
+
+    return Object.assign({}, stop);
+
+  });
+
+  //remove stopData field from stops before storing as this data is fetched using foreign key
+  for(let i = 0; i < databaseStops.length; i++){
+
+    delete databaseStops[i].stopData;
+
+  }
+
+  const result = await updateRun(runStruct.documentId, {stops: databaseStops});
+
+  if(result){
+    stopBeingToggleLocked['isLocked'] = !stopBeingToggleLocked['isLocked'];
+  }
+
+  return result;
 
 }
 
@@ -1197,6 +1220,8 @@ async function dropStopCard(){
 
   //get position of each stopm in list 
 
+  console.log(cardBeingDragged.parentNode.children);
+
   const stopCardList =  Array.from(cardBeingDragged.parentNode.children).filter((element) => {
 
     if(element.classList.contains('stopNumberWrapper')){
@@ -1211,7 +1236,9 @@ async function dropStopCard(){
 
   });
 
-  const updatedStops = []
+  const updatedStops = [];
+
+  console.log(currentSelectedRun.stops);
 
   for(let i = 0; i < stopCardList.length; i++){
 
@@ -1238,11 +1265,7 @@ async function dropStopCard(){
   }
 
 
-  // console.log(updatedStops);
-  // console.log(currentSelectedRun.stops);
-
   const updateDatabaseStops = [];
-  // // console.log(updateDatabaseStops === currentSelectedRun.stops);
 
   for(let i = 0; i < updatedStops.length; i++){
 
@@ -1253,8 +1276,6 @@ async function dropStopCard(){
 
   }
 
-  // console.log(updateDatabaseStops);
-  
   //update the database
   const result = await updateRun(currentSelectedRun.documentId, {stops: updateDatabaseStops});
  
@@ -1266,7 +1287,6 @@ async function dropStopCard(){
   }
 
   //update client side order as database has updated successfully
-
   currentSelectedRun.stops = updatedStops;
 
 
