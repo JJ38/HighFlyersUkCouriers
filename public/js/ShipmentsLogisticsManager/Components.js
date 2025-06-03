@@ -483,3 +483,44 @@ export function createDragDetectionZone(classList){
   return dragZone;
 
 }
+
+export function createShipmentOptions(shipmentName, shipments){
+
+  const shipmentOptions = [];
+
+  const selectShipmentOption = document.createElement('option');
+  selectShipmentOption.value = "SELECT_SHIPMENT";
+  selectShipmentOption.innerText = "-- select a shipment --";
+  shipmentOptions.push(selectShipmentOption);
+
+
+  for(let i = 0; i < shipments.docs.length; i++){
+
+    //add option to select element
+    const shipmentOption = document.createElement('option');
+    shipmentOption.value = shipments.docs[i].data()['shipmentName'];
+    shipmentOption.innerText = shipments.docs[i].data()['shipmentName'];
+
+    if(shipmentName == shipments.docs[i].data()['shipmentName']){
+      shipmentOption.selected = true;
+    }
+
+    shipmentOptions.push(shipmentOption);
+
+  }
+
+  const createShipmentOption = document.createElement('option');
+  createShipmentOption.value = "CREATE_SHIPMENT";
+  createShipmentOption.innerText = "-- create a shipment --";
+  shipmentOptions.push(createShipmentOption);
+
+  const deleteShipmentOption = document.createElement('option');
+  deleteShipmentOption.value = "DELETE_SHIPMENT";
+  deleteShipmentOption.innerText = "-- delete a shipment --";
+  shipmentOptions.push(deleteShipmentOption);
+
+
+  return shipmentOptions
+
+}
+

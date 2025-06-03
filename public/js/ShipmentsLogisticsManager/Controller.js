@@ -2,8 +2,9 @@ import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, fil
 import { query, collection, where, limit, orderBy, doc, writeBatch } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
+import { createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 
+import { fetchRun, fetchRunsInShipment, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, assignStopsToShipment } from "./Model";
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
 const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
@@ -35,7 +36,6 @@ const addStopsWidgetButton = document.getElementById('add_stops_widget_button');
 
 const runCardList = document.getElementById("runCardList");
 const selectedShipment = document.getElementById('select_shipment');
-
 
 const selectedRunView = document.getElementById('selected_run_view');
 const runStopsContainer = document.getElementById('run_stops_container');
@@ -72,28 +72,400 @@ let dragZones = [];
 let map;
 
 
-let runStructList = [];
-
-
 // initMap();
 addEventListeners();
+
 init();
 
 
-const sortAlphabetically = (a, b) => {
 
-  if(a.runName < b.runName){
-    return -1;
-  }
+function init(){
 
-  else if(a.runName > b.runName){
-    return 1;
-  }
+  updateSelectShipment();
+  getOrders(query(collection(db, 'Orders'), orderBy('ID', 'desc'), limit(20)));
 
-  return 0;
 
 }
 
+
+function addEventListeners(){
+
+  window.addEventListener('mousedown', () => {
+
+    mouseDown = true;
+    lastMouseDown = Date.now();
+
+  });
+
+  window.addEventListener('mouseup', () => {
+
+    mouseDown = false;
+    lastMouseUp = Date.now();
+
+    if(isCardBeingDragged){
+
+      dropStopCard();
+
+    }
+
+  });
+
+  if(selectedShipment != null){
+
+    selectedShipment.addEventListener('input', () => {
+  
+      if(selectedShipment.value == "CREATE_SHIPMENT"){
+
+        showUI(createShipmentWidget);
+        return;
+      }
+
+      if(selectedShipment.value == "DELETE_SHIPMENT"){
+
+        generateDeleteWidget();
+        showUI(deleteShipmentWidget);
+        return;
+      }
+
+      selectedRunView.classList.add('hidden');
+      updateRunsList(selectedShipment.value);
+
+    });
+
+  }
+
+  if(cancelCreateShipmentButton != null){
+
+    cancelCreateShipmentButton.addEventListener('click', () => {
+
+        hideSelectUI(createShipmentWidget);
+
+    });
+
+  }
+
+  if(saveCreateShipmentButton != null){
+
+    saveCreateShipmentButton.addEventListener('click', async () => {
+
+      if(shipmentNameInput.value == "default"){
+        alert('"default" is an invalid name for a shipment. Please choose a different name')
+        return;
+      }
+
+      const generateShipmentResult = await generateShipment(shipmentNameInput.value, shipmentTypeInput.value, shipmentDeliveryWeekInput.value);
+
+      console.log(generateShipmentResult);
+
+      if(!generateShipmentResult){
+
+        showNotification("Error!", "Error creating shipment");
+        return;
+
+      }
+
+      updateSelectShipment(shipmentNameInput.value);
+      updateRunsList(shipmentNameInput.value);
+      showNotification("Success!", "Successfully created shipment");
+      hideSelectUI(createShipmentWidget);
+
+    });
+
+  }
+
+  if(cancelDeleteShipmentButton != null){
+
+    cancelDeleteShipmentButton.addEventListener('click', () => {
+
+      hideSelectUI(deleteShipmentWidget);
+
+    });
+
+  }
+
+  if(confirmDeleteShipmentButton != null){
+
+    confirmDeleteShipmentButton.addEventListener('click', async () => {
+
+      if(selectDeleteShipment.value != "default"){
+
+        const deleteShipmentDocumentResult = await deleteShipmentDocument(selectDeleteShipment.value);
+        
+        console.log(deleteShipmentDocumentResult);
+
+        if(!deleteShipmentDocumentResult){
+
+          showNotification("Error!", "Error deleting shipment");
+
+          return;
+        }
+        
+        updateSelectShipment();
+        updateRunsList();
+        showNotification("Success!", "Successfully deleted shipment");
+        hideSelectUI(deleteShipmentWidget);
+
+      }else{
+        alert("Please select a shipment to delete");
+      }
+
+    });
+
+  }
+
+  if(searchButton != null){
+
+    searchButton.addEventListener('click', () => {
+    
+      if(addOrderSearchInput.value == ""){
+
+        alert("enter a search value to fitler orders by");
+
+      }
+
+      if(addOrderSearchFilter.value == ""){
+
+        alert("enter a field to filter orders by");
+
+      }
+
+      getOrders(filterSearch(addOrderSearchFilter.value, addOrderSearchInput.value));
+
+
+    });
+
+  }
+  
+  if(assignStopButton != null){
+
+    assignStopButton.addEventListener('click', async () => {
+
+      const shipmentData = await fetchShipment(selectedShipment.value);
+      const runData = await fetchRunsInShipment(shipmentData.docs[0].data()['runs']);
+
+      updateSelectRunAssignStops(runData);
+
+      showUI(assignStopsWidget);
+
+    });
+
+  }
+
+  if(addStopButton != null){
+
+    addStopButton.addEventListener('click', () => {
+
+      showUI(addStopsWidget);
+
+    });
+
+  }
+
+  if(assignStopsWidgetButton != null){
+
+    assignStopsWidgetButton.addEventListener('click', async () => {
+
+      //check for selected order
+      const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=assignStopCheckbox]');
+
+      const orderIDs = [];
+
+      selectedCheckBoxes.forEach((x) => {
+
+        orderIDs.push(x.value);
+
+      });
+
+      const result = await assignStopsToRun(selectAssignStopsRun.value, orderIDs, currentShipmentUnassignedOrders);
+
+      //rebuild ui
+      updateRunsList(selectedShipment.value);
+      
+      if(result){
+
+        showNotification("Success!", "Stop(s) successfully assigned to run");
+
+      }else{
+
+        showNotification("Error!", "Error assigning stop(s) to run");
+
+      }
+
+      hideUI(assignStopsWidget);
+
+    });
+
+  }
+
+  if(cancelAssignStopsWidgetButton != null){
+
+    cancelAssignStopsWidgetButton.addEventListener('click', () => {
+
+      hideUI(assignStopsWidget);
+      
+    });
+
+  }
+
+  if(addStopsWidgetButton != null){
+
+    addStopsWidgetButton.addEventListener('click', async () => {
+
+      //check for selected order
+      const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=addStopCheckbox]');
+
+      const orderIDs = [];
+
+      selectedCheckBoxes.forEach((x) => {
+
+        orderIDs.push(x.value);
+
+      });
+
+      const stopType = selectAddStopsRun.value
+
+      //returns true or a string
+      const result = await assignStopsToShipment(orderIDs, stopType, selectedShipment.value);
+
+      if(result !== true){
+
+        showNotification("Error!", result);
+        return;
+
+      }else{
+        
+        showNotification("Success!", "Successfully added stop(s) to " + selectedShipment.value);
+
+      }
+
+      hideUI(addStopsWidget);
+      updateRunsList(selectedShipment.value);
+
+    });
+
+  }
+
+  if(cancelAddStopsWidgetButton != null){
+
+    cancelAddStopsWidgetButton.addEventListener('click', () => {
+
+      hideUI(addStopsWidget);
+      
+    });
+
+  }
+
+}
+
+
+function showRuns(){
+
+  showUI(runStopsContainer);
+  showUI(selectedRunView);
+  showUI(runInfoWrapper);
+  hideUI(addRunDetailsContainer);
+  hideUI(unassignedOrdersContainer);
+
+  selectedRunView.classList.add('fit-content');
+
+}
+
+
+function showAddOrderTable(){
+
+  showUI(addRunDetailsContainer);
+  showUI(selectedRunView);
+  hideUI(runStopsContainer);
+  hideUI(unassignedOrdersContainer);
+  hideUI(runInfoWrapper);
+
+  selectedRunView.classList.remove('fit-content');
+
+}
+
+
+function showUnassignedOrdersTable(){
+
+  hideUI(addRunDetailsContainer);
+  hideUI(selectedRunView);
+  hideUI(runStopsContainer);
+  showUI(unassignedOrdersContainer);
+
+  selectedRunView.classList.add('fit-content');
+
+}
+
+
+function showUI(element){
+
+  element.classList.remove('hidden');
+
+}
+
+
+function hideUI(element){
+
+  element.classList.add('hidden');
+
+} 
+
+
+function hideSelectUI(element){
+
+  selectedShipment.value = "SELECT_SHIPMENT";
+  hideUI(element);
+
+}
+
+
+function selectCard(runCard){
+
+
+  //deselect card without selecting a new one
+  if(!runCard){
+
+    currentSelectedRunCard.classList.remove('selectedRunCard');
+    currentSelectedRunCard = null;
+    return;
+
+  }
+
+  if(currentSelectedRunCard != null){
+    currentSelectedRunCard.classList.remove('selectedRunCard');
+  }
+
+  runCard.classList.add('selectedRunCard');
+
+  currentSelectedRunCard = runCard;
+
+}
+
+
+//updates select options in assign run widget
+function updateSelectRunAssignStops(runData){
+
+  const runs = [];
+
+  for(let i = 0; i < runData.length; i++){
+
+    runs.push(parseRunInfo(runData[i]));
+
+  }
+
+  runs.sort(sortAlphabetically);
+
+  selectAssignStopsRun.innerHTML = "";
+
+  for(let i = 0; i < runs.length; i++){
+
+    if(runs[i].runName != null){
+      selectAssignStopsRun.appendChild(createOption(runs[i].runName, runs[i].documentId));
+    
+    }
+
+  }
+
+}
 
 function parseRunData(runData){
 
@@ -148,419 +520,36 @@ function parseRunData(runData){
     currentShipmentUnassignedOrders = runStruct.documentId;
   }
 
-  runStructList.push(runStruct);
-
-}
-
-function init(){
-
-  updateSelectShipment();
-  getOrders(query(collection(db, 'Orders'), orderBy('ID', 'desc'), limit(20)));
-
-}
-
-
-function addEventListeners(){
-
-  window.addEventListener('mousedown', () => {
-
-    mouseDown = true;
-    lastMouseDown = Date.now();
-
-  });
-
-  window.addEventListener('mouseup', () => {
-
-    mouseDown = false;
-    lastMouseUp = Date.now();
-
-    if(isCardBeingDragged){
-
-      dropStopCard();
-
-    }
-
-  });
-
-
-  if(selectedShipment != null){
-
-    selectedShipment.addEventListener('input', () => {
-  
-      if(selectedShipment.value == "CREATE_SHIPMENT"){
-
-        showUI(createShipmentWidget);
-        return;
-      }
-
-      if(selectedShipment.value == "DELETE_SHIPMENT"){
-
-        generateDeleteWidget();
-        showUI(deleteShipmentWidget);
-        return;
-      }
-
-      selectedRunView.classList.add('hidden');
-      updateRunsList(selectedShipment.value);
-
-    });
-
-  }
-
-  if(cancelCreateShipmentButton != null){
-
-    cancelCreateShipmentButton.addEventListener('click', () => {
-
-        hideSelectUI(createShipmentWidget);
-
-    });
-
-  }
-
-  if(saveCreateShipmentButton != null){
-
-    saveCreateShipmentButton.addEventListener('click', async () => {
-
-      if(shipmentNameInput.value == "default"){
-        alert('"default" is an invalid name for a shipment. Please choose a different name')
-        return;
-      }
-
-      const generateShipmentResult = await generateShipment();
-
-      if(!generateShipmentResult){
-
-        showNotification("Error!", "Error creating shipment");
-        
-      }
-
-      updateSelectShipment(shipmentNameInput.value);
-      updateRunsList(shipmentNameInput.value);
-      showNotification("Success!", "Successfully created shipment");
-      hideSelectUI(createShipmentWidget);
-
-    });
-
-  }
-
-  if(cancelDeleteShipmentButton != null){
-
-    cancelDeleteShipmentButton.addEventListener('click', () => {
-
-      hideSelectUI(deleteShipmentWidget);
-
-    });
-
-  }
-
-  if(confirmDeleteShipmentButton != null){
-
-    confirmDeleteShipmentButton.addEventListener('click', async () => {
-
-      if(selectDeleteShipment.value != "default"){
-
-        const deleteShipmentDocumentResult = deleteShipmentDocument(selectDeleteShipment.value);
-        
-        if(!deleteShipmentDocumentResult){
-          alert("error deleting shipment");
-        }
-        
-        updateSelectShipment();
-        updateRunsList();
-        showNotification("Success!", "Successfully deleted shipment");
-        hideSelectUI(deleteShipmentWidget);
-
-      }else{
-        alert("Please select a shipment to delete");
-      }
-
-    });
-
-  }
-
-  if(searchButton != null){
-
-    searchButton.addEventListener('click', () => {
-    
-      if(addOrderSearchInput.value == ""){
-
-        alert("enter a search value to fitler orders by");
-
-      }
-
-      if(addOrderSearchFilter.value == ""){
-
-        alert("enter a field to filter orders by");
-
-      }
-
-      getOrders(filterSearch(addOrderSearchFilter.value, addOrderSearchInput.value));
-
-    });
-
-  }
-  
-  if(assignStopButton != null){
-
-    assignStopButton.addEventListener('click', async () => {
-
-      const shipmentData = await fetchShipment(selectedShipment.value);
-      const runData = await fetchRunsInShipment(shipmentData.docs[0].data()['runs']);
-
-      updateSelectRunAssignStops(runData);
-
-      showUI(assignStopsWidget);
-
-    });
-
-  }
-
-
-  if(addStopButton != null){
-
-    addStopButton.addEventListener('click', () => {
-
-      showUI(addStopsWidget);
-
-    });
-
-  }
-
-  if(assignStopsWidgetButton != null){
-
-    assignStopsWidgetButton.addEventListener('click', async () => {
-
-       //check for selected order
-      const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=assignStopCheckbox]');
-
-      const orderIDs = [];
-
-      selectedCheckBoxes.forEach((x) => {
-
-        orderIDs.push(x.value);
-
-      });
-
-      const result = await assignStopsToRun(selectAssignStopsRun.value, orderIDs);
-
-      //rebuild ui
-      updateRunsList(selectedShipment.value);
-      
-      if(result){
-
-        showNotification("Success!", "Stop(s) successfully assigned to run");
-
-      }else{
-
-        showNotification("Error!", "Error assigning stop(s) to run");
-
-      }
-
-      hideUI(assignStopsWidget);
-
-    });
-
-  }
-
-  if(cancelAssignStopsWidgetButton != null){
-
-    cancelAssignStopsWidgetButton.addEventListener('click', () => {
-
-      hideUI(assignStopsWidget);
-      
-    });
-
-  }
-
-  if(addStopsWidgetButton != null){
-
-    addStopsWidgetButton.addEventListener('click', async () => {
-
-      //check for selected order
-      const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=addStopCheckbox]');
-
-      const orderIDs = [];
-
-      selectedCheckBoxes.forEach((x) => {
-
-        orderIDs.push(x.value);
-
-      });
-
-      const stopType = selectAddStopsRun.value
-
-      //returns true or a string
-      const result = await assignStopsToShipment(orderIDs, stopType);
-
-      if(result !== true){
-
-        showNotification("Error!", result);
-        return;
-
-      }else{
-        
-        showNotification("Success!", "Successfully added stop(s) to " + selectedShipment.value);
-
-      }
-
-      hideUI(addStopsWidget);
-      updateRunsList(selectedShipment.value);
-
-    });
-
-  }
-
-  if(cancelAddStopsWidgetButton != null){
-
-    cancelAddStopsWidgetButton.addEventListener('click', () => {
-
-      hideUI(addStopsWidget);
-      
-    });
-
-  }
-
-}
-
-
-function showRuns(){
-
-  showUI(runStopsContainer);
-  showUI(selectedRunView);
-  showUI(runInfoWrapper);
-  hideUI(addRunDetailsContainer);
-  hideUI(unassignedOrdersContainer);
-
-  selectedRunView.classList.add('fit-content');
-
-}
-
-function showAddOrderTable(){
-
-  showUI(addRunDetailsContainer);
-  showUI(selectedRunView);
-  hideUI(runStopsContainer);
-  hideUI(unassignedOrdersContainer);
-  hideUI(runInfoWrapper);
-
-  selectedRunView.classList.remove('fit-content');
-
-}
-
-
-function showUnassignedOrdersTable(){
-
-  hideUI(addRunDetailsContainer);
-  hideUI(selectedRunView);
-  hideUI(runStopsContainer);
-  showUI(unassignedOrdersContainer);
-
-  selectedRunView.classList.add('fit-content');
-
-}
-
-function showUI(element){
-
-  element.classList.remove('hidden');
-
-}
-
-function hideUI(element){
-
-  element.classList.add('hidden');
-
-} 
-
-function hideSelectUI(element){
-
-  selectedShipment.value = "SELECT_SHIPMENT";
-  hideUI(element);
-
-}
-
-function selectCard(runCard){
-
-
-  //deselect card without selecting a new one
-  if(!runCard){
-
-    currentSelectedRunCard.classList.remove('selectedRunCard');
-    currentSelectedRunCard = null;
-    return;
-
-  }
-
-  if(currentSelectedRunCard != null){
-    currentSelectedRunCard.classList.remove('selectedRunCard');
-  }
-
-  runCard.classList.add('selectedRunCard');
-
-  currentSelectedRunCard = runCard;
-
-}
-
-//updates select options in assign run widget
-function updateSelectRunAssignStops(runData){
-
-  const runs = [];
-
-  for(let i = 0; i < runData.length; i++){
-
-    runs.push(parseRunInfo(runData[i]));
-
-  }
-
-  runs.sort(sortAlphabetically);
-
-  selectAssignStopsRun.innerHTML = "";
-
-  for(let i = 0; i < runs.length; i++){
-
-    if(runs[i].runName != null){
-      selectAssignStopsRun.appendChild(createOption(runs[i].runName, runs[i].documentId));
-    
-    }
-
-  }
+  return runStruct;
+  //runStructList.push(runStruct);
 
 }
 
 
 async function updateSelectShipment(shipmentName){
 
+  let shipments;
+
+  try{
+
+    shipments = await getDocuments(query(collection(db, 'Shipments')));
+ 
+  }catch(e){
+
+    showNotification("Error!", "Error updating shipment options");
+    return;
+  }
+  
   selectedShipment.innerHTML = "";
 
-  const selectShipmentOption = document.createElement('option');
-  selectShipmentOption.value = "SELECT_SHIPMENT";
-  selectShipmentOption.innerText = "-- select a shipment --";
-  selectedShipment.appendChild(selectShipmentOption);
+  const shipmentOptions = createShipmentOptions(shipmentName, shipments);
 
-  const shipments = await getDocuments(query(collection(db, 'Shipments')));
+  for(let i = 0; i < shipmentOptions.length; i++){
 
-  for(let i = 0; i < shipments.docs.length; i++){
-
-    //add option to select element
-    const shipmentOption = document.createElement('option');
-    shipmentOption.value = shipments.docs[i].data()['shipmentName'];
-    shipmentOption.innerText = shipments.docs[i].data()['shipmentName'];
-    if(shipmentName == shipments.docs[i].data()['shipmentName']){
-      shipmentOption.selected = true;
-    }
-
-    selectedShipment.appendChild(shipmentOption);
+    selectedShipment.appendChild(shipmentOptions[i]);
 
   }
 
-  const createShipmentOption = document.createElement('option');
-  createShipmentOption.value = "CREATE_SHIPMENT";
-  createShipmentOption.innerText = "-- create a shipment --";
-  selectedShipment.appendChild(createShipmentOption);
-
-  const deleteShipmentOption = document.createElement('option');
-  deleteShipmentOption.value = "DELETE_SHIPMENT";
-  deleteShipmentOption.innerText = "-- delete a shipment --";
-  selectedShipment.appendChild(deleteShipmentOption);
 
 }
 
@@ -575,157 +564,9 @@ async function generateDeleteWidget(){
   for(let i = 0; i < shipments.docs.length; i++){
 
     const shipmentName = shipments.docs[i].data()['shipmentName'];
-    const option = document.createElement('option');
-    option.value = shipments.docs[i].id;
-    option.text = shipmentName;
-
-    selectDeleteShipment.appendChild(option);
+    selectDeleteShipment.appendChild(createOption(shipmentName, shipments.docs[i].id));
 
   }
-
-}
-
-
-async function deleteShipmentDocument(id){
-
-  //fetch shipment document
-  const shipmentRef = doc(db, 'Shipments', id);
-  let shipmentDocument;
-
-  try{
-
-    shipmentDocument = await getDocument(shipmentRef);
-    
-  }catch(e){
-
-    return false;
-
-  }
-
-  const batch = writeBatch(db);
-  const shipmentRunsDocumentIDs = shipmentDocument.data()['runs'];
-
-  //add runs in shipment document to batch
-  for(let i = 0; i < shipmentRunsDocumentIDs.length; i++){
-
-    const runRef = doc(db, "Runs", shipmentRunsDocumentIDs[i]);
-    batch.delete(runRef);
-
-  }
-
-  //add shipment document to batch
-  batch.delete(shipmentRef);
-
-  try{
-
-    await batch.commit();
-    return true;
-
-  }catch(e){
-
-    return false;
-
-  }
-
-}
-
-
-async function generateShipment(){
-
-  //fetch postcode run definitions
-  const docRef = doc(db, 'Settings', 'runDefinitions');
-  const runDefinitions = await getDocument(docRef);
-
-  //get runs by delivery week
-  const q = query(collection(db, "Orders"), orderBy('ID', 'asc'), where("deliveryWeek", "==", parseInt(shipmentDeliveryWeekInput.value)));
-  const orderData = await getDocuments(q);
-
-  //organise orders into defined runs based on runtype and postcode
-  generateRuns(runDefinitions.data(), orderData.docs);
-
-  const storeShipmentResult = await storeShipment();
-  return storeShipmentResult;
-
-}
-
-
-function generateRuns(runDefinitions, orderData){
-
-  runStructList = [];
-
-  const runType = shipmentTypeInput.value == 'collection' ? 'collectionPostcode' : 'deliveryPostcode';
-
-  for(let i = 0; i < orderData.length; i++){
-   
-    //find corrosponding key in rundefinitions and get value
-    const orderPostcode = orderData[i].data()[runType];
-
-    if(orderPostcode != null){
-
-      let runName = null;
-
-      if(runDefinitions[orderPostcode.substring(0,4)] != null){
-
-        runName = runDefinitions[orderPostcode.substring(0,4)];
-
-      }else if(runDefinitions[orderPostcode.substring(0,3)] != null){
-
-        runName = runDefinitions[orderPostcode.substring(0,3)];
-
-      }else if(runDefinitions[orderPostcode.substring(0,2)] != null){
-
-        runName = runDefinitions[orderPostcode.substring(0,2)];
-
-      }
-
-      generateStopForRun(runName, orderData[i], shipmentTypeInput.value);
-
-    }
-
-  }
-
-}
-
-
-function generateStopForRun(runName, orderData, stopType){
-
-  //does run exist in run list
-  let run = runStructList.find((run) => {
-    return run.runName === runName;
-  })
-
-  if(run == null){
-
-    run = {
-
-      assignedDriver: "",
-      fuelCost: "",
-      runName: runName,
-      runWeek: parseInt(shipmentDeliveryWeekInput.value),
-      stops: [],     
-
-    }
-
-    run.stops.push(
-    {
-      orderID: orderData.id,
-      stopType: stopType, //collection or delivery
-      isLocked: false,
-      stopNumber: 1
-    });
-      
-    runStructList.push(run);
-
-    return;
-  }
-
-  run.stops.push(
-  {
-    orderID: orderData.id,
-    stopType: stopType, //collection or delivery
-    isLocked: false,
-    stopNumber: run.stops.length + 1
-  });
 
 }
 
@@ -744,30 +585,29 @@ function clearShipmentUI(){
 
 }
 
+
 async function updateRunsList(shipmentName){
 
   clearShipmentUI();
 
-  runStructList = [];
+  const runsList = await selectShipment(shipmentName);
 
-  await selectShipment(shipmentName);
+  runsList.sort(sortAlphabetically);
 
-  runStructList.sort(sortAlphabetically);
-
-  if(runStructList.length == 0){
+  if(runsList.length == 0){
     runCardList.innerText = "No runs in shipment";
   }
   
-  for(let i = 0; i < runStructList.length; i++){
+  for(let i = 0; i < runsList.length; i++){
 
-    if(runStructList[i].runName != null){
+    if(runsList[i].runName != null){
 
-      runCardList.appendChild(runStructList[i].runCard);
+      runCardList.appendChild(runsList[i].runCard);
 
     }else{
       //manage unassigned runs
       
-      unassignedOrdersCardWrapper.appendChild(runStructList[i].runCard);
+      unassignedOrdersCardWrapper.appendChild(runsList[i].runCard);
     }
 
   }
@@ -786,64 +626,6 @@ async function updateRunsList(shipmentName){
 
 }
 
-async function storeShipment(){
-
-  const batch = writeBatch(db);
-
-  let runDocRefs = [];
-
-  for(let i = 0; i < runStructList.length; i++){
-
-    const runRef = doc(collection(db, 'Runs'));
-    runDocRefs.push(runRef.id);
-    batch.set(runRef, runStructList[i]);
-
-  }
-
-  const shipmentRef = doc(collection(db, "Shipments"));
-  batch.set(shipmentRef,  {
-
-    runs: runDocRefs,
-    shipmentName: shipmentNameInput.value
-
-  });
-
-  // Commit the batch
-
-  try{
-
-    console.log("attempt to commit batch");
-    await batch.commit();
-    return true;
-
-  }catch(e){
-
-    console.log(e);
-
-  }
-
-  return false;
-
-}
-
-async function updateRun(documentId, fieldsToUpdate){
-
-  const runRef = doc(db, 'Runs', documentId);
-
-  try{
-
-    await updateDocument(runRef, fieldsToUpdate);
-    
-  }catch(e){
-
-    console.log(e);
-    return false;
-
-  }
-
-  return true;
-}
-
 
 async function selectShipment(selectedShipment){
 
@@ -853,32 +635,18 @@ async function selectShipment(selectedShipment){
 
   const runData = await fetchRunsInShipment(runIDs);
 
+  const runsList = [];
+
   for(let i = 0; i < runData.length; i++){
 
-    parseRunData(runData[i]);
+    runsList.push(parseRunData(runData[i]));
 
   }
 
-}
-
-
-function parseRunInfo(doc){
-
-  const runData = doc.data();
-
-  const runStruct = {
-    documentId: doc.id,
-    assignedDriver: runData['assignedDriver'],
-    fuelCost: runData['fuelCost'],
-    stops: runData['stops'],
-    runName: runData['runName'],
-    runWeek: runData['runWeek'],
- 
-  }
-  
-  return runStruct;
+  return runsList;
 
 }
+
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
@@ -887,29 +655,6 @@ async function initMap() {
     center: { lat: -34.397, lng: 150.644 },
     zoom: 8,
   });
-}
-
-
-async function getRunStopsOrderData(stops){
-
-  const orderIDs = [];
-
-  for(let i = 0; i < stops.length; i++){
-
-    orderIDs.push(stops[i]['orderID']);
-
-  }
-
-  const orders = await bulkReadTransaction(orderIDs, 'Orders');
-
-  if(orders === false){
-
-    alert("error fetching stops for that run")
-    return;
-  }
-
-  return orders;
-
 }
 
 
@@ -943,6 +688,7 @@ function updateStopList(runStruct){
   }
 
 }
+
 
 function getDragDetectionZone(detectionZoneType){
 
@@ -1134,6 +880,7 @@ function getStopCard(stop, runStruct){
 
 }
 
+
 async function toggleLockStop(stopBeingToggleLocked, runStruct){
 
   const updatedStops = [];
@@ -1175,6 +922,7 @@ async function toggleLockStop(stopBeingToggleLocked, runStruct){
 
 }
 
+
 function updateLockIcon(isLocked, lockIcon, lockOpenIcon){
 
   //the new state to set
@@ -1191,6 +939,7 @@ function updateLockIcon(isLocked, lockIcon, lockOpenIcon){
   }
 
 }
+
 
 function stopCardDragAndMove(stopCard, grabPositionOffset){
  
@@ -1210,17 +959,12 @@ function stopCardDragAndMove(stopCard, grabPositionOffset){
 
   window.addEventListener('mousemove', mouseMoveCallback);
 
-  //add initial mimic card
-
-
 }
 
 
 async function dropStopCard(){
 
   //get position of each stopm in list 
-
-  console.log(cardBeingDragged.parentNode.children);
 
   const stopCardList =  Array.from(cardBeingDragged.parentNode.children).filter((element) => {
 
@@ -1238,44 +982,17 @@ async function dropStopCard(){
 
   const updatedStops = [];
 
-  console.log(currentSelectedRun.stops);
-
   for(let i = 0; i < stopCardList.length; i++){
 
     const orderID = parseInt(stopCardList[i].querySelector('.orderID').innerText.replace('#', ''));
     const stopType = stopCardList[i].querySelector('.stopType').innerText.toLowerCase();
 
-    for(let j = 0; j < currentSelectedRun.stops.length; j++){
-
-      if(currentSelectedRun.stops[j].stopData.ID === orderID){
-
-        if(currentSelectedRun.stops[j].stopType === stopType){
-
-          const stopCopy = Object.assign({}, currentSelectedRun.stops[j]);
-          stopCopy.stopNumber = i + 1;
-
-          updatedStops.push(stopCopy);
-        
-        }
-
-      }
-
-    }
+    updatedStops.push(updateStopNumberInRun(orderID, stopType, currentSelectedRun.stops, i + 1));
 
   }
 
-
-  const updateDatabaseStops = [];
-
-  for(let i = 0; i < updatedStops.length; i++){
-
-    const stopCopy = Object.assign({}, updatedStops[i]);
-    delete stopCopy.stopData;
-
-    updateDatabaseStops.push(stopCopy);
-
-  }
-
+  const updateDatabaseStops = removeStopDataFromStop(updatedStops);
+  
   //update the database
   const result = await updateRun(currentSelectedRun.documentId, {stops: updateDatabaseStops});
  
@@ -1312,7 +1029,6 @@ async function dropStopCard(){
   isCardBeingDragged = false;
 
 }
-
 
 function getGrabPosition(){
 
@@ -1368,6 +1084,7 @@ function enableDragZones(){
 
 }
 
+
 function disableDragZones(){
 
   for(let i = 0; i < dragZones.length; i++){
@@ -1385,34 +1102,19 @@ function moveStopCard(mouseY, stopCard, grabPositionOffset){
   const top = mouseY - stopListYOffset - grabPositionOffset;
 
   //get center of card pos
-  const position = getPositionOfElement(stopCard);
+  //const position = getPositionOfElement(stopCard);
 
   setTop(top, stopCard);
 
 }
 
-function getPositionOfElement(element){
-
-  const elementBounds = element.getBoundingClientRect();
-
-  const width = elementBounds.width;
-  const height = elementBounds.height;
-
-  const top = elementBounds.y;
-  const left = elementBounds.x;
-
-  const xPos = left - (width/2);
-  const yPos = top - (height/2);
-
-  return [xPos, yPos];
-
-}
 
 function setTop(top, element){
 
   element.style.top = top + "px";
 
 }
+
 
 function selectStop(stopMetaData, stopLockButton){
 
@@ -1445,58 +1147,6 @@ function selectStop(stopMetaData, stopLockButton){
 }
 
 
-function mergeStopsWithOrderData(stops, orders){
-
-  for(let i = 0; i < stops.length; i++){
-
-    for(let j = 0; j < orders.length; j++){
-
-      if(stops[i].orderID == orders[j].id){
-
-        //to include in every stop type
-        const stopData = {};
-        const orderData = orders[j].data();
-
-        stopData['message'] = orderData['message'];
-        stopData['email'] = orderData['email'];
-        stopData['animalType'] = orderData['animalType'];
-        stopData['ID'] = orderData['ID'];
-        stopData['quantity'] = orderData['quantity'];
-        stopData['payment'] = orderData['payment'];
-        stopData['code'] = orderData['code'];
-
-
-        if(stops[i].stopType == "collection"){
-          //add collection data to stop
-          stopData['address1'] = orderData['collectionAddress1'];
-          stopData['address2'] = orderData['collectionAddress2'];
-          stopData['address3'] = orderData['collectionAddress3'];
-          stopData['name'] = orderData['collectionName'];
-          stopData['postcode'] = orderData['collectionPostcode'];
-          stopData['phoneNumber'] = orderData['collectionPhoneNumber'];
-
-        }else if(stops[i].stopType == "delivery"){
-          //add delivery data to stop
-          stopData['address1'] = orderData['deliveryAddress1'];
-          stopData['address2'] = orderData['deliveryAddress2'];
-          stopData['address3'] = orderData['deliveryAddress3'];
-          stopData['name'] = orderData['deliveryName'];
-          stopData['postcode'] = orderData['deliveryPostcode'];
-          stopData['phoneNumber'] = orderData['deliveryPhoneNumber'];
-
-        }
-
-        stops[i]['stopData'] = stopData;
-    
-      }
-
-    }
-
-  }
-
-}
-
-
 async function getOrders(query){
 
   //fetch orders
@@ -1517,280 +1167,9 @@ async function getOrders(query){
 
 }
 
-async function fetchShipment(shipmentName){
 
-  const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", shipmentName), limit(1)));
 
-  if(shipmentData.empty){
-    console.log("shipment doesnt exist");
-    return;
-  }
 
-  return shipmentData;
 
-}
-
-async function fetchRunsInShipment(runIDs){
-
-  const numberOfRuns = runIDs.length;
-
-  let promises = [];
-
-  for(let i = 0; i < numberOfRuns; i++){
-
-    promises.push(fetchRun(runIDs[i]));
-
-  } 
-  
-  return await Promise.all(promises);
-
-}
-
-async function fetchRun(runID){
-
-  try{
-
-    const runData = await getDocument(query(doc(db, 'Runs', runID)));
-    return runData;
-
-  }catch(e){
-
-    return false;
-  }
-
-}
-
-async function assignStopsToRun(runID, stops){
-
-  const batch = writeBatch(db);
-  //remove stops from unassigned run document
-
-  const unassignedStopsRef = doc(db, 'Runs', currentShipmentUnassignedOrders); 
-  let unassignedOrdersDocument;
-
-  try{
-
-    unassignedOrdersDocument = await getDocument(unassignedStopsRef);
-
-  }catch(e){
-
-    console.log(e);
-    return false;
-
-  }
-
-  const unassignedStops = unassignedOrdersDocument.data()['stops'];
-
-  const removedStops = unassignedStops.filter((unassignedStop) => {
-
-    return !stops.includes(unassignedStop.orderID);
-
-  });
-
-  batch.update(unassignedStopsRef, {"stops": removedStops})
-
-  //add runs to run document
-
-  const stopsToAdd = unassignedStops.filter((unassignedStop) => {
-
-    return stops.includes(unassignedStop.orderID);
-
-  });
-
-  const runRef = doc(db, 'Runs', runID); 
-  let runDocument;
-  
-  try{
-
-    runDocument = await getDocument(runRef);
-
-  }catch(e){
-
-    console.log(e);
-    return false;
-
-  }
-
-  const currentNumberOfStops = runDocument.data()['stops'].length 
-
-  for(let i = 0; i < stopsToAdd.length; i++){
-
-    stopsToAdd[i].stopNumber = currentNumberOfStops + i + 1;
-
-  }
-
-
-  const newStops = runDocument.data()['stops'].concat(stopsToAdd);
-  batch.update(runRef, {"stops": newStops})
-
-  try{
-
-    await batch.commit()
-
-  }catch(e){
-
-    console.log(e);
-    return false;
-  }
-
-  return true;
-
-} 
-
-
-//assigns stops to the unassighed run within the currently selected shipment
-async function assignStopsToShipment(orderIDs, stopType){
-
-  let runData;
-
-  try{
-
-    const shipmentData = await fetchShipment(selectedShipment.value);
-    runData = await fetchRunsInShipment(shipmentData.docs[0].data()['runs']);
-
-  }catch(e){
-
-    console.log(e);
-    return false;
-
-  }
-
-  const unassignedRun = runData.find((runDocument) => {
-
-    return runDocument.data().runName == null;
-
-  });
-
-  if(unassignedRun == null){
-
-    return false;
-
-  }
-
-  if(orderIDs.length == 0){
-
-    return false;
-
-  }
-
-  const stopsToAdd = [];
-
-  for(let i = 0; i < orderIDs.length; i++){
-
-    stopsToAdd.push(
-      {
-        orderID: orderIDs[i],
-        stopType: stopType 
-      }
-    );
-
-  }
-
-  //check if stop is already in shipment 
-
-  //returns false or a string
-  const result = isStopInShipment(runData, stopsToAdd);
-  
-  if(result !== false){
-
-    return result;
-
-  }
-
-  try{
-
-    const batch = writeBatch(db);
-
-    const runRef = doc(db, 'Runs', unassignedRun.id);
-
-    const newStops = stopsToAdd.concat(unassignedRun.data()['stops']);
-    batch.update(runRef, {"stops": newStops})
-
-    batch.commit();
-
-  }catch(e){
-
-    console.log(e);
-    return false;
-
-  }
-
-  return true;
-
-}
-
-
-function isStopInShipment(runDocuments, stopsToAdd){
-
-  for(let i = 0; i < runDocuments.length; i++){
-
-    const runStops = runDocuments[i].data()['stops'];
-
-    for(let j = 0; j < runStops.length; j++){
-    
-      if(isStopInArray(stopsToAdd, runStops[j])){
-        
-        let runName = runDocuments[i].data().runName; 
-        if(runDocuments[i].data().runName == null){
-          runName = "Unassigned";
-        }
-
-        return "Stop already in " + runName + " run";
-      }
-
-    }
-
-  }
-
-  return false;
-
-}
-
-function isStopInArray(arr, stop) {
-
-  for(let i = 0; i < arr.length; i++){
-
-    if(arr[i].orderID === stop.orderID){
-      
-      if(arr[i].stopType === stop.stopType){
-        return true;
-      }
-
-    }
-
-  }
-
-  return false;
-
-};
-
-function indexOfElementInArray(arr, element){
-
-  for(let i = 0; i < arr.length; i++){
-
-    if(arr[i] === element){
-      return i;
-    }
-  }
-
-  return -1
-
-}
-
-
-function compareStops(a, b){
-
-  if(a.orderID === b.orderID){
-
-    if(a.stopType === b.stopType){
-
-      return true
-    }
-
-  }
-
-  return false;
-
-}
 
 
