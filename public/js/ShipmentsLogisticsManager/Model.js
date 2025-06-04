@@ -568,8 +568,13 @@ export async function updateRun(documentId, fieldsToUpdate){
 
   try{
 
-    const result = await updateDocument(runRef, fieldsToUpdate);
-    console.log(result);
+    await updateDocument(runRef, fieldsToUpdate);
+
+    // if(Math.floor(Math.random() * 2)){
+
+    //   throw new Error("awdwad");
+
+    // }
 
   }catch(e){
 

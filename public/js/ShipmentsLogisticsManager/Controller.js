@@ -832,6 +832,8 @@ function getStopCard(stop, runStruct, stopNumber){
     if(!result){
 
       showNotification("Error!", "Error updating lock on stop");
+      updateStopList(currentSelectedRun);
+
       return;
 
     }
@@ -977,7 +979,7 @@ async function dropStopCard(){
 
   //get position of each stopm in list 
 
-  const stopCardList =  Array.from(cardBeingDragged.parentNode.children).filter((element) => {
+  const stopCardList = Array.from(cardBeingDragged.parentNode.children).filter((element) => {
 
     if(element.classList.contains('stopNumberWrapper')){
       return false;
@@ -1010,6 +1012,7 @@ async function dropStopCard(){
   if(!result){
 
     showNotification("Error!", "Error updating stops orders");
+    updateStopList(currentSelectedRun);
 
     return false;
   }
