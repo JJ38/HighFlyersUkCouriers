@@ -420,6 +420,7 @@ export async function assignStopsToRun(runID, stops, currentShipmentUnassignedOr
 
 } 
 
+
 export async function getRunStopsOrderData(stops){
 
   const orderIDs = [];
@@ -441,8 +442,6 @@ export async function getRunStopsOrderData(stops){
   return orders;
 
 }
-
-
 
 
 export function updateStopNumberInRun (orderID, stopType, runStops, stopNumber){
@@ -484,6 +483,66 @@ export function removeStopDataFromStop(updatedStops){
 
 }
 
+export async function toggleStopLock(stopBeingToggleLocked, runStruct){
+
+  //returns a copy of what the stops will look like if stored correctly. This is where isLocked value gets changed.
+  const updatedStops = toggleStopLockInRun(stopBeingToggleLocked, runStruct.stops)
+
+  const databaseStops = updatedStops.map((stop) => {
+
+    return Object.assign({}, stop);
+
+  });
+
+  let databaseStopBeingToggled;
+  //remove stopData field from stops before storing as this data is fetched using foreign key
+  for(let i = 0; i < databaseStops.length; i++){
+
+    delete databaseStops[i].stopData;
+
+    //get the new value for is locked if the store is successful
+    if(compareStops(databaseStops[i], stopBeingToggleLocked)){
+      databaseStopBeingToggled = databaseStops[i];
+
+    }
+
+  }
+
+  const result = await updateRun(runStruct.documentId, {stops: databaseStops});
+
+  if(result){
+
+    runStruct.stops = updatedStops;
+    stopBeingToggleLocked['isLocked'] = databaseStopBeingToggled['isLocked'];
+
+  }
+
+  return result;
+
+}
+
+function toggleStopLockInRun(stopBeingToggleLocked, runStops){
+
+  const updatedStops = [];
+
+  for(let i = 0; i < runStops.length; i++){
+
+    const stopCopy = Object.assign({}, runStops[i]);
+
+    if(compareStops(stopCopy, stopBeingToggleLocked)){
+
+      stopCopy['isLocked'] = !stopBeingToggleLocked['isLocked'];
+   
+    }
+
+    updatedStops.push(stopCopy);
+
+  }
+
+  return updatedStops;
+
+}
+
 
 export function parseRunInfo(doc){
 
@@ -509,8 +568,9 @@ export async function updateRun(documentId, fieldsToUpdate){
 
   try{
 
-    await updateDocument(runRef, fieldsToUpdate);
-    
+    const result = await updateDocument(runRef, fieldsToUpdate);
+    console.log(result);
+
   }catch(e){
 
     console.log(e);

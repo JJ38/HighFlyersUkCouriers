@@ -349,7 +349,7 @@ p{
     margin: 10px 0px;
     padding: 25px 30px;
     width: 100%;
-    transition: all 1s;
+    transition: all 0.5s;
 
 }
 
@@ -358,6 +358,18 @@ p{
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
+
+}
+
+.lockedNumber{
+
+    color: rgb(255, 49, 49);
+
+}
+
+.lockedCard{
+
+    filter: drop-shadow(2px 3px 8px #cc000080) !important;
 
 }
 

@@ -4,7 +4,8 @@ import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 
-import { fetchRun, fetchRunsInShipment, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, assignStopsToShipment } from "./Model";
+import { fetchRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, assignStopsToShipment } from "./Model";
+import { update } from "lodash";
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
 const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
@@ -83,7 +84,6 @@ function init(){
 
   updateSelectShipment();
   getOrders(query(collection(db, 'Orders'), orderBy('ID', 'desc'), limit(20)));
-
 
 }
 
@@ -467,6 +467,7 @@ function updateSelectRunAssignStops(runData){
 
 }
 
+
 function parseRunData(runData){
 
   const runStruct = parseRunInfo(runData);
@@ -665,7 +666,7 @@ function updateStopList(runStruct){
   const stops = runStruct.stops
   runStopsContainer.innerHTML = "";
 
-  console.log(runStruct);
+  // console.log(runStruct.stops);
 
   for(let i = 0; i < stops.length; i++){
 
@@ -675,8 +676,8 @@ function updateStopList(runStruct){
       // console.log(stops[j]);
       if(stops[j].stopNumber == i + 1){
 
-        const stopNumber = createStopNumber(stops[j].stopNumber);
-        const stopCard = getStopCard(stops[j], runStruct);
+        const stopNumber = createStopNumber(stops[j].stopNumber, stops[j].isLocked);
+        const stopCard = getStopCard(stops[j], runStruct, stopNumber.firstChild);
 
         runStopsContainer.appendChild(stopNumber);
         runStopsContainer.appendChild(stopCard);
@@ -744,9 +745,20 @@ function addNumbersToStopsList(){
     return stopCard != cardBeingDragged;
   });
 
+  //console.log(filteredStopCards);
+
   for(let i = 0; i < filteredStopCards.length; i++){
 
-    filteredStopCards[i].before(createStopNumber(i + 1));
+    const stopNumber = createStopNumber(i + 1);
+    const stopCard = filteredStopCards[i].querySelector('.stopCard');
+    //console.log(stopCard);
+
+    const isLocked = stopCard.classList.contains('lockedCard');
+    //console.log(isLocked);
+
+    filteredStopCards[i].before(stopNumber);
+
+    setStopNumberLock(isLocked, stopNumber.firstChild);
 
   }
   
@@ -780,7 +792,7 @@ function getMimicCard(){
 }
 
 
-function getStopCard(stop, runStruct){
+function getStopCard(stop, runStruct, stopNumber){
   
   const stopMetaData = createStopMetaData(stop);
 
@@ -789,7 +801,7 @@ function getStopCard(stop, runStruct){
 
   const stopLockButton = createStopLockButton(stop['isLocked'], lockIcon, lockOpenIcon);
  
-  const stopCard = createStopCard(stop, stopMetaData, stopLockButton);
+  const stopCardWrapper = createStopCard(stop, stopMetaData, stopLockButton);
 
   const dragZoneTop = getDragDetectionZone("top");
   const dragZoneBottom= getDragDetectionZone("bottom");
@@ -797,8 +809,11 @@ function getStopCard(stop, runStruct){
   dragZones.push(dragZoneTop);
   dragZones.push(dragZoneBottom);
 
-  stopCard.appendChild(dragZoneTop);
-  stopCard.appendChild(dragZoneBottom);
+  stopCardWrapper.appendChild(dragZoneTop);
+  stopCardWrapper.appendChild(dragZoneBottom);
+
+  //set initial lock state
+  setStopLock(stop['isLocked'], lockIcon, lockOpenIcon, stopNumber, stopCardWrapper.firstChild);
 
   stopLockButton.addEventListener('click', async () => {
 
@@ -810,7 +825,7 @@ function getStopCard(stop, runStruct){
 
     stopLockButton.classList.add('nonClickable');
 
-    const result = await toggleLockStop(stop, runStruct);
+    const result = await toggleStopLock(stop, currentSelectedRun);
 
     stopLockButton.classList.remove('nonClickable');
 
@@ -821,8 +836,9 @@ function getStopCard(stop, runStruct){
 
     }
 
-    updateLockIcon(stop['isLocked'], lockIcon, lockOpenIcon);
+    const stopNumber = stopCardWrapper.previousElementSibling.firstChild;
 
+    setStopLock(stop['isLocked'], lockIcon, lockOpenIcon, stopNumber, stopCardWrapper.firstChild);
 
   });
 
@@ -838,7 +854,7 @@ function getStopCard(stop, runStruct){
 
   });
 
-  stopCard.addEventListener('mousedown', (e) => {
+  stopCardWrapper.addEventListener('mousedown', (e) => {
 
     const mousedownTime = Date.now();
 
@@ -848,13 +864,14 @@ function getStopCard(stop, runStruct){
       if(mousedownTime - lastMouseUp > 0){
 
         const stopListYOffset = runStopsContainer.getBoundingClientRect().y;
-        const stopCardYOffset = stopCard.getBoundingClientRect().y;
+        const stopCardYOffset = stopCardWrapper.getBoundingClientRect().y;
         
         const grabPositionOffset = e.clientY - stopCardYOffset;
         const top = e.clientY - stopListYOffset - grabPositionOffset;
 
-        setTop(top ,stopCard)
-        stopCardDragAndMove(stopCard, grabPositionOffset);
+
+        setTop(top ,stopCardWrapper)
+        stopCardDragAndMove(stopCardWrapper, grabPositionOffset);
 
       }
 
@@ -862,7 +879,7 @@ function getStopCard(stop, runStruct){
 
   });
 
-  stopCard.addEventListener('mouseup', () => {
+  stopCardWrapper.addEventListener('mouseup', () => {
 
     const mouseupTime = Date.now();
 
@@ -874,56 +891,50 @@ function getStopCard(stop, runStruct){
 
   });
 
- 
-
-  return stopCard;
+  return stopCardWrapper;
 
 }
 
 
-async function toggleLockStop(stopBeingToggleLocked, runStruct){
+function setStopLock(isLocked, lockIcon, lockOpenIcon, stopNumber, stopCard){
 
-  const updatedStops = [];
+  // console.log(stopCard);
+  setLockIcon(isLocked, lockIcon, lockOpenIcon);
+  setStopNumberLock(isLocked, stopNumber);
+  setStopCardLock(isLocked, stopCard);
 
-  for(let i = 0; i < runStruct.stops.length; i++){
+}
 
-    const stopCopy = Object.assign({}, runStruct.stops[i]);
+function setStopCardLock(isLocked, stopCard){
 
-    if(compareStops(stopCopy, stopBeingToggleLocked)){
+  if(isLocked){
 
-      stopCopy['isLocked'] = !stopCopy['isLocked'];
+    stopCard.classList.add('lockedCard');
 
-    }
+  }else{
 
-    updatedStops.push(stopCopy);
-
-  }
-
-  const databaseStops = updatedStops.map((stop) => {
-
-    return Object.assign({}, stop);
-
-  });
-
-  //remove stopData field from stops before storing as this data is fetched using foreign key
-  for(let i = 0; i < databaseStops.length; i++){
-
-    delete databaseStops[i].stopData;
+    stopCard.classList.remove('lockedCard');
 
   }
 
-  const result = await updateRun(runStruct.documentId, {stops: databaseStops});
+}
 
-  if(result){
-    stopBeingToggleLocked['isLocked'] = !stopBeingToggleLocked['isLocked'];
+function setStopNumberLock(isLocked, stopNumber){
+
+  if(isLocked){
+
+    stopNumber.classList.add('lockedNumber');
+
+  }else{
+
+    stopNumber.classList.remove('lockedNumber');
+
   }
-
-  return result;
 
 }
 
 
-function updateLockIcon(isLocked, lockIcon, lockOpenIcon){
+function setLockIcon(isLocked, lockIcon, lockOpenIcon){
 
   //the new state to set
   if(isLocked){
@@ -1003,6 +1014,8 @@ async function dropStopCard(){
     return false;
   }
 
+  console.log(updateDatabaseStops);
+
   //update client side order as database has updated successfully
   currentSelectedRun.stops = updatedStops;
 
@@ -1067,9 +1080,7 @@ function getPositionDropped(){
   
   }); 
 
-  
   return indexOfElementInArray(stopList, mimicCard) + 1;
-
 
 }
 

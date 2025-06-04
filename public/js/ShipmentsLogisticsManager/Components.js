@@ -111,13 +111,6 @@ export function createStopCard(stop, stopMetaDataContainer, lockButtonWrapper){
 
   stopCardWrapper.appendChild(stopCard);
 
-
-  stopCardWrapper.addEventListener('click', () => {
-
-
-  });
-
-
   return stopCardWrapper;
 
 }
@@ -188,7 +181,7 @@ export function createOpenLockIcon(){
   return lockOpenIcon;
 }
 
-export function createStopNumber(stopNumberValue){
+export function createStopNumber(stopNumberValue, isLocked){
 
   const wrapper = document.createElement('div');
   wrapper.classList = "stopNumberWrapper";
@@ -196,6 +189,13 @@ export function createStopNumber(stopNumberValue){
   const stopNumber = document.createElement('p');
   stopNumber.classList = "stopNumber";
   stopNumber.innerText = stopNumberValue;
+
+  if(isLocked){
+
+    stopNumber.classList.add('locked');
+
+  }
+
 
   wrapper.appendChild(stopNumber);
 
