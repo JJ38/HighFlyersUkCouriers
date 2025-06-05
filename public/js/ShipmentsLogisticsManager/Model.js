@@ -231,6 +231,19 @@ export async function fetchShipment(shipmentName){
 
 }
 
+export async function selectRun(documentID){
+
+  const runDocument = await fetchRun(documentID);
+  const runObject = parseRunInfo(runDocument);
+
+  const orders = await getRunStopsOrderData(runObject.stops);
+  mergeStopsWithOrderData(runObject.stops, orders);
+
+  return runObject;
+
+}
+
+
 export async function fetchRun(runID){
 
   try{
@@ -345,8 +358,6 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
 
 export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID){
 
-  console.log(stops);
-
   const batch = writeBatch(db);
   //remove stops from unassigned run document
 
@@ -356,7 +367,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
   try{
 
     runRemovingStopsDocument = await getDocument(runRemovingStopRef);
-    console.log(runRemovingStopsDocument);
+
   }catch(e){
 
     console.log(e);
@@ -368,15 +379,18 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   const stopsWithStopsRemoved = stopsOfRunRemovingStops.filter((stop) => {
 
-    console.log(stop.orderID);
-    console.log(stop.stopType);
     const primaryKey = stop.orderID + "_" + stop.stopType;
-
     return !stops.includes(primaryKey);
 
   });
 
-  console.log(stopsWithStopsRemoved);
+  //reorder stopNumbers
+
+  for(let i = 0; i < stopsWithStopsRemoved.length; i++){
+
+    stopsWithStopsRemoved[i].stopNumber = i + 1;
+
+  }
 
   batch.update(runRemovingStopRef, {"stops": stopsWithStopsRemoved})
 
@@ -384,11 +398,9 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
   const stopsToAdd = stopsOfRunRemovingStops.filter((stop) => {
 
     const primaryKey = stop.orderID + "_" + stop.stopType;
-
     return stops.includes(primaryKey);
 
   });
-
 
   const runRef = doc(db, 'Runs', runToAddStopID); 
   let runDocument;
@@ -404,6 +416,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   }
 
+
   const currentNumberOfStops = runDocument.data()['stops'].length; 
 
   for(let i = 0; i < stopsToAdd.length; i++){
@@ -412,7 +425,6 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   }
 
-  console.log(stopsToAdd);
 
   const newStops = runDocument.data()['stops'].concat(stopsToAdd);
   batch.update(runRef, {"stops": newStops});

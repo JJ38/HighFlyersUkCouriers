@@ -4,7 +4,7 @@ import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 
-import { fetchRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, assignStopsToShipment } from "./Model";
+import { selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, assignStopsToShipment } from "./Model";
 import { update } from "lodash";
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -166,6 +166,8 @@ function addEventListeners(){
 
       updateSelectShipment(shipmentNameInput.value);
       updateRunsList(shipmentNameInput.value);
+      clearAndHideRunStopsUI();
+
       showNotification("Success!", "Successfully created shipment");
       hideSelectUI(createShipmentWidget);
 
@@ -200,8 +202,10 @@ function addEventListeners(){
           return;
         }
         
+        clearShipmentUI();
+        clearAndHideRunStopsUI();
         updateSelectShipment();
-        updateRunsList();
+
         showNotification("Success!", "Successfully deleted shipment");
         hideSelectUI(deleteShipmentWidget);
 
@@ -481,14 +485,9 @@ function parseRunData(runData){
     runCard.addEventListener('click', async () => {
 
       //fetch run to make sure client is showing the correct state and order of stops.
-      const runDocument = await fetchRun(runStruct.documentId);
-      const runObject = parseRunInfo(runDocument);
-
-      const orders = await getRunStopsOrderData(runObject.stops);
-      mergeStopsWithOrderData(runObject.stops, orders);
+      const runObject = await selectRun(runStruct.documentId);
       updateStopList(runObject);
       showRuns();
-
       selectCard(runCard);
 
     });
@@ -525,6 +524,9 @@ function parseRunData(runData){
   //runStructList.push(runStruct);
 
 }
+
+
+
 
 
 async function updateSelectShipment(shipmentName){
@@ -579,21 +581,29 @@ function clearShipmentUI(){
   unassignedOrdersCardWrapper.innerHTML = "";
   addStopButtonWrapper.innerHTML = "";
 
-  hideUI(runStopsContainer);
-  hideUI(selectedRunView);
   hideUI(addRunDetailsContainer);
   hideUI(unassignedOrdersContainer);
+
+}
+
+function clearAndHideRunStopsUI(){
+
+  runStopsContainer.innerHTML = "";
+  hideUI(runStopsContainer);
+  hideUI(selectedRunView);
 
 }
 
 
 async function updateRunsList(shipmentName){
 
-  clearShipmentUI();
-
   const runsList = await selectShipment(shipmentName);
 
   runsList.sort(sortAlphabetically);
+
+  clearShipmentUI();
+  showUI(runStopsContainer);
+
 
   if(runsList.length == 0){
     runCardList.innerText = "No runs in shipment";
@@ -849,20 +859,22 @@ function getStopCard(stop, runStruct, stopNumber){
 
 
   deleteButton.addEventListener('click', async () => {
+    console.log(selectedShipment.value);
 
-    console.log("currentShipmentUnassignedOrders: " + currentShipmentUnassignedOrders);
-    console.log("runStruct.documentId: " + runStruct.documentId);
-
-    //const result = await assignStopsToRun(currentShipmentUnassignedOrders, [stop], runStruct.documentId);
+    const result = await assignStopsToRun(currentShipmentUnassignedOrders, [stop.orderID + "_" + stop.stopType], runStruct.documentId);
     
-    // if(result){
+    if(result){
 
-    //   showNotification("Success!", "Removed stop from run");
-    //   return;
-    // }
+      showNotification("Success!", "Removed stop from run");
+      console.log(selectedShipment.value);
+      const runObject = await selectRun(runStruct.documentId);
+      updateStopList(runObject);
+      await updateRunsList(selectedShipment.value);
 
-    // showNotification("Error!", "Error removing stop from run");
+      return;
+    } 
 
+    showNotification("Error!", "Error removing stop from run");
 
   })
 
