@@ -2,7 +2,7 @@ import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, fil
 import { query, collection, where, limit, orderBy, doc, writeBatch } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
+import { createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 
 import { fetchRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, assignStopsToShipment } from "./Model";
 import { update } from "lodash";
@@ -57,7 +57,7 @@ let currentSelectedRunCard = null;
 let currentSelectedRun = null;
 
 let currentlyStopMetaData = null;
-let currentlyStopLockButton = null;
+let currentStopButtonWrapper = null;
 
 let lastMouseDown = 0;
 let lastMouseUp = 0;
@@ -800,8 +800,11 @@ function getStopCard(stop, runStruct, stopNumber){
   const lockOpenIcon = createOpenLockIcon();
 
   const stopLockButton = createStopLockButton(stop['isLocked'], lockIcon, lockOpenIcon);
+  const deleteButton = createDeleteStopButton();
+
+  const buttonWrapper = createButtonWrapper(stopLockButton, deleteButton);
  
-  const stopCardWrapper = createStopCard(stop, stopMetaData, stopLockButton);
+  const stopCardWrapper = createStopCard(stop, stopMetaData, buttonWrapper);
 
   const dragZoneTop = getDragDetectionZone("top");
   const dragZoneBottom= getDragDetectionZone("bottom");
@@ -844,17 +847,13 @@ function getStopCard(stop, runStruct, stopNumber){
 
   });
 
-  stopLockButton.addEventListener('mouseup', (e) => {
 
-    e.stopPropagation();
+  deleteButton.addEventListener('click', () => {
 
-  });
+    console.log(stop);
 
-  stopLockButton.addEventListener('mousedown', (e) => {
+  })
 
-    e.stopPropagation();
-
-  });
 
   stopCardWrapper.addEventListener('mousedown', (e) => {
 
@@ -887,9 +886,33 @@ function getStopCard(stop, runStruct, stopNumber){
 
     if(mouseupTime - lastMouseDown < stopCardLongClickTime){
 
-      selectStop(stopMetaData, stopLockButton);
+      selectStop(stopMetaData, buttonWrapper);
 
     }
+
+  });
+
+  stopLockButton.addEventListener('mouseup', (e) => {
+
+    e.stopPropagation();
+
+  });
+
+  stopLockButton.addEventListener('mousedown', (e) => {
+
+    e.stopPropagation();
+
+  });
+
+  deleteButton.addEventListener('mouseup', (e) => {
+
+    e.stopPropagation();
+
+  });
+
+  deleteButton.addEventListener('mousedown', (e) => {
+
+    e.stopPropagation();
 
   });
 
@@ -1022,7 +1045,6 @@ async function dropStopCard(){
   //update client side order as database has updated successfully
   currentSelectedRun.stops = updatedStops;
 
-
   if(cardBeingDragged != null){
 
       cardBeingDragged.classList.remove('absolute');
@@ -1130,15 +1152,15 @@ function setTop(top, element){
 }
 
 
-function selectStop(stopMetaData, stopLockButton){
+function selectStop(stopMetaData, buttonWrapper){
 
-  if(currentlyStopMetaData == stopMetaData && currentlyStopLockButton == stopLockButton){
+  if(currentlyStopMetaData == stopMetaData && currentStopButtonWrapper == buttonWrapper){
     //deselect 
     currentlyStopMetaData = null; 
-    currentlyStopLockButton = null;
+    currentStopButtonWrapper= null;
 
     hideUI(stopMetaData);
-    hideUI(stopLockButton);
+    hideUI(buttonWrapper);
 
     return;
 
@@ -1148,15 +1170,15 @@ function selectStop(stopMetaData, stopLockButton){
     hideUI(currentlyStopMetaData);
   }
 
-  if(currentlyStopLockButton != null){
-    hideUI(currentlyStopLockButton);
+  if(currentStopButtonWrapper != null){
+    hideUI(currentStopButtonWrapper);
   }
 
   showUI(stopMetaData);
-  showUI(stopLockButton);
+  showUI(buttonWrapper);
 
   currentlyStopMetaData = stopMetaData;
-  currentlyStopLockButton = stopLockButton;
+  currentStopButtonWrapper = buttonWrapper;
 
 }
 

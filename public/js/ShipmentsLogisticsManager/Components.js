@@ -59,7 +59,7 @@ export function createStopContainer(stopNumber, stopCard){
 }
 
 
-export function createStopCard(stop, stopMetaDataContainer, lockButtonWrapper){
+export function createStopCard(stop, stopMetaDataContainer, buttonWrapper){
 
   const stopData = stop['stopData'];
 
@@ -106,12 +106,40 @@ export function createStopCard(stop, stopMetaDataContainer, lockButtonWrapper){
   stopCard.appendChild(stopCustomerName);
   stopCard.appendChild(stopAddressLine1);
   stopCard.appendChild(stopAddressWrapper);
-  stopCard.appendChild(lockButtonWrapper);
+  stopCard.appendChild(buttonWrapper);
 
 
   stopCardWrapper.appendChild(stopCard);
 
   return stopCardWrapper;
+
+}
+
+
+export function createButtonWrapper(stopLockButton, deleteButton){
+
+  const wrapper = document.createElement('div');
+  wrapper.classList = "buttonWrapper hidden";
+
+  wrapper.appendChild(stopLockButton);
+  wrapper.appendChild(deleteButton);
+
+  return wrapper;
+
+}
+
+export function createDeleteStopButton(){
+
+  const deleteButtonWrapper = document.createElement('div');
+  deleteButtonWrapper.classList = "deleteButtonWrapper"; 
+
+  const deleteIcon = document.createElement('span');
+  deleteIcon.classList = "delete material-symbols-outlined"
+  deleteIcon.innerText = "delete";
+
+  deleteButtonWrapper.appendChild(deleteIcon);
+
+  return deleteButtonWrapper;
 
 }
 
@@ -141,7 +169,7 @@ export function createStopMetaData(stop){
 export function createStopLockButton(isLocked, lockIcon, lockOpenIcon){
 
   const lockButtonWrapper = document.createElement('div');
-  lockButtonWrapper.classList = "lockButtonWrapper hidden"; 
+  lockButtonWrapper.classList = "lockButtonWrapper"; 
 
   if(isLocked){
 
