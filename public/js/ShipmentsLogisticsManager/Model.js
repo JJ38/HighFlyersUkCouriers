@@ -343,18 +343,20 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
 }
 
 
-export async function assignStopsToRun(runID, stops, currentShipmentUnassignedOrders){
+export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID){
+
+  console.log(stops);
 
   const batch = writeBatch(db);
   //remove stops from unassigned run document
 
-  const unassignedStopsRef = doc(db, 'Runs', currentShipmentUnassignedOrders); 
-  let unassignedOrdersDocument;
+  const runRemovingStopRef = doc(db, 'Runs', runToRemoveStopID); 
+  let runRemovingStopsDocument;
 
   try{
 
-    unassignedOrdersDocument = await getDocument(unassignedStopsRef);
-
+    runRemovingStopsDocument = await getDocument(runRemovingStopRef);
+    console.log(runRemovingStopsDocument);
   }catch(e){
 
     console.log(e);
@@ -362,25 +364,33 @@ export async function assignStopsToRun(runID, stops, currentShipmentUnassignedOr
 
   }
 
-  const unassignedStops = unassignedOrdersDocument.data()['stops'];
+  const stopsOfRunRemovingStops = runRemovingStopsDocument.data()['stops'];
 
-  const removedStops = unassignedStops.filter((unassignedStop) => {
+  const stopsWithStopsRemoved = stopsOfRunRemovingStops.filter((stop) => {
 
-    return !stops.includes(unassignedStop.orderID);
+    console.log(stop.orderID);
+    console.log(stop.stopType);
+    const primaryKey = stop.orderID + "_" + stop.stopType;
+
+    return !stops.includes(primaryKey);
 
   });
 
-  batch.update(unassignedStopsRef, {"stops": removedStops})
+  console.log(stopsWithStopsRemoved);
+
+  batch.update(runRemovingStopRef, {"stops": stopsWithStopsRemoved})
 
   //add runs to run document
+  const stopsToAdd = stopsOfRunRemovingStops.filter((stop) => {
 
-  const stopsToAdd = unassignedStops.filter((unassignedStop) => {
+    const primaryKey = stop.orderID + "_" + stop.stopType;
 
-    return stops.includes(unassignedStop.orderID);
+    return stops.includes(primaryKey);
 
   });
 
-  const runRef = doc(db, 'Runs', runID); 
+
+  const runRef = doc(db, 'Runs', runToAddStopID); 
   let runDocument;
   
   try{
@@ -394,7 +404,7 @@ export async function assignStopsToRun(runID, stops, currentShipmentUnassignedOr
 
   }
 
-  const currentNumberOfStops = runDocument.data()['stops'].length 
+  const currentNumberOfStops = runDocument.data()['stops'].length; 
 
   for(let i = 0; i < stopsToAdd.length; i++){
 
@@ -402,13 +412,14 @@ export async function assignStopsToRun(runID, stops, currentShipmentUnassignedOr
 
   }
 
+  console.log(stopsToAdd);
 
   const newStops = runDocument.data()['stops'].concat(stopsToAdd);
-  batch.update(runRef, {"stops": newStops})
+  batch.update(runRef, {"stops": newStops});
 
   try{
 
-    await batch.commit()
+    await batch.commit();
 
   }catch(e){
 

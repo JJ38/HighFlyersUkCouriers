@@ -240,7 +240,8 @@ export function createUnassignedOrdersTableCard(stopData){
   const x = document.createElement('td');
   const checkBox = document.createElement("input");
   checkBox.setAttribute("type", "checkbox");
-  checkBox.value = stopData['orderID'];
+  checkBox.value = stopData['orderID'] + "_" + stopData['stopType'];
+  checkBox.id = stopData['orderID'] + "_" + stopData['stopType'];
   checkBox.classList = "assignStopCheckbox";
 
   x.appendChild(checkBox);

@@ -275,7 +275,7 @@ function addEventListeners(){
         orderIDs.push(x.value);
 
       });
-
+      console.log(currentSelectedRun);
       const result = await assignStopsToRun(selectAssignStopsRun.value, orderIDs, currentShipmentUnassignedOrders);
 
       //rebuild ui
@@ -848,9 +848,21 @@ function getStopCard(stop, runStruct, stopNumber){
   });
 
 
-  deleteButton.addEventListener('click', () => {
+  deleteButton.addEventListener('click', async () => {
 
-    console.log(stop);
+    console.log("currentShipmentUnassignedOrders: " + currentShipmentUnassignedOrders);
+    console.log("runStruct.documentId: " + runStruct.documentId);
+
+    //const result = await assignStopsToRun(currentShipmentUnassignedOrders, [stop], runStruct.documentId);
+    
+    // if(result){
+
+    //   showNotification("Success!", "Removed stop from run");
+    //   return;
+    // }
+
+    // showNotification("Error!", "Error removing stop from run");
+
 
   })
 
