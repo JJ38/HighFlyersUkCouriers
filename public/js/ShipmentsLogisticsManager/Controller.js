@@ -346,7 +346,9 @@ function addEventListeners(){
       }
 
       hideUI(addStopsWidget);
-      updateRunsList(selectedShipment.value);
+      await updateRunsList(selectedShipment.value);
+      showUI(addRunDetailsContainer);
+      deselectCheckboxes(selectedCheckBoxes);
 
     });
 
@@ -412,6 +414,17 @@ function addEventListeners(){
       showNotification("Error!", "Error removing stops from shipment");
 
     });
+
+  }
+
+}
+
+
+function deselectCheckboxes(checkBoxes){
+
+  for(let i = 0; i < checkBoxes.length; i++){
+
+    checkBoxes[i].checked = false;
 
   }
 
