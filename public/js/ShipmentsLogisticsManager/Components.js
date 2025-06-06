@@ -354,90 +354,91 @@ export function createTableOrderCard(doc){
 
 export function createRunCard(runStruct){
 
-    const runCard = document.createElement('div');
-    runCard.classList = "runCard";
+  const runCard = document.createElement('div');
+  runCard.classList = "runCard";
+  runCard.id = runStruct.documentId
 
-    const runName = document.createElement('p');
-    runName.classList = "runName";
-    runName.innerText = runStruct.runName;
+  const runName = document.createElement('p');
+  runName.classList = "runName";
+  runName.innerText = runStruct.runName;
 
-    const runIconsWrapper = document.createElement('div');
-    runIconsWrapper.classList = "row runInfoWrapper";
-    
-
-
-    const runWeekWrapper = document.createElement('div');
-    runWeekWrapper.classList = "row";
-
-    const calendarIcon = document.createElement('span');
-    calendarIcon.classList = "material-symbols-rounded runInfoIcon";
-    calendarIcon.innerText = "calendar_month";
-
-    const weekNumber = document.createElement('p');
-    weekNumber.innerText = runStruct.runWeek;
-
-    runWeekWrapper.appendChild(calendarIcon);
-    runWeekWrapper.appendChild(weekNumber);
+  const runIconsWrapper = document.createElement('div');
+  runIconsWrapper.classList = "row runInfoWrapper";
+  
 
 
+  const runWeekWrapper = document.createElement('div');
+  runWeekWrapper.classList = "row";
 
-    const totalStopsWrapper = document.createElement('div');
-    totalStopsWrapper.classList = "row";
+  const calendarIcon = document.createElement('span');
+  calendarIcon.classList = "material-symbols-rounded runInfoIcon";
+  calendarIcon.innerText = "calendar_month";
 
-    const totalStopsIcon = document.createElement('span');
-    totalStopsIcon.innerText = "location_on";
-    totalStopsIcon.classList = "material-symbols-rounded runInfoIcon";
+  const weekNumber = document.createElement('p');
+  weekNumber.innerText = runStruct.runWeek;
 
-    const totalStops = document.createElement('p');
-    totalStops.innerText = runStruct.stops.length;
-
-    totalStopsWrapper.appendChild(totalStopsIcon);
-    totalStopsWrapper.appendChild(totalStops);
+  runWeekWrapper.appendChild(calendarIcon);
+  runWeekWrapper.appendChild(weekNumber);
 
 
 
-    const fuelCostWrapper = document.createElement('div');
-    fuelCostWrapper.classList = "row";
+  const totalStopsWrapper = document.createElement('div');
+  totalStopsWrapper.classList = "row";
 
-    const fuelCostIcon = document.createElement('span');
-    fuelCostIcon.classList = "material-symbols-rounded runInfoIcon";
-    fuelCostIcon.innerText = "local_gas_station";
+  const totalStopsIcon = document.createElement('span');
+  totalStopsIcon.innerText = "location_on";
+  totalStopsIcon.classList = "material-symbols-rounded runInfoIcon";
 
-    const fuelCost = document.createElement('p');
-    fuelCost.innerText = "£" + runStruct.fuelCost;
+  const totalStops = document.createElement('p');
+  totalStops.innerText = runStruct.stops.length;
 
-    fuelCostWrapper.appendChild(fuelCostIcon);
-    fuelCostWrapper.appendChild(fuelCost);
-
-
-
-    runIconsWrapper.appendChild(runWeekWrapper);
-    runIconsWrapper.appendChild(totalStopsWrapper);
-    runIconsWrapper.appendChild(fuelCostWrapper);
+  totalStopsWrapper.appendChild(totalStopsIcon);
+  totalStopsWrapper.appendChild(totalStops);
 
 
 
-    const driverInfoWrapper = document.createElement('div');
-    driverInfoWrapper.classList = "row runInfoWrapper";
+  const fuelCostWrapper = document.createElement('div');
+  fuelCostWrapper.classList = "row";
 
-    const assignedDriverTitle = document.createElement('p');
-    assignedDriverTitle.classList = "runInfoTitle";
-    assignedDriverTitle.innerText = "AssignedDriver: ";
+  const fuelCostIcon = document.createElement('span');
+  fuelCostIcon.classList = "material-symbols-rounded runInfoIcon";
+  fuelCostIcon.innerText = "local_gas_station";
 
-    const assignedDriver = document.createElement('p');
-    assignedDriver.classList = "runInfo";
-    assignedDriver.innerText = runStruct.assignedDriver;
+  const fuelCost = document.createElement('p');
+  fuelCost.innerText = "£" + runStruct.fuelCost;
 
-    driverInfoWrapper.appendChild(assignedDriverTitle);
-    driverInfoWrapper.appendChild(assignedDriver);
-
+  fuelCostWrapper.appendChild(fuelCostIcon);
+  fuelCostWrapper.appendChild(fuelCost);
 
 
-    runCard.appendChild(runName);
-    runCard.appendChild(runIconsWrapper);
-    runCard.appendChild(driverInfoWrapper);
 
-    return runCard;
+  runIconsWrapper.appendChild(runWeekWrapper);
+  runIconsWrapper.appendChild(totalStopsWrapper);
+  runIconsWrapper.appendChild(fuelCostWrapper);
+
+
+
+  const driverInfoWrapper = document.createElement('div');
+  driverInfoWrapper.classList = "row runInfoWrapper";
+
+  const assignedDriverTitle = document.createElement('p');
+  assignedDriverTitle.classList = "runInfoTitle";
+  assignedDriverTitle.innerText = "AssignedDriver: ";
+
+  const assignedDriver = document.createElement('p');
+  assignedDriver.classList = "runInfo";
+  assignedDriver.innerText = runStruct.assignedDriver;
+
+  driverInfoWrapper.appendChild(assignedDriverTitle);
+  driverInfoWrapper.appendChild(assignedDriver);
+
+
+
+  runCard.appendChild(runName);
+  runCard.appendChild(runIconsWrapper);
+  runCard.appendChild(driverInfoWrapper);
+
+  return runCard;
 
 
 }
@@ -446,6 +447,7 @@ export function createRunCard(runStruct){
 export function createUnassignedOrdersButton(runStruct){
 
     const unassignedOrdersCard = document.createElement('div');
+    unassignedOrdersCard.id = runStruct.documentId;
     unassignedOrdersCard.classList = "unassignedOrdersCard";
 
     const reportIcon = document.createElement('span');

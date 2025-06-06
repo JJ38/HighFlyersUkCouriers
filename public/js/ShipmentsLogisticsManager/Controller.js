@@ -493,6 +493,7 @@ function hideSelectUI(element){
 
 function selectCard(runCard){
 
+  console.log("selectCard");
 
   //deselect card without selecting a new one
   if(!runCard){
@@ -510,6 +511,7 @@ function selectCard(runCard){
   runCard.classList.add('selectedRunCard');
 
   currentSelectedRunCard = runCard;
+
 
 }
 
@@ -567,7 +569,8 @@ function parseRunData(runData){
 
     unassignedOrdersButton.addEventListener('click', async () => {
 
-      updateUnassignedOrdersTable(runStruct.documentId);
+      const runObject = await selectRun(runStruct.documentId);
+      await updateUnassignedOrdersTable(runObject);
 
     });
 
@@ -583,9 +586,9 @@ function parseRunData(runData){
 }
 
 
-async function updateUnassignedOrdersTable(unassignedStopsDocumentID){
+async function updateUnassignedOrdersTable(runObject){
 
-  const runObject = await selectRun(unassignedStopsDocumentID);
+  currentSelectedRun = runObject;
 
   //rebuild ui
   await updateRunsList(selectedShipment.value);
@@ -599,6 +602,8 @@ async function updateUnassignedOrdersTable(unassignedStopsDocumentID){
   }
 
   showUnassignedOrdersTable();
+
+
 
 }
 
@@ -669,12 +674,13 @@ function clearAndHideRunStopsUI(){
 
 }
 
-
+//unassigned orders button ui bug is in here
 async function updateRunsList(shipmentName){
 
   const runsList = await selectShipment(shipmentName);
 
   runsList.sort(sortAlphabetically);
+
 
   clearShipmentUI();
   showUI(runStopsContainer);
@@ -691,12 +697,29 @@ async function updateRunsList(shipmentName){
       runCardList.appendChild(runsList[i].runCard);
 
     }else{
+
       //manage unassigned runs
-      
       unassignedOrdersCardWrapper.appendChild(runsList[i].runCard);
+
+    }
+
+    console.log(currentSelectedRun);
+    console.log(runsList[i].runCard.id);
+    if(currentSelectedRun != null){
+
+      //find and reselect run that was selected before run card were rebuilt.
+      if(currentSelectedRun.documentId == runsList[i].runCard.id){
+
+        console.log(currentSelectedRun);
+        console.log(runsList[i]);
+        selectCard(runsList[i].runCard);
+
+      }
     }
 
   }
+
+
 
   //append add stop button
   const addStopButton = createAddStopButton();
@@ -934,13 +957,13 @@ function getStopCard(stop, runStruct, stopNumber){
     console.log(selectedShipment.value);
 
     const result = await assignStopsToRun(currentShipmentUnassignedOrders, [stop.orderID + "_" + stop.stopType], runStruct.documentId);
-    
+
     if(result){
 
       showNotification("Success!", "Removed stop from run");
-      console.log(selectedShipment.value);
       const runObject = await selectRun(runStruct.documentId);
       updateStopList(runObject);
+
       await updateRunsList(selectedShipment.value);
 
       return;
