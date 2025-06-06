@@ -1,11 +1,10 @@
-import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
-import { query, collection, where, limit, orderBy, doc, writeBatch } from "firebase/firestore";
+import { db, getDocuments, filterSearch } from "/js/Firebase.js";
+import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 
-import { selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, assignStopsToShipment } from "./Model";
-import { update } from "lodash";
+import { removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, assignStopsToShipment } from "./Model";
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
 const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
@@ -35,6 +34,10 @@ const selectAddStopsRun = document.getElementById('select_add_stops_run');
 const cancelAddStopsWidgetButton = document.getElementById('cancel_add_stops_button');
 const addStopsWidgetButton = document.getElementById('add_stops_widget_button');
 
+const removeStopsWidget = document.getElementById('remove_stops_widget');
+const cancelRemoveStopsWidgetButton = document.getElementById('cancel_remove_stops_button');
+const removeStopsWidgetButton = document.getElementById('remove_stops_widget_button');
+
 const runCardList = document.getElementById("runCardList");
 const selectedShipment = document.getElementById('select_shipment');
 
@@ -48,6 +51,7 @@ const addOrderTable = document.getElementById('table_body');
 const addOrderSearchInput = document.getElementById('add_order_search_input');
 const addOrderSearchFilter = document.getElementById('add_order_search_filter');
 const assignStopButton = document.getElementById('assign_stop_button');
+const removeStopButton = document.getElementById('remove_stop_button');
 const addStopButton = document.getElementById('add_stop_button');
 
 const stopCardLongClickTime = 1000;
@@ -279,11 +283,10 @@ function addEventListeners(){
         orderIDs.push(x.value);
 
       });
-      console.log(currentSelectedRun);
+      
       const result = await assignStopsToRun(selectAssignStopsRun.value, orderIDs, currentShipmentUnassignedOrders);
 
-      //rebuild ui
-      updateRunsList(selectedShipment.value);
+      updateUnassignedOrdersTable(currentShipmentUnassignedOrders);
       
       if(result){
 
@@ -355,6 +358,59 @@ function addEventListeners(){
 
       hideUI(addStopsWidget);
       
+    });
+
+  }
+
+  if(removeStopButton != null){
+
+    removeStopButton.addEventListener('click', () => {
+
+      showUI(removeStopsWidget);
+
+    });
+
+  }
+
+  if(cancelRemoveStopsWidgetButton != null){
+
+    cancelRemoveStopsWidgetButton.addEventListener('click', () => {
+
+      hideUI(removeStopsWidget);
+
+    });
+
+  }
+
+  if(removeStopsWidgetButton != null){
+
+    removeStopsWidgetButton.addEventListener('click', async () => {
+
+      //get stops that have been selected
+    
+      const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked[class=assignStopCheckbox]');
+
+      const stopIDs = [];
+
+      selectedCheckBoxes.forEach((x) => {
+
+        stopIDs.push(x.value);
+
+      });
+
+      const result = await removeStopsFromShipment(stopIDs, currentShipmentUnassignedOrders);
+      
+      hideUI(removeStopsWidget);
+      
+      updateUnassignedOrdersTable(currentShipmentUnassignedOrders);
+
+      if(result){
+        showNotification("Success!", "Successfully removed stops from shipment");
+        return;
+      }
+      
+      showNotification("Error!", "Error removing stops from shipment");
+
     });
 
   }
@@ -498,19 +554,7 @@ function parseRunData(runData){
 
     unassignedOrdersButton.addEventListener('click', async () => {
 
-        selectCard(unassignedOrdersButton);
-        const orders = await getRunStopsOrderData(runStruct.stops);
-        mergeStopsWithOrderData(runStruct.stops, orders);
-
-        unassignedOrderTableBody.innerHTML = "";
-
-        for(let i = 0; i < runStruct.stops.length; i++){
-
-            unassignedOrderTableBody.appendChild(createUnassignedOrdersTableCard(runStruct.stops[i]));
-
-        }
-        // mergeStopsWithOrderData(runStruct.stops, orders);
-        showUnassignedOrdersTable();
+      updateUnassignedOrdersTable(runStruct.documentId);
 
     });
 
@@ -526,7 +570,24 @@ function parseRunData(runData){
 }
 
 
+async function updateUnassignedOrdersTable(unassignedStopsDocumentID){
 
+  const runObject = await selectRun(unassignedStopsDocumentID);
+
+  //rebuild ui
+  await updateRunsList(selectedShipment.value);
+
+  unassignedOrderTableBody.innerHTML = "";
+
+  for(let i = 0; i < runObject.stops.length; i++){
+
+      unassignedOrderTableBody.appendChild(createUnassignedOrdersTableCard(runObject.stops[i]));
+
+  }
+
+  showUnassignedOrdersTable();
+
+}
 
 
 async function updateSelectShipment(shipmentName){
@@ -585,6 +646,7 @@ function clearShipmentUI(){
   hideUI(unassignedOrdersContainer);
 
 }
+
 
 function clearAndHideRunStopsUI(){
 
@@ -676,14 +738,10 @@ function updateStopList(runStruct){
   const stops = runStruct.stops
   runStopsContainer.innerHTML = "";
 
-  // console.log(runStruct.stops);
-
   for(let i = 0; i < stops.length; i++){
 
-    // console.log(i);
     for(let j = 0; j < stops.length; j++){
 
-      // console.log(stops[j]);
       if(stops[j].stopNumber == i + 1){
 
         const stopNumber = createStopNumber(stops[j].stopNumber, stops[j].isLocked);
@@ -697,6 +755,7 @@ function updateStopList(runStruct){
     }
 
   }
+  
 
 }
 

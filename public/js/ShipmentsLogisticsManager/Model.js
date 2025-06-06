@@ -355,6 +355,49 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
 
 }
 
+export async function removeStopsFromShipment(stops, unassignedStopsDocumentID){
+
+  const runRef = doc(db, 'Runs', unassignedStopsDocumentID);
+
+  let unassignedStopsDocument;
+
+  try{
+
+    unassignedStopsDocument = await getDocument(runRef);
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  const currentUnassignedStops = unassignedStopsDocument.data()['stops'];
+
+  const unassignedStopsWithStopsRemoved = currentUnassignedStops.filter((stop) => {
+
+    const primaryKey = stop.orderID + "_" + stop.stopType;
+    return !stops.includes(primaryKey);
+
+  });
+
+  console.log(unassignedStopsWithStopsRemoved);
+
+
+  try{
+
+    await updateDocument(runRef, {"stops": unassignedStopsWithStopsRemoved});
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  return true;
+
+}
 
 export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID){
 
@@ -422,6 +465,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
   for(let i = 0; i < stopsToAdd.length; i++){
 
     stopsToAdd[i].stopNumber = currentNumberOfStops + i + 1;
+    stopsToAdd[i].isLocked = false;
 
   }
 

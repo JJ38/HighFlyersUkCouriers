@@ -83,8 +83,8 @@
 
           <div>
 
-            <button id="cancel_create_shipment" class="shipmentWidgetButton">Cancel</button>
-            <button id="save_create_shipment" class="shipmentWidgetButton">Save</button>
+            <button id="cancel_create_shipment" class="widgetButton">Cancel</button>
+            <button id="save_create_shipment" class="widgetButton">Save</button>
           
           </div>
         </div>
@@ -105,8 +105,8 @@
 
           <div>
 
-            <button id="cancel_delete_shipment" class="shipmentWidgetButton">Cancel</button>
-            <button id="confirm_delete_shipment" class="shipmentWidgetButton">Confirm</button>
+            <button id="cancel_delete_shipment" class="widgetButton">Cancel</button>
+            <button id="confirm_delete_shipment" class="widgetButton">Confirm</button>
           
           </div>
 
@@ -123,8 +123,8 @@
           
           <div>
 
-            <button id="cancel_assign_stops_button" class="shipmentWidgetButton">Cancel</button>
-            <button id="assign_stops_widget_button" class="shipmentWidgetButton">Assign Stops</button>
+            <button id="cancel_assign_stops_button" class="widgetButton">Cancel</button>
+            <button id="assign_stops_widget_button" class="widgetButton">Assign Stops</button>
 
           </div>
           
@@ -133,7 +133,7 @@
 
         <div id="add_stops_widget" class="addStopsWidget widget hidden">
 
-          <h2>Add Stops Widget</h2>
+          <h2>Add Stops</h2>
 
           <select name="" id="select_add_stops_run">
 
@@ -145,8 +145,21 @@
              
           <div>
 
-            <button id="cancel_add_stops_button" class="shipmentWidgetButton">Cancel</button>
-            <button id="add_stops_widget_button" class="shipmentWidgetButton">Add Stops</button>
+            <button id="cancel_add_stops_button" class="widgetButton">Cancel</button>
+            <button id="add_stops_widget_button" class="widgetButton">Add Stops</button>
+
+          </div>
+
+        </div>
+
+        <div id="remove_stops_widget" class="removeStopsWidget widget hidden">
+
+          <h2>Remove stops</h2>
+
+          <div>
+
+            <button id="cancel_remove_stops_button" class="widgetButton">Cancel</button>
+            <button id="remove_stops_widget_button" class="widgetButton">Remove Stops</button>
 
           </div>
 
@@ -251,12 +264,13 @@
                     </select>
 
                     <button id="" class="selectAddButton filterButton">Search</button>
+                    <button id="remove_stop_button" class="removeStopButton filterButton">Remove Stop(s)</button>
 
                   </div>
 
-                  <div class="orderButtonsContainer">
+                  <div class="stopButtonsContainer">
 
-                    <button id="assign_stop_button" class="addOrderButton filterButton">Assign Stop(s)</button>
+                    <button id="assign_stop_button" class="assignStopButton filterButton">Assign Stop(s)</button>
 
                   </div>
 
