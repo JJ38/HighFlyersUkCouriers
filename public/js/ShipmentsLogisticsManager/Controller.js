@@ -47,8 +47,12 @@ const selectedShipment = document.getElementById('select_shipment');
 
 const selectedRunView = document.getElementById('selected_run_view');
 const runStopsContainer = document.getElementById('run_stops_container');
+const runOptionsContainer = document.getElementById('run_options_container');
 const addRunDetailsContainer = document.getElementById('add_run_details');
 const runInfoWrapper = document.getElementById('run_info_wrapper');
+
+const manageTabButton = document.getElementById('manage_tab_button');
+const optionTabButton = document.getElementById('option_tab_button');
 
 const searchButton = document.getElementById('search_button');
 const addOrderTable = document.getElementById('table_body');
@@ -458,8 +462,27 @@ function addEventListeners(){
 
   }
 
-}
+  if(manageTabButton != null){
 
+    manageTabButton.addEventListener('click', () => {
+
+      selectTab("Manage");
+
+    });
+
+  }
+
+  if(optionTabButton != null){
+
+    optionTabButton.addEventListener('click', () => {
+      
+      selectTab("Option");
+
+    });
+
+  }
+
+}
 
 function deselectCheckboxes(checkBoxes){
 
@@ -472,15 +495,38 @@ function deselectCheckboxes(checkBoxes){
 }
 
 
+function selectTab(tabName){
+
+  if(tabName == "Manage"){
+
+    showUI(runStopsContainer);
+    hideUI(runOptionsContainer);
+    manageTabButton.classList.add('selectedTabButton');
+    optionTabButton.classList.remove('selectedTabButton');
+
+  }else if(tabName == "Option"){
+
+    hideUI(runStopsContainer);
+    showUI(runOptionsContainer);
+    optionTabButton.classList.add('selectedTabButton');
+    manageTabButton.classList.remove('selectedTabButton');
+
+  }
+
+}
+
+
+
 function showRuns(){
 
-  showUI(runStopsContainer);
   showUI(selectedRunView);
   showUI(runInfoWrapper);
   hideUI(addRunDetailsContainer);
   hideUI(unassignedOrdersContainer);
 
   selectedRunView.classList.add('fit-content');
+
+  selectTab("Manage");
 
 }
 
@@ -1316,8 +1362,6 @@ function moveStopCard(mouseY, stopCard, grabPositionOffset){
   const top = mouseY - stopListYOffset - grabPositionOffset;
 
   //get center of card pos
-  //const position = getPositionOfElement(stopCard);
-
   setTop(top, stopCard);
 
 }
