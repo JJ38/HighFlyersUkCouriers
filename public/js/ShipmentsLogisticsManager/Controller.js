@@ -493,25 +493,21 @@ function hideSelectUI(element){
 
 function selectCard(runCard){
 
-  console.log("selectCard");
+  if(currentSelectedRunCard != null){
+    currentSelectedRunCard.classList.remove('selectedRunCard');
+  }
 
   //deselect card without selecting a new one
   if(!runCard){
 
-    currentSelectedRunCard.classList.remove('selectedRunCard');
     currentSelectedRunCard = null;
     return;
 
   }
 
-  if(currentSelectedRunCard != null){
-    currentSelectedRunCard.classList.remove('selectedRunCard');
-  }
-
   runCard.classList.add('selectedRunCard');
 
   currentSelectedRunCard = runCard;
-
 
 }
 
@@ -581,7 +577,6 @@ function parseRunData(runData){
   }
 
   return runStruct;
-  //runStructList.push(runStruct);
 
 }
 
@@ -602,8 +597,6 @@ async function updateUnassignedOrdersTable(runObject){
   }
 
   showUnassignedOrdersTable();
-
-
 
 }
 
@@ -631,7 +624,6 @@ async function updateSelectShipment(shipmentName){
     selectedShipment.appendChild(shipmentOptions[i]);
 
   }
-
 
 }
 
@@ -703,23 +695,17 @@ async function updateRunsList(shipmentName){
 
     }
 
-    console.log(currentSelectedRun);
-    console.log(runsList[i].runCard.id);
     if(currentSelectedRun != null){
 
       //find and reselect run that was selected before run card were rebuilt.
       if(currentSelectedRun.documentId == runsList[i].runCard.id){
 
-        console.log(currentSelectedRun);
-        console.log(runsList[i]);
         selectCard(runsList[i].runCard);
 
       }
     }
 
   }
-
-
 
   //append add stop button
   const addStopButton = createAddStopButton();
