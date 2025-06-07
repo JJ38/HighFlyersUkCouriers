@@ -2,9 +2,8 @@ import { db, getDocuments, filterSearch } from "/js/Firebase.js";
 import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
-
-import { removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, assignStopsToShipment } from "./Model";
+import { createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
+import { addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, assignStopsToShipment } from "./Model";
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
 const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
@@ -37,6 +36,11 @@ const addStopsWidgetButton = document.getElementById('add_stops_widget_button');
 const removeStopsWidget = document.getElementById('remove_stops_widget');
 const cancelRemoveStopsWidgetButton = document.getElementById('cancel_remove_stops_button');
 const removeStopsWidgetButton = document.getElementById('remove_stops_widget_button');
+
+const addRunWidget = document.getElementById('add_run_widget');
+const cancelAddRunWidgetButton = document.getElementById('cancel_add_run_button');
+const addRunWidgetButton = document.getElementById('add_run_widget_button');
+const addRunNameInput = document.getElementById('add_run_name_input');
 
 const runCardList = document.getElementById("runCardList");
 const selectedShipment = document.getElementById('select_shipment');
@@ -249,7 +253,7 @@ function addEventListeners(){
     assignStopButton.addEventListener('click', async () => {
 
       const shipmentData = await fetchShipment(selectedShipment.value);
-      const runData = await fetchRunsInShipment(shipmentData.docs[0].data()['runs']);
+      const runData = await fetchRunsInShipment(shipmentData.data()['runs']);
 
       updateSelectRunAssignStops(runData);
 
@@ -412,6 +416,43 @@ function addEventListeners(){
       }
       
       showNotification("Error!", "Error removing stops from shipment");
+
+    });
+
+  }
+
+  if(addRunWidgetButton != null){
+
+    addRunWidgetButton.addEventListener('click', async () => {
+
+      if(addRunNameInput.value != null){
+
+        const result = await addRunToShipment(addRunNameInput.value, selectedShipment.value);
+
+        if(result === false){
+
+          showNotification("Error!", "Error adding run to shipment");
+          return;
+
+        }
+
+        updateRunsList(selectedShipment.value);
+        showNotification("Success!", "Successfully added run to shipment");
+        hideUI(addRunWidget);
+        return;
+
+      } 
+
+      showNotification("Error!", "Please enter a name for the run you want to add");
+
+    });
+  }
+
+  if(cancelAddRunWidgetButton != null){
+
+    cancelAddRunWidgetButton.addEventListener('click', () => {
+
+      hideUI(addRunWidget);
 
     });
 
@@ -669,7 +710,16 @@ function clearAndHideRunStopsUI(){
 //unassigned orders button ui bug is in here
 async function updateRunsList(shipmentName){
 
+  if(shipmentName === "SELECT_SHIPMENT"){
+    return;
+  }
+
   const runsList = await selectShipment(shipmentName);
+
+  if(runsList === false){
+    showNotification("Error!", "Error fetching shipment");
+    return;
+  }
 
   runsList.sort(sortAlphabetically);
 
@@ -719,6 +769,18 @@ async function updateRunsList(shipmentName){
 
   addStopButtonWrapper.appendChild(addStopButton);
 
+
+  //append add run button
+  const addRunButton = createAddRunButton();
+
+  addRunButton.addEventListener('click', () => {
+
+    showUI(addRunWidget);
+
+  });
+
+  runCardList.appendChild(addRunButton);
+
 }
 
 
@@ -726,7 +788,13 @@ async function selectShipment(selectedShipment){
 
   const shipmentData = await fetchShipment(selectedShipment);
 
-  const runIDs = shipmentData.docs[0].data()['runs'];
+  if(shipmentData === false){
+
+    return false;
+
+  }
+
+  const runIDs = shipmentData.data()['runs'];
 
   const runData = await fetchRunsInShipment(runIDs);
 

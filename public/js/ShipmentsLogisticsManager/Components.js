@@ -495,6 +495,27 @@ export function createAddStopButton(){
 }
 
 
+export function createAddRunButton(){
+
+  const addRunButton = document.createElement('div');
+  addRunButton.classList = "addStopButton";
+
+  const reportIcon = document.createElement('span');
+  reportIcon.classList = "addIcon material-symbols-outlined";
+  reportIcon.innerText = "add";
+
+  const title = document.createElement('p');
+  title.classList = "unassignedOrdersTitle";
+  title.innerText = "Add Run";
+
+  addRunButton.appendChild(reportIcon);
+  addRunButton.appendChild(title);
+
+  return addRunButton;
+
+}
+
+
 export function createOption(text, value){
 
   const option = document.createElement('option');

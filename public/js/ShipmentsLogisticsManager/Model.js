@@ -1,4 +1,4 @@
-import { query, collection, where, limit, orderBy, doc, writeBatch } from "firebase/firestore";
+import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion } from "firebase/firestore";
 import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
 
 
@@ -183,15 +183,7 @@ function generateStopForRun(runName, orderData, stopType, deliveryWeek, runStruc
 
   if(run == null){
 
-    run = {
-
-      assignedDriver: "",
-      fuelCost: "",
-      runName: runName,
-      runWeek: deliveryWeek,
-      stops: [],     
-
-    }
+    run = generateRunDoc(runName, deliveryWeek);
 
     run.stops.push(
     {
@@ -218,16 +210,37 @@ function generateStopForRun(runName, orderData, stopType, deliveryWeek, runStruc
 
 }
 
+function generateRunDoc(runName, deliveryWeek){
+
+  if(deliveryWeek == null){
+    deliveryWeek = -1;
+  }
+
+  const run = {
+
+    assignedDriver: "",
+    fuelCost: "",
+    runName: runName,
+    runWeek: deliveryWeek,
+    stops: [],     
+
+  }
+
+  return run;
+
+}
+
 export async function fetchShipment(shipmentName){
 
   const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", shipmentName), limit(1)));
 
   if(shipmentData.empty){
     console.log("shipment doesnt exist");
-    return;
+    
+    return false;
   }
 
-  return shipmentData;
+  return shipmentData.docs[0];
 
 }
 
@@ -486,6 +499,50 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
   return true;
 
 } 
+
+export async function addRunToShipment(runName, shipmentName){
+
+  //get shipment doc ref
+  const shipmentDoc = await fetchShipment(shipmentName); 
+
+  if(shipmentDoc === false){
+    return false;
+  }
+
+  console.log(shipmentDoc.id);
+
+  try{
+
+    const batch = writeBatch(db);
+
+    //create run document
+    const runRef = doc(collection(db, 'Runs'));
+    const shipmentRef = doc(db, 'Shipments', shipmentDoc.id);
+
+    console.log(runRef.id);
+
+    const runDoc = generateRunDoc(runName);
+
+    batch.set(runRef, runDoc);
+
+    batch.update(shipmentRef, {
+      runs: arrayUnion(runRef.id)
+    });
+
+    batch.commit();
+
+    return true;
+
+  }catch(e){
+    
+    console.log(e);
+    return false
+
+  }
+
+
+
+}
 
 
 export async function getRunStopsOrderData(stops){
