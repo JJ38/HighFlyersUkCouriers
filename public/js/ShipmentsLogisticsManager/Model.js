@@ -83,7 +83,7 @@ export async function generateShipment(shipmentName, shipmentType, shipmentDeliv
 
     console.log(runStructList);
 
-    const storeShipmentResult = await storeShipment(runStructList, shipmentName);
+    const storeShipmentResult = await storeShipment(runStructList, shipmentName, deliveryWeek);
     return storeShipmentResult;
 
   }catch(e){
@@ -95,7 +95,7 @@ export async function generateShipment(shipmentName, shipmentType, shipmentDeliv
 
 }
 
-async function storeShipment(runStructList, shipmentName){
+async function storeShipment(runStructList, shipmentName, deliveryWeek){
 
   const batch = writeBatch(db);
 
@@ -113,7 +113,8 @@ async function storeShipment(runStructList, shipmentName){
   batch.set(shipmentRef,  {
 
     runs: runDocRefs,
-    shipmentName: shipmentName
+    shipmentName: shipmentName,
+    shipmentWeek: deliveryWeek
 
   });
 
@@ -509,6 +510,8 @@ export async function addRunToShipment(runName, shipmentName){
     return false;
   }
 
+  const deliveryWeek = shipmentDoc.data()['shipmentWeek'];
+
   console.log(shipmentDoc.id);
 
   try{
@@ -521,7 +524,7 @@ export async function addRunToShipment(runName, shipmentName){
 
     console.log(runRef.id);
 
-    const runDoc = generateRunDoc(runName);
+    const runDoc = generateRunDoc(runName, deliveryWeek);
 
     batch.set(runRef, runDoc);
 
