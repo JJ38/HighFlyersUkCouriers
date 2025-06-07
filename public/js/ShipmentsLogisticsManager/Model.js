@@ -171,6 +171,17 @@ export function generateRuns(runDefinitions, orderData, shipmentTypeInput, deliv
 
   }
 
+  //check if unassigned stops run has been created
+  const unassignedStopsRunCreated = runStructList.find((run) => {
+    return run.runName === null;
+  });
+
+  if(!unassignedStopsRunCreated){
+
+    runStructList.push(generateRunDoc(null, deliveryWeek));
+
+  }
+
   return runStructList;
 
 }
@@ -296,7 +307,7 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
   try{
 
     const shipmentData = await fetchShipment(selectedShipment);
-    runData = await fetchRunsInShipment(shipmentData.docs[0].data()['runs']);
+    runData = await fetchRunsInShipment(shipmentData.data()['runs']);
 
   }catch(e){
 
@@ -312,6 +323,8 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
   });
 
   if(unassignedRun == null){
+
+    console.log("unassignedRun == null");
 
     return false;
 
@@ -413,7 +426,12 @@ export async function removeStopsFromShipment(stops, unassignedStopsDocumentID){
 
 }
 
+
 export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID){
+
+  //handle case where unassigned document doesnt exist
+  console.log(runToAddStopID);
+
 
   const batch = writeBatch(db);
   //remove stops from unassigned run document
@@ -473,7 +491,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   }
 
-
+  console.log(runDocument);
   const currentNumberOfStops = runDocument.data()['stops'].length; 
 
   for(let i = 0; i < stopsToAdd.length; i++){
@@ -501,6 +519,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
 } 
 
+//returns the id of the run document added to shipment or false
 export async function addRunToShipment(runName, shipmentName){
 
   //get shipment doc ref

@@ -845,6 +845,12 @@ function updateStopList(runStruct){
     }
 
   }
+
+  if(stops.length == 0){
+
+    runStopsContainer.innerText = "No Stops in run";
+
+  }
   
 
 }
@@ -1008,7 +1014,6 @@ function getStopCard(stop, runStruct, stopNumber){
 
 
   deleteButton.addEventListener('click', async () => {
-    console.log(selectedShipment.value);
 
     const result = await assignStopsToRun(currentShipmentUnassignedOrders, [stop.orderID + "_" + stop.stopType], runStruct.documentId);
 
