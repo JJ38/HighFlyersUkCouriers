@@ -283,6 +283,7 @@ p{
 }
 
 .runStopsContainer{
+    min-width: 250px;
     max-width: 350px;
     height: 100%;
     width: fit-content;
@@ -711,6 +712,40 @@ td > div{
 
 }
 
+
+.runOptionsContainer{
+
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    min-width: 300px;
+
+    padding: 15px 15px;
+
+}
+
+.removeRunButton{
+
+    display: flex;
+    color: white;
+    align-items: center;
+    border-radius: 5px;
+    background-color: red;
+    border: 1px solid red;
+    padding: 5px 10px;
+    width: fit-content;
+
+}
+
+.removeRunButton:hover{
+
+    cursor: pointer;
+    color: red;
+    background-color: white;
+
+}
+
+
 .hidden{
     display: none !important;
 }
@@ -791,4 +826,8 @@ td > div{
 
 .fit-content{
     width: fit-content;
+}
+
+.bold{
+    font-weight: 600;
 }

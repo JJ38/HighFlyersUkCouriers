@@ -1,9 +1,9 @@
 import { db, getDocuments, filterSearch } from "/js/Firebase.js";
-import { query, collection, limit, orderBy } from "firebase/firestore";
+import { query, collection, limit, orderBy, doc } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
-import { addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, assignStopsToShipment } from "./Model";
+import { addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
 const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
@@ -53,6 +53,9 @@ const runInfoWrapper = document.getElementById('run_info_wrapper');
 
 const manageTabButton = document.getElementById('manage_tab_button');
 const optionTabButton = document.getElementById('option_tab_button');
+
+const removeRunButton = document.getElementById('remove_run_button');
+const removeRunWidget = document.getElementById('remove_run_widget');
 
 const searchButton = document.getElementById('search_button');
 const addOrderTable = document.getElementById('table_body');
@@ -482,6 +485,55 @@ function addEventListeners(){
 
   }
 
+  if(removeRunButton != null){
+
+    removeRunButton.addEventListener('click', async () => {
+      //get primary keys of stops to remove
+      const stopPrimaryKeys = currentSelectedRun.stops.map((stop) => {
+
+        return stop.orderID + "_" + stop.stopType;
+
+      });
+
+      let assignStopsResult = true;
+
+      if(stopPrimaryKeys.length != 0){
+        //remove all stops from run
+        assignStopsResult = await assignStopsToRun(currentShipmentUnassignedOrders, stopPrimaryKeys, currentSelectedRun.documentId);
+      }
+
+      //remove run document
+      if(assignStopsResult){
+
+        if(currentShipmentUnassignedOrders == currentSelectedRun.documentId){
+          showNotification("Error!", "Cannot remove unassigned stops document from shipment");
+          return; 
+        }
+
+        const removeRunFromShipmentResult = await removeRunFromShipment(currentSelectedRun.documentId, selectedShipment.value);
+        if(removeRunFromShipmentResult){
+
+          showNotification("Success!", "Removed run from shipment. All stops in run have been marked as unassigned");
+
+        }else{
+
+          showNotification("Error!", "Error removing run from shipment. All stops in run have been market as unassigned");
+
+        }
+
+        await updateRunsList(selectedShipment.value);
+        hideUI(selectedRunView);
+   
+      }else{
+        showNotification("Error!", "Error removing run from shipment");
+      }
+
+
+    });
+
+  }
+
+
 }
 
 function deselectCheckboxes(checkBoxes){
@@ -514,7 +566,6 @@ function selectTab(tabName){
   }
 
 }
-
 
 
 function showRuns(){
@@ -1410,6 +1461,8 @@ async function getOrders(query){
   //fetch orders
   const orderData = await getDocuments(query);
   addOrderTable.innerHTML = "";
+
+  console.log(orderData);
 
   if(orderData.empty){
     console.log("no orders to show");

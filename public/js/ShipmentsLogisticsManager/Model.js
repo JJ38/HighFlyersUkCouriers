@@ -1,4 +1,4 @@
-import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion } from "firebase/firestore";
+import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion, deleteDoc } from "firebase/firestore";
 import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
 
 
@@ -57,6 +57,77 @@ export async function deleteShipmentDocument(id){
 
   }catch(e){
 
+    return false;
+
+  }
+
+}
+
+export async function removeRunFromShipment(runIDToRemove, shipmentName){
+
+  let shipmentDocument;
+
+  try{
+
+    shipmentDocument = await fetchShipment(shipmentName);
+
+    if(shipmentDocument == false){
+      return false;
+    }
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  console.log(shipmentDocument);
+  console.log(runIDToRemove);
+
+
+  const newRuns = shipmentDocument.data()['runs'].filter((runID) => {
+
+    return runID != runIDToRemove;
+
+  })
+
+  console.log(newRuns);
+
+  try{
+
+    const batch = writeBatch(db)
+
+    const shipmentRef = doc(db, "Shipments", shipmentDocument.id);
+    batch.update(shipmentRef, {"runs": newRuns});
+
+    batch.delete(doc(db, "Runs", runIDToRemove));
+
+    batch.commit();
+
+    return true;
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+
+}
+
+async function deleteDocument(docRef){
+
+  try{
+
+    await deleteDoc(docRef);
+  
+    return true;
+
+  }catch(e){
+
+    console.log(e);
     return false;
 
   }
@@ -429,9 +500,7 @@ export async function removeStopsFromShipment(stops, unassignedStopsDocumentID){
 
 export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID){
 
-  //handle case where unassigned document doesnt exist
   console.log(runToAddStopID);
-
 
   const batch = writeBatch(db);
   //remove stops from unassigned run document

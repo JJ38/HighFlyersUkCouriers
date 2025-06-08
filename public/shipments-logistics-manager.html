@@ -182,6 +182,20 @@
 
         </div>
 
+        <div id="remove_run_widget" class="removeStopsWidget widget hidden">
+
+          <h2>Remove Run</h2>
+
+
+          <div>
+
+            <button id="cancel_remove_run_button" class="widgetButton">Cancel</button>
+            <button id="add_remove_widget_button" class="widgetButton">Add Run</button>
+
+          </div>
+
+        </div>
+
 
         <nav class="logisticsVerticalNavbar">
           <a class="verticalNavbarLink" href="/live-logistics-manager">
@@ -341,7 +355,7 @@
                 <div id="run_tab_buttons_wrapper" class="runTabButtonWrapper">
 
                   <button id="manage_tab_button" class="runTabButton selectedTabButton">Manage</button>
-                  <button id="option_tab_button" class="runTabButton">Option</button>
+                  <button id="option_tab_button" class="runTabButton">Options</button>
 
                 </div>
               
@@ -351,7 +365,24 @@
                 </div>
 
                 <div id="run_options_container" class="runOptionsContainer hidden">
-                  run options container
+
+                  <div>
+
+                    <label for="driver_select" class="bold">Assign Driver: </label>
+                    <select name="driver_select" id="driver_select" class="addOrderSearchFilter">
+
+                      <option value="opunuoien">Stephen</option>
+                      <option value="pojjesPIOFJEI">Anne</option>
+                  
+                    </select>
+
+                  </div>
+
+                  <div id="remove_run_button" class="removeRunButton">
+                    <p>Remove Run</p>
+                    <span class="delete material-symbols-outlined">delete</span>
+                  </div>
+
                 </div>
 
               </div>
