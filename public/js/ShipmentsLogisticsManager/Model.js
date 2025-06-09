@@ -269,6 +269,10 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
 
   }
 
+  if(stop.coordinates == null){
+    runName = null;
+  }
+
   const run = runDocuments.find((run) => {
     return run.runName === runName;
   })
