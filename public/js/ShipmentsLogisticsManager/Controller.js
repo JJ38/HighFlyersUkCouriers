@@ -167,7 +167,7 @@ function addEventListeners(){
         alert('"default" is an invalid name for a shipment. Please choose a different name')
         return;
       }
-
+      
       const generateShipmentResult = await generateShipment(shipmentNameInput.value, shipmentTypeInput.value, shipmentDeliveryWeekInput.value);
 
       console.log(generateShipmentResult);

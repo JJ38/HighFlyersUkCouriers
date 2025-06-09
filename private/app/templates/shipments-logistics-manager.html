@@ -5,7 +5,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>
-      
+        
+
         
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
@@ -15,15 +16,16 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 
         <!-- <script type="text/javascript" src="/js/MobileNavigationBar.js"></script> -->
-        
+
         <title>HighFlyersUkCouriers</title>
-      <script type="module" crossorigin src="./assets/ShipmentsLogisticsManager-BNH-ocmv.js"></script>
+      <script type="module" crossorigin src="./assets/ShipmentsLogisticsManager-B6qarFdj.js"></script>
       <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
-      <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-na8kYZ-F.js">
-      <link rel="modulepreload" crossorigin href="./assets/Firebase-HrLgfg5a.js">
-      <link rel="modulepreload" crossorigin href="./assets/Logout-pK-0Dl2f.js">
-      <link rel="modulepreload" crossorigin href="./assets/FirebaseManageOrders-Dv5fN-4T.js">
-      <link rel="stylesheet" crossorigin href="./assets/ShipmentsLogisticsManager-e2GlPvv0.css">
+      <link rel="modulepreload" crossorigin href="./assets/Notification-D0jEUT8q.js">
+      <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-B1C6gsaD.js">
+      <link rel="modulepreload" crossorigin href="./assets/Firebase-Crudew6x.js">
+      <link rel="modulepreload" crossorigin href="./assets/Logout-COma5mPh.js">
+      <link rel="stylesheet" crossorigin href="./assets/Notification-BHB7FqS3.css">
+      <link rel="stylesheet" crossorigin href="./assets/ShipmentsLogisticsManager-BcSTKLdd.css">
       <link rel="stylesheet" crossorigin href="./assets/Navbar-ClBKpNFz.css">
       <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
       <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-UkFB9euZ.css">
@@ -38,7 +40,7 @@
               <a class="currentpage" href="/manage-orders">Bookings</a>
               <a href="/content-manager">Content Manager</a>
               <a href="/manage-accounts">Accounts</a>
-              <a class="navLinks" href="/manage-logistics">Logistics</a>
+              <a class="navLinks" href="/live-logistics-manager">Logistics</a>
           </div>
         </div>
         <nav id="menu">
@@ -51,13 +53,13 @@
           <a class="navLinks" href="/manage-orders">Bookings</a>
           <a class="navLinks" href="/content-manager">Content Manager</a>
           <a class="navLinks" href="/manage-accounts">Accounts</a>
-          <a class="navLinks" href="/manage-logistics">Logistics</a>
+          <a class="navLinks" href="/live-logistics-manager">Logistics</a>
         </nav>
     
       </header>
       <Section id="navbarMainContentWrapper">
 
-        <div id="create_shipment_widget" class="createShipmentWidget hidden">
+        <div id="create_shipment_widget" class="widget hidden">
 
           <h1>Create New Shipment</h1>
 
@@ -74,7 +76,7 @@
             </div>
             
             <div class="flex-col">
-              <label for="shipment_run_type">Run Type</label>
+              <label for="shipment_run_type">Run Type:</label>
               <select type="text" name="shipment_run_type" id="shipment_run_type">
                 <option value="collection">Collection</option>
                 <option value="delivery">Delivery</option>
@@ -85,11 +87,119 @@
 
           <div>
 
-            <button id="cancel_create_shipment" class="shipmentWidgetButton">Cancel</button>
-            <button id="save_create_shipment" class="shipmentWidgetButton">Save</button>
+            <button id="cancel_create_shipment" class="widgetButton">Cancel</button>
+            <button id="save_create_shipment" class="widgetButton">Save</button>
           
           </div>
         </div>
+
+
+        <div id="delete_shipment_widget" class="widget hidden">
+
+          <h1>Delete Shipment</h1>
+
+          <div class="createShipmentContentWrapper">
+
+            <label for="select_delete_shipment">Select shipment to delete:</label>
+            <select type="text" name="select_delete_shipment" id="select_delete_shipment">
+              <option selected value="default">-- select shipment to delete --</option>
+            </select>
+
+          </div>
+
+          <div>
+
+            <button id="cancel_delete_shipment" class="widgetButton">Cancel</button>
+            <button id="confirm_delete_shipment" class="widgetButton">Confirm</button>
+          
+          </div>
+
+        </div>
+
+
+        <div id="assign_stops_widget" class="assignStopsWidget widget hidden">
+
+          <h2>Assign Stops</h2>
+
+          <select name="" id="select_assign_stops_run">
+            <option value="">awdawd</option>
+          </select>
+          
+          <div>
+
+            <button id="cancel_assign_stops_button" class="widgetButton">Cancel</button>
+            <button id="assign_stops_widget_button" class="widgetButton">Assign Stops</button>
+
+          </div>
+          
+        </div>
+
+
+        <div id="add_stops_widget" class="addStopsWidget widget hidden">
+
+          <h2>Add Stops</h2>
+
+          <select name="" id="select_add_stops_run">
+
+            <option value="collection">Collection</option>
+            <option value="delivery">Delivery</option>
+
+          </select>
+
+             
+          <div>
+
+            <button id="cancel_add_stops_button" class="widgetButton">Cancel</button>
+            <button id="add_stops_widget_button" class="widgetButton">Add Stops</button>
+
+          </div>
+
+        </div>
+
+
+        <div id="remove_stops_widget" class="removeStopsWidget widget hidden">
+
+          <h2>Remove stops</h2>
+
+          <div>
+
+            <button id="cancel_remove_stops_button" class="widgetButton">Cancel</button>
+            <button id="remove_stops_widget_button" class="widgetButton">Remove Stops</button>
+
+          </div>
+
+        </div>
+
+
+        <div id="add_run_widget" class="removeStopsWidget widget hidden">
+
+          <h2>Add Run</h2>
+
+          <input id="add_run_name_input" type="text">
+
+          <div>
+
+            <button id="cancel_add_run_button" class="widgetButton">Cancel</button>
+            <button id="add_run_widget_button" class="widgetButton">Add Run</button>
+
+          </div>
+
+        </div>
+
+        <div id="remove_run_widget" class="removeStopsWidget widget hidden">
+
+          <h2>Remove Run</h2>
+
+
+          <div>
+
+            <button id="cancel_remove_run_button" class="widgetButton">Cancel</button>
+            <button id="add_remove_widget_button" class="widgetButton">Add Run</button>
+
+          </div>
+
+        </div>
+
 
         <nav class="logisticsVerticalNavbar">
           <a class="verticalNavbarLink" href="/live-logistics-manager">
@@ -110,47 +220,269 @@
 
           <Section class="shipmentsLogisticsManagerWrapper">
             <Section class="shipmentsWindow">
+
               <h1 class="windowTitle">Shipments</h1>
-              <div class="selectWrapper" >
-                <label for="shipmentGroups" hidden="hidden">Shipment</label>
-                <select id="shipmentGroups" class="selectShipment" name="shipmentGroups">
-                  <option selected value="">-- select a shipment --</option>  
-                  <option value="Wednesday Collections">Collections Week 14</option>  
-                  <option value="Thursday Deliverys">Deliverys Week 14</option>
-                  <option value="CREATE_SHIPMENT">Create Shipment</option>
+
+              <div class="selectWrapper">
+
+                <label for="select_shipment" hidden="hidden">Shipment</label>
+                <select id="select_shipment" class="selectShipment" name="select_shipment">
+                       
                 </select>
+
                 <span class="material-symbols-rounded dropDownIcon">
                   arrow_drop_down_circle
                 </span>
+
               </div>
-              <div id="unassignedOrdersCard" class="unassignedOrdersCard">
-                <span class="warningIcon material-symbols-outlined ">
-                  report
-                </span>
-                <p class="unassignedOrdersTitle">Unassigned</p>
-                <p class="numberOfUnassignedOrders">#19</p>
-              </div>
-              <div id="runCardList" class="runCardList">
+
+            
+              <div id="add_stop_button_wrapper">
+                
               
-              </div>                 
+              </div>  
+
+              <div id="unassigned_orders_card_wrapper">
+                
+              
+              </div>   
+              
+              <div id="runCardList" class="runCardList">
+
+            
+              </div> 
+
             </Section>
             
           </Section>
-          <Section id="dependantContent" class="dependantContent">
-              
-            <div id="unassignOrdersView">
-              
-              <div id="filterWrapper"></div>
-              <table id="unassignedOrdersTable">
+          <Section id="dependant_content" class="dependantContent">
 
-              </table>
-                
-            </div>
+           
 
-            <div id="selectedRunView">
-              <!-- <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map> -->
-        
+            <div id="unassigned_orders_details" class="runDetailsContainer hidden">
+
+              <h1>Unassigned Orders</h1>
+
+              <div class="runDetails">
+
+                <div class="tableActionContainer">
+
+                  <div class="orderFiltersContainer">
+
+                    <input id="unassigned_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
+
+                    <select name="" id="unassigned_order_search_filter" class="addOrderSearchFilter">
+
+                      <option value="ID">ID</option>
+                      <option value="animalType">Animal Type</option>
+                      <option value="quantity">Quantity</option>
+                      <option value="email">Email</option>
+                      <option value="account">Account</option>
+                      <option value="deliveryWeek">Delivery Week</option>
+                      <option value="collectionPhoneNumber">Phone Number</option>
+                      <option value="collectionName">Collection Name</option>
+                      <option value="collectionAddress1">Collection Address 1</option>
+                      <option value="collectionAddress2">Collection Address 2</option>
+                      <option value="collectionAddress3">Collection Address 3</option>
+                      <option value="collectionPostcode">Collection Postcode</option>
+                      <option value="deliveryName">Delivery Name</option>
+                      <option value="deliveryAddress1">Delivery Address 1</option>
+                      <option value="deliveryAddress2">Delivery Address 2</option>
+                      <option value="deliveryAddress3">Delivery Address 3</option>
+                      <option value="deliveryPostcode">Delivery Postcode</option>
+                      <option value="deliveryPhoneNumber">Delivery Phone Number</option>
+                      <option value="payment">Payment</option>
+                      <option value="message">Message</option>
+                      <option value="code">Code</option>
+                      <option value="addedBy">Added By</option>
+                      <option value="printed">Printed</option>
+
+                    </select>
+
+                    <button id="" class="selectAddButton filterButton">Search</button>
+                    <button id="remove_stop_button" class="removeStopButton filterButton">Remove Stop(s)</button>
+
+                  </div>
+
+                  <div class="stopButtonsContainer">
+
+                    <button id="assign_stop_button" class="assignStopButton filterButton">Assign Stop(s)</button>
+
+                  </div>
+
+                </div>
+
+                <div class="tableContainer">
+
+                  <table id="unassigned_order_table" class="orderTable">
+
+                    <tbody class="tableHeaderContainer">
+
+                      <tr class="headerRow">               
+                        <th></th>
+                        <th>ID</th>
+                        <th>Animal</th>
+                        <th>Quantity</th>
+
+                        <th>Stop Type</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Phone Number</th>
+                        <th>Payment</th>
+                        <th>Message</th>
+                        <th>Code</th>
+                        <th></th>
+                        <th class="tableRowBackground"></th>
+                      </tr>
+
+                    </tbody>
+
+                    <tbody id="unassigned_orders_table_body" class="tableBody">
+
+                      <tr></tr>
+                      <tr></tr>
+                      <tr></tr>
+
+                    </tbody>
+                  </table>
+
+                </div>
+              
+              </div>
+
             </div>
+              
+            <div id="selected_run_view" class="runDetailsContainer hidden">
+              
+              <div id="run_info_wrapper" class="runInfoWrapper">
+
+                <div id="run_tab_buttons_wrapper" class="runTabButtonWrapper">
+
+                  <button id="manage_tab_button" class="runTabButton selectedTabButton">Manage</button>
+                  <button id="option_tab_button" class="runTabButton">Options</button>
+
+                </div>
+              
+                <div id="run_stops_container" class="runStopsContainer">
+
+         
+                </div>
+
+                <div id="run_options_container" class="runOptionsContainer hidden">
+
+                  <div>
+
+                    <label for="driver_select" class="bold">Assign Driver: </label>
+                    <select name="driver_select" id="driver_select" class="addOrderSearchFilter">
+
+                      <option value="opunuoien">Stephen</option>
+                      <option value="pojjesPIOFJEI">Anne</option>
+                  
+                    </select>
+
+                  </div>
+
+                  <div id="remove_run_button" class="removeRunButton">
+                    <p>Remove Run</p>
+                    <span class="delete material-symbols-outlined">delete</span>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div id="add_run_details" class="runDetails hidden">
+
+                <div class="tableActionContainer">
+
+                  <div class="orderFiltersContainer">
+
+                    <input id="add_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
+
+                    <select name="" id="add_order_search_filter" class="addOrderSearchFilter">
+
+                      <option value="ID">ID</option>
+                      <option value="animalType">Animal Type</option>
+                      <option value="quantity">Quantity</option>
+                      <option value="email">Email</option>
+                      <option value="account">Account</option>
+                      <option value="deliveryWeek">Delivery Week</option>
+                      <option value="collectionPhoneNumber">Phone Number</option>
+                      <option value="collectionName">Collection Name</option>
+                      <option value="collectionAddress1">Collection Address 1</option>
+                      <option value="collectionAddress2">Collection Address 2</option>
+                      <option value="collectionAddress3">Collection Address 3</option>
+                      <option value="collectionPostcode">Collection Postcode</option>
+                      <option value="deliveryName">Delivery Name</option>
+                      <option value="deliveryAddress1">Delivery Address 1</option>
+                      <option value="deliveryAddress2">Delivery Address 2</option>
+                      <option value="deliveryAddress3">Delivery Address 3</option>
+                      <option value="deliveryPostcode">Delivery Postcode</option>
+                      <option value="deliveryPhoneNumber">Delivery Phone Number</option>
+                      <option value="payment">Payment</option>
+                      <option value="message">Message</option>
+                      <option value="code">Code</option>
+                      <option value="addedBy">Added By</option>
+                      <option value="printed">Printed</option>
+
+                    </select>
+
+                    <button id="search_button" class="selectAddButton filterButton">Search</button>
+
+                  </div>
+
+                  <div class="orderButtonsContainer">
+
+                    <button id="add_stop_button" class="addOrderButton filterButton">Add Stop(s)</button>
+
+                  </div>
+
+                </div>
+
+                <div class="tableContainer">
+
+                  <table id="order_table" class="orderTable">
+
+                    <tbody class="tableHeaderContainer">
+
+                      <tr class="headerRow">               
+                        <th></th>
+                        <th>ID</th>
+                        <th>Animal</th>
+                        <th>Quantity</th>
+                        <th>Account</th>
+                        <th>Week</th>
+                        <th>Collection Name</th>
+                        <th>Collection Address</th>
+                        <th>Collection Phone Number</th>
+                        <th>Delivery Name</th>
+                        <th>Delivery Address</th>
+                        <th>Delivery Phone Number</th>
+                        <th>Payment</th>
+                        <th>Message</th>
+                        <th>Code</th>
+                        <th id="topright"></th>
+                        <th class="tableRowBackground"></th>
+                      </tr>
+
+                    </tbody>
+
+                    <tbody id="table_body" class="tableBody">
+
+                      <tr></tr>
+                      <tr></tr>
+                      <tr></tr>
+
+                    </tbody>
+                  </table>
+
+                 </div>
+
+              </div>
+
+            </div>
+             <!-- <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map> -->
+
           </Section>
         </Section>
       </Section>

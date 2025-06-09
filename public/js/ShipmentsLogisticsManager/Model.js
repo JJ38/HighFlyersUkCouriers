@@ -143,18 +143,23 @@ export async function generateShipment(shipmentName, shipmentType, shipmentDeliv
 
     //fetch postcode run definitions
     const docRef = doc(db, 'Settings', 'runDefinitions');
-    const runDefinitions = await getDocument(docRef);
+    const runDefinitions = await getDocument(docRef); //postcodes for runs
 
     //get orders by delivery week
     const q = query(collection(db, "Orders"), orderBy('ID', 'asc'), where("deliveryWeek", "==", deliveryWeek));
-    const orderData = await getDocuments(q);
+    const orderDataQuery = await getDocuments(q);
 
-    //organise orders into defined runs based on runtype and postcode
-    const runStructList = generateRuns(runDefinitions.data(), orderData.docs, shipmentType, deliveryWeek);
+    //create run documents
+    const runDocuments = generateRunDocs(runDefinitions.data(), shipmentDeliveryWeekInput);
 
-    console.log(runStructList);
+    //create a list of stops from orders
+    await generateStopsFromOrders(orderDataQuery.docs, shipmentType, runDocuments, runDefinitions.data());
 
-    const storeShipmentResult = await storeShipment(runStructList, shipmentName, deliveryWeek);
+    console.log(runDocuments);
+    addStopNumbersToStops(runDocuments);
+
+    const storeShipmentResult = await storeShipment(runDocuments, shipmentName, deliveryWeek);
+    
     return storeShipmentResult;
 
   }catch(e){
@@ -166,17 +171,170 @@ export async function generateShipment(shipmentName, shipmentType, shipmentDeliv
 
 }
 
-async function storeShipment(runStructList, shipmentName, deliveryWeek){
+
+function addStopNumbersToStops(runDocuments){
+
+  for(let i = 0; i < runDocuments.length; i++){
+
+    for(let j = 0; j < runDocuments[i].stops.length; j++){
+
+      // console.log(runDocuments[i].stops);
+      runDocuments[i].stops[j]['stopNumber'] = j + 1;
+
+    }
+
+  }
+
+
+}
+
+
+function generateRunDocs(runDefinitions, shipmentDeliveryWeekInput){
+  
+  const runSet = new Set();
+
+  //for unassigned stops document
+  runSet.add(null);
+
+  for (const property in runDefinitions) {
+    runSet.add(runDefinitions[property]);
+  }
+
+  const runDocumentList = [];
+
+  runSet.forEach((runName) => {
+
+    runDocumentList.push(generateRunDoc(runName, shipmentDeliveryWeekInput));
+
+  });
+  
+  return runDocumentList;
+
+}
+
+
+async function generateStopsFromOrders(orderDataDocuments, shipmentType, runDocuments, runDefinitions){
+
+  const promises = [];
+
+  for(let i = 0; i < orderDataDocuments.length; i++){
+
+    promises.push(generateAndAssignStop(orderDataDocuments[i], shipmentType, runDocuments, runDefinitions));
+
+  }
+
+  return await Promise.all(promises);
+
+}
+
+async function generateAndAssignStop(orderDocument, shipmentType, runDocuments, runDefinitions){
+
+  const stop = await generateStop(orderDocument, shipmentType);
+
+  let stopPostcode;
+
+  if(shipmentType == "collection"){
+
+    stopPostcode = orderDocument.data()['collectionPostcode'];
+
+  }else{
+
+    stopPostcode = orderDocument.data()['deliveryPostcode'];
+
+  }
+
+  assignStop(stop, stopPostcode, runDocuments, runDefinitions);
+
+}
+
+function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
+
+  let runName = null;
+
+  if(stopPostcode != null){
+
+    if(runDefinitions[stopPostcode.substring(0,4)] != null){
+
+      runName = runDefinitions[stopPostcode.substring(0,4)];
+
+    }else if(runDefinitions[stopPostcode.substring(0,3)] != null){
+
+      runName = runDefinitions[stopPostcode.substring(0,3)];
+
+    }else if(runDefinitions[stopPostcode.substring(0,2)] != null){
+
+      runName = runDefinitions[stopPostcode.substring(0,2)];
+
+    }
+
+  }
+
+  const run = runDocuments.find((run) => {
+    return run.runName === runName;
+  })
+
+  run.stops.push(stop);
+
+}
+
+async function generateStop(orderDocument, shipmentType){
+
+  const addressString = getStopAddressString(orderDocument.data(), shipmentType);
+  const json = await getStopCoordinates(addressString);
+  
+  const coordinates = getCoordinates(json);
+
+  if(coordinates == null){
+    console.log("coordinates === false on: " + addressString + " status: " + json['status']);
+
+  }
+
+  const stop = {
+
+    coordinates: coordinates,
+    orderID: orderDocument.id,
+    isLocked: false,
+    stopType: shipmentType
+
+  }
+
+  return stop;
+
+}
+
+
+async function getCoordinatesForStopsInShipment(runStructList){
+
+  let promises = [];
+
+  //loop through every run
+  for(let i = 0; i < runStructList.length; i++){
+
+    console.log(runStructList[i]['stops'].length);
+
+    for(let j = 0; j < runStructList[i]['stops'].length; j++){
+
+      promises.push(addCoordinatesToStop(runStructList[i]['stops'][j]));
+
+    }
+
+  }
+
+  await Promise.all(promises);
+
+}
+
+async function storeShipment(runDocuments, shipmentName, deliveryWeek){
 
   const batch = writeBatch(db);
 
   let runDocRefs = [];
 
-  for(let i = 0; i < runStructList.length; i++){
+  for(let i = 0; i < runDocuments.length; i++){
 
     const runRef = doc(collection(db, 'Runs'));
     runDocRefs.push(runRef.id);
-    batch.set(runRef, runStructList[i]);
+    batch.set(runRef, runDocuments[i]);
 
   }
 
@@ -207,7 +365,8 @@ async function storeShipment(runStructList, shipmentName, deliveryWeek){
 
 }
 
-export function generateRuns(runDefinitions, orderData, shipmentTypeInput, deliveryWeek){
+
+function generateRuns(runDefinitions, orderData, shipmentTypeInput, deliveryWeek){
 
   const runStructList = [];
 
@@ -269,12 +428,13 @@ function generateStopForRun(runName, orderData, stopType, deliveryWeek, runStruc
     run = generateRunDoc(runName, deliveryWeek);
 
     run.stops.push(
-    {
-      orderID: orderData.id,
-      stopType: stopType, //collection or delivery
-      isLocked: false,
-      stopNumber: 1
-    });
+      {
+        orderID: orderData.id,
+        stopType: stopType, //collection or delivery
+        isLocked: false,
+        stopNumber: 1
+      }
+    );
       
     runStructList.push(run);
 
@@ -424,10 +584,9 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
 
   const promises = [];
 
-
   for(let i = 0; i < stopsToAdd.length; i++){
 
-    promises.push(addCoordinatesToStop(stopsToAdd[i], stopType));
+    promises.push(addCoordinatesToStop(stopsToAdd[i]));
 
   }
 
@@ -466,9 +625,9 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
 
 }
 
-async function addCoordinatesToStop(stop, stopType){
+async function addCoordinatesToStop(orderID, stopType){
 
-  const docRef = doc(db, 'Orders', stop.orderID);
+  const docRef = doc(db, 'Orders', orderID);
   const document = await getDocument(docRef);
   const orderData = document.data();
 
@@ -481,24 +640,36 @@ async function addCoordinatesToStop(stop, stopType){
 
   }
 
-  const coordinates = await getStopCoordinates(addressString);
+  const json = await getStopCoordinates(addressString);
 
-  if (coordinates == false){
-    console.log("coordinates === false");
 
-    return false;
+
+  stop['coordinates'] = getCoordinates(json);
+
+}
+
+function getCoordinates(json){
+
+  console.log(json);
+
+  //https://developers.google.com/maps/documentation/geocoding/requests-geocoding#StatusCodes
+  if(json['status'] != "OK"){
+    
+    return null;
 
   }
 
-  stop['coordinates'] = {
+  const geometry = json['results'][0]['geometry'];
 
-    lat: coordinates['location']['lat'],
-    lng: coordinates['location']['lng'],
-    accuracy: coordinates['location_type'],
+  const coordinates = {
+
+    lat: geometry['location']['lat'],
+    lng: geometry['location']['lng'],
+    accuracy: geometry['location_type'],
 
   }
 
-  console.log(stop);
+  return coordinates;
 
 }
 
@@ -532,8 +703,6 @@ function getStopAddressString(orderData, stopType){
 
   }
 
-  console.log(addressString);
-
   return addressString;
 
 }
@@ -550,15 +719,8 @@ async function getStopCoordinates(addressString){
     }
 
     const json = await response.json();
-
-    //https://developers.google.com/maps/documentation/geocoding/requests-geocoding#StatusCodes
-    if(json['status'] != "OK"){
-      return false;
-    }
-
-    console.log(json['results']);
-
-    return json['results'][0]['geometry'];
+   
+    return json;
 
   } catch (error) {
     console.error(error.message);
