@@ -525,9 +525,10 @@ function addEventListeners(){
         hideUI(selectedRunView);
    
       }else{
-        showNotification("Error!", "Error removing run from shipment");
-      }
 
+        showNotification("Error!", "Error removing run from shipment");
+
+      }
 
     });
 

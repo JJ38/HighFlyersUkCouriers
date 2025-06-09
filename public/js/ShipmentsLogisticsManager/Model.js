@@ -1,6 +1,6 @@
 import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion, deleteDoc } from "firebase/firestore";
 import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
-
+import { GeocodingAPIKey } from '/js/Settings.js';
 
 
 export const sortAlphabetically = (a, b) => {
@@ -145,7 +145,7 @@ export async function generateShipment(shipmentName, shipmentType, shipmentDeliv
     const docRef = doc(db, 'Settings', 'runDefinitions');
     const runDefinitions = await getDocument(docRef);
 
-    //get runs by delivery week
+    //get orders by delivery week
     const q = query(collection(db, "Orders"), orderBy('ID', 'asc'), where("deliveryWeek", "==", deliveryWeek));
     const orderData = await getDocuments(q);
 
@@ -420,7 +420,20 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
 
   }
 
-  //check if stop is already in shipment 
+  //get coordinates of stops
+
+  const promises = [];
+
+
+  for(let i = 0; i < stopsToAdd.length; i++){
+
+    promises.push(addCoordinatesToStop(stopsToAdd[i], stopType));
+
+  }
+
+  await Promise.all(promises);
+
+  console.log(promises);
 
   //returns false or a string
   const result = isStopInShipment(runData, stopsToAdd);
@@ -450,6 +463,108 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
   }
 
   return true;
+
+}
+
+async function addCoordinatesToStop(stop, stopType){
+
+  const docRef = doc(db, 'Orders', stop.orderID);
+  const document = await getDocument(docRef);
+  const orderData = document.data();
+
+  const addressString = getStopAddressString(orderData, stopType);
+
+  if(addressString === false){
+    console.log("addressString === false");
+
+    return false;
+
+  }
+
+  const coordinates = await getStopCoordinates(addressString);
+
+  if (coordinates == false){
+    console.log("coordinates === false");
+
+    return false;
+
+  }
+
+  stop['coordinates'] = {
+
+    lat: coordinates['location']['lat'],
+    lng: coordinates['location']['lng'],
+    accuracy: coordinates['location_type'],
+
+  }
+
+  console.log(stop);
+
+}
+
+function getStopAddressString(orderData, stopType){
+
+  let addressString = "";
+
+  if(stopType == "collection"){
+    //add collection data to stop
+    addressString += orderData['collectionAddress1'];
+    addressString += ",";
+    addressString += orderData['collectionAddress2'];
+    addressString += ",";
+    addressString += orderData['collectionAddress3'];
+    addressString += ",";
+    addressString += orderData['collectionPostcode'];
+
+  }else if(stopType == "delivery"){
+    //add delivery data to stop
+    addressString += orderData['deliveryAddress1'];
+    addressString += ",";
+    addressString += orderData['deliveryAddress2'];
+    addressString += ",";
+    addressString += orderData['deliveryAddress3'];
+    addressString += ",";
+    addressString += orderData['deliveryPostcode'];
+
+  }else{
+
+    return false;
+
+  }
+
+  console.log(addressString);
+
+  return addressString;
+
+}
+
+async function getStopCoordinates(addressString){
+
+  const url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressString + '&key=' + GeocodingAPIKey;
+
+  try {
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const json = await response.json();
+
+    //https://developers.google.com/maps/documentation/geocoding/requests-geocoding#StatusCodes
+    if(json['status'] != "OK"){
+      return false;
+    }
+
+    console.log(json['results']);
+
+    return json['results'][0]['geometry'];
+
+  } catch (error) {
+    console.error(error.message);
+
+    return false;
+  }
 
 }
 
