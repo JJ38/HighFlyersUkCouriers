@@ -5,8 +5,8 @@ import { createOption, createAddStopButton, createStopCard, createUnassignedOrde
 import { createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 import { addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
 
-let GoogleMap;
-let GoogleAdvancedMarkerElement;
+const { Map } = await google.maps.importLibrary("maps");
+const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
 const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
@@ -919,10 +919,8 @@ async function initMap() {
   const position = { lat: 53.165573, lng: -2.204147 };
   // Request needed libraries.
   //@ts-ignore
-  const { Map } = await google.maps.importLibrary("maps");
-  const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
-  GoogleAdvancedMarkerElement = AdvancedMarkerElement;
+  // GoogleAdvancedMarkerElement = AdvancedMarkerElement;
 
   // The map, centered at Uluru
   map = new Map(document.getElementById("map"), {
@@ -957,9 +955,15 @@ async function updateMapMarkers(runObject){
 
       }
 
-      mapMarkers.push(new GoogleAdvancedMarkerElement({
+      const pinTextGlyph = new PinElement({
+        glyph: stops[i]['stopNumber'].toString(),
+        glyphColor: "white",
+      });
+
+      mapMarkers.push(new AdvancedMarkerElement({
         map: map,
         position: position,
+        content: pinTextGlyph.element
       }));
 
     }
