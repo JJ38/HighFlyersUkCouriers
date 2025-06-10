@@ -4,9 +4,12 @@ import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 import { addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
+
 
 const { Map } = await google.maps.importLibrary("maps");
 const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
 const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
@@ -963,12 +966,14 @@ async function updateMapMarkers(runObject){
       mapMarkers.push(new AdvancedMarkerElement({
         map: map,
         position: position,
-        content: pinTextGlyph.element
+        content: pinTextGlyph.element,
+        collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
       }));
 
     }
 
   }
+  // new MarkerClusterer({ mapMarkers, map });
 
 }
 
@@ -1405,6 +1410,7 @@ async function dropStopCard(){
   }
 
   disableDragZones();
+  updateMapMarkers(currentSelectedRun)
 
   window.removeEventListener('mousemove', mouseMoveCallback);
 
