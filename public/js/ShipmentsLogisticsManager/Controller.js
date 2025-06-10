@@ -93,6 +93,7 @@ let dragZones = [];
 
 let map;
 let mapMarkers = [];
+let mapMarketClusters;
 
 initMap();
 addEventListeners();
@@ -973,7 +974,9 @@ async function updateMapMarkers(runObject){
     }
 
   }
-  // new MarkerClusterer({ mapMarkers, map });
+
+  mapMarketClusters = new MarkerClusterer({ markers: mapMarkers, map: map });
+  console.log(mapMarketClusters);
 
 }
 
@@ -989,6 +992,11 @@ function removeMapMarkers(){
   }
 
   mapMarkers = [];
+
+  if(mapMarketClusters != null){
+    mapMarketClusters.clearMarkers();
+
+  }
 
 }
 
@@ -1410,7 +1418,7 @@ async function dropStopCard(){
   }
 
   disableDragZones();
-  updateMapMarkers(currentSelectedRun)
+  updateMapMarkers(currentSelectedRun);
 
   window.removeEventListener('mousemove', mouseMoveCallback);
 

@@ -284,7 +284,7 @@ p{
 }
 
 .runStopsContainer{
-    min-width: 250px;
+    min-width: 300px;
     max-width: 350px;
     height: 100%;
     width: fit-content;
