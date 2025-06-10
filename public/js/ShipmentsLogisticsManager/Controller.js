@@ -5,6 +5,9 @@ import { createOption, createAddStopButton, createStopCard, createUnassignedOrde
 import { createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 import { addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
 
+let GoogleMap;
+let GoogleAdvancedMarkerElement;
+
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
 const unassignedOrdersCardWrapper = document.getElementById('unassigned_orders_card_wrapper');
 const unassignedOrderTableBody = document.getElementById('unassigned_orders_table_body');
@@ -86,9 +89,9 @@ let mimicCard;
 let dragZones = [];
 
 let map;
+let mapMarkers = [];
 
-
-// initMap();
+initMap();
 addEventListeners();
 
 init();
@@ -696,6 +699,9 @@ function parseRunData(runData){
       showRuns();
       selectCard(runCard);
 
+      //update map markers
+      await updateMapMarkers(runObject);
+
     });
 
   }else{
@@ -908,16 +914,74 @@ async function selectShipment(selectedShipment){
 
 }
 
-
 async function initMap() {
+  // The location of Uluru
+  const position = { lat: 53.165573, lng: -2.204147 };
+  // Request needed libraries.
+  //@ts-ignore
   const { Map } = await google.maps.importLibrary("maps");
+  const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
+  GoogleAdvancedMarkerElement = AdvancedMarkerElement;
+
+  // The map, centered at Uluru
   map = new Map(document.getElementById("map"), {
-    center: { lat: -34.397, lng: 150.644 },
-    zoom: 8,
+    zoom: 10,
+    center: position,
+    mapId: "298860eb89cd00b43e74dbd5",
   });
+
+  // // The marker, positioned at Uluru
+  // const marker = new GoogleAdvancedMarkerElement({
+  //   map: map,
+  //   position: position,
+  //   title: "Uluru",
+  // });
 }
 
+async function updateMapMarkers(runObject){
+
+  removeMapMarkers();
+
+  const stops = runObject.stops;
+
+  for(let i = 0; i < stops.length; i++){
+
+    if(stops[i]['coordinates'] != null){
+      
+      const position = 
+      {
+
+        lat: stops[i]['coordinates']['lat'],
+        lng: stops[i]['coordinates']['lng'],
+
+      }
+
+      mapMarkers.push(new GoogleAdvancedMarkerElement({
+        map: map,
+        position: position,
+      }));
+
+    }
+
+  }
+
+}
+
+function removeMapMarkers(){
+
+  console.log("removeMapMarkers");
+
+  for(let i = 0; i < mapMarkers.length; i++){
+
+    // console.log(mapMarkers[i].map);
+    mapMarkers[i].map = null;
+
+  }
+
+  mapMarkers = [];
+
+}
 
 function updateStopList(runStruct){
 
