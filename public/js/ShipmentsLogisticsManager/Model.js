@@ -1220,3 +1220,10 @@ export function mergeStopsWithOrderData(stops, orders){
   }
 
 }
+
+
+export function calculateRoute(stops){
+
+  console.log(stops);
+
+}

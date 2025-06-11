@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy, doc } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
-import { addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -62,6 +62,7 @@ const optionTabButton = document.getElementById('option_tab_button');
 
 const removeRunButton = document.getElementById('remove_run_button');
 const removeRunWidget = document.getElementById('remove_run_widget');
+const calculateRouteButton = document.getElementById('calculate_route_button');
 
 const searchButton = document.getElementById('search_button');
 const addOrderTable = document.getElementById('table_body');
@@ -541,6 +542,16 @@ function addEventListeners(){
 
   }
 
+  if(calculateRouteButton != null){
+
+    calculateRouteButton.addEventListener('click', () => {
+
+      calculateRoute(currentSelectedRun.stops);
+
+    });
+
+  }
+
 
 }
 
@@ -716,6 +727,7 @@ function parseRunData(runData){
 
       const runObject = await selectRun(runStruct.documentId);
       await updateUnassignedOrdersTable(runObject);
+      removeMapMarkers();
 
     });
 
@@ -872,6 +884,7 @@ async function updateRunsList(shipmentName){
 
     selectCard(false);
     showAddOrderTable();
+    removeMapMarkers();
 
   });
 
@@ -893,6 +906,8 @@ async function updateRunsList(shipmentName){
 
 
 async function selectShipment(selectedShipment){
+
+  removeMapMarkers();
 
   const shipmentData = await fetchShipment(selectedShipment);
 
