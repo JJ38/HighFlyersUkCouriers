@@ -72,6 +72,8 @@ const assignStopButton = document.getElementById('assign_stop_button');
 const removeStopButton = document.getElementById('remove_stop_button');
 const addStopButton = document.getElementById('add_stop_button');
 
+const mapWrapper = document.getElementById("map");
+
 const stopCardLongClickTime = 1000;
 
 let currentShipmentUnassignedOrders;
@@ -591,12 +593,21 @@ function showRuns(){
 
   showUI(selectedRunView);
   showUI(runInfoWrapper);
+  showUI(mapWrapper);
   hideUI(addRunDetailsContainer);
   hideUI(unassignedOrdersContainer);
 
   selectedRunView.classList.add('fit-content');
 
   selectTab("Manage");
+
+}
+
+function showShipment(){
+
+  clearShipmentUI();
+  showUI(runStopsContainer);
+  showUI(mapWrapper);
 
 }
 
@@ -608,6 +619,7 @@ function showAddOrderTable(){
   hideUI(runStopsContainer);
   hideUI(unassignedOrdersContainer);
   hideUI(runInfoWrapper);
+  hideUI(mapWrapper);
 
   selectedRunView.classList.remove('fit-content');
 
@@ -619,6 +631,7 @@ function showUnassignedOrdersTable(){
   hideUI(addRunDetailsContainer);
   hideUI(selectedRunView);
   hideUI(runStopsContainer);
+  hideUI(mapWrapper);
   showUI(unassignedOrdersContainer);
 
   selectedRunView.classList.add('fit-content');
@@ -665,6 +678,27 @@ function selectCard(runCard){
   runCard.classList.add('selectedRunCard');
 
   currentSelectedRunCard = runCard;
+
+}
+
+function clearShipmentUI(){
+
+  runCardList.innerHTML = "";
+  unassignedOrderTableBody.innerHTML = "";
+  unassignedOrdersCardWrapper.innerHTML = "";
+  addStopButtonWrapper.innerHTML = "";
+
+  hideUI(addRunDetailsContainer);
+  hideUI(unassignedOrdersContainer);
+
+}
+
+
+function clearAndHideRunStopsUI(){
+
+  runStopsContainer.innerHTML = "";
+  hideUI(runStopsContainer);
+  hideUI(selectedRunView);
 
 }
 
@@ -806,26 +840,7 @@ async function generateDeleteWidget(){
 }
 
 
-function clearShipmentUI(){
 
-  runCardList.innerHTML = "";
-  unassignedOrderTableBody.innerHTML = "";
-  unassignedOrdersCardWrapper.innerHTML = "";
-  addStopButtonWrapper.innerHTML = "";
-
-  hideUI(addRunDetailsContainer);
-  hideUI(unassignedOrdersContainer);
-
-}
-
-
-function clearAndHideRunStopsUI(){
-
-  runStopsContainer.innerHTML = "";
-  hideUI(runStopsContainer);
-  hideUI(selectedRunView);
-
-}
 
 //unassigned orders button ui bug is in here
 async function updateRunsList(shipmentName){
@@ -843,10 +858,7 @@ async function updateRunsList(shipmentName){
 
   runsList.sort(sortAlphabetically);
 
-
-  clearShipmentUI();
-  showUI(runStopsContainer);
-
+  showShipment();
 
   if(runsList.length == 0){
     runCardList.innerText = "No runs in shipment";
@@ -934,26 +946,16 @@ async function selectShipment(selectedShipment){
 }
 
 async function initMap() {
-  // The location of Uluru
+
   const position = { lat: 53.165573, lng: -2.204147 };
-  // Request needed libraries.
-  //@ts-ignore
-
-  // GoogleAdvancedMarkerElement = AdvancedMarkerElement;
-
-  // The map, centered at Uluru
+  
   map = new Map(document.getElementById("map"), {
     zoom: 10,
     center: position,
     mapId: "298860eb89cd00b43e74dbd5",
   });
 
-  // // The marker, positioned at Uluru
-  // const marker = new GoogleAdvancedMarkerElement({
-  //   map: map,
-  //   position: position,
-  //   title: "Uluru",
-  // });
+
 }
 
 async function updateMapMarkers(runObject){

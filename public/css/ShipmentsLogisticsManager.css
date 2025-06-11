@@ -209,7 +209,7 @@ p{
 
 .dependantContent{
     display: flex;
-    background-color: pink;
+    background-color: white;
     flex: 1;
     overflow: hidden;
 }
@@ -306,6 +306,13 @@ p{
     max-width: 350px;
     height: 100%;
     gap:10px
+
+}
+
+.stopsTable{
+
+    width:100%;
+    background-color: white;
 
 }
 
