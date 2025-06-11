@@ -1224,6 +1224,125 @@ export function mergeStopsWithOrderData(stops, orders){
 
 export function calculateRoute(stops){
 
-  console.log(stops);
+  const originAndDestination = getOriginAndDestination(stops);
+  const stopLocations = getStopLocations(stops);
+  const requestBody = getRouteOptimisationRequestBody(originAndDestination.origin, originAndDestination.destination, stopLocations);
+
+  
+
+  console.log(requestBody);
+
+}
+
+function getOriginAndDestination(stops){
+
+  const depotLatLng = {
+    lat: 53.165573, 
+    lng: -2.204147
+  }
+
+  let origin;
+  let destination;
+
+  const numberOfStops = stops.length;
+
+  for(let i = 0; i < stops.length; i++){
+
+    if(stops[i].stopNumber == 1){
+
+      if(stops[i].isLocked){
+        origin = {
+          
+          lat: stops[i].coordinates.lat,
+          lng: stops[i].coordinates.lng,
+
+        }
+      }
+
+    }
+
+    if(stops[i].stopNumber == numberOfStops){
+
+      if(stops[i].isLocked){
+        destination = {
+
+          lat: stops[i].coordinates.lat,
+          lng: stops[i].coordinates.lng,
+
+        }
+      }
+
+    }
+
+  }
+
+  if(origin == null){
+
+    origin = depotLatLng;
+
+  }
+
+  if(destination == null){
+
+    destination = depotLatLng;
+
+  }
+
+  return {origin: origin, destination: destination};
+
+}
+
+
+function getStopLocations(stops){
+
+  const stopObjects = [];
+
+  for(let i = 0; i < stops.length; i++){
+
+    const stopObject = {
+      "arrivalLocation": {
+        "latitude": stops[i].coordinates.lat,
+        "longitude": stops[i].coordinates.lng
+      }
+    }
+
+    stopObjects.push(stopObject);
+    
+  }
+
+  return stopObjects;
+
+}
+
+//https://developers.google.com/maps/documentation/route-optimization/construct-request?_gl=1*ftiy74*_up*MQ..*_ga*MTQ5NDczNjIwMi4xNzQ5NjU4OTYy*_ga_NRWSTWS78N*czE3NDk2NTg5NjIkbzEkZzEkdDE3NDk2NTkxNzckajI2JGwwJGgw
+function getRouteOptimisationRequestBody(origin, destination, stops){
+
+  const request =
+  {
+    "model": {
+      "shipments": [
+        {
+          "pickups": stops,
+        }
+      ],
+      "vehicles": [
+        {
+          "startLocation": {
+            "latitude": origin.lat,
+            "longitude": origin.lng
+          },
+          "endLocation": {
+            "latitude": destination.lat,
+            "longitude": destination.lng
+          },
+          "costPerKilometer": 1.0
+        }
+      ],
+    "globalStartTime": "2024-02-13T00:00:00.000Z",
+    "globalEndTime": "2024-02-14T06:00:00.000Z"
+    }
+  }
+
+  return request;
 
 }
