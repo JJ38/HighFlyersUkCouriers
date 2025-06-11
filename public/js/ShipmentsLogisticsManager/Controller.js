@@ -7,8 +7,8 @@ import { calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, f
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
-const { Map } = await google.maps.importLibrary("maps");
-const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+let GoogleAdvancedMarkerElement;
+let GooglePinElement;
 
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -546,9 +546,15 @@ function addEventListeners(){
 
   if(calculateRouteButton != null){
 
-    calculateRouteButton.addEventListener('click', () => {
+    calculateRouteButton.addEventListener('click', async () => {
 
-      calculateRoute(currentSelectedRun.stops);
+      //add debouncer
+
+      const result = await calculateRoute(currentSelectedRun.stops);
+      
+      if(result === false){
+        showNotification("Error!", "Error calculating route");
+      }
 
     });
 
@@ -946,6 +952,13 @@ async function selectShipment(selectedShipment){
 }
 
 async function initMap() {
+  
+  const { Map } = await google.maps.importLibrary("maps");
+  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+
+
+  GoogleAdvancedMarkerElement = AdvancedMarkerElement;
+  GooglePinElement = PinElement;
 
   const position = { lat: 53.165573, lng: -2.204147 };
   
@@ -976,12 +989,12 @@ async function updateMapMarkers(runObject){
 
       }
 
-      const pinTextGlyph = new PinElement({
+      const pinTextGlyph = new GooglePinElement({
         glyph: stops[i]['stopNumber'].toString(),
         glyphColor: "white",
       });
 
-      mapMarkers.push(new AdvancedMarkerElement({
+      mapMarkers.push(new GoogleAdvancedMarkerElement({
         map: map,
         position: position,
         content: pinTextGlyph.element,

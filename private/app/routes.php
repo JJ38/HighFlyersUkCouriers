@@ -26,4 +26,5 @@ require "routes/LiveLogisticsManager.php";
 require "routes/ShipmentsLogisticsManager.php";
 require "routes/LoginLegacy.php";
 require "routes/LogisticsSettings.php";
+require "routes/CalculateRoute.php";
 

@@ -18,14 +18,14 @@
         <!-- <script type="text/javascript" src="/js/MobileNavigationBar.js"></script> -->
 
         <title>HighFlyersUkCouriers</title>
-      <script type="module" crossorigin src="./assets/ShipmentsLogisticsManager-B6qarFdj.js"></script>
+      <script type="module" crossorigin src="./assets/ShipmentsLogisticsManager-BJWpZERT.js"></script>
       <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
       <link rel="modulepreload" crossorigin href="./assets/Notification-D0jEUT8q.js">
       <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-B1C6gsaD.js">
       <link rel="modulepreload" crossorigin href="./assets/Firebase-Crudew6x.js">
       <link rel="modulepreload" crossorigin href="./assets/Logout-COma5mPh.js">
       <link rel="stylesheet" crossorigin href="./assets/Notification-BHB7FqS3.css">
-      <link rel="stylesheet" crossorigin href="./assets/ShipmentsLogisticsManager-BcSTKLdd.css">
+      <link rel="stylesheet" crossorigin href="./assets/ShipmentsLogisticsManager-DhTWEpul.css">
       <link rel="stylesheet" crossorigin href="./assets/Navbar-ClBKpNFz.css">
       <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
       <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-UkFB9euZ.css">
@@ -257,11 +257,9 @@
           </Section>
           <Section id="dependant_content" class="dependantContent">
 
-           
+            <div id="unassigned_orders_details" class="runDetailsContainer stopsTable hidden">
 
-            <div id="unassigned_orders_details" class="runDetailsContainer hidden">
-
-              <h1>Unassigned Orders</h1>
+              <h1>Unassigned Stops</h1>
 
               <div class="runDetails">
 
@@ -351,47 +349,10 @@
               </div>
 
             </div>
-              
-            <div id="selected_run_view" class="runDetailsContainer hidden">
-              
-              <div id="run_info_wrapper" class="runInfoWrapper">
 
-                <div id="run_tab_buttons_wrapper" class="runTabButtonWrapper">
+            <div id="add_run_details" class="runDetails stopsTable hidden">
 
-                  <button id="manage_tab_button" class="runTabButton selectedTabButton">Manage</button>
-                  <button id="option_tab_button" class="runTabButton">Options</button>
-
-                </div>
-              
-                <div id="run_stops_container" class="runStopsContainer">
-
-         
-                </div>
-
-                <div id="run_options_container" class="runOptionsContainer hidden">
-
-                  <div>
-
-                    <label for="driver_select" class="bold">Assign Driver: </label>
-                    <select name="driver_select" id="driver_select" class="addOrderSearchFilter">
-
-                      <option value="opunuoien">Stephen</option>
-                      <option value="pojjesPIOFJEI">Anne</option>
-                  
-                    </select>
-
-                  </div>
-
-                  <div id="remove_run_button" class="removeRunButton">
-                    <p>Remove Run</p>
-                    <span class="delete material-symbols-outlined">delete</span>
-                  </div>
-
-                </div>
-
-              </div>
-
-              <div id="add_run_details" class="runDetails hidden">
+              <h1>Add Stops</h1>
 
                 <div class="tableActionContainer">
 
@@ -478,16 +439,65 @@
 
                  </div>
 
+            </div>
+              
+            <div id="selected_run_view" class="runDetailsContainer hidden">
+              
+              <div id="run_info_wrapper" class="runInfoWrapper">
+
+                <div id="run_tab_buttons_wrapper" class="runTabButtonWrapper">
+
+                  <button id="manage_tab_button" class="runTabButton selectedTabButton">Manage</button>
+                  <button id="option_tab_button" class="runTabButton">Options</button>
+
+                </div>
+              
+                <div id="run_stops_container" class="runStopsContainer">
+
+         
+                </div>
+
+                <div id="run_options_container" class="runOptionsContainer hidden">
+
+                  <div>
+
+                    <label for="driver_select" class="bold">Assign Driver: </label>
+                    <select name="driver_select" id="driver_select" class="addOrderSearchFilter">
+
+                      <option value="opunuoien">Stephen</option>
+                      <option value="pojjesPIOFJEI">Anne</option>
+                  
+                    </select>
+
+                  </div>
+
+                  <div id="remove_run_button" class="removeRunButton">
+                    <p>Remove Run</p>
+                    <span class="delete material-symbols-outlined">delete</span>
+                  </div>
+
+                  <button id="calculate_route_button">Calculate Route</button>
+
+                </div>
+
               </div>
 
+              
+
             </div>
-             <!-- <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map> -->
+
+            <!-- <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map> -->
+
+            <div id="map"></div>
 
           </Section>
         </Section>
       </Section>
     </body>
-    <!-- <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&libraries=maps,marker&v=beta"}} defer></script> -->
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_Mgv99mzX9qXTw4DsI6_uYfECGzhopik&libraries=maps,marker&v=beta" defer></script> -->
     
+    <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+        ({key: "AIzaSyC_Mgv99mzX9qXTw4DsI6_uYfECGzhopik", v: "weekly"});</script>
+
 </html>
 

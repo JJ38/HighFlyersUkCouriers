@@ -1,6 +1,6 @@
 import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion, deleteDoc } from "firebase/firestore";
 import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
-import { GeocodingAPIKey } from '/js/Settings.js';
+import { GeocodingAPIKey, calculateRouteEndpoint } from '/js/Settings.js';
 
 
 export const sortAlphabetically = (a, b) => {
@@ -1222,17 +1222,52 @@ export function mergeStopsWithOrderData(stops, orders){
 }
 
 
-export function calculateRoute(stops){
+export async function calculateRoute(stops){
 
   const originAndDestination = getOriginAndDestination(stops);
   const stopLocations = getStopLocations(stops);
   const requestBody = getRouteOptimisationRequestBody(originAndDestination.origin, originAndDestination.destination, stopLocations);
 
-  
+  const result = await fetchOptimisedRoute(requestBody);
+
+  console.log(result);
+
+  if(result === false){
+    return false;
+  }
 
   console.log(requestBody);
 
 }
+
+
+async function fetchOptimisedRoute(requestBody){
+
+  const url = calculateRouteEndpoint;
+
+  try {
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: requestBody,
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }
+    });
+
+    console.log(response);
+
+    const json = await response.json();
+
+    return json;
+
+  } catch (error) {
+    console.error(error.message);
+    return false
+  }
+
+}
+
 
 function getOriginAndDestination(stops){
 
