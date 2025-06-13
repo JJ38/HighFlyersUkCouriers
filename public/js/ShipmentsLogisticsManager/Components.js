@@ -232,12 +232,9 @@ export function createStopNumber(stopNumberValue, isLocked){
 }
 
 
-export function createUnassignedOrdersTableCard(stopData){
+export function createUnassignedStopCardClickableElement(stopData){
 
-  const tableRow = document.createElement('tr');
-  tableRow.classList = "tableDataRow";
-
-  const x = document.createElement('td');
+  const td = document.createElement("td");
 
   if(stopData['coordinates'] != null){
 
@@ -247,22 +244,36 @@ export function createUnassignedOrdersTableCard(stopData){
     checkBox.id = stopData['orderID'] + "_" + stopData['stopType'];
     checkBox.classList = "assignStopCheckbox";
 
-    x.appendChild(checkBox);
+    td.appendChild(checkBox);
     
   }else{
 
+    const container = document.createElement('div');
+    container.classList = "validateAddressButton";
 
     const span = document.createElement('span');
     span.classList = "material-symbols-rounded exclamation";
     span.innerText = "priority_high";
 
-    x.appendChild(span);
+    container.appendChild(span);
+
+    td.appendChild(container);
 
   }
 
-  
+  return td;
 
-  tableRow.appendChild(x);
+}
+
+
+export function createUnassignedOrdersTableCard(stopData, clickableElement){
+
+  //clickableElement is either a checkbox or button
+
+  const tableRow = document.createElement('tr');
+  tableRow.classList = "tableDataRow";
+
+  tableRow.appendChild(clickableElement);
 
   tableRow.appendChild(tableData(stopData['stopData']['ID']));
   tableRow.appendChild(tableData(stopData['stopData']['animalType']));

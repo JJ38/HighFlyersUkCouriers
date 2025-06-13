@@ -2,7 +2,7 @@ import { db, getDocuments, filterSearch } from "/js/Firebase.js";
 import { query, collection, limit, orderBy, doc } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
+import { createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
 import { doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
@@ -809,7 +809,20 @@ async function updateUnassignedOrdersTable(runObject){
 
   for(let i = 0; i < runObject.stops.length; i++){
 
-      unassignedOrderTableBody.appendChild(createUnassignedOrdersTableCard(runObject.stops[i]));
+    //clickableElement is either a checkbox or button
+
+    const clickableElement = createUnassignedStopCardClickableElement(runObject.stops[i]);
+    unassignedOrderTableBody.appendChild(createUnassignedOrdersTableCard(runObject.stops[i], clickableElement));
+
+    if(runObject.stops[i]['coordinates'] == null){
+
+      clickableElement.addEventListener('click', () => {
+
+        console.log(runObject.stops[i]);
+
+      });
+
+    }
 
   }
 
