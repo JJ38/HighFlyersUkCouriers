@@ -155,7 +155,6 @@ export async function generateShipment(shipmentName, shipmentType, shipmentDeliv
     //create a list of stops from orders
     await generateStopsFromOrders(orderDataQuery.docs, shipmentType, runDocuments, runDefinitions.data());
 
-    console.log(runDocuments);
     addStopNumbersToStops(runDocuments);
 
     const storeShipmentResult = await storeShipment(runDocuments, shipmentName, deliveryWeek);
@@ -268,9 +267,17 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
 
   }
 
+ 
+  //if coordinates are null but postcode was correct aslso assign to unassigned runs to be flagged for address validation
   if(stop.coordinates == null){
     runName = null;
   }
+
+   //if the postcode is invalid set the coordinates to null so it can be flagged later for the address to be validated
+  if(runName == null){
+    stop.coordinates = null;
+  }
+
 
   const run = runDocuments.find((run) => {
     return run.runName === runName;
@@ -283,7 +290,7 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
 async function generateStop(orderDocument, shipmentType){
 
   const addressString = getStopAddressString(orderDocument.data(), shipmentType);
-  const json = await getStopCoordinates(addressString);
+  const json = await fetchStopCoordinates(addressString);
   
   const coordinates = getCoordinates(json);
 
@@ -583,6 +590,8 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
 
   }
 
+  console.log(stopsToAdd);
+
   //get coordinates of stops
 
   const promises = [];
@@ -628,13 +637,13 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
 
 }
 
-async function addCoordinatesToStop(orderID, stopType){
+async function addCoordinatesToStop(stop){
 
-  const docRef = doc(db, 'Orders', orderID);
+  const docRef = doc(db, 'Orders', stop['orderID']);
   const document = await getDocument(docRef);
   const orderData = document.data();
 
-  const addressString = getStopAddressString(orderData, stopType);
+  const addressString = getStopAddressString(orderData, stop['stopType']);
 
   if(addressString === false){
     console.log("addressString === false");
@@ -643,17 +652,13 @@ async function addCoordinatesToStop(orderID, stopType){
 
   }
 
-  const json = await getStopCoordinates(addressString);
-
-
+  const json = await fetchStopCoordinates(addressString);
 
   stop['coordinates'] = getCoordinates(json);
 
 }
 
 function getCoordinates(json){
-
-  console.log(json);
 
   //https://developers.google.com/maps/documentation/geocoding/requests-geocoding#StatusCodes
   if(json['status'] != "OK"){
@@ -710,7 +715,7 @@ function getStopAddressString(orderData, stopType){
 
 }
 
-async function getStopCoordinates(addressString){
+async function fetchStopCoordinates(addressString){
 
   const url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressString + '&key=' + GeocodingAPIKey;
 
@@ -722,7 +727,7 @@ async function getStopCoordinates(addressString){
     }
 
     const json = await response.json();
-   
+
     return json;
 
   } catch (error) {
@@ -759,9 +764,6 @@ export async function removeStopsFromShipment(stops, unassignedStopsDocumentID){
 
   });
 
-  console.log(unassignedStopsWithStopsRemoved);
-
-
   try{
 
     await updateDocument(runRef, {"stops": unassignedStopsWithStopsRemoved});
@@ -777,10 +779,38 @@ export async function removeStopsFromShipment(stops, unassignedStopsDocumentID){
 
 }
 
+export function doesStopHaveCoordinates(stopsInRun, stopPrimaryKey){
+
+  const indexOfSeparator = stopPrimaryKey.indexOf('_');
+  const stopID = stopPrimaryKey.substring(0, indexOfSeparator);
+  const stopType = stopPrimaryKey.slice(indexOfSeparator + 1, stopPrimaryKey.length);
+
+  console.log(stopID);
+  console.log(stopType);
+
+  for(let i = 0; i < stopsInRun.length; i++){
+
+    if(stopsInRun[i].orderID == stopID){
+
+      if(stopsInRun[i].stopType == stopType){
+
+        if(stopsInRun[i].coordinates == null){
+
+          return stopsInRun[i];
+
+        }
+
+      }
+
+    }
+
+  }
+
+  return false;
+
+}
 
 export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID){
-
-  console.log(runToAddStopID);
 
   const batch = writeBatch(db);
   //remove stops from unassigned run document
@@ -1230,13 +1260,9 @@ export async function calculateRoute(stops){
 
   const result = await fetchOptimisedRoute(requestBody);
 
-  console.log(result);
-
   if(result === false){
     return false;
   }
-
-  console.log(requestBody);
 
 }
 
@@ -1247,17 +1273,18 @@ async function fetchOptimisedRoute(requestBody){
 
   try {
 
-    const response = await fetch(url, {
+    const body = {
       method: "POST",
-      body: requestBody,
+      body: JSON.stringify(requestBody),
       headers: {
         "Content-type": "application/json; charset=UTF-8"
       }
-    });
+    }
 
-    console.log(response);
-
+    const response = await fetch(url, body);
     const json = await response.json();
+
+    console.log(json);
 
     return json;
 
@@ -1334,11 +1361,17 @@ function getStopLocations(stops){
 
   for(let i = 0; i < stops.length; i++){
 
-    const stopObject = {
-      "arrivalLocation": {
-        "latitude": stops[i].coordinates.lat,
-        "longitude": stops[i].coordinates.lng
-      }
+    const stopObject = 
+    {
+      "label": "Stop_" + i.toString(),
+      "deliveries": [
+        {
+          "arrivalLocation": {
+            "latitude": stops[i].coordinates.lat,
+            "longitude": stops[i].coordinates.lng
+          }
+        }
+      ]
     }
 
     stopObjects.push(stopObject);
@@ -1355,11 +1388,7 @@ function getRouteOptimisationRequestBody(origin, destination, stops){
   const request =
   {
     "model": {
-      "shipments": [
-        {
-          "pickups": stops,
-        }
-      ],
+      "shipments": stops,
       "vehicles": [
         {
           "startLocation": {
@@ -1373,8 +1402,6 @@ function getRouteOptimisationRequestBody(origin, destination, stops){
           "costPerKilometer": 1.0
         }
       ],
-    "globalStartTime": "2024-02-13T00:00:00.000Z",
-    "globalEndTime": "2024-02-14T06:00:00.000Z"
     }
   }
 

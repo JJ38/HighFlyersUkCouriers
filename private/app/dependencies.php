@@ -94,6 +94,10 @@ $container['authenticationModel'] = function () {
   return new \HighFlyersUkCouriers\AuthenticationModel();
 };
 
+$container['calculateRouteModel'] = function () {
+  return new \HighFlyersUkCouriers\CalculateRouteModel();
+};
+
 $container['notFoundHandler'] = function ($container) {
   return function ($request, $response) use ($container) {
       return  $response->withRedirect('/', 302);

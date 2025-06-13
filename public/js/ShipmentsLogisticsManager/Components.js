@@ -238,13 +238,29 @@ export function createUnassignedOrdersTableCard(stopData){
   tableRow.classList = "tableDataRow";
 
   const x = document.createElement('td');
-  const checkBox = document.createElement("input");
-  checkBox.setAttribute("type", "checkbox");
-  checkBox.value = stopData['orderID'] + "_" + stopData['stopType'];
-  checkBox.id = stopData['orderID'] + "_" + stopData['stopType'];
-  checkBox.classList = "assignStopCheckbox";
 
-  x.appendChild(checkBox);
+  if(stopData['coordinates'] != null){
+
+    const checkBox = document.createElement("input");
+    checkBox.setAttribute("type", "checkbox");
+    checkBox.value = stopData['orderID'] + "_" + stopData['stopType'];
+    checkBox.id = stopData['orderID'] + "_" + stopData['stopType'];
+    checkBox.classList = "assignStopCheckbox";
+
+    x.appendChild(checkBox);
+    
+  }else{
+
+
+    const span = document.createElement('span');
+    span.classList = "material-symbols-rounded exclamation";
+    span.innerText = "priority_high";
+
+    x.appendChild(span);
+
+  }
+
+  
 
   tableRow.appendChild(x);
 

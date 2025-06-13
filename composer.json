@@ -13,7 +13,9 @@
       "kreait/firebase-php": "^5.26",
       "bensontrent/firestore-php": "^3.1",
       "monolog/monolog": "^3.8",
-      "grpc/grpc": "1.38" 
+      "grpc/grpc": "1.38",
+      "google/auth": "^1.47",
+      "guzzlehttp/guzzle": "^7.9" 
     },
     "config": {
         "platform": {

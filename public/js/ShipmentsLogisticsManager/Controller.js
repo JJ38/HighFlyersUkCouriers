@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy, doc } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
-import { calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -304,7 +304,21 @@ function addEventListeners(){
         orderIDs.push(x.value);
 
       });
-      
+
+      console.log(currentSelectedRun);
+
+      for(let i = 0; i < orderIDs.length; i++){
+
+        const stopWithoutCoordinates = doesStopHaveCoordinates(currentSelectedRun.stops, orderIDs[i]);
+
+        if(stopWithoutCoordinates){
+          console.log(stopWithoutCoordinates);
+          showNotification("Error!", "Stop " + stopWithoutCoordinates.stopData.ID + " " + stopWithoutCoordinates.stopType + " has invalid coordinates. Please validate the address before assigning the run");
+          return;
+        }
+
+      }
+
       const result = await assignStopsToRun(selectAssignStopsRun.value, orderIDs, currentShipmentUnassignedOrders);
 
       updateUnassignedOrdersTable(currentShipmentUnassignedOrders);
@@ -783,6 +797,8 @@ function parseRunData(runData){
 
 
 async function updateUnassignedOrdersTable(runObject){
+
+  console.log(runObject);
 
   currentSelectedRun = runObject;
 
