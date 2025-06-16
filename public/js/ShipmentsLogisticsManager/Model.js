@@ -2,6 +2,7 @@ import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion, 
 import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
 import { GeocodingAPIKey, calculateRouteEndpoint } from '/js/Settings.js';
 
+let GoogleAutocomplete;
 
 export const sortAlphabetically = (a, b) => {
 
@@ -738,6 +739,91 @@ async function fetchStopCoordinates(addressString){
 
 }
 
+export async function fetchSuggestionPlace(address){
+
+  const json = await fetchStopCoordinates(address);
+  const coordinates = getCoordinates(json);
+  const parsedAddress = parseAddress(json);
+
+  return {
+    address: parsedAddress,
+    coordinates: coordinates
+  }
+
+}
+
+
+function parseAddress(json){
+
+  let streetAddress = "";
+  let city;
+  let county;
+  let postcode;
+
+  console.log(json);
+
+  const addressComponents = json.results[0]['address_components'];
+
+  console.log(addressComponents);
+
+  for (let i = 0; i < addressComponents.length; i++){
+
+      const addressComponent = addressComponents[i];
+
+      for(let j = 0; j < addressComponents[i].types.length; j++){
+          
+          const addressComponentType = addressComponents[i].types[j]
+
+          console.log(addressComponentType);
+          console.log(addressComponent);
+
+
+          switch(addressComponentType){
+
+              case "street_number":
+                  streetAddress = addressComponent['long_name'] + " " + streetAddress;
+                  break; 
+              
+              case "route":
+                  streetAddress = streetAddress + addressComponent['long_name'];
+                  break; 
+
+              case "premise":
+                  streetAddress = streetAddress + addressComponent['long_name'];
+                  break;
+
+              case "postal_town":
+                  city = addressComponent['long_name'];
+                  break; 
+
+              case "administrative_area_level_2":
+                  county = addressComponent['long_name'];
+                  break; 
+
+              case "postal_code":
+                  postcode = addressComponent['long_name'];
+                  break; 
+
+              default:
+                  break;
+          }
+
+      }
+  }
+
+  const address = {
+
+    streetAddress: streetAddress,
+    city: city,
+    county: county,
+    postcode: postcode
+
+  }
+
+  return address;
+
+}
+
 export async function removeStopsFromShipment(stops, unassignedStopsDocumentID){
 
   const runRef = doc(db, 'Runs', unassignedStopsDocumentID);
@@ -1407,4 +1493,49 @@ function getRouteOptimisationRequestBody(origin, destination, stops){
 
   return request;
 
+}
+
+export async function fetchAutocompleteAddress(incompleteAddress, token, autocomplete){
+
+  const request = getRequest(incompleteAddress, token);
+
+  const { suggestions } = await autocomplete.fetchAutocompleteSuggestions(request);
+
+  console.log(suggestions);
+
+  return suggestions;
+}
+
+
+
+
+// Helper function to refresh the session token.
+function getRequest(incompleteAddress, token) {
+
+    console.log("getting new session token");
+
+    const request = {
+
+      input: incompleteAddress,
+      includedPrimaryTypes: ["street_address", "premise", "establishment"],
+      includedRegionCodes: ["uk", "ie"],
+      language: "en-UK",
+      sessionToken: token,
+
+    }
+
+    console.log(request);
+    
+    return request;
+}
+
+
+export function generateSessionToken(){
+
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+  
 }

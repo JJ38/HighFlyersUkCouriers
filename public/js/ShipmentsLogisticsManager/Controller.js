@@ -1,14 +1,15 @@
 import { db, getDocuments, filterSearch } from "/js/Firebase.js";
-import { query, collection, limit, orderBy, doc } from "firebase/firestore";
+import { query, collection, limit, orderBy, doc, documentId } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
-import { doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
 let GoogleAdvancedMarkerElement;
 let GooglePinElement;
+let GoogleAutocomplete;
 
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -64,6 +65,19 @@ const removeRunButton = document.getElementById('remove_run_button');
 const removeRunWidget = document.getElementById('remove_run_widget');
 const calculateRouteButton = document.getElementById('calculate_route_button');
 
+const validateAddressWidget = document.getElementById('validate_address_widget');
+const validateAddressAutocompleteInput = document.getElementById('validate_address_autocomplete_input');
+const validateAddressCancelButton = document.getElementById('cancel_validate_address_button');
+const autocompleteLoader = document.getElementById('autocomplete_loader');
+const autocompleteResults = document.getElementById('autocomplete_results');
+const autocompleteAnchor = document.getElementById('autocomplete_results_anchor');
+
+const validateAddressLine1 = document.getElementById('validate_address_line_1');
+const validateAddressLine2 = document.getElementById('validate_address_line_2');
+const validateAddressLine3 = document.getElementById('validate_address_line_3');
+const validateAddressPostcode = document.getElementById('validate_address_postcode');
+
+
 const searchButton = document.getElementById('search_button');
 const addOrderTable = document.getElementById('table_body');
 const addOrderSearchInput = document.getElementById('add_order_search_input');
@@ -75,6 +89,12 @@ const addStopButton = document.getElementById('add_stop_button');
 const mapWrapper = document.getElementById("map");
 
 const stopCardLongClickTime = 1000;
+
+const autocompleteDebounce = 2000;
+
+let autocompleteSessionActive = false;
+let lastAutoCompleteInput;
+let currentSessionToken;
 
 let currentShipmentUnassignedOrders;
 let currentSelectedRunCard = null;
@@ -98,17 +118,25 @@ let map;
 let mapMarkers = [];
 let mapMarketClusters;
 
-initMap();
 addEventListeners();
-
 init();
 
 
 
 function init(){
 
+  initAutocomplete();
+  initMap();
   updateSelectShipment();
   getOrders(query(collection(db, 'Orders'), orderBy('ID', 'desc'), limit(20)));
+
+}
+
+
+async function initAutocomplete(){
+
+  const Autocomplete = await google.maps.importLibrary("places");
+  GoogleAutocomplete = Autocomplete;
 
 }
 
@@ -574,8 +602,83 @@ function addEventListeners(){
 
   }
 
+  if(validateAddressCancelButton != null){
+
+    validateAddressCancelButton.addEventListener('click', () => {
+
+      hideUI(validateAddressWidget);
+
+    });
+
+  }
+
+  if(validateAddressAutocompleteInput != null){
+
+    validateAddressAutocompleteInput.addEventListener('focus', () => {
+    
+
+      if(!autocompleteSessionActive){
+
+        autocompleteSessionActive = true;
+        
+        currentSessionToken = new google.maps.places.AutocompleteSessionToken();
+
+        console.log(currentSessionToken);
+
+        validateAddressAutocompleteInput.addEventListener('input', async () => {
+
+          if(validateAddressAutocompleteInput.value == ""){
+
+            hideUI(autocompleteAnchor);
+            hideUI(autocompleteLoader);
+            return;
+
+          }
+
+          showUI(autocompleteLoader);
+          showUI(autocompleteAnchor);
+          removeAutocompleteSuggestions();
+
+
+          lastAutoCompleteInput = Date.now();
+
+          setTimeout(async () => {
+
+            if((Date.now() - lastAutoCompleteInput) >= autocompleteDebounce){
+
+              if(validateAddressAutocompleteInput.value == ""){
+                return;
+              }
+
+              const suggestions = await fetchAutocompleteAddress(validateAddressAutocompleteInput.value, currentSessionToken, GoogleAutocomplete.AutocompleteSuggestion);  
+
+              setAutocompleteResults(suggestions);
+
+              hideUI(autocompleteLoader);
+
+            }
+
+          }, 2000);
+
+
+        });
+
+      }
+
+    });
+
+  
+
+  }
 
 }
+
+
+function initAutocompleteSessions(){
+
+
+}
+
 
 function deselectCheckboxes(checkBoxes){
 
@@ -809,7 +912,7 @@ async function updateUnassignedOrdersTable(runObject){
 
   for(let i = 0; i < runObject.stops.length; i++){
 
-    //clickableElement is either a checkbox or button
+    //clickable Element is either a checkbox or button
 
     const clickableElement = createUnassignedStopCardClickableElement(runObject.stops[i]);
     unassignedOrderTableBody.appendChild(createUnassignedOrdersTableCard(runObject.stops[i], clickableElement));
@@ -819,6 +922,12 @@ async function updateUnassignedOrdersTable(runObject){
       clickableElement.addEventListener('click', () => {
 
         console.log(runObject.stops[i]);
+        showUI(validateAddressWidget);
+
+        validateAddressLine1.value = runObject.stops[i]['stopData']['address1'];
+        validateAddressLine2.value = runObject.stops[i]['stopData']['address2'];
+        validateAddressLine3.value = runObject.stops[i]['stopData']['address3'];
+        validateAddressPostcode.value = runObject.stops[i]['stopData']['postcode'];
 
       });
 
@@ -985,7 +1094,6 @@ async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
   const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
-
   GoogleAdvancedMarkerElement = AdvancedMarkerElement;
   GooglePinElement = PinElement;
 
@@ -996,7 +1104,6 @@ async function initMap() {
     center: position,
     mapId: "298860eb89cd00b43e74dbd5",
   });
-
 
 }
 
@@ -1224,16 +1331,16 @@ function getStopCard(stop, runStruct, stopNumber){
   stopLockButton.addEventListener('click', async () => {
 
     //loading symbol for lock
-    if(stopLockButton.classList.contains("nonClickable")){
+    if(stopLockButton.classList.contains("loading")){
       console.log("click blocked");
       return;
     }
 
-    stopLockButton.classList.add('nonClickable');
+    stopLockButton.classList.add('loading');
 
     const result = await toggleStopLock(stop, currentSelectedRun);
 
-    stopLockButton.classList.remove('nonClickable');
+    stopLockButton.classList.remove('loading');
 
     if(!result){
 
@@ -1621,6 +1728,54 @@ async function getOrders(query){
 }
 
 
+function setAutocompleteResults(suggestions){
+
+  removeAutocompleteSuggestions();
+
+  for (const suggestion of suggestions) {
+
+    const placePrediction = suggestion.placePrediction;
+
+    const address = document.createElement("p");
+
+    address.addEventListener("click", async () => {
+
+      hideUI(autocompleteAnchor);
+      removeAutocompleteSuggestions();
+      const result = await fetchSuggestionPlace(placePrediction.text.toString());
+
+      validateAddressLine1.value = result.address.streetAddress;
+      validateAddressLine2.value = result.address.city;
+      validateAddressLine3.value = result.address.county;
+      validateAddressPostcode.value = result.address.postcode;
+      
+      console.log(result);
+
+    });
+
+    address.innerText = placePrediction.text.toString();
+
+    // Create a new list element.
+    const li = document.createElement("li");
+
+    li.appendChild(address);
+    autocompleteResults.appendChild(li);
+
+  }
+
+}
+
+function removeAutocompleteSuggestions(){
+
+  const suggestions = autocompleteResults.querySelectorAll('li');
+
+  for(let i = 0; i < suggestions.length; i++){
+
+    suggestions[i].remove();
+
+  }
+
+}
 
 
 

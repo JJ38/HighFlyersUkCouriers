@@ -15,9 +15,6 @@ const deliveryAddress2 = document.getElementById('deliveryAddress2');
 const deliveryAddress3 = document.getElementById('deliveryAddress3');
 const deliveryPostcode= document.getElementById('deliveryPostcode');
 
-//jolly brook
-//its a bird thing
-//tumley lofts
 
 let activeCollectionAutoCompleteSession = false;
 let activeDeliveryAutoCompleteSession = false;
