@@ -202,6 +202,8 @@
 
         <div id="validate_address_widget" class="validateAddressWidget widget">
 
+          <div id="validate_address_form" class="validateAddressForm">
+
             <h2>Validate Address</h2>
 
             <label for="validate_address_autocomplete_input">Search for an address: </label>
@@ -229,13 +231,24 @@
             <label for="validate_address_postcode">Postcode </label>
             <input id="validate_address_postcode" type="text"/>
 
+            <button id="validate_address_button" class="widgetButton validateAddressWidgetButton">Validate Address</button>
+
+            <div id="address_suggestion_wrapper" class="addressSuggestionWrapper">
+              <!-- <div class="addressSuggestionCard"><p class="addressSuggestionNumber">1</p><div class="suggestionAddressWrapper"><p class="addressSuggestionStreetAddress">10 Kenilworth Road</p><div class="addressSuggestionSecondaryAddress"><p>Ripley,&nbsp;</p><p>Derbyshire,&nbsp;</p><p>DE5 3GY</p></div></div></div> -->
+            </div>
+
             <div>
 
               <button id="cancel_validate_address_button" class="widgetButton">Cancel</button>
-              <button id="confirm_validate_address_button" class="widgetButton nonClickable">Update address</button>
+              <button id="confirm_update_address_button" class="widgetButton nonClickable">Update address</button>
 
             </div>
 
+          </div>
+          
+          <div id="validate_address_map" class="validateAddressMap">
+          </div>
+          
         </div>
 
         <nav class="logisticsVerticalNavbar">

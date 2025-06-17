@@ -716,7 +716,7 @@ function getStopAddressString(orderData, stopType){
 
 }
 
-async function fetchStopCoordinates(addressString){
+export async function fetchStopCoordinates(addressString){
 
   const url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressString + '&key=' + GeocodingAPIKey;
 
@@ -743,7 +743,7 @@ export async function fetchSuggestionPlace(address){
 
   const json = await fetchStopCoordinates(address);
   const coordinates = getCoordinates(json);
-  const parsedAddress = parseAddress(json);
+  const parsedAddress = parseAddress(json.results[0]['address_components']);
 
   return {
     address: parsedAddress,
@@ -753,16 +753,12 @@ export async function fetchSuggestionPlace(address){
 }
 
 
-function parseAddress(json){
+export function parseAddress(addressComponents){
 
   let streetAddress = "";
   let city;
   let county;
   let postcode;
-
-  console.log(json);
-
-  const addressComponents = json.results[0]['address_components'];
 
   console.log(addressComponents);
 
@@ -785,7 +781,7 @@ function parseAddress(json){
                   break; 
               
               case "route":
-                  streetAddress = streetAddress + addressComponent['long_name'];
+                  streetAddress = streetAddress + " " + addressComponent['long_name'];
                   break; 
 
               case "premise":

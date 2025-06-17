@@ -2,14 +2,15 @@ import { db, getDocuments, filterSearch } from "/js/Firebase.js";
 import { query, collection, limit, orderBy, doc, documentId } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData } from "./Components";
-import { fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData, createAddressSuggestionCard } from "./Components";
+import { parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
 let GoogleAdvancedMarkerElement;
 let GooglePinElement;
 let GoogleAutocomplete;
+let GoogleMap;
 
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -68,6 +69,7 @@ const calculateRouteButton = document.getElementById('calculate_route_button');
 const validateAddressWidget = document.getElementById('validate_address_widget');
 const validateAddressAutocompleteInput = document.getElementById('validate_address_autocomplete_input');
 const validateAddressCancelButton = document.getElementById('cancel_validate_address_button');
+const validateAddressButton = document.getElementById('validate_address_button');
 const autocompleteLoader = document.getElementById('autocomplete_loader');
 const autocompleteResults = document.getElementById('autocomplete_results');
 const autocompleteAnchor = document.getElementById('autocomplete_results_anchor');
@@ -76,6 +78,7 @@ const validateAddressLine1 = document.getElementById('validate_address_line_1');
 const validateAddressLine2 = document.getElementById('validate_address_line_2');
 const validateAddressLine3 = document.getElementById('validate_address_line_3');
 const validateAddressPostcode = document.getElementById('validate_address_postcode');
+const addressSuggestionWrapper = document.getElementById('address_suggestion_wrapper');
 
 
 const searchButton = document.getElementById('search_button');
@@ -114,9 +117,13 @@ let mouseMoveCallback;
 let mimicCard;
 let dragZones = [];
 
-let map;
-let mapMarkers = [];
+let mainMap;
+let mainMapMarkers = [];
 let mapMarketClusters;
+
+let validateAddressMap;
+let validateAddressMapMarkers = [];
+let currentlySelectedAddressSuggestionCard;
 
 addEventListeners();
 init();
@@ -607,6 +614,8 @@ function addEventListeners(){
     validateAddressCancelButton.addEventListener('click', () => {
 
       hideUI(validateAddressWidget);
+      removeMapMarkers(validateAddressMapMarkers);
+      addressSuggestionWrapper.innerHTML = "";
 
     });
 
@@ -671,13 +680,75 @@ function addEventListeners(){
 
   }
 
+  if(validateAddressButton != null){
+
+    validateAddressButton.addEventListener('click', async () => {
+
+      removeMapMarkers(validateAddressMapMarkers);
+      addressSuggestionWrapper.innerHTML = "";
+
+      //create address string
+      const addressString = validateAddressLine1.value + "," + validateAddressLine2.value + "," +validateAddressLine3.value + "," + validateAddressPostcode.value;
+      const coordinates = await fetchStopCoordinates(addressString);
+
+
+      if(coordinates === false){
+        showNotification("Error!", "Error fetching coordinates for address");
+        return;
+      }
+
+      if(coordinates.status == "ZERO_RESULTS"){
+        showNotification("Invalid address", "Couldnt find coordinates for this address");
+        return;
+      }
+
+      addSuggestions(coordinates.results);
+
+    });
+
+  }
+
+}
+
+function addSuggestions(results){
+
+  for(let i = 0; i < results.length; i++){  
+
+    console.log(results[i]);
+
+    const addressObject = parseAddress(results[i]['address_components']);
+    const addressSuggestionCard = createAddressSuggestionCard(addressObject, i + 1);
+
+    addressSuggestionCard.addEventListener('click', () =>{
+
+      validateAddressMap.setCenter(results[i]['geometry']['location']);
+      console.log(parseAddress(results[i]['address_components']));
+      console.log(results[i]['geometry']['location']);
+
+      selectAddressSuggestionCard(addressSuggestionCard);
+
+    });
+
+    addressSuggestionWrapper.appendChild(addressSuggestionCard);
+    addMarkerToMap(validateAddressMap, i + 1, results[i]['geometry']['location']);
+
+  }
+
+  validateAddressMap.setCenter(results[0]['geometry']['location']);
+
 }
 
 
-function initAutocompleteSessions(){
+function selectAddressSuggestionCard(selectedCard){
 
+  if(currentlySelectedAddressSuggestionCard != null){
+    currentlySelectedAddressSuggestionCard.classList.remove('selected');
+  }
 
-}
+  selectedCard.classList.add('selected');
+  currentlySelectedAddressSuggestionCard = selectedCard;
+
+} 
 
 
 function deselectCheckboxes(checkBoxes){
@@ -884,7 +955,7 @@ function parseRunData(runData){
 
       const runObject = await selectRun(runStruct.documentId);
       await updateUnassignedOrdersTable(runObject);
-      removeMapMarkers();
+      removeMapMarkers(mainMapMarkers);
 
     });
 
@@ -1040,7 +1111,7 @@ async function updateRunsList(shipmentName){
 
     selectCard(false);
     showAddOrderTable();
-    removeMapMarkers();
+    removeMapMarkers(mainMapMarkers);
 
   });
 
@@ -1063,7 +1134,7 @@ async function updateRunsList(shipmentName){
 
 async function selectShipment(selectedShipment){
 
-  removeMapMarkers();
+  removeMapMarkers(mainMapMarkers);
 
   const shipmentData = await fetchShipment(selectedShipment);
 
@@ -1096,20 +1167,51 @@ async function initMap() {
 
   GoogleAdvancedMarkerElement = AdvancedMarkerElement;
   GooglePinElement = PinElement;
+  GoogleMap = Map;
 
   const position = { lat: 53.165573, lng: -2.204147 };
   
-  map = new Map(document.getElementById("map"), {
+  mainMap = new GoogleMap(document.getElementById("map"), {
     zoom: 10,
+    center: position,
+    mapId: "298860eb89cd00b43e74dbd5",
+  });
+
+  initValidateAddressMap();
+
+}
+
+function initValidateAddressMap(){
+
+  const position = { lat: 53.165573, lng: -2.204147 };
+  
+  validateAddressMap = new GoogleMap(document.getElementById("validate_address_map"), {
+    zoom: 15,
     center: position,
     mapId: "298860eb89cd00b43e74dbd5",
   });
 
 }
 
+function addMarkerToMap(map, pinText, coordinates){
+
+  const pinTextGlyph = new GooglePinElement({
+    glyph: pinText.toString(),
+    glyphColor: "white",
+  });
+
+  validateAddressMapMarkers.push(new GoogleAdvancedMarkerElement({
+    map: map,
+    position: coordinates,
+    content: pinTextGlyph.element,
+    collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
+  }));
+
+}
+
 async function updateMapMarkers(runObject){
 
-  removeMapMarkers();
+  removeMapMarkers(mainMapMarkers);
 
   const stops = runObject.stops;
 
@@ -1130,8 +1232,8 @@ async function updateMapMarkers(runObject){
         glyphColor: "white",
       });
 
-      mapMarkers.push(new GoogleAdvancedMarkerElement({
-        map: map,
+      mainMapMarkers.push(new GoogleAdvancedMarkerElement({
+        map: mainMap,
         position: position,
         content: pinTextGlyph.element,
         collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
@@ -1141,18 +1243,18 @@ async function updateMapMarkers(runObject){
 
   }
 
-  mapMarketClusters = new MarkerClusterer({ markers: mapMarkers, map: map });
+  mapMarketClusters = new MarkerClusterer({ markers: mainMapMarkers, map: map });
   console.log(mapMarketClusters);
 
 }
 
-function removeMapMarkers(){
+function removeMapMarkers(mapMarkers){
 
   console.log("removeMapMarkers");
 
   for(let i = 0; i < mapMarkers.length; i++){
 
-    // console.log(mapMarkers[i].map);
+    // console.log(mainMapMarkers[i].map);
     mapMarkers[i].map = null;
 
   }
@@ -1749,8 +1851,6 @@ function setAutocompleteResults(suggestions){
       validateAddressLine3.value = result.address.county;
       validateAddressPostcode.value = result.address.postcode;
       
-      console.log(result);
-
     });
 
     address.innerText = placePrediction.text.toString();

@@ -46,6 +46,56 @@ function createTableAddress(addressLine1, addressLine2, addressLine3, addressPos
 
 }
 
+
+export function createAddressSuggestionCard(addressObject, addressNumber){
+
+  console.log(addressObject);
+
+  const card = document.createElement('div');
+  card.classList = "addressSuggestionCard";
+
+  const suggestionNumber = document.createElement('p');
+  suggestionNumber.innerText = addressNumber;
+  suggestionNumber.classList = "addressSuggestionNumber"
+
+  const address1 = document.createElement('p');
+  address1.innerHTML = addressObject.streetAddress;
+  address1.classList = "addressSuggestionStreetAddress";
+
+  const secondaryAddressWrapper = document.createElement('div');
+  secondaryAddressWrapper.classList = "addressSuggestionSecondaryAddress";
+  
+  const address2 = document.createElement('p');
+  address2.innerHTML = addressObject.city + ",&nbsp;";
+
+  const address3 = document.createElement('p');
+  address3.innerHTML = addressObject.county + ",&nbsp;";
+
+  const postcode = document.createElement('p');
+  postcode.innerText = addressObject.postcode;
+
+  secondaryAddressWrapper.appendChild(address2);
+  secondaryAddressWrapper.appendChild(address3);
+  secondaryAddressWrapper.appendChild(postcode);
+
+
+  const addressWrapper = document.createElement('div');
+  addressWrapper.classList = "suggestionAddressWrapper";
+
+
+  addressWrapper.appendChild(address1);
+  addressWrapper.appendChild(secondaryAddressWrapper);
+
+  
+  card.appendChild(suggestionNumber);
+  card.appendChild(addressWrapper);
+
+
+  return card;
+
+}
+
+
 export function createStopContainer(stopNumber, stopCard){
 
   const stopContainer = document.createElement('div');
