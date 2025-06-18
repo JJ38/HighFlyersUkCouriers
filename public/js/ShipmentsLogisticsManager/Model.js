@@ -760,8 +760,6 @@ export function parseAddress(addressComponents){
   let county;
   let postcode;
 
-  console.log(addressComponents);
-
   for (let i = 0; i < addressComponents.length; i++){
 
       const addressComponent = addressComponents[i];
@@ -770,10 +768,7 @@ export function parseAddress(addressComponents){
           
           const addressComponentType = addressComponents[i].types[j]
 
-          console.log(addressComponentType);
-          console.log(addressComponent);
-
-
+  
           switch(addressComponentType){
 
               case "street_number":
@@ -952,7 +947,6 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   }
 
-  console.log(runDocument);
   const currentNumberOfStops = runDocument.data()['stops'].length; 
 
   for(let i = 0; i < stopsToAdd.length; i++){
@@ -1051,7 +1045,7 @@ export async function getRunStopsOrderData(stops){
 }
 
 
-export function updateStopNumberInRun (orderID, stopType, runStops, stopNumber){
+export function updateStopNumberInRun(orderID, stopType, runStops, stopNumber){
 
   for(let j = 0; j < runStops.length; j++){
 
@@ -1534,4 +1528,120 @@ export function generateSessionToken(){
     return v.toString(16);
   });
   
+}
+
+
+
+export async function updateStopAddress(address, run, stopToUpdate){
+
+  //fetch run
+  let runDocument;
+  let runRef;
+
+  try{
+
+    runRef = doc(db, 'Runs', run.documentId);
+    runDocument = await getDocument(runRef);
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  //fetch order
+  let orderDocument;
+  let orderRef;
+
+  try{
+
+    orderRef = doc(db, 'Orders', stopToUpdate.orderID);
+    orderDocument = await getDocument(orderRef);
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+  }
+
+  //add coordinates to stop
+  stopToUpdate.coordinates = address.coordinates;
+ 
+  //update stop in run 
+  const stopToUpdatePrimaryKey = stopToUpdate.orderID + "_" + stopToUpdate.stopType
+
+  console.log(stopToUpdatePrimaryKey);
+
+  //remove outdated stop
+  const newStops = runDocument.data().stops.filter((stop) => {
+
+    const primaryKey = stop.orderID + "_" + stop.stopType;
+    return primaryKey != stopToUpdatePrimaryKey;
+
+  });
+
+  newStops.push(stopToUpdate);
+
+  const databaseStops = removeStopDataFromStop(newStops);
+  console.log(databaseStops);
+
+  const batch = writeBatch(db);
+
+  batch.update(runRef, {"stops": databaseStops});
+
+
+  //update orderdata
+  const newOrderDocument = updateOrderDocumentAddress(stopToUpdate.stopType, address.address, orderDocument.data());
+
+  console.log(newOrderDocument);
+
+  if(newOrderDocument === false){
+    return false;
+  }
+
+  batch.set(orderRef, newOrderDocument);
+
+  try{
+
+    batch.commit();
+
+  }catch{
+
+    console.log(e);
+    return false;
+
+  }
+
+  return true;
+
+}
+
+
+function updateOrderDocumentAddress(addressType, address, orderDocument){
+
+  console.log(addressType, address);
+
+  if(addressType == "collection"){
+
+    orderDocument['collectionAddress1'] = address.streetAddress;
+    orderDocument['collectionAddress2'] = address.city;
+    orderDocument['collectionAddress3'] = address.county;
+    orderDocument['collectionPostcode'] = address.postcode;
+
+  }else if(stopType == "delivery"){
+
+    orderDocument['deliveryAddress1'] = address.streetAddress;
+    orderDocument['deliveryAddress2'] = address.city;
+    orderDocument['deliveryAddress3'] = address.county;
+    orderDocument['deliveryPostcode'] = address.postcode;
+
+  }else{
+
+    return false;
+
+  }
+
+  return orderDocument;
+
 }

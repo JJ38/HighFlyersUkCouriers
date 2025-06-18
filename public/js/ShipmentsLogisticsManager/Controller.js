@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy, doc, documentId } from "firebase/fir
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData, createAddressSuggestionCard } from "./Components";
-import { parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -79,7 +79,7 @@ const validateAddressLine2 = document.getElementById('validate_address_line_2');
 const validateAddressLine3 = document.getElementById('validate_address_line_3');
 const validateAddressPostcode = document.getElementById('validate_address_postcode');
 const addressSuggestionWrapper = document.getElementById('address_suggestion_wrapper');
-
+const updateAddressButton = document.getElementById('confirm_update_address_button');
 
 const searchButton = document.getElementById('search_button');
 const addOrderTable = document.getElementById('table_body');
@@ -119,11 +119,14 @@ let dragZones = [];
 
 let mainMap;
 let mainMapMarkers = [];
-let mapMarketClusters;
+let mainMapMarkerClusters;
 
 let validateAddressMap;
 let validateAddressMapMarkers = [];
 let currentlySelectedAddressSuggestionCard;
+let currentlySelectedSuggestionAddress;
+let currentlySelectedStop;
+
 
 addEventListeners();
 init();
@@ -616,6 +619,8 @@ function addEventListeners(){
       hideUI(validateAddressWidget);
       removeMapMarkers(validateAddressMapMarkers);
       addressSuggestionWrapper.innerHTML = "";
+      updateAddressButton.classList.add('nonClickable');
+      currentlySelectedAddressSuggestionCard = null;
 
     });
 
@@ -708,7 +713,29 @@ function addEventListeners(){
 
   }
 
+  if(updateAddressButton != null){
+
+    updateAddressButton.addEventListener('click', async () => {
+
+
+      if(currentlySelectedAddressSuggestionCard != null){
+
+        const result = await updateStopAddress(currentlySelectedSuggestionAddress, currentSelectedRun, currentlySelectedStop);
+        if(result ===  false){
+          showNotification("Error!", "Error updating stop address");
+          return;
+        }
+
+        showNotification("Success!", "Updated stop address");
+      
+      }
+
+    });
+
+  }
+
 }
+
 
 function addSuggestions(results){
 
@@ -722,10 +749,13 @@ function addSuggestions(results){
     addressSuggestionCard.addEventListener('click', () =>{
 
       validateAddressMap.setCenter(results[i]['geometry']['location']);
-      console.log(parseAddress(results[i]['address_components']));
-      console.log(results[i]['geometry']['location']);
 
-      selectAddressSuggestionCard(addressSuggestionCard);
+      const stop = {
+        coordinates: results[i]['geometry']['location'], 
+        address: parseAddress(results[i]['address_components'])
+      }
+
+      selectAddressSuggestionCard(addressSuggestionCard, stop);
 
     });
 
@@ -739,7 +769,7 @@ function addSuggestions(results){
 }
 
 
-function selectAddressSuggestionCard(selectedCard){
+function selectAddressSuggestionCard(selectedCard, suggestedAddress){
 
   if(currentlySelectedAddressSuggestionCard != null){
     currentlySelectedAddressSuggestionCard.classList.remove('selected');
@@ -747,6 +777,9 @@ function selectAddressSuggestionCard(selectedCard){
 
   selectedCard.classList.add('selected');
   currentlySelectedAddressSuggestionCard = selectedCard;
+  currentlySelectedSuggestionAddress = suggestedAddress;
+
+  updateAddressButton.classList.remove('nonClickable');
 
 } 
 
@@ -993,6 +1026,7 @@ async function updateUnassignedOrdersTable(runObject){
       clickableElement.addEventListener('click', () => {
 
         console.log(runObject.stops[i]);
+        currentlySelectedStop = runObject.stops[i];
         showUI(validateAddressWidget);
 
         validateAddressLine1.value = runObject.stops[i]['stopData']['address1'];
@@ -1211,9 +1245,12 @@ function addMarkerToMap(map, pinText, coordinates){
 
 async function updateMapMarkers(runObject){
 
+  console.log("updateMapMarkers");
   removeMapMarkers(mainMapMarkers);
+  // mainMapMarkers = [];
 
   const stops = runObject.stops;
+  console.log(stops.length);
 
   for(let i = 0; i < stops.length; i++){
 
@@ -1243,28 +1280,29 @@ async function updateMapMarkers(runObject){
 
   }
 
-  mapMarketClusters = new MarkerClusterer({ markers: mainMapMarkers, map: map });
-  console.log(mapMarketClusters);
+  mainMapMarkerClusters = new MarkerClusterer({ markers: mainMapMarkers, map: mainMap });
 
 }
 
 function removeMapMarkers(mapMarkers){
 
-  console.log("removeMapMarkers");
-
   for(let i = 0; i < mapMarkers.length; i++){
 
-    // console.log(mainMapMarkers[i].map);
+    console.log("map = null");
     mapMarkers[i].map = null;
 
   }
 
   mapMarkers = [];
 
-  if(mapMarketClusters != null){
-    mapMarketClusters.clearMarkers();
+  if(mainMapMarkerClusters != null){
+    mainMapMarkerClusters.clearMarkers();
 
   }
+
+  console.log(mapMarkers);
+  console.log(mainMapMarkerClusters);
+
 
 }
 
@@ -1665,7 +1703,6 @@ async function dropStopCard(){
     return false;
   }
 
-  console.log(updateDatabaseStops);
 
   //update client side order as database has updated successfully
   currentSelectedRun.stops = updatedStops;
