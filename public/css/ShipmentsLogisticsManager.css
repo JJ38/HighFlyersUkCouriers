@@ -315,6 +315,17 @@ p{
 
 }
 
+.runDetailsWrapper{
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-width: 350px;
+    gap:10px
+
+}
+
+
 .stopsTable{
 
     width:100%;

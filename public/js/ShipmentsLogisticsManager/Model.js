@@ -269,7 +269,7 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
   }
 
  
-  //if coordinates are null but postcode was correct aslso assign to unassigned runs to be flagged for address validation
+  //if coordinates are null but postcode was correct also assign to unassigned runs to be flagged for address validation
   if(stop.coordinates == null){
     runName = null;
   }
@@ -1571,8 +1571,6 @@ export async function updateStopAddress(address, run, stopToUpdate){
   //update stop in run 
   const stopToUpdatePrimaryKey = stopToUpdate.orderID + "_" + stopToUpdate.stopType
 
-  console.log(stopToUpdatePrimaryKey);
-
   //remove outdated stop
   const newStops = runDocument.data().stops.filter((stop) => {
 
@@ -1584,7 +1582,6 @@ export async function updateStopAddress(address, run, stopToUpdate){
   newStops.push(stopToUpdate);
 
   const databaseStops = removeStopDataFromStop(newStops);
-  console.log(databaseStops);
 
   const batch = writeBatch(db);
 
@@ -1620,8 +1617,6 @@ export async function updateStopAddress(address, run, stopToUpdate){
 
 function updateOrderDocumentAddress(addressType, address, orderDocument){
 
-  console.log(addressType, address);
-
   if(addressType == "collection"){
 
     orderDocument['collectionAddress1'] = address.streetAddress;
@@ -1629,7 +1624,7 @@ function updateOrderDocumentAddress(addressType, address, orderDocument){
     orderDocument['collectionAddress3'] = address.county;
     orderDocument['collectionPostcode'] = address.postcode;
 
-  }else if(stopType == "delivery"){
+  }else if(addressType == "delivery"){
 
     orderDocument['deliveryAddress1'] = address.streetAddress;
     orderDocument['deliveryAddress2'] = address.city;

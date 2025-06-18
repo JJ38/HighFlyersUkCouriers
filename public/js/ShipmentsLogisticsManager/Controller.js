@@ -358,7 +358,7 @@ function addEventListeners(){
 
       const result = await assignStopsToRun(selectAssignStopsRun.value, orderIDs, currentShipmentUnassignedOrders);
 
-      updateUnassignedOrdersTable(currentShipmentUnassignedOrders);
+      updateUnassignedOrdersTable(currentSelectedRun);
       
       if(result){
 
@@ -476,7 +476,7 @@ function addEventListeners(){
       
       hideUI(removeStopsWidget);
       
-      updateUnassignedOrdersTable(currentShipmentUnassignedOrders);
+      updateUnassignedOrdersTable(currentSelectedRun);
 
       if(result){
         showNotification("Success!", "Successfully removed stops from shipment");
@@ -615,11 +615,7 @@ function addEventListeners(){
 
     validateAddressCancelButton.addEventListener('click', () => {
 
-      hideUI(validateAddressWidget);
-      removeMapMarkers(validateAddressMapMarkers);
-      addressSuggestionWrapper.innerHTML = "";
-      updateAddressButton.classList.add('nonClickable');
-      currentlySelectedAddressSuggestionCard = null;
+      clearAndHideValidateAddressWidget();
 
     });
 
@@ -726,6 +722,9 @@ function addEventListeners(){
         }
 
         showNotification("Success!", "Updated stop address");
+        clearAndHideValidateAddressWidget();
+        updateUnassignedOrdersTable(currentSelectedRun);
+        
       
       }
 
@@ -790,6 +789,16 @@ function deselectCheckboxes(checkBoxes){
     checkBoxes[i].checked = false;
 
   }
+
+}
+
+function clearAndHideValidateAddressWidget(){
+
+  hideUI(validateAddressWidget);
+  removeMapMarkers(validateAddressMapMarkers);
+  addressSuggestionWrapper.innerHTML = "";
+  updateAddressButton.classList.add('nonClickable');
+  currentlySelectedAddressSuggestionCard = null;
 
 }
 
@@ -1005,6 +1014,9 @@ function parseRunData(runData){
 async function updateUnassignedOrdersTable(runObject){
 
   console.log(runObject);
+  console.log(runObject.stops);
+  console.log(runObject.stops.length);
+
 
   currentSelectedRun = runObject;
 
