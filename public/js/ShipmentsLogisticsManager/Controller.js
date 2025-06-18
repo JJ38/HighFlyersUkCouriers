@@ -1,9 +1,9 @@
 import { db, getDocuments, filterSearch } from "/js/Firebase.js";
-import { query, collection, limit, orderBy, doc, documentId } from "firebase/firestore";
+import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData, createAddressSuggestionCard } from "./Components";
-import { updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, compareStops, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData, createAddressSuggestionCard } from "./Components";
+import { updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -684,6 +684,7 @@ function addEventListeners(){
 
     validateAddressButton.addEventListener('click', async () => {
 
+      console.log("before");
       removeMapMarkers(validateAddressMapMarkers);
       addressSuggestionWrapper.innerHTML = "";
 
@@ -723,7 +724,15 @@ function addEventListeners(){
 
         showNotification("Success!", "Updated stop address");
         clearAndHideValidateAddressWidget();
-        updateUnassignedOrdersTable(currentSelectedRun);
+
+        if(currentSelectedRun.runName == null){
+          updateUnassignedOrdersTable(currentSelectedRun);
+        }else{
+          const runObject = await selectRun(currentSelectedRun.documentId);
+          console.log(runObject);
+          updateStopList(runObject);
+          updateMapMarkers(runObject);
+        }
         
       
       }
@@ -996,7 +1005,7 @@ function parseRunData(runData){
 
       const runObject = await selectRun(runStruct.documentId);
       await updateUnassignedOrdersTable(runObject);
-      removeMapMarkers(mainMapMarkers);
+      removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
     });
 
@@ -1012,11 +1021,6 @@ function parseRunData(runData){
 
 
 async function updateUnassignedOrdersTable(runObject){
-
-  console.log(runObject);
-  console.log(runObject.stops);
-  console.log(runObject.stops.length);
-
 
   currentSelectedRun = runObject;
 
@@ -1156,7 +1160,7 @@ async function updateRunsList(shipmentName){
 
     selectCard(false);
     showAddOrderTable();
-    removeMapMarkers(mainMapMarkers);
+    removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
   });
 
@@ -1179,7 +1183,7 @@ async function updateRunsList(shipmentName){
 
 async function selectShipment(selectedShipment){
 
-  removeMapMarkers(mainMapMarkers);
+  removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
   const shipmentData = await fetchShipment(selectedShipment);
 
@@ -1257,7 +1261,7 @@ function addMarkerToMap(map, pinText, coordinates){
 async function updateMapMarkers(runObject){
 
   console.log("updateMapMarkers");
-  removeMapMarkers(mainMapMarkers);
+  removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
   const stops = runObject.stops;
   console.log(stops.length);
@@ -1294,7 +1298,12 @@ async function updateMapMarkers(runObject){
 
 }
 
-function removeMapMarkers(mapMarkers){
+function removeMapMarkers(mapMarkers, clusters){
+
+  console.log(mapMarkers);
+  console.log(mapMarkers.length);
+
+  console.log("removeMapMarkers");
 
   for(let i = 0; i < mapMarkers.length; i++){
 
@@ -1306,8 +1315,8 @@ function removeMapMarkers(mapMarkers){
   //mapMarkers = [] cant be used as this would desctroy the reference and create a new array rather than alter the one passed in
   mapMarkers.splice(0, mapMarkers.length);
 
-  if(mainMapMarkerClusters != null){
-    mainMapMarkerClusters.clearMarkers();
+  if(clusters != null){
+    clusters.clearMarkers();
 
   }
 
@@ -1320,6 +1329,8 @@ function updateStopList(runStruct){
   const stops = runStruct.stops
   runStopsContainer.innerHTML = "";
 
+  console.log('runStopsContainer.innerHTML = "";');
+
   for(let i = 0; i < stops.length; i++){
 
     for(let j = 0; j < stops.length; j++){
@@ -1327,7 +1338,7 @@ function updateStopList(runStruct){
       if(stops[j].stopNumber == i + 1){
 
         const stopNumber = createStopNumber(stops[j].stopNumber, stops[j].isLocked);
-        const stopCard = getStopCard(stops[j], runStruct, stopNumber.firstChild);
+        const stopCard = getStopCard(stops[j], runStruct.documentId, stopNumber.firstChild);
 
         runStopsContainer.appendChild(stopNumber);
         runStopsContainer.appendChild(stopCard);
@@ -1449,7 +1460,7 @@ function getMimicCard(){
 }
 
 
-function getStopCard(stop, runStruct, stopNumber){
+function getStopCard(stop, runDocumentID, stopNumber){
   
   const stopMetaData = createStopMetaData(stop);
 
@@ -1457,9 +1468,10 @@ function getStopCard(stop, runStruct, stopNumber){
   const lockOpenIcon = createOpenLockIcon();
 
   const stopLockButton = createStopLockButton(stop['isLocked'], lockIcon, lockOpenIcon);
+  const editButton = createEditButton();
   const deleteButton = createDeleteStopButton();
 
-  const buttonWrapper = createButtonWrapper(stopLockButton, deleteButton);
+  const buttonWrapper = createButtonWrapper(stopLockButton, editButton ,deleteButton);
  
   const stopCardWrapper = createStopCard(stop, stopMetaData, buttonWrapper);
 
@@ -1505,14 +1517,28 @@ function getStopCard(stop, runStruct, stopNumber){
   });
 
 
+  editButton.addEventListener('click', () => {
+
+    currentlySelectedStop = stop;
+
+    showUI(validateAddressWidget);
+
+    validateAddressLine1.value = stop['stopData']['address1'];
+    validateAddressLine2.value = stop['stopData']['address2'];
+    validateAddressLine3.value = stop['stopData']['address3'];
+    validateAddressPostcode.value = stop['stopData']['postcode'];
+
+  });
+
+
   deleteButton.addEventListener('click', async () => {
 
-    const result = await assignStopsToRun(currentShipmentUnassignedOrders, [stop.orderID + "_" + stop.stopType], runStruct.documentId);
+    const result = await assignStopsToRun(currentShipmentUnassignedOrders, [stop.orderID + "_" + stop.stopType], runDocumentID);
 
     if(result){
 
       showNotification("Success!", "Removed stop from run");
-      const runObject = await selectRun(runStruct.documentId);
+      const runObject = await selectRun(runDocumentID);
       updateStopList(runObject);
 
       await updateRunsList(selectedShipment.value);
@@ -1569,6 +1595,18 @@ function getStopCard(stop, runStruct, stopNumber){
   });
 
   stopLockButton.addEventListener('mousedown', (e) => {
+
+    e.stopPropagation();
+
+  });
+
+  editButton.addEventListener('mouseup', (e) => {
+
+    e.stopPropagation();
+
+  });
+
+  editButton.addEventListener('mousedown', (e) => {
 
     e.stopPropagation();
 

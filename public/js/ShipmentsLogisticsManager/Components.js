@@ -166,17 +166,35 @@ export function createStopCard(stop, stopMetaDataContainer, buttonWrapper){
 }
 
 
-export function createButtonWrapper(stopLockButton, deleteButton){
+export function createButtonWrapper(stopLockButton, editButton, deleteButton){
 
   const wrapper = document.createElement('div');
   wrapper.classList = "buttonWrapper hidden";
 
   wrapper.appendChild(stopLockButton);
+  wrapper.appendChild(editButton)
   wrapper.appendChild(deleteButton);
 
   return wrapper;
 
 }
+
+
+export function createEditButton(){
+
+  const editButtonWrapper = document.createElement('div');
+  editButtonWrapper.classList = "editButtonWrapper"; 
+
+  const editIcon = document.createElement('span');
+  editIcon.classList = "edit material-symbols-outlined";
+  editIcon.innerText = "edit";
+
+  editButtonWrapper.appendChild(editIcon);
+
+  return editButtonWrapper;
+
+}
+
 
 export function createDeleteStopButton(){
 

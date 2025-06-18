@@ -252,17 +252,38 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
 
   if(stopPostcode != null){
 
-    if(runDefinitions[stopPostcode.substring(0,4)] != null){
+    checkPostcodeForException(stopPostcode);
 
-      runName = runDefinitions[stopPostcode.substring(0,4)];
+    //outward code is 4 characters e.g DE56 1TP
+    if(stopPostcode.replaceAll(" ", "").length == 7){
 
-    }else if(runDefinitions[stopPostcode.substring(0,3)] != null){
+      if(runDefinitions[stopPostcode.substring(0,4)] != null){
 
-      runName = runDefinitions[stopPostcode.substring(0,3)];
+        runName = runDefinitions[stopPostcode.substring(0,4)];
 
-    }else if(runDefinitions[stopPostcode.substring(0,2)] != null){
+      }
 
-      runName = runDefinitions[stopPostcode.substring(0,2)];
+    }
+
+    //outward code is 3 characters e.g DE5 3GY
+    if(stopPostcode.replaceAll(" ", "").length == 6){
+
+      if(runDefinitions[stopPostcode.substring(0,3)] != null){
+
+        runName = runDefinitions[stopPostcode.substring(0,3)];
+
+      }
+
+    }
+
+    //outward code is 2 characters e.g E2 0AA
+    if(stopPostcode.replaceAll(" ", "").length == 5){
+
+      if(runDefinitions[stopPostcode.substring(0,2)] != null){
+
+        runName = runDefinitions[stopPostcode.substring(0,2)];
+
+      }
 
     }
 
@@ -287,6 +308,45 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
   run.stops.push(stop);
 
 }
+
+
+function checkPostcodeForException(stopPostcode){
+
+  //outward code is 4 characters e.g DE56 1TP
+  if(stopPostcode.replaceAll(" ", "").length == 7){
+
+    if(runDefinitions[stopPostcode.substring(0,4)] != null){
+
+      runName = runDefinitions[stopPostcode.substring(0,4)];
+
+    }
+
+  }
+
+  //outward code is 3 characters e.g DE5 3GY
+  if(stopPostcode.replaceAll(" ", "").length == 6){
+
+    if(runDefinitions[stopPostcode.substring(0,3)] != null){
+
+      runName = runDefinitions[stopPostcode.substring(0,3)];
+
+    }
+
+  }
+
+  //outward code is 2 characters e.g E2 0AA
+  if(stopPostcode.replaceAll(" ", "").length == 5){
+
+    if(runDefinitions[stopPostcode.substring(0,2)] != null){
+
+      runName = runDefinitions[stopPostcode.substring(0,2)];
+
+    }
+
+  }
+
+}
+
 
 async function generateStop(orderDocument, shipmentType){
 
