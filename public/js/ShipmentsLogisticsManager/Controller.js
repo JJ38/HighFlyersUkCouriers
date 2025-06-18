@@ -132,7 +132,6 @@ addEventListeners();
 init();
 
 
-
 function init(){
 
   initAutocomplete();
@@ -1247,7 +1246,6 @@ async function updateMapMarkers(runObject){
 
   console.log("updateMapMarkers");
   removeMapMarkers(mainMapMarkers);
-  // mainMapMarkers = [];
 
   const stops = runObject.stops;
   console.log(stops.length);
@@ -1293,16 +1291,13 @@ function removeMapMarkers(mapMarkers){
 
   }
 
-  mapMarkers = [];
+  //mapMarkers = [] cant be used as this would desctroy the reference and create a new array rather than alter the one passed in
+  mapMarkers.splice(0, mapMarkers.length);
 
   if(mainMapMarkerClusters != null){
     mainMapMarkerClusters.clearMarkers();
 
   }
-
-  console.log(mapMarkers);
-  console.log(mainMapMarkerClusters);
-
 
 }
 
