@@ -1365,6 +1365,8 @@ export async function calculateRoute(stops){
     return false;
   }
 
+  return result;
+
 }
 
 

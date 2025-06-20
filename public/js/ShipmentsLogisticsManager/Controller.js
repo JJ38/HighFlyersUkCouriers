@@ -11,6 +11,7 @@ let GoogleAdvancedMarkerElement;
 let GooglePinElement;
 let GoogleAutocomplete;
 let GoogleMap;
+let GoogleGeometry;
 
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -126,6 +127,8 @@ let validateAddressMapMarkers = [];
 let currentlySelectedAddressSuggestionCard;
 let currentlySelectedSuggestionAddress;
 let currentlySelectedStop;
+
+let routePaths = [];
 
 
 addEventListeners();
@@ -606,6 +609,20 @@ function addEventListeners(){
       if(result === false){
         showNotification("Error!", "Error calculating route");
       }
+      
+      const routeJSON = JSON.parse(result);
+
+      console.log(routeJSON);
+
+      const transitions = routeJSON['routes'][0]['transitions']
+      // [0]['routePolyline']['points'];
+      console.log(transitions);
+
+      for(let i = 0; i < transitions.length; i++){
+        
+        drawPolyline(transitions[i]['routePolyline']['points']);
+
+      }
 
     });
 
@@ -743,6 +760,27 @@ function addEventListeners(){
 
 }
 
+function drawPolyline(polylineString){
+
+  //in case there is no rouote as there is a second delivery at the location
+  if(polylineString != null){
+
+    const decodedPath = GoogleGeometry.decodePath(polylineString);
+
+
+    const routePath = new google.maps.Polyline({
+        path: decodedPath,      // The array of LatLng coordinates
+        geodesic: true,         // Set to true for accurate rendering on a globe
+        strokeColor: '#2881FF', // Red color for the line (you can choose any hex color)
+        strokeOpacity: 1.0,     // Fully opaque
+        strokeWeight: 4         // Line thickness in pixels
+    });
+
+    routePaths.push(routePath.setMap(mainMap));
+
+  }
+
+}
 
 function addSuggestions(results){
 
@@ -1213,7 +1251,10 @@ async function initMap() {
   
   const { Map } = await google.maps.importLibrary("maps");
   const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+  const { encoding } = await google.maps.importLibrary("geometry");
 
+
+  GoogleGeometry = encoding;
   GoogleAdvancedMarkerElement = AdvancedMarkerElement;
   GooglePinElement = PinElement;
   GoogleMap = Map;
