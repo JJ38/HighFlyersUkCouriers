@@ -501,6 +501,7 @@ function generateRunDoc(runName, deliveryWeek){
     fuelCost: "",
     runName: runName,
     runWeek: deliveryWeek,
+    optimised: false,
     stops: [],     
 
   }
@@ -1353,22 +1354,61 @@ export function mergeStopsWithOrderData(stops, orders){
 }
 
 
-export async function calculateRoute(stops){
+export async function calculateRoute(run){
+
+  const stops = run.stops;
 
   const originAndDestination = getOriginAndDestination(stops);
   const stopLocations = getStopLocations(stops);
   const requestBody = getRouteOptimisationRequestBody(originAndDestination.origin, originAndDestination.destination, stopLocations);
 
-  const result = await fetchOptimisedRoute(requestBody);
+  const optimisedRoute = await fetchOptimisedRoute(requestBody);
 
-  if(result === false){
+  if(optimisedRoute === false){
     return false;
   }
 
-  return result;
+  try{ 
+
+    const optimisedRouteJSON = JSON.parse(optimisedRoute);
+
+    const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON);
+
+    run.optimisedRoute = optimisedRouteJSON;
+
+    if(storedResult === false){
+      return false;
+    }
+
+    return optimisedRouteJSON;
+
+  }catch{
+
+    return false;
+  }
+
+
 
 }
 
+async function storeOptimisedRoute(runID, optimisedRoute){
+
+  try{
+
+    const runRef = doc(db, 'Runs', runID);
+
+    await updateDocument(runRef, {optimisedRoute: optimisedRoute});
+    
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  return true;
+}
 
 async function fetchOptimisedRoute(requestBody){
 
@@ -1386,8 +1426,6 @@ async function fetchOptimisedRoute(requestBody){
 
     const response = await fetch(url, body);
     const json = await response.json();
-
-    console.log(json);
 
     return json;
 
@@ -1466,7 +1504,7 @@ function getStopLocations(stops){
 
     const stopObject = 
     {
-      "label": "Stop_" + i.toString(),
+      "label": stops[i].orderID + "_" + stops[i].stopType,
       "deliveries": [
         {
           "arrivalLocation": {

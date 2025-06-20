@@ -604,19 +604,16 @@ function addEventListeners(){
 
       //add debouncer
 
-      const result = await calculateRoute(currentSelectedRun.stops);
+      const routeJSON = await calculateRoute(currentSelectedRun);
       
-      if(result === false){
+      if(routeJSON === false){
         showNotification("Error!", "Error calculating route");
       }
       
-      const routeJSON = JSON.parse(result);
 
-      console.log(routeJSON);
-
-      const transitions = routeJSON['routes'][0]['transitions']
-      // [0]['routePolyline']['points'];
-      console.log(transitions);
+      const transitions = routeJSON['routes'][0]['transitions'];
+     
+      removePolylines();
 
       for(let i = 0; i < transitions.length; i++){
         
@@ -767,7 +764,6 @@ function drawPolyline(polylineString){
 
     const decodedPath = GoogleGeometry.decodePath(polylineString);
 
-
     const routePath = new google.maps.Polyline({
         path: decodedPath,      // The array of LatLng coordinates
         geodesic: true,         // Set to true for accurate rendering on a globe
@@ -776,7 +772,9 @@ function drawPolyline(polylineString){
         strokeWeight: 4         // Line thickness in pixels
     });
 
-    routePaths.push(routePath.setMap(mainMap));
+    routePath.setMap(mainMap)
+
+    routePaths.push(routePath);
 
   }
 
@@ -1033,6 +1031,8 @@ function parseRunData(runData){
       //update map markers
       await updateMapMarkers(runObject);
 
+      updatePolylines();
+
     });
 
   }else{
@@ -1288,6 +1288,8 @@ function addMarkerToMap(map, pinText, coordinates){
   const pinTextGlyph = new GooglePinElement({
     glyph: pinText.toString(),
     glyphColor: "white",
+    background: '#0000FF',
+    borderColor: '#CC0000'
   });
 
   validateAddressMapMarkers.push(new GoogleAdvancedMarkerElement({
@@ -1301,11 +1303,9 @@ function addMarkerToMap(map, pinText, coordinates){
 
 async function updateMapMarkers(runObject){
 
-  console.log("updateMapMarkers");
   removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
   const stops = runObject.stops;
-  console.log(stops.length);
 
   for(let i = 0; i < stops.length; i++){
 
@@ -1319,9 +1319,19 @@ async function updateMapMarkers(runObject){
 
       }
 
+      let backgroundColour = '#FF0000';
+      let borderColour = '#CC0000';
+
+      if(runObject.optimised){
+        backgroundColour = '#0000FF';
+        borderColour = '#0000CC';
+      }
+
       const pinTextGlyph = new GooglePinElement({
         glyph: stops[i]['stopNumber'].toString(),
         glyphColor: "white",
+        background: backgroundColour, // Red background
+        borderColor: borderColour
       });
 
       mainMapMarkers.push(new GoogleAdvancedMarkerElement({
@@ -1341,11 +1351,6 @@ async function updateMapMarkers(runObject){
 
 function removeMapMarkers(mapMarkers, clusters){
 
-  console.log(mapMarkers);
-  console.log(mapMarkers.length);
-
-  console.log("removeMapMarkers");
-
   for(let i = 0; i < mapMarkers.length; i++){
 
     console.log("map = null");
@@ -1363,14 +1368,30 @@ function removeMapMarkers(mapMarkers, clusters){
 
 }
 
+function updatePolylines(){
+
+  removePolylines();
+
+}
+
+function removePolylines(){
+
+  for(let i = 0; i < routePaths.length; i++){
+
+    routePaths[i].setMap(null);
+
+  }
+
+  routePaths = [];
+
+}
+
 function updateStopList(runStruct){
 
   currentSelectedRun = runStruct;
 
   const stops = runStruct.stops
   runStopsContainer.innerHTML = "";
-
-  console.log('runStopsContainer.innerHTML = "";');
 
   for(let i = 0; i < stops.length; i++){
 
@@ -1395,7 +1416,6 @@ function updateStopList(runStruct){
     runStopsContainer.innerText = "No Stops in run";
 
   }
-  
 
 }
 
