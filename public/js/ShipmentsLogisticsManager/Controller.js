@@ -185,6 +185,7 @@ function addEventListeners(){
     selectedShipment.addEventListener('input', () => {
 
       removePolylines();
+      currentSelectedRun = null;
   
       if(selectedShipment.value == "CREATE_SHIPMENT"){
 
@@ -1191,7 +1192,7 @@ async function updateRunsList(shipmentName){
 
     if(currentSelectedRun != null){
 
-      //find and reselect run that was selected before run card were rebuilt.
+      //find and reselect run that was selected before run card was rebuilt.
       if(currentSelectedRun.documentId == runsList[i].runCard.id){
 
         selectCard(runsList[i].runCard);
