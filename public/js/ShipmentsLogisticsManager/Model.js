@@ -1374,13 +1374,13 @@ export async function calculateRoute(run){
     const optimisedRouteJSON = JSON.parse(optimisedRoute);
     updateStopOrder(optimisedRouteJSON, stops);
 
-    //const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON);
+    const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON);
 
     run.isOptimised = true;
 
-    // if(storedResult === false){
-    //   return false;
-    // }
+    if(storedResult === false){
+      return false;
+    }
 
     return optimisedRouteJSON;
 

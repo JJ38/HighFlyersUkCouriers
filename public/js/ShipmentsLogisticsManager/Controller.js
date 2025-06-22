@@ -615,7 +615,7 @@ function addEventListeners(){
         showNotification("Error!", "Error calculating route");
         return;
       }
-      
+    
 
       const transitions = routeJSON['routes'][0]['transitions'];
      
@@ -1383,14 +1383,20 @@ function removeMapMarkers(mapMarkers, clusters){
 
 async function updatePolylines(run){
 
-
-
-  // //is order of stops optimised
-  if(run.isOptimised){
-    
-  }
-
   removePolylines();
+
+  //is order of stops optimised
+  if(run.isOptimised){
+
+    const transitions = run.optimisedRoute['routes'][0]['transitions'];
+    
+    for(let i = 0; i < transitions.length; i++){
+      
+      drawPolyline(transitions[i]['routePolyline']['points']);
+
+    }
+
+  }
 
 }
 
@@ -1794,7 +1800,7 @@ function stopCardDragAndMove(stopCard, grabPositionOffset){
 
 async function dropStopCard(){
 
-  //get position of each stopm in list 
+  //get position of each stop in list 
 
   const stopCardList = Array.from(cardBeingDragged.parentNode.children).filter((element) => {
 
@@ -1809,6 +1815,11 @@ async function dropStopCard(){
     return true;
 
   });
+
+
+  //TODO: has the order changed
+
+
 
   const updatedStops = [];
 
