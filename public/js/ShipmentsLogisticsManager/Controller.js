@@ -1039,7 +1039,6 @@ function parseRunData(runData){
 
       //update map markers
       updateMapMarkers(run);
-      console.log(run)
       updatePolylines(run);
 
     });
@@ -1454,6 +1453,7 @@ function updateStopList(runStruct){
 
 
 function getDragDetectionZone(detectionZoneType){
+  console.log("getDragDetectionZone");
 
   const dragDetectionZone = createDragDetectionZone(detectionZoneType);
   
@@ -1649,6 +1649,10 @@ function getStopCard(stop, runDocumentID, stopNumber){
 
     setTimeout(() => {
 
+      if(stop['isLocked']){
+        return;
+      }
+
       //has there been a mouseup within the timeout time
       if(mousedownTime - lastMouseUp > 0){
 
@@ -1657,7 +1661,6 @@ function getStopCard(stop, runDocumentID, stopNumber){
         
         const grabPositionOffset = e.clientY - stopCardYOffset;
         const top = e.clientY - stopListYOffset - grabPositionOffset;
-
 
         setTop(top ,stopCardWrapper)
         stopCardDragAndMove(stopCardWrapper, grabPositionOffset);
@@ -1786,6 +1789,7 @@ function stopCardDragAndMove(stopCard, grabPositionOffset){
 
   mimicCard = getMimicCard();
 
+  //initial mimic card position
   stopCard.before(mimicCard);
  
   stopCard.classList.add('absolute');
@@ -1877,9 +1881,33 @@ async function dropStopCard(){
 
 function enableDragZones(){
 
+  const dragDetectionZones = runStopsContainer.querySelectorAll('.dragDetectionZone');
+
   for(let i = 0; i < dragZones.length; i++){
 
     dragZones[i].classList.remove('hidden');
+
+  }
+
+  const stops = currentSelectedRun.stops;
+
+  for(let i = 0; i < stops.length; i++){
+
+    if(stops[i].stopNumber == 1){
+
+      if(stops[i]['isLocked']){
+        dragDetectionZones[0].classList.add('hidden');
+      }
+
+    }
+
+    if(stops[i].stopNumber == stops.length){
+
+      if(stops[i]['isLocked']){
+        dragDetectionZones[dragDetectionZones.length - 1].classList.add('hidden');
+      }
+
+    }
 
   }
 
