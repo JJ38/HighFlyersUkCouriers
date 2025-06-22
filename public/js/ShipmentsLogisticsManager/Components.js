@@ -237,7 +237,7 @@ export function createStopMetaData(stop){
 export function createStopLockButton(isLocked, lockIcon, lockOpenIcon){
 
   const lockButtonWrapper = document.createElement('div');
-  lockButtonWrapper.classList = "lockButtonWrapper"; 
+  lockButtonWrapper.classList = "lockButtonWrapper hidden"; 
 
   if(isLocked){
 

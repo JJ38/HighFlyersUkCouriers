@@ -1445,6 +1445,8 @@ function updateStopList(runStruct){
 
   }
 
+  updateStopLockButtons();
+
   if(stops.length == 0){
 
     runStopsContainer.innerText = "No Stops in run";
