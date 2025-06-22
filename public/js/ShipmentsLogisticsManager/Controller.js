@@ -2,8 +2,8 @@ import { db, getDocuments, filterSearch } from "/js/Firebase.js";
 import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopNumber, createStopLockButton, createStopMetaData, createAddressSuggestionCard } from "./Components";
-import { updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
+import { convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -162,14 +162,19 @@ function addEventListeners(){
 
   });
 
-  window.addEventListener('mouseup', () => {
+  window.addEventListener('mouseup', async () => {
 
     mouseDown = false;
     lastMouseUp = Date.now();
 
     if(isCardBeingDragged){
 
-      dropStopCard();
+      await dropStopCard();
+
+      removePolylines();
+
+      console.log(currentSelectedRun); 
+      updateMapMarkers(currentSelectedRun);
 
     }
 
@@ -608,6 +613,7 @@ function addEventListeners(){
       
       if(routeJSON === false){
         showNotification("Error!", "Error calculating route");
+        return;
       }
       
 
@@ -620,6 +626,9 @@ function addEventListeners(){
         drawPolyline(transitions[i]['routePolyline']['points']);
 
       }
+
+      updateMapMarkers(currentSelectedRun);
+      updateStopList(currentSelectedRun);
 
     });
 
@@ -1023,15 +1032,15 @@ function parseRunData(runData){
     runCard.addEventListener('click', async () => {
 
       //fetch run to make sure client is showing the correct state and order of stops.
-      const runObject = await selectRun(runStruct.documentId);
-      updateStopList(runObject);
+      const run = await selectRun(runStruct.documentId);
+      updateStopList(run);
       showRuns();
       selectCard(runCard);
 
       //update map markers
-      await updateMapMarkers(runObject);
-
-      updatePolylines();
+      updateMapMarkers(run);
+      console.log(run)
+      updatePolylines(run);
 
     });
 
@@ -1301,11 +1310,13 @@ function addMarkerToMap(map, pinText, coordinates){
 
 }
 
-async function updateMapMarkers(runObject){
+function updateMapMarkers(run){ 
+
+  console.log("updateMapMarkers");
 
   removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
-  const stops = runObject.stops;
+  const stops = run.stops;
 
   for(let i = 0; i < stops.length; i++){
 
@@ -1322,13 +1333,13 @@ async function updateMapMarkers(runObject){
       let backgroundColour = '#FF0000';
       let borderColour = '#CC0000';
 
-      if(runObject.optimised){
+      if(run.isOptimised){
         backgroundColour = '#0000FF';
         borderColour = '#0000CC';
       }
 
       const pinTextGlyph = new GooglePinElement({
-        glyph: stops[i]['stopNumber'].toString(),
+        glyph: run.isOptimised ? stops[i].stopNumber.toString() : convertStopNumberToLetter(stops[i]['stopNumber']),
         glyphColor: "white",
         background: backgroundColour, // Red background
         borderColor: borderColour
@@ -1351,6 +1362,8 @@ async function updateMapMarkers(runObject){
 
 function removeMapMarkers(mapMarkers, clusters){
 
+  console.log("removeMapMarkers");
+
   for(let i = 0; i < mapMarkers.length; i++){
 
     console.log("map = null");
@@ -1368,7 +1381,14 @@ function removeMapMarkers(mapMarkers, clusters){
 
 }
 
-function updatePolylines(){
+async function updatePolylines(run){
+
+
+
+  // //is order of stops optimised
+  if(run.isOptimised){
+    
+  }
 
   removePolylines();
 
@@ -1399,7 +1419,14 @@ function updateStopList(runStruct){
 
       if(stops[j].stopNumber == i + 1){
 
-        const stopNumber = createStopNumber(stops[j].stopNumber, stops[j].isLocked);
+        let label = stops[j].stopNumber;
+
+        if(!runStruct.isOptimised){
+
+          label = convertStopNumberToLetter(stops[j].stopNumber);
+        }
+
+        const stopNumber = createStopLabel(label, stops[j].isLocked);
         const stopCard = getStopCard(stops[j], runStruct.documentId, stopNumber.firstChild);
 
         runStopsContainer.appendChild(stopNumber);
@@ -1455,7 +1482,7 @@ function getDragDetectionZone(detectionZoneType){
 
       }
 
-      addNumbersToStopsList();
+      addLabelsToStopsList();
 
     }
 
@@ -1466,7 +1493,7 @@ function getDragDetectionZone(detectionZoneType){
 }
 
 
-function addNumbersToStopsList(){
+function addLabelsToStopsList(){
 
   const stopCards = runStopsContainer.querySelectorAll('.stopCardWrapper');
   const filteredStopCards = Array.from(stopCards).filter((stopCard) => {
@@ -1474,11 +1501,9 @@ function addNumbersToStopsList(){
     return stopCard != cardBeingDragged;
   });
 
-  //console.log(filteredStopCards);
-
   for(let i = 0; i < filteredStopCards.length; i++){
 
-    const stopNumber = createStopNumber(i + 1);
+    const stopNumber = createStopLabel(convertStopNumberToLetter(i + 1));
     const stopCard = filteredStopCards[i].querySelector('.stopCard');
     //console.log(stopCard);
 
@@ -1490,7 +1515,6 @@ function addNumbersToStopsList(){
     setStopNumberLock(isLocked, stopNumber.firstChild);
 
   }
-  
 
 }
 
@@ -1603,6 +1627,7 @@ function getStopCard(stop, runDocumentID, stopNumber){
       updateStopList(runObject);
 
       await updateRunsList(selectedShipment.value);
+      updateMapMarkers(runObject);
 
       return;
     } 
@@ -1799,7 +1824,7 @@ async function dropStopCard(){
   const updateDatabaseStops = removeStopDataFromStop(updatedStops);
   
   //update the database
-  const result = await updateRun(currentSelectedRun.documentId, {stops: updateDatabaseStops});
+  const result = await updateRun(currentSelectedRun.documentId, {stops: updateDatabaseStops, isOptimised: false});
  
   if(!result){
 
@@ -1812,6 +1837,8 @@ async function dropStopCard(){
 
   //update client side order as database has updated successfully
   currentSelectedRun.stops = updatedStops;
+  currentSelectedRun.isOptimised = false;
+
 
   if(cardBeingDragged != null){
 
@@ -1829,52 +1856,10 @@ async function dropStopCard(){
   }
 
   disableDragZones();
-  updateMapMarkers(currentSelectedRun);
 
   window.removeEventListener('mousemove', mouseMoveCallback);
 
   isCardBeingDragged = false;
-
-}
-
-function getGrabPosition(){
-
-  const stopCardList =  Array.from(mimicCard.parentNode.children).filter((element) => {
-
-    if(element.classList.contains('stopNumberWrapper')){
-      return false;
-    }
-
-    if(element === mimicCard){
-      return false;
-    }
-
-    return true;
-
-  });
-
-  return indexOfElementInArray(stopCardList, cardBeingDragged) + 1;
-
-}
-
-
-function getPositionDropped(){
-
-  const stopList = Array.from(mimicCard.parentNode.children).filter((element) => {
-
-    if(element.classList.contains('stopNumberWrapper')){
-      return false;
-    }
-
-    if(element === cardBeingDragged){
-      return false;
-    }
-  
-    return true;
-  
-  }); 
-
-  return indexOfElementInArray(stopList, mimicCard) + 1;
 
 }
 

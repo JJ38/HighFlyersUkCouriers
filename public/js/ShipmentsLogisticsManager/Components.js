@@ -277,14 +277,14 @@ export function createOpenLockIcon(){
   return lockOpenIcon;
 }
 
-export function createStopNumber(stopNumberValue, isLocked){
+export function createStopLabel(label, isLocked){
 
   const wrapper = document.createElement('div');
   wrapper.classList = "stopNumberWrapper";
 
   const stopNumber = document.createElement('p');
   stopNumber.classList = "stopNumber";
-  stopNumber.innerText = stopNumberValue;
+  stopNumber.innerText = label;
 
   if(isLocked){
 

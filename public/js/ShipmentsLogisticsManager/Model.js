@@ -1182,7 +1182,8 @@ export function parseRunInfo(doc){
     stops: runData['stops'],
     runName: runData['runName'],
     runWeek: runData['runWeek'],
- 
+    isOptimised: runData['isOptimised'],
+    optimisedRoute: runData['optimisedRoute']
   }
   
   return runStruct;
@@ -1371,25 +1372,48 @@ export async function calculateRoute(run){
   try{ 
 
     const optimisedRouteJSON = JSON.parse(optimisedRoute);
+    updateStopOrder(optimisedRouteJSON, stops);
 
-    const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON);
+    //const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON);
 
-    run.optimisedRoute = optimisedRouteJSON;
+    run.isOptimised = true;
 
-    if(storedResult === false){
-      return false;
-    }
+    // if(storedResult === false){
+    //   return false;
+    // }
 
     return optimisedRouteJSON;
 
-  }catch{
-
+  }catch(e){
+    console.log(e);
     return false;
   }
 
+}
 
+
+function updateStopOrder(optimisedRouteJSON, stops){ 
+  
+  console.log(optimisedRouteJSON['routes'][0]['visits']);
+
+  const optimisedStops = optimisedRouteJSON['routes'][0]['visits'];
+
+  for(let i = 0; i < optimisedStops.length; i++){
+
+    for(let j = 0; j < stops.length; j++){
+
+      const primaryKey = stops[j]['orderID'] + "_" + stops[j]['stopType'];
+
+      if(primaryKey === optimisedStops[i]['shipmentLabel']){
+        stops[j].stopNumber = i + 1;
+      }
+
+    }
+
+  }
 
 }
+
 
 async function storeOptimisedRoute(runID, optimisedRoute){
 
@@ -1397,7 +1421,7 @@ async function storeOptimisedRoute(runID, optimisedRoute){
 
     const runRef = doc(db, 'Runs', runID);
 
-    await updateDocument(runRef, {optimisedRoute: optimisedRoute});
+    await updateDocument(runRef, {optimisedRoute: optimisedRoute, isOptimised: true});
     
 
   }catch(e){
@@ -1465,7 +1489,7 @@ function getOriginAndDestination(stops){
     }
 
     if(stops[i].stopNumber == numberOfStops){
-
+      console.log(stops[i].stopNumber == numberOfStops);
       if(stops[i].isLocked){
         destination = {
 
@@ -1703,5 +1727,36 @@ function updateOrderDocumentAddress(addressType, address, orderDocument){
   }
 
   return orderDocument;
+
+}
+
+export function convertStopNumberToLetter(stopNumber){
+
+  const remainder = stopNumber % 26;
+  const dividable = Math.floor(stopNumber / 26);
+
+  let stopLetter = "";
+
+  //64 is offset for ascii character A
+  if(dividable > 0 && remainder != 0){
+    stopLetter += String.fromCharCode(dividable + 64);
+  }
+
+  if(remainder == 0){
+
+    if(dividable > 1){
+
+      stopLetter += String.fromCharCode(dividable - 1 + 64);
+
+    }
+
+    stopLetter += "Z";
+  }
+
+  if(remainder > 0){
+    stopLetter += String.fromCharCode(remainder + 64);
+  }
+
+  return stopLetter;
 
 }
