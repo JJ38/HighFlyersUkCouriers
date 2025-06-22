@@ -1052,6 +1052,8 @@ function parseRunData(runData){
       updateMapMarkers(run);
       updatePolylines(run);
 
+      updateMapPosition(mainMap, run)
+
     });
 
   }else{
@@ -1073,6 +1075,25 @@ function parseRunData(runData){
   }
 
   return runStruct;
+
+}
+
+
+function updateMapPosition(map, run){
+
+  if(run.stops.length == 0){
+    return;
+  }
+
+  const position = 
+  {
+
+    lat: run.stops[0]['coordinates']['lat'],
+    lng: run.stops[0]['coordinates']['lng'],
+
+  }
+
+  map.setCenter(position);
 
 }
 
