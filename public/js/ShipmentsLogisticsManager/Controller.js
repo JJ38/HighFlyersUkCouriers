@@ -183,6 +183,8 @@ function addEventListeners(){
   if(selectedShipment != null){
 
     selectedShipment.addEventListener('input', () => {
+
+      removePolylines();
   
       if(selectedShipment.value == "CREATE_SHIPMENT"){
 
