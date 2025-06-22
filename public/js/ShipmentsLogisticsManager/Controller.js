@@ -1431,8 +1431,10 @@ function updateStopList(runStruct){
           label = convertStopNumberToLetter(stops[j].stopNumber);
         }
 
+        const hasLockButton = stops[j].stopNumber == 1 ? true : (stops[j].stopNumber == stops.length) ? true : false
+
         const stopNumber = createStopLabel(label, stops[j].isLocked);
-        const stopCard = getStopCard(stops[j], runStruct.documentId, stopNumber.firstChild);
+        const stopCard = getStopCard(stops[j], runStruct.documentId, stopNumber.firstChild, hasLockButton);
 
         runStopsContainer.appendChild(stopNumber);
         runStopsContainer.appendChild(stopCard);
@@ -1551,7 +1553,7 @@ function getMimicCard(){
 }
 
 
-function getStopCard(stop, runDocumentID, stopNumber){
+function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
   
   const stopMetaData = createStopMetaData(stop);
 
@@ -1559,6 +1561,7 @@ function getStopCard(stop, runDocumentID, stopNumber){
   const lockOpenIcon = createOpenLockIcon();
 
   const stopLockButton = createStopLockButton(stop['isLocked'], lockIcon, lockOpenIcon);
+
   const editButton = createEditButton();
   const deleteButton = createDeleteStopButton();
 
@@ -1683,6 +1686,7 @@ function getStopCard(stop, runDocumentID, stopNumber){
 
   });
 
+
   stopLockButton.addEventListener('mouseup', (e) => {
 
     e.stopPropagation();
@@ -1694,6 +1698,7 @@ function getStopCard(stop, runDocumentID, stopNumber){
     e.stopPropagation();
 
   });
+
 
   editButton.addEventListener('mouseup', (e) => {
 
@@ -1871,10 +1876,26 @@ async function dropStopCard(){
   }
 
   disableDragZones();
+  updateStopLockButtons();
 
   window.removeEventListener('mousemove', mouseMoveCallback);
 
   isCardBeingDragged = false;
+
+}
+
+
+function updateStopLockButtons(){
+
+  const lockButtons = runStopsContainer.querySelectorAll('.lockButtonWrapper');
+
+  for(let i = 0; i < lockButtons.length; i++){
+    lockButtons[i].classList.add('hidden');
+  }
+
+  lockButtons[0].classList.remove('hidden');
+  lockButtons[lockButtons.length - 1].classList.remove('hidden');
+
 
 }
 
