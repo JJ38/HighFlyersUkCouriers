@@ -790,6 +790,27 @@ td > div{
 
 }
 
+.calculateRouteButton{
+
+    display: flex;
+    color: white;
+    align-items: center;
+    border-radius: 5px;
+    padding: 5px 10px;
+    width: fit-content;
+    border: 1px solid #2881FF;
+    background-color: #2881FF;
+    color: white;
+
+}
+
+.calculateRouteButton:hover{
+
+    cursor: pointer;
+    color: #2881FF;
+    background-color: white;
+
+}
 
 .hidden{
     display: none !important;

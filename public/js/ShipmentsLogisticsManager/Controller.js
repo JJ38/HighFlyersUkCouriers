@@ -2,7 +2,7 @@ import { db, getDocuments, filterSearch } from "/js/Firebase.js";
 import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
+import { createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
 import { convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
@@ -66,6 +66,7 @@ const optionTabButton = document.getElementById('option_tab_button');
 const removeRunButton = document.getElementById('remove_run_button');
 const removeRunWidget = document.getElementById('remove_run_widget');
 const calculateRouteButton = document.getElementById('calculate_route_button');
+const calculateRouteButtonWrapper = document.getElementById('calculate_route_button_wrapper');
 
 const validateAddressWidget = document.getElementById('validate_address_widget');
 const validateAddressAutocompleteInput = document.getElementById('validate_address_autocomplete_input');
@@ -610,12 +611,19 @@ function addEventListeners(){
 
     calculateRouteButton.addEventListener('click', async () => {
 
-      //add debouncer
+      //show loader
+      const loader = createLoader();
+      calculateRouteButtonWrapper.appendChild(loader);
+      hideUI(calculateRouteButton);
 
       const routeJSON = await calculateRoute(currentSelectedRun);
+
+      showUI(calculateRouteButton);
+      loader.remove();
       
       if(routeJSON === false){
-        showNotification("Error!", "Error calculating route");
+        showNotification("Error!", "Error calculating route");   
+    
         return;
       }
     
