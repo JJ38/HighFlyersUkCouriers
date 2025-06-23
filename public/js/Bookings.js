@@ -1,3 +1,5 @@
+import { validatePostcodes } from "/js/ValidateAddress.js";
+
 const submitOrdersButton = document.getElementById('submitButton');
 
 const loadingSymbol = document.getElementById('loadingsymbol');
@@ -5,12 +7,14 @@ const form = document.getElementById('bookingForm');
 
 const collectionName = document.getElementById('collectionName');
 const collectionTelephone = document.getElementById('collectionTelephone');
+const collectionPostcode = document.getElementById('collectionPostcode');
 const email = document.getElementById('email');
 const confirmEmail = document.getElementById('confirmEmail');
 
 
 const deliveryName = document.getElementById('deliveryName');
 const deliveryTelephone = document.getElementById('deliveryTelephone');
+const deliveryPostcode = document.getElementById('deliveryPostcode');
 const paymentOption = document.getElementById('payment');
 
 const animalType = document.getElementById('animalType');
@@ -20,7 +24,7 @@ const requiredFields = [collectionName, collectionAddress1, collectionPostcode, 
     deliveryPostcode, deliveryTelephone, paymentOption, quantity, animalType];
 
 
-function submitOrders(){
+async function submitOrders(){
     
     //if form fields are filled
 
@@ -39,7 +43,7 @@ function submitOrders(){
 
     if(requiredFieldsMet){
 
-        let validateResult = validateForm();
+        let validateResult = await validateForm();
 
         //Validate fields 
         if(validateResult == null){
@@ -63,7 +67,7 @@ submitOrdersButton.addEventListener('click', () => {
 });
 
 
-function validateForm(){ 
+async function validateForm(){ 
 
     //var isNumber = /^\d+$/;
     const isNumber = new RegExp('^[0-9]*$');
@@ -94,6 +98,12 @@ function validateForm(){
     if(!email.value.match(isEmail)){
         return "Email is not valid";
     }
+
+    const validatePostcodesResult = await validatePostcodes(collectionPostcode.value, deliveryPostcode.value);
+
+    if(validatePostcodesResult != false){
+        return validatePostcodesResult;
+    }   
 
 
     return null;

@@ -1051,7 +1051,6 @@ function parseRunData(runData){
       //update map markers
       updateMapMarkers(run);
       updatePolylines(run);
-
       updateMapPosition(mainMap, run)
 
     });
