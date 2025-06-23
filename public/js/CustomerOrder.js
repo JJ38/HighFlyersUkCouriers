@@ -3,6 +3,7 @@
 import { db, auth, getDocument } from "/js/Firebase.js";
 import { doc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import { validatePostcodes } from "/js/ValidateAddress.js";
 
 
 const quickCollectionAddress = document.querySelector('.quickcollectionaddresswrapper');
@@ -30,11 +31,13 @@ const quickAddressTelephone = document.getElementById('quickAddressTelephone');
 
 const collectionName = document.getElementById('collectionName');
 const collectionPhoneNumber = document.getElementById('collectionPhoneNumber');
+const collectionPostcode = document.getElementById('collectionPostcode');
 const email = document.getElementById('email');
 const profileEmail = document.getElementById('profileemail');
 
 const deliveryName = document.getElementById('deliveryName');
 const deliveryPhoneNumber = document.getElementById('deliveryPhoneNumber');
+const deliveryPostcode = document.getElementById('deliveryPostcode');
 const paymentOption = document.getElementById('payment');
 const message = document.getElementById('message');
 
@@ -69,19 +72,14 @@ let idBookmark = 0;
 var uid;
 
 onAuthStateChanged(auth, (user) => {
-    
-    console.log("customer order authstatechanged");
-    console.log(user);
 
     if (user) {
     // User is signed in
 
     uid = user.uid;
-    console.log(uid);
     const docRef = doc(db, "Customers", uid);
 
     getDocument(docRef).then((doc) => {
-        console.log(doc.data());
         setProfileData(doc.data());
         //show customer profile data
         // loader.style.display = "none";
@@ -185,7 +183,7 @@ function updateQuickAddressEmail(){
 }
 
 
-function validateOrder(){ 
+async function validateOrder(){ 
 
     var isNumber = /^\d+$/;
     var isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -218,13 +216,18 @@ function validateOrder(){
         return "Payment method is not valid";
     }
 
+    const validatePostcodesResult = await validatePostcodes(collectionPostcode.value, deliveryPostcode.value);
+    console.log(validatePostcodesResult);
+    if(validatePostcodesResult != false){
+        return validatePostcodesResult;
+    }   
 
     return null;
 
 }
 
 
-function addToBasket(){
+async function addToBasket(){
     
     try{
         //check if profile has email
@@ -235,7 +238,7 @@ function addToBasket(){
         
         //check if required fields are filled
         let requiredFieldsMet = true;
-        console.log(requiredFields);
+     
         for(let i = 0; i < requiredFields.length; i++){
 
             if(requiredFields[i].value == ""){
@@ -253,26 +256,13 @@ function addToBasket(){
 
 
         //validate fields
-        const validateResult = validateOrder();
+        const validateResult = await validateOrder();
         if(validateResult != null){
             alert(validateResult);
             return;
         }
 
 
-        //store in local storage
-
-        //create JSON of order
-
-        //get current basket
-
-        //add order to JSON
-
-        // if required fields entered add dom elements
-
-        
-
-        //set order data
 
         
         animalTypeValue = animalType.value;
@@ -309,8 +299,6 @@ function addToBasket(){
 }
 
 function addOrderHTML(id){
-
-    console.log("orderhtml");
 
     const tableRow = document.createElement('div');
     tableRow.classList = "tablerow";
@@ -375,7 +363,6 @@ function addOrderHTML(id){
     table.appendChild(tableRow);
 
     //add delete or even listener
-    console.log(tableRow);
     const deleteButton = document.getElementById(id);
     deleteButton.addEventListener('click', () => {
 
@@ -406,7 +393,6 @@ function resetFormValues(){
 
 function deleteOrder(element){
 
-    console.log(element.parentElement);
     element.parentElement.parentElement.removeChild(element.parentElement);
     updateBasket();
 
@@ -508,12 +494,9 @@ function submitOrders(){
             orderWrapper.appendChild(input);
         }
 
-        console.log(orderWrapper);
-
-        
         form.appendChild(orderWrapper);
     }
-    console.log(profileEmail);
+
     //add profile email
     form.appendChild(profileEmail);
 
