@@ -370,7 +370,6 @@ function addEventListeners(){
 
       const result = await assignStopsToRun(selectAssignStopsRun.value, orderIDs, currentShipmentUnassignedOrders);
 
-      updateUnassignedOrdersTable(currentSelectedRun);
       
       if(result){
 
@@ -381,6 +380,11 @@ function addEventListeners(){
         showNotification("Error!", "Error assigning stop(s) to run");
 
       }
+
+
+      const runObject = await selectRun(currentSelectedRun.documentId);
+      currentSelectedRun = runObject;
+      updateUnassignedOrdersTable(runObject);
 
       hideUI(assignStopsWidget);
 
@@ -761,12 +765,11 @@ function addEventListeners(){
 
         const runObject = await selectRun(currentSelectedRun.documentId);
         console.log(runObject);
-        
+
         if(currentSelectedRun.runName == null){
           updateUnassignedOrdersTable(runObject);
         }else{
 
-          console.log(runObject);
           updateStopList(runObject);
           updateMapMarkers(runObject);
 

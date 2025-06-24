@@ -1032,7 +1032,7 @@ export async function addRunToShipment(runName, shipmentName){
       runs: arrayUnion(runRef.id)
     });
 
-    batch.commit();
+    await batch.commit();
 
     return true;
 
