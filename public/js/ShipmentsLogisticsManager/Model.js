@@ -501,7 +501,7 @@ function generateRunDoc(runName, deliveryWeek){
     fuelCost: "",
     runName: runName,
     runWeek: deliveryWeek,
-    optimised: false,
+    isOptimised: false,
     stops: [],     
 
   }
@@ -1372,15 +1372,17 @@ export async function calculateRoute(run){
   try{ 
 
     const optimisedRouteJSON = JSON.parse(optimisedRoute);
-    updateStopOrder(optimisedRouteJSON, stops);
+    const updatedStops = updateStopOrder(optimisedRouteJSON, run);
 
-    const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON);
-
-    run.isOptimised = true;
+    const databaseStops = removeStopDataFromStop(run.stops);
+    const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON, databaseStops);
 
     if(storedResult === false){
       return false;
     }
+
+    run.stops = updatedStops;
+    run.isOptimised = true;
 
     return optimisedRouteJSON;
 
@@ -1392,8 +1394,10 @@ export async function calculateRoute(run){
 }
 
 
-function updateStopOrder(optimisedRouteJSON, stops){ 
+function updateStopOrder(optimisedRouteJSON, run){ 
   
+  const stops = Object.assign([], run.stops);
+  console.log(stops);
   console.log(optimisedRouteJSON['routes'][0]['visits']);
 
   const optimisedStops = optimisedRouteJSON['routes'][0]['visits'];
@@ -1406,22 +1410,25 @@ function updateStopOrder(optimisedRouteJSON, stops){
 
       if(primaryKey === optimisedStops[i]['shipmentLabel']){
         stops[j].stopNumber = i + 1;
+        console.log(primaryKey + " " + (i + 1))
       }
 
     }
 
   }
+  console.log(stops);
+  return stops;
 
 }
 
 
-async function storeOptimisedRoute(runID, optimisedRoute){
+async function storeOptimisedRoute(runID, optimisedRoute, stops){
 
   try{
 
     const runRef = doc(db, 'Runs', runID);
 
-    await updateDocument(runRef, {optimisedRoute: optimisedRoute, isOptimised: true});
+    await updateDocument(runRef, {optimisedRoute: optimisedRoute, isOptimised: true, stops:stops});
     
 
   }catch(e){

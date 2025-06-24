@@ -435,6 +435,7 @@ function addEventListeners(){
 
       hideUI(addStopsWidget);
       await updateRunsList(selectedShipment.value);
+      hideUI(mapWrapper);
       showUI(addRunDetailsContainer);
       deselectCheckboxes(selectedCheckBoxes);
 
@@ -1187,9 +1188,6 @@ async function generateDeleteWidget(){
 }
 
 
-
-
-//unassigned orders button ui bug is in here
 async function updateRunsList(shipmentName){
 
   if(shipmentName === "SELECT_SHIPMENT"){
@@ -1348,57 +1346,51 @@ function addMarkerToMap(map, pinText, coordinates){
 
 function updateMapMarkers(run){ 
 
-  console.log("updateMapMarkers");
-
   removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
   const stops = run.stops;
 
   for(let i = 0; i < stops.length; i++){
 
-    if(stops[i]['coordinates'] != null){
-      
-      const position = 
-      {
+    const position = 
+    {
 
-        lat: stops[i]['coordinates']['lat'],
-        lng: stops[i]['coordinates']['lng'],
-
-      }
-
-      let backgroundColour = '#FF0000';
-      let borderColour = '#CC0000';
-
-      if(run.isOptimised){
-        backgroundColour = '#0000FF';
-        borderColour = '#0000CC';
-      }
-
-      const pinTextGlyph = new GooglePinElement({
-        glyph: run.isOptimised ? stops[i].stopNumber.toString() : convertStopNumberToLetter(stops[i]['stopNumber']),
-        glyphColor: "white",
-        background: backgroundColour, // Red background
-        borderColor: borderColour
-      });
-
-      mainMapMarkers.push(new GoogleAdvancedMarkerElement({
-        map: mainMap,
-        position: position,
-        content: pinTextGlyph.element,
-        collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
-      }));
+      lat: stops[i]['coordinates']['lat'],
+      lng: stops[i]['coordinates']['lng'],
 
     }
 
+    let backgroundColour = '#FF0000';
+    let borderColour = '#CC0000';
+
+    if(run.isOptimised){
+      backgroundColour = '#0000FF';
+      borderColour = '#0000CC';
+    }
+
+    const pinTextGlyph = new GooglePinElement({
+      glyph: run.isOptimised ? stops[i].stopNumber.toString() : convertStopNumberToLetter(stops[i]['stopNumber']),
+      glyphColor: "white",
+      background: backgroundColour, // Red background
+      borderColor: borderColour
+    });
+
+    mainMapMarkers.push(new GoogleAdvancedMarkerElement({
+      map: mainMap,
+      position: position,
+      content: pinTextGlyph.element,
+      collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
+    }));
+
   }
+
+  
 
   mainMapMarkerClusters = new MarkerClusterer({ markers: mainMapMarkers, map: mainMap });
 
 }
 
 function removeMapMarkers(mapMarkers, clusters){
-
-  console.log("removeMapMarkers");
 
   for(let i = 0; i < mapMarkers.length; i++){
 
@@ -1494,7 +1486,6 @@ function updateStopList(runStruct){
 
 
 function getDragDetectionZone(detectionZoneType){
-  console.log("getDragDetectionZone");
 
   const dragDetectionZone = createDragDetectionZone(detectionZoneType);
   
