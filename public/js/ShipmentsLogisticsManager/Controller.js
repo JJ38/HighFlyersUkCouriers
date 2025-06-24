@@ -759,16 +759,19 @@ function addEventListeners(){
         showNotification("Success!", "Updated stop address");
         clearAndHideValidateAddressWidget();
 
+        const runObject = await selectRun(currentSelectedRun.documentId);
+        console.log(runObject);
+        
         if(currentSelectedRun.runName == null){
-          updateUnassignedOrdersTable(currentSelectedRun);
+          updateUnassignedOrdersTable(runObject);
         }else{
-          const runObject = await selectRun(currentSelectedRun.documentId);
+
           console.log(runObject);
           updateStopList(runObject);
           updateMapMarkers(runObject);
+
         }
         
-      
       }
 
     });
