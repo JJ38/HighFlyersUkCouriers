@@ -17,7 +17,7 @@ class Sanitizer
      * @return mixed|string
      */
 
-     public function sanitizePhoneNumber(string $tainted_string) : string | null
+     public function sanitizePhoneNumber(string $tainted_string) : string
      {
        $cleaned_string = '';
 

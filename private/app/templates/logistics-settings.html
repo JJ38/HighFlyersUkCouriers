@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">        
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=warning" />
+
+    <title>HighFlyersUkCouriers</title>
+
+  <script type="module" crossorigin src="./assets/LogisticsSettings-CULml-Ii.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="./assets/Notification-D0jEUT8q.js">
+  <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-B1C6gsaD.js">
+  <link rel="modulepreload" crossorigin href="./assets/Firebase-Crudew6x.js">
+  <link rel="stylesheet" crossorigin href="./assets/Notification-BHB7FqS3.css">
+  <link rel="stylesheet" crossorigin href="./assets/LogisticsSettings-XAkUg1CR.css">
+  <link rel="stylesheet" crossorigin href="./assets/Navbar-ClBKpNFz.css">
+  <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
+  <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-UkFB9euZ.css">
+</head>
+<body>
+    <header>
+        <div id="mobilenavmenu"  class="hideMobileMenu">
+          <div id="mobilenavwrapper">
+            <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+              <a class="logoutButton">Logout</a>
+              <a class="currentpage" href="/manage-orders">Bookings</a>
+              <a href="/content-manager">Content Manager</a>
+              <a href="/manage-accounts">Accounts</a>
+              <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+
+          </div>
+        </div>
+        <nav id="menu">
+          <div id="mobilenavtoggle">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <a class="navLinks logoutButton">Logout</a>
+          <a class="navLinks" href="/manage-orders">Bookings</a>
+          <a class="navLinks" href="/content-manager">Content Manager</a>
+          <a class="navLinks" href="/manage-accounts">Accounts</a>
+          <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+        </nav>
+    </header>
+    
+    <Section id="navbarMainContentWrapper">
+        <nav class="logisticsVerticalNavbar">
+            <a class="verticalNavbarLink" href="/live-logistics-manager">
+                <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon">
+                    share_location
+                </span>
+            </a>
+            <a class="verticalNavbarLink" href="/shipments-logistics-manager">
+                <span id="shipmentLogisticsManagerButton" class="material-symbols-outlined navbarIcon" >
+                    package_2
+                </span>
+            </a>
+            <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon selectedIconColour">
+                settings
+            </span>
+          </a>
+        </nav>
+        <div class="maincontent">
+
+          <h1 class="title">Settings</h1>
+
+          <section class="fuelsettingswrapper">
+            <h2 class="title">Fuel Settings</h2>
+            <div class="subsection">
+
+              <div class="titledinputwrapper">
+                <label class="inputlable" for="fuelcostinput">Fuel Price</label>
+                <div class="fuelcostinputwrapper">
+                  <input id="fuelCostInput" class="fuelcostinput" name="fuelcostinput" type="number">
+                  <p class="pence">p</p>
+                </div>
+              </div>
+
+              <button id="updateFuelCostButton" class="updatefuelcostbutton hidden">Update</button>
+    
+            </div>           
+          </section>
+
+          <section class="rundefinitionswrapper">
+            <h2 class="title">Run Settings</h2>
+            <div class="subsection">
+
+              <div class="warningwrapper">
+                <span class="material-symbols-rounded warningtriangle">
+                  warning
+                </span>
+                <h3 class="warningtitle">Unassigned area codes</h3>
+              </div>
+
+              <div class="unassignedareacodeswrapper">
+                    <div class="areacodepill">DE</div>
+                    <div class="areacodepill">SW</div>
+              </div>
+
+            </div>
+
+            <div class="subsection">
+              <h3>Run Definitions</h3>
+
+              <div class="rundefinitionbuttonwrapper">
+                <div id="addRunButton" class="rundefinitionbutton">
+                  <p class="plus">+</p>
+                  <p>Add Run</p>
+                </div>
+                <div id="addPostcodeButton" class="rundefinitionbutton">
+                  <p class="plus">+</p>
+                  <p>Add Postcode</p>
+                </div>
+              </div>  
+
+              <div class="run">
+                <h4 class="runname">Cumbria</h4>
+                <div id="areacodewrapper" class="areacodewrapper">
+
+                  <div class="areacodepill">
+                    <div class="removeareacodebutton">x</div>
+                    <p>CA</p>
+                  </div>
+
+                  <div class="areacodepill">
+                    <div class="removeareacodebutton">x</div>
+                    <p>LA</p>
+                  </div>
+
+                  <div class="runbuttonwrapper">
+                    <div class="runbutton add">
+                      <span class="material-symbols-outlined">
+                        add
+                      </span>
+                    </div>
+                    <div class="runbutton delete">
+                      <span class="material-symbols-outlined">
+                        delete
+                      </span>
+                    </div>
+                  </div>
+               
+                </div>
+              </div>
+              <div class="run">
+                <h4 class="runname">Bristol</h4>
+                <div id="areacodewrapper" class="areacodewrapper">
+
+                  <div class="areacodepill">
+                    <div class="removeareacodebutton">x</div>
+                    <p>CA</p>
+                  </div>
+
+                  <div class="areacodepill">
+                    <div class="removeareacodebutton">x</div>
+                    <p>LA</p>
+                  </div>
+
+                  <div class="runbuttonwrapper">
+                    <div class="runbutton add">
+                      <span class="material-symbols-outlined">
+                        add
+                      </span>
+                    </div>
+                    <div class="runbutton delete">
+                      <span class="material-symbols-outlined">
+                        delete
+                      </span>
+                    </div>
+                  </div>
+               
+                </div>
+              </div>
+
+              <div class="run">
+                <h4 class="runname">North East Scotland</h4>
+                <div id="areacodewrapper" class="areacodewrapper">
+
+                  <div class="areacodepill">
+                    <div class="removeareacodebutton">x</div>
+                    <p>CA</p>
+                  </div>
+
+                  <div class="areacodepill">
+                    <div class="removeareacodebutton">x</div>
+                    <p>LA</p>
+                  </div>
+
+                  <div class="runbuttonwrapper">
+                    <div class="runbutton add">
+                      <span class="material-symbols-outlined">
+                        add
+                      </span>
+                    </div>
+                    <div class="runbutton delete">
+                      <span class="material-symbols-outlined">
+                        delete
+                      </span>
+                    </div>
+                  </div>
+               
+                </div>
+              </div>
+
+            </div>
+
+          </section>
+        </div>
+    </Section>
+    
+</body>
+</html>

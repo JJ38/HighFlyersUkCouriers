@@ -1,0 +1,1 @@
+import{a as t}from"./Firebase-Crudew6x.js";import{m as n}from"./index-dfc2d82f-B1C6gsaD.js";const e=document.querySelectorAll(".logoutButton");for(const o of e)o!=null&&o.addEventListener("click",()=>{if(console.log("clicked logout"),t==null){console.log("error logging out");return}n(t).then(()=>{console.log("awdwad")}).catch(l=>{console.log(l)})});

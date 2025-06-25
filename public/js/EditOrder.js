@@ -1,180 +1,94 @@
-import { db, getDocuments, auth } from "/js/Firebase.js";
+import { db, getDocuments } from "/js/Firebase.js";
 import { where, query, collection } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const ID = parseInt(new URLSearchParams(document.location.search).get("id"));
 const q = query(collection(db, "Orders"), where("ID", "==", ID));
 
-let role;
-let username;
+getDocuments(q).then((documentSnapshots) => {
 
-onAuthStateChanged(auth, (user) => {
+    if(documentSnapshots.docs.length == 0){
+        alert("Error fetching order");
+        exit();
+    }
 
-  if (user) {
+    const table = document.getElementById("orderdata");
+    const orderData = documentSnapshots.docs[0].data();
 
-    auth.currentUser.getIdTokenResult().then(async (getIdTokenResult) => {
-        console.log(getIdTokenResult.claims.role);   
-        role = getIdTokenResult.claims.role;
-        username = auth.currentUser.email.replace("@placeholder.com", "");
-        fetchDocuments();
-      
-    });
+    const sortedOrderData = sortOrderData(orderData);
 
+    for(var fields in sortedOrderData){
 
-  } else {
+        const tableRow = document.createElement('tr');
 
-  }
-  
-});
+        const field = document.createElement('td');
+        field.innerText = fields;
 
-function fetchDocuments(){
+        const data = document.createElement('td');
 
-    getDocuments(q).then((documentSnapshots) => {
+        switch (fields){
 
-        if(documentSnapshots.docs.length == 0){
-            alert("Error fetching order");
-            exit();
-        }
-    
-        const table = document.getElementById("orderdata");
-        const orderData = documentSnapshots.docs[0].data();
-    
-        //check if should have access
-        if(role == "staff"){
-    
-            if(username != orderData['addedBy']){
-                alert("you dont have permission to edit this order");
-                return;
-            }
-    
-        }
-    
-    
-        const sortedOrderData = sortOrderData(orderData);
-    
-        console.log(table.children[0].children);
-        let index = 0;
-    
-        for(var fields in sortedOrderData){
-    
-            const data = document.createElement('td');
-    
-            switch (fields){
-    
-                case "ID":
-                case "timestamp":
-                case "addedBy":
-                {
-                    data.innerText = sortedOrderData[fields];
-                
-                    break;
-                }
-                case "printed":
-                {
-                    const input = document.createElement('select');
-                    input.name = "printed"
-                    input.id = "printed";
-    
-                    const printedOpt = document.createElement('option');
-                    printedOpt.value = "Printed";
-                    printedOpt.innerText = "Printed";
-    
-                    const notPrintedOpt = document.createElement('option');
-                    notPrintedOpt.value = "Not Printed";
-                    notPrintedOpt.innerText = "Not Printed";
-    
-                    if(sortedOrderData[fields]){//printed
-                        printedOpt.selected = true;
-                    }else{
-                        notPrintedOpt.selected = false;
-                    }
-    
-                    input.appendChild(notPrintedOpt);
-                    input.appendChild(printedOpt);
-    
-                    data.appendChild(input);
-    
-                    break;
-                }
-    
-                case "username":
-                {
+            case "ID":
+            case "timestamp":
+            case "addedBy":
+            {
+                data.innerText = sortedOrderData[fields];
             
-                    const input = document.createElement('input');
-                    input.type = "text";
-                    input.value = sortedOrderData[fields];
-                    input.name = fields;
-                    data.appendChild(input);
-    
-                    break;
-                }
-    
-                case "deliveryWeek":
-                {
-                    const input = document.createElement('input');
-                    input.value = sortedOrderData[fields];
-    
-                    if(role == "admin"){
-                        input.type = "number";
-                    }else{
-                        input.type = "hidden";
-                    }
-    
-                    input.name = fields;
-                    data.appendChild(input);
-                    break;
-                }
-    
-                case "quantity":
-    
-                    const input = document.createElement('input');
-                    input.type = "number";
-                    input.value = sortedOrderData[fields];
-                    input.name = fields;
-                    data.appendChild(input);
-    
-                    break;
-    
-                case "email":
-                {
-                    const input = document.createElement('input');
-                    input.type = "email";
-                    input.value = sortedOrderData[fields];
-                    input.name = fields;
-                    data.appendChild(input);
-                    break;
-                }
-                
-                default:
-                {
-                    const input = document.createElement('input');
-                    input.type = "text";
-                    input.value = sortedOrderData[fields];
-                    input.name = fields;
-                    data.appendChild(input);
-    
-                }
+                break;
             }
-    
-            table.children[0].children[index].appendChild(data);
-    
-            index++;
+            case "printed":
+            {
+                const input = document.createElement('select');
+                input.name = "printed"
+                input.id = "printed";
+
+                const printedOpt = document.createElement('option');
+                printedOpt.value = "Printed";
+                printedOpt.innerText = "Printed";
+
+
+                const notPrintedOpt = document.createElement('option');
+                notPrintedOpt.value = "Not Printed";
+                notPrintedOpt.innerText = "Not Printed";
+
+                if(sortedOrderData[fields]){//printed
+                    printedOpt.selected = true;
+                }else{
+                    notPrintedOpt.selected = false;
+                }
+
+
+                input.appendChild(notPrintedOpt);
+                input.appendChild(printedOpt);
+
+                data.appendChild(input);
+
+                break;
+            }
+
+            default:
+            {
+                const input = document.createElement('input');
+                input.type = "text";
+                input.value = sortedOrderData[fields];
+                input.name = fields;
+                data.appendChild(input);
+            }
         }
-    
-        console.log(orderData);
-        // for()
-    
-        const docRef = document.createElement('input');
-        docRef.type = "hidden";
-        docRef.value = documentSnapshots.docs[0].id;
-        docRef.name = "docRef";
-    
-        table.appendChild(docRef);
-    });
-    
 
-}
+        tableRow.appendChild(field);
+        tableRow.appendChild(data);    
+        
+        table.appendChild(tableRow);
 
+    }
+
+    const docRef = document.createElement('input');
+    docRef.type = "hidden";
+    docRef.value = documentSnapshots.docs[0].id;
+    docRef.name = "docRef";
+
+    table.appendChild(docRef);
+});
 
 function sortOrderData(orderFields){
 

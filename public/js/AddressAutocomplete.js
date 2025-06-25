@@ -31,12 +31,6 @@ let tokenDelivery;
 let resultsWrapperCollection;
 let resultsWrapperDelivery;
 
-let debouncer = false;
-let lastUserInputEpoch;
-
-const debounceDelay = 2000;
-
-
 
 setUpListeners();
 
@@ -86,11 +80,11 @@ function initCollectionAddressAutocomplete(){
     resultsCollection = document.getElementById("autocompleteResultsCollection");
     inputCollection = document.getElementById("collectionAddressAutocompleteInput");
     resultsWrapperCollection = document.getElementById("autocompleteResultsWrapperCollection");
-    const loadingSymbol = addLoadingSymbol(resultsWrapperCollection);
 
     const request = getRequest();
 
-    inputCollection.addEventListener("input", (input) => makeAcRequest(input, collectionAddress1, collectionAddress2, collectionAddress3, collectionPostcode, request, resultsCollection, titleCollection, inputCollection, resultsWrapperCollection, "COLLECTION", loadingSymbol));
+    inputCollection.addEventListener("input", (input) => makeAcRequest(input, collectionAddress1, collectionAddress2, collectionAddress3, collectionPostcode, request, resultsCollection, titleCollection, inputCollection, resultsWrapperCollection, "COLLECTION"));
+
 
 }
 
@@ -102,84 +96,53 @@ function initDeliveryAddressAutocomplete(){
     resultsDelivery = document.getElementById("autocompleteResultsDelivery");
     inputDelivery = document.getElementById("deliveryAddressAutocompleteInput");
     resultsWrapperDelivery = document.getElementById("autocompleteResultsWrapperDelivery");
-    const loadingSymbol = addLoadingSymbol(resultsWrapperDelivery);
 
     const request = getRequest();
 
-    inputDelivery.addEventListener("input", async (input) => makeAcRequest(input, deliveryAddress1, deliveryAddress2, deliveryAddress3, deliveryPostcode, request, resultsDelivery, titleDelivery, inputDelivery, resultsWrapperDelivery, "DELIVERY", loadingSymbol));
+    inputDelivery.addEventListener("input", async (input) => makeAcRequest(input, deliveryAddress1, deliveryAddress2, deliveryAddress3, deliveryPostcode, request, resultsDelivery, titleDelivery, inputDelivery, resultsWrapperDelivery, "DELIVERY"));
     
 
 }
 
-function addLoadingSymbol(resultsWrapper){
 
-    const loadingSymbol = document.createElement('div');
-    loadingSymbol.id = "loadingsymbol";
-    loadingSymbol.style = "margin: 0px auto";
-
-    resultsWrapper.appendChild(loadingSymbol);
-
-    return loadingSymbol;
-
-}
-
-
-async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, postcodeInput, request, results, title, inputField, resultsWrapper, autoCompleteType, loadingSymbol) {
-
-    const userInput = input.target.value;
-
-    lastUserInputEpoch = Date.now();
-
-    //show loading symbol and query
-    title.innerText = 'Query predictions for "' + userInput + '"';
-
-    resultsWrapper.classList.remove('hidden');
-    
-    results.replaceChildren();
-
-    //show loading symbol
-    loadingSymbol.classList.add("loader");
-    
-    console.log("makeAcRequest");
-    console.log(userInput);
-    console.log(inputField.value);
-    
-
+async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, postcodeInput, request, results, title, inputField, resultsWrapper, autoCompleteType) {
     // Reset elements and exit if an empty string is received.
-    if (userInput == "") {
+    if (input.target.value == "") {
         title.innerText = "";
         results.replaceChildren();
         resultsWrapper.classList.add('hidden');
-        loadingSymbol.classList.remove("loader");
         return;
     }
 
 
-    await new Promise(resolve => setTimeout(resolve, debounceDelay));
+    resultsWrapper.classList.remove('hidden');
 
-    console.log(Date.now() - lastUserInputEpoch);
-   
-
-    //if the user hasnt typed for the last 2 seconds
-    if((Date.now() - lastUserInputEpoch) < debounceDelay){
-
-        return;
-    }
-
-    console.log("User hasnt type in " + debounceDelay/1000 + "s");
-
-    // return;
 
     // Add the latest char sequence to the request.
-    request.input = userInput;
+    request.input = input.target.value;
     request.includedPrimaryTypes = ["street_address", "premise", "establishment"];
     request.includedRegionCodes = ["uk", "ie"];
+    
+    title.innerText = 'Query predictions for "' + request.input + '"';
 
+    console.log(request);
 
     // Fetch autocomplete suggestions and show them in a list.
     // @ts-ignore
     const { suggestions } = await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
 
+    //check if input has change or not. If input has changed dont display results as this could lead to incorrect results being shown
+
+    if(request.input != inputField.value){
+        
+        return;
+    }
+
+    
+    // Clear the list first.
+    results.replaceChildren();
+
+    
 
     for (const suggestion of suggestions) {
         const placePrediction = suggestion.placePrediction;
@@ -189,7 +152,6 @@ async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, 
         a.addEventListener("click", () => {
             onPlaceSelected(placePrediction.toPlace(), streetAddressInput, cityInput, countyInput, postcodeInput, results, title, inputField, autoCompleteType);
             resultsWrapper.classList.add('hidden');
-            loadingSymbol.remove();
 
         });
         a.innerText = placePrediction.text.toString();
@@ -200,8 +162,6 @@ async function makeAcRequest(input, streetAddressInput, cityInput, countyInput, 
         li.appendChild(a);
         results.appendChild(li);
     }
-
-    loadingSymbol.classList.remove("loader");
 }
 
 // Event handler for clicking on a suggested place.

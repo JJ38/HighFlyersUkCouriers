@@ -1,12 +1,10 @@
 <?php
 
-use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use MrShan0\PHPFirestore\FirestoreClient;
 use Datetime;
 use DateTimeZone;
-use Google\Service\Datastore;
+
 
 $app->get('/bookings[/invalidform]', function (Request $request, Response $response, $args) use ($app) : Response{
 
@@ -72,6 +70,10 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   
   $manage_order_model = $container->get('manageOrderModel');
 
+ 
+
+  //$cleaned_parameters = cleanBookingForm($app, $tainted_parameters);
+
   $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
 
   //if one of the parameters does not meet requirements
@@ -112,46 +114,33 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   $logger = $container->get('logger');
   $add_order_model = $container->get('addOrderModel');
   $session_wrapper = $container->get('sessionWrapper');
+  $authentication_model = $container->get('authenticationModel');
   $date_time = new DateTime();
   $date_time->setTimezone(new DateTimeZone('Europe/London'));
+  $add_order_model->setDateTime($date_time);
+
   
   $add_order_model->setLogger($logger);
   $add_order_model->setOrderData($cleaned_parameters);
   $add_order_model->setSessionWrapper($session_wrapper);
-  $add_order_model->setDateTime($date_time);
-  $add_order_model->fetchOAuth2Token();
 
-  $accessToken = $add_order_model->getOAuth2Token();
- 
-  try{
 
-    $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
-            
-    $env = parse_ini_file(realpath('../.env'));
+  $authentication_model->setLogger($logger);
+  $authentication_model->fetchOAuth2Token();
 
-    $projectID = $env['FIREBASE_PROJECT_ID'];
-    $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+  $accessToken = $authentication_model->getOAuth2Token();
+  $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
-    $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-        'database' => '(default)',
-    ], $client);
-
-    $add_order_model->setFirebaseFirestore($firestore);
-
-  }catch(Exception $e){
-
-      if($logger != null){
-          $logger->error('FIREBASE_INIT_ERROR', array($e));
-          $logger->error('FIREBASE_INIT_ENV', array($env));
-      }
-
-      return $response->withRedirect('/manage-accounts?error=dberror', 302);
-
+  if($firestore == null){
+    return $response->withRedirect('/bookings?error=dberror', 302);
   }
 
+  $add_order_model->setFirebaseFirestore($firestore);
+  $add_order_model->setOAuth2Token($accessToken);
+
+  $add_order_model->storeOrder();
  
   //store data
-  $add_order_model->storeOrder();
   $query_result = $add_order_model->getFirebaseFirestoreResult();
 
   if($logger != null){

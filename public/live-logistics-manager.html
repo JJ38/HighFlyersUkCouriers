@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en">
     <head>
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -16,111 +16,93 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 
         <script type="module" src="/js/Logout.js"></script>
+        <!-- <script type="text/javascript" src="/js/MobileNavigationBar.js"></script> -->
+        <script type="module" src="/js/LiveLogisticsManager.js"></script>
         
-        <title>{{ page_title }}</title>
+        <title>HighFlyersUkCouriers</title>
     </head>
     <body>
-      <div id="wrapper">
-        <header>
-          <div id="mobilenavmenu"  class="hideMobileMenu">
-            <div id="mobilenavwrapper">
-              <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
-                <a class="logoutButton">Logout</a>
-                <a class="currentpage" href="/manage-orders">Bookings</a>
-                <a href="/content-manager">Content Manager</a>
-                <a href="/manage-accounts">Accounts</a>
-                <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+      <header>
+        <div id="mobilenavmenu"  class="hideMobileMenu">
+          <div id="mobilenavwrapper">
+            <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+              <a class="logoutButton">Logout</a>
+              <a class="currentpage" href="/manage-orders">Bookings</a>
+              <a href="/content-manager">Content Manager</a>
+              <a href="/manage-accounts">Accounts</a>
+              <a class="navLinks" href="/live-logistics-manager">Logistics</a>=
+          </div>
+        </div>
+        <nav id="menu">
+          <div id="mobilenavtoggle">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <a class="navLinks logoutButton">Logout</a>
+          <a class="navLinks" href="/manage-orders">Bookings</a>
+          <a class="navLinks" href="/content-manager">Content Manager</a>
+          <a class="navLinks" href="/manage-accounts">Accounts</a>
+          <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+        </nav>
+    
+      </header>
+      <Section id="navbarMainContentWrapper">
+        <nav class="logisticsVerticalNavbar">
+          <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon selectedIconColour">
+            share_location
+          </span>
+          <a class="verticalNavbarLink" href="/shipments-logistics-manager">
+            <span id="shipmentLogisticsManagerButton" class="material-symbols-outlined navbarIcon" >
+              package_2
+            </span>
+          </a>
+          <a class="verticalNavbarLink" href="/logistics-settings">
+            <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon">
+            settings
+            </span>
+          </a>
+        </nav>
 
+        <Section class="mainContent">
+          <div id="driversWindow" class="driversWindow">
+            <h1 class="windowTitle">Drivers</h1>
+            <div id="driverList" class="driverCardList">
+              <!-- <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
+              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
+              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
+              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
+              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
+              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
+              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div> -->
+              
             </div>
           </div>
-          <nav id="menu">
-            <div id="mobilenavtoggle">
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-            <a class="navLinks logoutButton">Logout</a>
-            <a class="navLinks" href="/manage-orders">Bookings</a>
-            <a class="navLinks" href="/content-manager">Content Manager</a>
-            <a class="navLinks" href="/manage-accounts">Accounts</a>
-            <a class="navLinks" href="/live-logistics-manager">Logistics</a>
-          </nav>
-     
-        </header>
-        <Section id="navbarMainContentWrapper">
-          <nav class="logisticsVerticalNavbar">
-            <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon selectedIconColour">
-              share_location
-            </span>
-            <a class="verticalNavbarLink" href="/shipments-logistics-manager">
-              <span id="shipmentLogisticsManagerButton" class="material-symbols-outlined navbarIcon" >
-                package_2
-              </span>
-            </a>
-          </nav>
-          <Section id="mainContent">
-            <Section id="liveLogisticsManagerWrapper">
-              <div id="driversWindow">
-                <h1 class="windowTitle">Drivers</h1>
-                <div class="driverInfoCardList">
-                  <div class="driverInfoCard">
-                    <div class="row">
-                      <div class="row flexOne noGap alignItemsCenter">
-                        <span class="material-symbols-outlined green">
-                          circle
-                        </span>
-                        <p class="driverStatus">En Route</p>
-                      </div>   
-                      <p class="driverName flexTwo">Alexander</p>    
-                    </div>
-                    <p class="runName">North East Scotland</p>
-                    <div class="row">
-                      <div class="column flexOne">
-                        <p class="runInfoTitle">Stops Remaining</p>
-                        <p class="runInfo">7</p>
-                      </div>
-                      <div class="column flexTwo">
-                        <p class="runInfoTitle">Next Stop</p>
-                        <p class="runInfo">10 Downing Street</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="driverInfoCard">
-                    <div class="row">
-                      <div class="row flexOne noGap alignItemsCenter">
-                        <span class="material-symbols-outlined green">
-                          circle
-                        </span>
-                        <p class="driverStatus">En Route</p>
-                      </div>   
-                      <p class="driverName flexTwo">Stephen</p>    
-                    </div>
-                    <p class="runName">Cumbria</p>
-                    <div class="row">
-                      <div class="column flexOne">
-                        <p class="runInfoTitle">Stops Remaining</p>
-                        <p class="runInfo">11</p>
-                      </div>
-                      <div class="column flexTwo">
-                        <p class="runInfoTitle">Next Stop</p>
-                        <p class="runInfo">8 Marston Close</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Section>
-            <Section id="driverRunDetailsWindow" class="hidden">
+
+          <div id="dependantContent">
+
+            <div id="unassignOrdersView">
               
-            </Section>
-    
-            <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map>
-            
-          </Section>
+              <div id="filterWrapper"></div>
+              <table id="unassignedOrdersTable">
+
+              </table>
+                
+            </div>
+
+            <div id="selectedRunView">
+              <!-- <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map> -->
+          <!-- <Section id="driverRunDetailsWindow" class="hidden">
+                      
+                    </Section>-->
+            </div>
+          </div>
+          
         </Section>
+      </Section>
+
     </body>
     <!-- <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&libraries=maps,marker&v=beta"}} defer></script> -->
-    <script type="text/javascript" src="/js/MobileNavigationBar.js"></script>
-    <script type="text/javascript" src="/js/LiveLogisticsManager.js"></script>
+    
 </html>
 

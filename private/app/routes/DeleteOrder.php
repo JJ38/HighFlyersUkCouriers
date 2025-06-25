@@ -42,7 +42,7 @@ $app->post('/delete-order', function (Request $request, Response $response) use 
 
   $account_type = $request->getAttribute('accountType');
 
-  if($account_type == "admin"){
+  if($account_type == "admin" || $account_type == "staff"){
 
     $allGetVars = $request->getParsedBody();
     $docRef = $allGetVars['docRef'];
@@ -86,4 +86,4 @@ $app->post('/delete-order', function (Request $request, Response $response) use 
   return $response->withRedirect('/loginpage', 302);
   
 
-})->setName('edit-orders');
+});

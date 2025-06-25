@@ -53,78 +53,6 @@ class AddOrderModel
         $this->date_time = $date_time;
     }
 
-
-    public function fetchOAuth2Token(){
-
-
-        function base64url_encode($data) { 
-            return rtrim(strtr(base64_encode($data), '+/', '-_'), '='); 
-        }
-        
-        //Google's Documentation of Creating a JWT: https://developers.google.com/identity/protocols/OAuth2ServiceAccount#authorizingrequests
-        
-        //{Base64url encoded JSON header}
-        $jwtHeader = base64url_encode(json_encode(array(
-            "alg" => "RS256",
-            "typ" => "JWT"
-        )));
-
-        //{Base64url encoded JSON claim set}
-        $now = time();
-        $jwtClaim = base64url_encode(json_encode(array(
-            "iss" => "firebase-adminsdk-fbsvc@highflyersukcouriers-a9c17.iam.gserviceaccount.com",
-            "scope" => "https://www.googleapis.com/auth/datastore",
-            "aud" => "https://oauth2.googleapis.com/token",
-            "exp" => $now + 3600,
-            "iat" => $now
-        )));
-
-
-        $env = parse_ini_file(realpath('../.env'));
-        $private_key = $env['SERVICE_ACCOUNT_PRIVATE_KEY'];
-
-        $new_private_key = str_replace('\n', "\n", $private_key); //important for formatting. Key wont work otherwise
-
-        //The base string for the signature: {Base64url encoded JSON header}.{Base64url encoded JSON claim set}
-        $encryption_result = openssl_sign(
-            $jwtHeader.".".$jwtClaim,
-            $jwtSig,
-            $new_private_key,
-            "sha256WithRSAEncryption"
-        );
-
-        $jwtSign = base64url_encode($jwtSig);
-        
-        //{Base64url encoded JSON header}.{Base64url encoded JSON claim set}.{Base64url encoded signature}
-        $jwtAssertion = $jwtHeader.".".$jwtClaim.".".$jwtSign;
-
-        $this->logger->error("JWT", array($jwtAssertion));
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, 'https://oauth2.googleapis.com/token');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=" . $jwtAssertion);
-
-        $headers = array();
-        $headers[] = 'Content-Type: application/x-www-form-urlencoded';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
-        }
-
-        $result_arr = json_decode($result, true);
-        $access_token = $result_arr['access_token'];
-        curl_close($ch);
-
-        $this->access_token = $access_token;
-
-    }
-
-
     private function incrementOrderID() : int{
 
         $accessToken = null;
@@ -132,15 +60,16 @@ class AddOrderModel
         try{    
 
             $accessToken = $this->access_token;
-
-            $this->logger->error("OAUTH2_TOKEN", array($accessToken));
             
             $ch = curl_init();
 
-            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/(default)/documents:commit?key=AIzaSyDNBL3PpPTm6l69jVFbL');
+            $env = parse_ini_file(realpath('../.env'));
+            $database_name = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
+
+            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/' . $database_name . '/documents:commit?key=AIzaSyDNBL3PpPTm6l69jVFbL');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"writes\":[{\"transform\":{\"document\":\"projects/highflyersukcouriers-a9c17/databases/(default)/documents/MetaData/IDTRACKER\",\"fieldTransforms\":[{\"fieldPath\":\"ID\",\"increment\":{\"integerValue\":1}}]}}]}");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"writes\":[{\"transform\":{\"document\":\"projects/highflyersukcouriers-a9c17/databases/" . $database_name . "/documents/MetaData/IDTRACKER\",\"fieldTransforms\":[{\"fieldPath\":\"ID\",\"increment\":{\"integerValue\":1}}]}}]}");
             curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
             
             $headers = array();
@@ -148,7 +77,6 @@ class AddOrderModel
             $headers[] = 'Accept: application/json';
             $headers[] = 'Content-Type: application/json';
 
-        
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             
             $result = curl_exec($ch);
@@ -245,6 +173,7 @@ class AddOrderModel
 
             $this->firebase_firestore_result = true;
 
+
         }catch(\Exception $e){
 
             $this->firebase_firestore_result = false;
@@ -259,7 +188,275 @@ class AddOrderModel
 
         }
 
+    }
 
+
+    private function beginTransaction(){
+
+        $accessToken = null;
+
+        try{    
+
+            $accessToken = $this->access_token;
+            // $accessToken = null;
+            
+            $ch = curl_init();
+
+            $env = parse_ini_file(realpath('../.env'));
+            $database_name = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
+            
+            //https://firebase.google.com/docs/firestore/reference/rest/v1beta1/projects.databases.documents/beginTransaction?apix_params=%7B%22database%22%3A%22projects%2Fhighflyersukcouriers-a9c17%2Fdatabases%2F(default)%22%2C%22resource%22%3A%7B%7D%7D
+            //POST https://firestore.googleapis.com/v1beta1/{database=projects/*/databases/*}/documents:beginTransaction
+
+            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/' . $database_name . '/documents:beginTransaction?key=AIzaSyDNBL3PpPTm6l69jVFbL');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+            
+            $headers = array();
+            $headers[] = 'Authorization: Bearer ' . $accessToken;
+            $headers[] = 'Accept: application/json';
+            $headers[] = 'Content-Type: application/json';
+
+        
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+
+                echo 'Error:' . curl_error($ch);
+                curl_close($ch);
+
+                $this->logger->error("FIREBASE_REST_API_ERROR", array($ch));
+
+                return -1;
+            }
+
+            curl_close($ch);
+
+            $result_arr = json_decode($result, true);
+         
+            var_dump($result_arr);
+
+            if(key_exists('error', $result_arr)){
+
+                if ($this->logger !== null) {
+                    $this->logger->error("FIREBASE_FIRESTORE_BEGIN_TRANSACTION_ERROR", $result_arr);
+                }
+
+                return false;
+            }
+
+            if(!key_exists('transaction', $result_arr)){
+
+                if ($this->logger !== null) {
+                    $this->logger->error("FIREBASE_FIRESTORE_BEGIN_TRANSACTION_ERROR", $result_arr);
+                }
+
+                return false;
+            }
+
+            return $result_arr['transaction'];
+
+        }catch(\Exception $e){
+
+            $this->firebase_firestore_result = false;
+
+            if ($this->logger !== null) {
+                $this->logger->error("FIREBASE_FIRESTORE_BEGIN_TRANSACTION_ERROR", array($e));
+            }
+
+        }
+
+        return -1;
+        
+
+    }
+
+//     {
+//   "writes": [
+//     {
+//       "update": {
+//         "name": "projects/YOUR_PROJECT_ID/databases/(default)/documents/orders/order1",
+//         "fields": {
+//           "status": { "stringValue": "pending" }
+//         }
+//       }
+//     },
+//     {
+//       "update": {
+//         "name": "projects/YOUR_PROJECT_ID/databases/(default)/documents/orders/order2",
+//         "fields": {
+//           "status": { "stringValue": "pending" }
+//         }
+//       }
+//     },
+//     {
+//       "update": {
+//         "name": "projects/YOUR_PROJECT_ID/databases/(default)/documents/orders/order3",
+//         "fields": {
+//           "status": { "stringValue": "pending" }
+//         }
+//       }
+//     }
+//   ],
+//   "transaction": "CiYxNWI..."  // from step 1
+// }
+
+
+
+    //commit transaction
+    private function commitTransaction($transactionID){
+
+        $accessToken = null;
+
+        try{    
+
+            $accessToken = $this->access_token;
+
+            $ch = curl_init();
+
+            $env = parse_ini_file(realpath('../.env'));
+            $database_name = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
+
+            //https://firebase.google.com/docs/firestore/reference/rest/v1beta1/projects.databases.documents/commit?apix_params=%7B%22database%22%3A%22projects%2Fhighflyersukcouriers-a9c17%2Fdatabases%2F(default)%22%2C%22resource%22%3A%7B%7D%7D
+            //POST https://firestore.googleapis.com/v1beta1/{database=projects/*/databases/*}/documents:commit
+
+
+            //create json for write
+
+            
+
+
+
+
+            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/' . $database_name . '/documents:commit?key=AIzaSyDNBL3PpPTm6l69jVFbL');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"transaction\":\"" .  $transactionID . "\"}");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+            
+            $headers = array();
+            $headers[] = 'Authorization: Bearer ' . $accessToken;
+            $headers[] = 'Accept: application/json';
+            $headers[] = 'Content-Type: application/json';
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+
+                echo 'Error:' . curl_error($ch);
+                curl_close($ch);
+
+                $this->logger->error("FIREBASE_REST_API_ERROR", array($ch));
+
+                return -1;
+            }
+
+            curl_close($ch);
+
+            $result_arr = json_decode($result, true);
+         
+            echo "{\"transaction\":\"" .  $transactionID . "\"}";
+            var_dump($result_arr);
+
+            if(key_exists('error', $result_arr)){
+
+                if ($this->logger !== null) {
+                    $this->logger->error("FIREBASE_FIRESTORE_COMMIT_TRANSACTION_ERROR", $result_arr);
+                }
+
+                return false;
+            }
+
+            return true;
+
+        }catch(\Exception $e){
+
+            $this->firebase_firestore_result = false;
+
+            if ($this->logger !== null) {
+                $this->logger->error("FIREBASE_FIRESTORE_COMMIT_TRANSACTION_ERROR", array($e));
+            }
+
+        }
+
+        return -1;   
+
+    }
+
+
+    //commit transaction
+    private function rollbackTransaction($transactionID){
+
+        $accessToken = null;
+
+        try{    
+
+            $accessToken = $this->access_token;
+            // $accessToken = null;
+            
+            $ch = curl_init();
+
+            $env = parse_ini_file(realpath('../.env'));
+            $database_name = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
+
+            //https://firebase.google.com/docs/firestore/reference/rest/v1beta1/projects.databases.documents/rollback
+            //POST https://firestore.googleapis.com/v1beta1/{database=projects/*/databases/*}/documents:rollback
+
+            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/' . $database_name . '/documents:rollback?key=AIzaSyDNBL3PpPTm6l69jVFbL');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"transaction\":\"" .  $transactionID . "\"}");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+            
+            $headers = array();
+            $headers[] = 'Authorization: Bearer ' . $accessToken;
+            $headers[] = 'Accept: application/json';
+            $headers[] = 'Content-Type: application/json';
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+
+                echo 'Error:' . curl_error($ch);
+                curl_close($ch);
+
+                $this->logger->error("FIREBASE_REST_API_ERROR", array($ch));
+
+                return -1;
+            }
+
+            curl_close($ch);
+
+            $result_arr = json_decode($result, true);
+         
+            var_dump($result_arr);
+
+            if(key_exists('error', $result_arr)){
+
+                if ($this->logger !== null) {
+                    $this->logger->error("FIREBASE_FIRESTORE_ROLLBACK_TRANSACTION_ERROR", $result_arr);
+                }
+
+                return false;
+            }
+
+            return true;
+
+        }catch(\Exception $e){
+
+            $this->firebase_firestore_result = false;
+
+            if ($this->logger !== null) {
+                $this->logger->error("FIREBASE_FIRESTORE_ROLLBACK_TRANSACTION_ERROR", array($e));
+            }
+
+        }
+
+        return -1;   
 
     }
 

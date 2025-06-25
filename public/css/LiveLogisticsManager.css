@@ -1,12 +1,13 @@
 
-#driversWindow{
+.driversWindow{
     display: flex;
     flex-direction: column;
-    gap: 25px;
-    padding: 30px;
     height: 100%;
-    box-sizing: border-box;
-    background-color: white;
+    border-right: 1px solid var(--borderColour);
+}
+
+.placeholder{
+    height: 100px;
 }
 
 gmp-map{
@@ -14,7 +15,7 @@ gmp-map{
     /* min-width: 0; */
 }
 
-.driverInfoCard{
+.driverCard{
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -26,29 +27,43 @@ gmp-map{
     font-style: normal;
     font-family: "Inter", serif;
     line-height: 1em;
+    width: fit-content;
 }
 
 .selectedDriverInfoCard{
     background-color: #D9FCFF;
 }
 
-.driverInfoCardList{
+.driverCardList{
     display: flex;
     flex-direction: column;
     gap: 15px;
+    padding: 30px;
+    overflow-y: scroll;
+    height: 100%;
+
 }
-    
+
+.mainContent{
+    height: 100%;
+}
+
+.liveLogisticsManagerWrapper{
+    flex: 1;
+}
+
 
 .windowTitle{
     color: #000000;
     text-align: left;
     font-size: 32px;
     font-weight: 600;
+    padding: 30px 30px 0px 30px;
     
 }
 
 .driverStatus, .runInfoTitle{
-    font-size: 20px;
+    font-size: 1rem;
     font-weight: 300;
 }
 
@@ -58,13 +73,13 @@ gmp-map{
 }
 
 .runInfo{
-    font-size: 24px;
+    font-size: 1.2rem;
     font-weight: 500;
     text-wrap: wrap;
 }
 
 .runName{
-    font-size: 24px;
+    font-size: 1.3rem;
     font-weight: 600;
 }
 
@@ -73,7 +88,7 @@ gmp-map{
     padding: 0;
     margin: 0;
     display: flex;
-    align-items: start;
+    align-items: center;
    
 }
 
@@ -87,7 +102,7 @@ gmp-map{
 
 
 .driverName{
-    font-size: 24px;
+    font-size: 1.2rem;
     font-weight: 400;
 }
 

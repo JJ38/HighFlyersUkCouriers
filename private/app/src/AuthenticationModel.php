@@ -4,6 +4,10 @@ namespace HighFlyersUkCouriers;
 
 use MrShan0\PHPFirestore\FirestoreClient;
 use GuzzleHttp\Client;
+use Google\Auth\Credentials\ServiceAccountCredentials;
+use Kreait\Firebase\Project\ProjectId;
+use Psr\Http\Message\RequestInterface as Request; 
+use Exception;
 
 class AuthenticationModel
 {
@@ -120,10 +124,12 @@ class AuthenticationModel
             $projectID = $env['FIREBASE_PROJECT_ID'];
             $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
         
-            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-                'database' => '(default)',
-            ], $client);
+            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [] , $client);
 
+            FirestoreClient::setConfig([
+                'database' => $env['FIREBASE_FIRESTORE_DATABASE_NAME'],
+                'projectId' => $projectID,
+            ]);
             
         }catch(\Exception $e){
 
@@ -140,4 +146,52 @@ class AuthenticationModel
 
     }
 
+    public function fetchGoogleCloudAccessToken($serviceAccountKeyPath, $scopes){
+
+        if (!file_exists($serviceAccountKeyPath)) {
+            throw new Exception("Service account key file not found at: " . $serviceAccountKeyPath);
+        }
+
+        try {
+         
+            $credentials = new ServiceAccountCredentials(
+                $scopes,
+                $serviceAccountKeyPath
+            );
+
+          
+            $httpClient = new Client();
+
+            
+            $httpHandler = function (Request $request, array $options = []) use ($httpClient) {
+                // Use the Guzzle client to send the request
+                return $httpClient->send($request, $options);
+            };
+
+            // The fetchAuthToken method handles refreshing the token when it expires.
+            $token = $credentials->fetchAuthToken($httpHandler);
+
+            if (!isset($token['access_token'])) {
+
+                throw new Exception('Failed to get access token. Response: ' . json_encode($token));
+
+            } 
+    
+            return $token['access_token'];
+            
+        } catch (Exception $e) {
+
+            if ($this->logger !== null) {
+
+                $this->logger->error("FETCH_GOOGLE_ACCESS_TOKEN_ERROR", array($e));
+            }
+
+            throw new Exception("");
+
+        }
+
+    }
+
 }
+
+
