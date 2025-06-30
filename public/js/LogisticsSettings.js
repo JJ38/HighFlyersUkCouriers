@@ -1,6 +1,5 @@
 import { db, auth, getDocument, updateDocument } from '/js/firebase';
 import { query, doc } from 'firebase/firestore';
-import { onAuthStateChanged } from "firebase/auth";
 import { showNotification } from '/js/Notification';
 
 const fuelCostInput = document.getElementById('fuelCostInput');
@@ -13,20 +12,7 @@ let currentFuelCost;
 let fuelInput;
 
 addEventListeners();
-
-
-onAuthStateChanged(auth, (user) => {
-
-  if (user) {
-
-    auth.currentUser.getIdTokenResult().then(async (getIdTokenResult) => {
-      console.log(getIdTokenResult.claims.role);   
-      fetchFuelCost();
-
-    });
-  }
-
-});
+fetchFuelCost();
 
 
 function addEventListeners(){

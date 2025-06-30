@@ -104,6 +104,7 @@ let currentSessionToken;
 let currentShipmentUnassignedOrders;
 let currentSelectedRunCard = null;
 let currentSelectedRun = null;
+let currentSelectedShipmentName = null;
 
 let currentlyStopMetaData = null;
 let currentStopButtonWrapper = null;
@@ -185,7 +186,7 @@ function addEventListeners(){
 
     selectedShipment.addEventListener('input', () => {
 
-      removePolylines();
+      // removePolylines();
       currentSelectedRun = null;
   
       if(selectedShipment.value == "CREATE_SHIPMENT"){
@@ -201,8 +202,15 @@ function addEventListeners(){
         return;
       }
 
+      if(selectedShipment.value == "SELECT_SHIPMENT"){
+        return;
+      }
+
+
+      currentSelectedShipmentName = selectedShipment.value;
+
       selectedRunView.classList.add('hidden');
-      updateRunsList(selectedShipment.value);
+      updateRunsList(currentSelectedShipmentName);
 
     });
 
@@ -512,7 +520,7 @@ function addEventListeners(){
 
       if(addRunNameInput.value != null){
 
-        const result = await addRunToShipment(addRunNameInput.value, selectedShipment.value);
+        const result = await addRunToShipment(addRunNameInput.value, currentSelectedShipmentName);
 
         if(result === false){
 
@@ -521,8 +529,10 @@ function addEventListeners(){
 
         }
 
-        updateRunsList(selectedShipment.value);
+        updateRunsList(currentSelectedShipmentName);
+        removePolylines();
         showNotification("Success!", "Successfully added run to shipment");
+    
         hideUI(addRunWidget);
         return;
 
@@ -588,7 +598,7 @@ function addEventListeners(){
           return; 
         }
 
-        const removeRunFromShipmentResult = await removeRunFromShipment(currentSelectedRun.documentId, selectedShipment.value);
+        const removeRunFromShipmentResult = await removeRunFromShipment(currentSelectedRun.documentId, currentSelectedShipmentName);
         if(removeRunFromShipmentResult){
 
           showNotification("Success!", "Removed run from shipment. All stops in run have been marked as unassigned");
@@ -599,7 +609,7 @@ function addEventListeners(){
 
         }
 
-        await updateRunsList(selectedShipment.value);
+        await updateRunsList(currentSelectedShipmentName);
         hideUI(selectedRunView);
    
       }else{
@@ -1190,6 +1200,8 @@ async function generateDeleteWidget(){
 
 async function updateRunsList(shipmentName){
 
+  console.log(shipmentName);
+
   if(shipmentName === "SELECT_SHIPMENT"){
     return;
   }
@@ -1262,11 +1274,13 @@ async function updateRunsList(shipmentName){
 }
 
 
-async function selectShipment(selectedShipment){
+async function selectShipment(shipmentName){
+
+  console.log(shipmentName);
 
   removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
-  const shipmentData = await fetchShipment(selectedShipment);
+  const shipmentData = await fetchShipment(shipmentName);
 
   if(shipmentData === false){
 
@@ -1923,8 +1937,11 @@ function updateStopLockButtons(){
     lockButtons[i].classList.add('hidden');
   }
 
-  lockButtons[0].classList.remove('hidden');
-  lockButtons[lockButtons.length - 1].classList.remove('hidden');
+  if(lockButtons.length > 0){
+    lockButtons[0].classList.remove('hidden');
+    lockButtons[lockButtons.length - 1].classList.remove('hidden');
+  }
+ 
 
 
 }

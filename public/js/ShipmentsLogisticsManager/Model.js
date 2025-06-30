@@ -511,7 +511,7 @@ function generateRunDoc(runName, deliveryWeek){
 }
 
 export async function fetchShipment(shipmentName){
-
+  console.log(shipmentName);
   const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", shipmentName), limit(1)));
 
   if(shipmentData.empty){
@@ -1416,6 +1416,7 @@ function updateStopOrder(optimisedRouteJSON, run){
     }
 
   }
+  
   console.log(stops);
   return stops;
 
