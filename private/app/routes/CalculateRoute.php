@@ -40,7 +40,7 @@ $app->post('/calculate-route', function (Request $request, Response $response) u
         'https://www.googleapis.com/auth/cloud-platform'
     ];
 
-    $serviceAccountPath = '../route-optimisation-credentials.json';
+    $serviceAccountPath = '../route-optimisation-service-account.json';
 
     try {
 
