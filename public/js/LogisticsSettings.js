@@ -7,6 +7,8 @@ const addRunButton = document.getElementById('addRunButton');
 const addPostcodeButton = document.getElementById('addPostcodeButton');
 const updateFuelCostButton = document.getElementById('updateFuelCostButton');
 const runDefinitionsWrapper = document.getElementById('run_definitions_wrapper');
+const postcodeExceptionsWrapper = document.getElementById('postcode_exceptions_wrapper');
+
 
 
 let currentFuelCost;
@@ -15,6 +17,7 @@ let fuelInput;
 addEventListeners();
 fetchFuelCost();
 fetchPostcodes();
+fetchPostcodeExceptions();
 
 
 
@@ -151,7 +154,7 @@ async function fetchPostcodes(){
 function createRunDefinitionCard(run){
 
     const runDefinitionCard = document.createElement('div');
-    runDefinitionCard.classList = "run";
+    runDefinitionCard.classList = "card";
 
     const runNameButtonWrapper = document.createElement('div');
     runNameButtonWrapper.classList = "runNameButtonWrapper";
@@ -180,8 +183,6 @@ function createRunDefinitionCard(run){
 
     runDefinitionCard.appendChild(runNameButtonWrapper);
 
-
-
     const postcodeWrapper = document.createElement('div');
     postcodeWrapper.classList = "postcodeWrapper hidden";
 
@@ -205,6 +206,73 @@ function createPostcodePill(postcodeDefinition){
     postcode.innerText = postcodeDefinition;
 
     return postcode
+
+}
+
+
+async function fetchPostcodeExceptions(){
+
+    const postcodeExceptionsDocument = await getDocument(query(doc(db, 'Settings', 'postcodeExceptions')));
+    const postcodeExceptions = postcodeExceptionsDocument.data()['exceptions'];
+
+    console.log(postcodeExceptions);
+
+    for(let i = 0; i < postcodeExceptions.length; i++){
+
+        const postcodeExceptionCard = createPostcodeExceptionCard(postcodeExceptions[i]);
+        postcodeExceptionsWrapper.appendChild(postcodeExceptionCard);
+    }
+
+}
+
+
+function createPostcodeExceptionCard(postcodeException){
+
+    console.log(postcodeException.exceptionTypes);
+
+    const postcodeExceptionCard = document.createElement('div')
+    postcodeExceptionCard.classList = "card";
+
+    const exceptionName = document.createElement('h4');
+    exceptionName.classList = "runName";
+    exceptionName.innerText = postcodeException.name;
+
+    const exceptionTypes = document.createElement('p');
+    exceptionTypes.innerText = "Applies to postcode(s): "
+
+    if(postcodeException.exceptionTypes.includes('COLLECTION')){
+        exceptionTypes.innerText += "Collection";
+    }
+
+    if(postcodeException.exceptionTypes.includes('DELIVERY')){
+        exceptionTypes.innerText += ", Delivery";
+    }
+
+
+    const exceptionMessage = document.createElement('div');
+    exceptionMessage.classList = "exceptionMessage";
+    exceptionMessage.innerText = "Message: " + postcodeException.message;
+
+    const br = document.createElement('br');
+
+    const postcodeWrapper = document.createElement('div');
+    postcodeWrapper.classList = "postcodeWrapper";
+
+
+
+    for(let i = 0; i < postcodeException.postcodes.length; i++){
+
+        const postcodePill = createPostcodePill(postcodeException.postcodes[i]);
+        postcodeWrapper.appendChild(postcodePill);
+    }
+
+    postcodeExceptionCard.appendChild(exceptionName);
+    postcodeExceptionCard.appendChild(exceptionTypes);
+    postcodeExceptionCard.appendChild(exceptionMessage);
+    postcodeExceptionCard.appendChild(br);
+    postcodeExceptionCard.appendChild(postcodeWrapper);
+
+    return postcodeExceptionCard;
 
 }
 
