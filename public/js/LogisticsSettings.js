@@ -6,6 +6,7 @@ const fuelCostInput = document.getElementById('fuelCostInput');
 const addRunButton = document.getElementById('addRunButton');
 const addPostcodeButton = document.getElementById('addPostcodeButton');
 const updateFuelCostButton = document.getElementById('updateFuelCostButton');
+const runDefinitionsWrapper = document.getElementById('run_definitions_wrapper');
 
 
 let currentFuelCost;
@@ -13,6 +14,24 @@ let fuelInput;
 
 addEventListeners();
 fetchFuelCost();
+fetchPostcodes();
+
+
+
+const sortAlphabetically = (a, b) => {
+
+  if(a.runName < b.runName){
+    return -1;
+  }
+
+  else if(a.runName > b.runName){
+    return 1;
+  }
+
+  return 0;
+
+}
+
 
 
 function addEventListeners(){
@@ -68,12 +87,134 @@ async function fetchFuelCost(){
 
 }
 
+async function fetchPostcodes(){
+
+    const runDefinitionsDocument = await getDocument(query(doc(db, 'Settings', 'runDefinitions')));
+    const runDefinitions = runDefinitionsDocument.data();
+
+    const runs = [];
+
+    const runSet = new Set();
+
+    runSet.add(null);
+
+    for (const property in runDefinitions) {
+        runSet.add(runDefinitions[property]);
+    }
+
+    runSet.forEach((runName) => {
+
+        runs.push(
+            {
+                runName: runName,
+                postcodes: []
+            }
+        );
+
+    });
+
+
+    for (const postcode in runDefinitions) {
+
+        const runName = runDefinitions[postcode];
+        
+        for(let j = 0; j < runs.length; j++){
+
+            if(runs[j].runName === runName){
+                runs[j].postcodes.push(postcode);
+            }
+
+        }
+    }
+
+
+    for(let i = 0; i < runs.length; i++){
+        runs[i].postcodes.sort();
+    }
+
+    console.log(runs);
+
+    runs.sort(sortAlphabetically);
+
+    for(let i = 0; i < runs.length; i++){
+
+        if(runs[i].runName != null){
+            const runDefinitionCard = createRunDefinitionCard(runs[i]);
+            runDefinitionsWrapper.appendChild(runDefinitionCard);
+        }
+
+    }
+
+}
+
+
+function createRunDefinitionCard(run){
+
+    const runDefinitionCard = document.createElement('div');
+    runDefinitionCard.classList = "run";
+
+    const runNameButtonWrapper = document.createElement('div');
+    runNameButtonWrapper.classList = "runNameButtonWrapper";
+
+    const runName = document.createElement('h4');
+    runName.classList = "runName";
+    runName.innerText = run.runName;
+
+    const toggleButton = document.createElement('div');
+    toggleButton.classList = "toggleButton";
+
+    const v = document.createElement('p');
+    v.innerText = "V";
+
+    toggleButton.appendChild(v);
+
+    toggleButton.addEventListener('click', () => {
+
+        postcodeWrapper.classList.toggle('hidden');
+        toggleButton.classList.toggle('rotateButton');
+
+    });
+
+    runNameButtonWrapper.appendChild(runName);
+    runNameButtonWrapper.appendChild(toggleButton);
+
+    runDefinitionCard.appendChild(runNameButtonWrapper);
+
+
+
+    const postcodeWrapper = document.createElement('div');
+    postcodeWrapper.classList = "postcodeWrapper hidden";
+
+    for(let i = 0; i < run.postcodes.length; i++){
+
+        const postcodePill = createPostcodePill(run.postcodes[i]);
+        postcodeWrapper.appendChild(postcodePill);
+    }
+
+    runDefinitionCard.appendChild(postcodeWrapper);
+
+    return runDefinitionCard;
+
+}
+
+
+function createPostcodePill(postcodeDefinition){
+    
+    const postcode = document.createElement('p');
+    postcode.classList = "postcode";
+    postcode.innerText = postcodeDefinition;
+
+    return postcode
+
+}
+
 
 function areaCodePillController(){
 
 
 
 }
+
 
 function fuelCostInputController(input){
 
@@ -107,6 +248,7 @@ function updateFuelCostButtonController(){
     updateFuelCost();
 
 }
+
 function updateFuelCost(){
 
     updateDocument(doc(db, 'Settings', 'fuelcost'), {fuelcost: parseInt(fuelInput)}).then(() => {
