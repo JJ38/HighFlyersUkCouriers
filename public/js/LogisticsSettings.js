@@ -2,23 +2,25 @@ import { db, auth, getDocument, updateDocument } from '/js/firebase';
 import { query, doc } from 'firebase/firestore';
 import { showNotification } from '/js/Notification';
 
-const fuelCostInput = document.getElementById('fuelCostInput');
+const fuelCostInput = document.getElementById('fuel_cost_input');
+const milesPerGallonInput = document.getElementById('mile_per_gallon_input');
 const addRunButton = document.getElementById('addRunButton');
 const addPostcodeButton = document.getElementById('addPostcodeButton');
-const updateFuelCostButton = document.getElementById('updateFuelCostButton');
+const updateFuelSettingsButton = document.getElementById('update_fuel_settings_button');
 const runDefinitionsWrapper = document.getElementById('run_definitions_wrapper');
 const postcodeExceptionsWrapper = document.getElementById('postcode_exceptions_wrapper');
 
 
+let fuelCost;
+let milesPerGallon;
+let fuelUserInput;
+let milesPerGallonUserInput;
 
-let currentFuelCost;
-let fuelInput;
 
 addEventListeners();
-fetchFuelCost();
+fetchFuelSettings();
 fetchPostcodes();
 fetchPostcodeExceptions();
-
 
 
 const sortAlphabetically = (a, b) => {
@@ -34,7 +36,6 @@ const sortAlphabetically = (a, b) => {
   return 0;
 
 }
-
 
 
 function addEventListeners(){
@@ -57,19 +58,31 @@ function addEventListeners(){
 
     if(fuelCostInput != null){
         console.log("awdawd");
-        fuelCostInput.addEventListener('input', (input) => {
+        fuelCostInput.addEventListener('input', () => {
 
-            fuelCostInputController(input);
+            fuelUserInput = fuelCostInput.value;
+            fuelSettingsContoller();
             
         });
 
     }
 
-    if(updateFuelCostButton != null){
+    if(milesPerGallonInput != null){
 
-        updateFuelCostButton.addEventListener('click', () => {
+        milesPerGallonInput.addEventListener('input', () => {
 
-            updateFuelCostButtonController();
+            milesPerGallonUserInput = milesPerGallonInput.value;
+            fuelSettingsContoller();
+
+        });
+
+    }
+
+    if(updateFuelSettingsButton != null){
+
+        updateFuelSettingsButton.addEventListener('click', () => {
+
+            updateFuelSettingsButtonController();
 
         });
 
@@ -78,14 +91,22 @@ function addEventListeners(){
 }
 
 
-async function fetchFuelCost(){
+async function fetchFuelSettings(){
 
-    const fuelDocument = await getDocument(query(doc(db, 'Settings', 'fuelcost')));
+    const fuelDocument = await getDocument(query(doc(db, 'Settings', 'fuelSettings')));
 
     //add fuel cost to ui
-    currentFuelCost = fuelDocument.data()['fuelcost'];
+    fuelCost = fuelDocument.data()['fuelCost'];
     if(fuelCostInput != null){
-        fuelCostInput.value = currentFuelCost;
+        fuelCostInput.value = fuelCost;
+        fuelUserInput = fuelCost;
+    }
+
+    milesPerGallon = fuelDocument.data()['milesPerGallon'];
+    if(milesPerGallonInput != null){
+        milesPerGallonInput.value = milesPerGallon;
+        milesPerGallonUserInput = milesPerGallon;
+
     }
 
 }
@@ -284,46 +305,63 @@ function areaCodePillController(){
 }
 
 
-function fuelCostInputController(input){
+function fuelSettingsContoller(){
 
-    fuelInput = input.target.value;
+    if(updateFuelSettingsButton == null){
+        return;
+    }   
 
-    if(fuelInput != currentFuelCost){
+    console.log(fuelCost);
+    console.log(fuelUserInput);
 
-        if(updateFuelCostButton != null){
-            updateFuelCostButton.classList.remove('hidden');
-        }
-
-    }else{
-        updateFuelCostButton.classList.add('hidden');
+    if(fuelUserInput != fuelCost){
+        updateFuelSettingsButton.classList.remove('hidden');
+        return;
     }
+
+    console.log(milesPerGallon);
+    console.log(milesPerGallonUserInput);
+
+    if(milesPerGallonUserInput != milesPerGallon){
+        updateFuelSettingsButton.classList.remove('hidden');
+        return;
+    }
+
+    updateFuelSettingsButton.classList.add('hidden');
 
 }
 
-function updateFuelCostButtonController(){
+function updateFuelSettingsButtonController(){
 
 
-    if(fuelInput <= 0){
+    if(fuelUserInput <= 0){
         alert("Error - fuel cost must be greater than 0");
         return;
     }
 
-    if(fuelInput % 1 !== 0){
+    if(fuelUserInput % 1 !== 0){
         alert("Error - fuel cost must rounded to the nearest whole penny");
         return;
     }  
 
-    updateFuelCost();
+    updateFuelSettings();
 
 }
 
-function updateFuelCost(){
+function updateFuelSettings(){
 
-    updateDocument(doc(db, 'Settings', 'fuelcost'), {fuelcost: parseInt(fuelInput)}).then(() => {
+    updateDocument(doc(db, 'Settings', 'fuelSettings'), 
+        {
+            fuelCost: parseInt(fuelUserInput),
+            milesPerGallon: parseInt(milesPerGallonUserInput)
+        }
+    ).then(() => {
 
         showNotification("Success!", "Fuel cost has been updated");
-        currentFuelCost = fuelInput;
-        updateFuelCostButton.classList.add('hidden');
+        fuelCost = fuelUserInput;
+        milesPerGallon = milesPerGallonUserInput;
+
+        updateFuelSettingsButton.classList.add('hidden');
 
     }).catch(() => {
 

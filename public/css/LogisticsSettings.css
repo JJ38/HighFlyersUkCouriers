@@ -46,17 +46,30 @@ h4{
     font-weight: 300;
 }
 
-.fuelcostinput{
+.numberInput{
 
     border: 1px solid #9A9A9A;
     border-radius: 5px;
-    padding: 7px 20px 7px 7px;
+    padding: 7px 0px 7px 7px;
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     font-weight: 300;
     font-style: normal;
     background-color: #FCFCFC;
     max-width: 150px;
+
+}
+
+.fuelCostInput{
+
+    padding-right: 20px;
+  
+}
+
+.milesPerGallonInput{
+
+    padding-right: 45px;
+
 }
 
 .fuelcostinputwrapper{
@@ -73,7 +86,7 @@ h4{
 
 }
 
-.updatefuelcostbutton{
+.updateButton{
 
     width: min-content;
     padding: 8px;
