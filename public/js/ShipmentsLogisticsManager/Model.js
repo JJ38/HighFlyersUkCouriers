@@ -1200,9 +1200,6 @@ export function parseRunInfo(doc, fuelSettings){
 
 export function calculateFuelCost(travelDistanceMeters, fuelSettings){
 
-  console.log(fuelSettings);
-  console.log(travelDistanceMeters);
-
   const costPerLiterPence = fuelSettings['fuelCost']; 
   const milesPerGallon = fuelSettings['milesPerGallon'];
 
@@ -1215,12 +1212,8 @@ export function calculateFuelCost(travelDistanceMeters, fuelSettings){
   const kilometersTraveled = travelDistanceMeters / 1000;
   const numberOfLitersUsed = kilometersTraveled / kilometersPerLiter;
 
-
-
   const costOfRunPence = numberOfLitersUsed * costPerLiterPence;
   const costOfRunPounds = Number.parseFloat(costOfRunPence / 100).toFixed(2);
-
-  console.log(costOfRunPounds);
 
   return costOfRunPounds;
 

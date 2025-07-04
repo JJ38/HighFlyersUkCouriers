@@ -1220,6 +1220,9 @@ async function generateDeleteWidget(){
 
 function updateCurrentSelectedRunCard(runCard, run){
 
+  console.log(run);
+  console.log(runCard);
+
   const newRunCard = createRunCard(run);
 
   runCard.replaceWith(newRunCard);
@@ -1937,6 +1940,7 @@ async function dropStopCard(){
   //update client side order as database has updated successfully
   currentSelectedRun.stops = updatedStops;
   currentSelectedRun.isOptimised = false;
+  currentSelectedRun.fuelCost = 0;
 
 
   if(cardBeingDragged != null){
@@ -1956,6 +1960,7 @@ async function dropStopCard(){
 
   disableDragZones();
   updateStopLockButtons();
+  updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun)
 
   window.removeEventListener('mousemove', mouseMoveCallback);
 
