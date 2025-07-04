@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
-import { convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
+import { calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -633,6 +633,19 @@ function addEventListeners(){
 
       const routeJSON = await calculateRoute(currentSelectedRun);
 
+      console.log(routeJSON);
+
+      try{
+
+        const fuelSettings = await fetchFuelSettings();
+        currentSelectedRun.fuelCost = calculateFuelCost(routeJSON['metrics']['aggregatedRouteMetrics']['travelDistanceMeters'], fuelSettings.data());
+        
+      }catch(e){
+
+        console.log(e);
+
+      }
+
       showUI(calculateRouteButton);
       loader.remove();
       
@@ -642,7 +655,6 @@ function addEventListeners(){
         return;
       }
     
-
       const transitions = routeJSON['routes'][0]['transitions'];
      
       removePolylines();
@@ -655,6 +667,7 @@ function addEventListeners(){
 
       updateMapMarkers(currentSelectedRun);
       updateStopList(currentSelectedRun);
+      updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
 
     });
 
@@ -1046,10 +1059,31 @@ function updateSelectRunAssignStops(runData){
 
 }
 
+function getRunCardEventListener(runStruct, runCard){
 
-function parseRunData(runData){
+  const runCardEventListener = async () => {
 
-  const runStruct = parseRunInfo(runData);
+    const run = await selectRun(runStruct.documentId);
+    updateStopList(run);
+    showRuns();
+    selectCard(runCard);
+
+    //update map markers
+    updateMapMarkers(run);
+    updatePolylines(run);
+    updateMapPosition(mainMap, run);
+
+  }
+
+  return runCardEventListener;
+
+}
+
+
+
+function parseRunData(runData, fuelSettings){
+
+  const runStruct = parseRunInfo(runData, fuelSettings);
 
   if(runStruct.runName != null){
     
@@ -1057,20 +1091,7 @@ function parseRunData(runData){
 
     runStruct.runCard = runCard;
     
-    runCard.addEventListener('click', async () => {
-
-      //fetch run to make sure client is showing the correct state and order of stops.
-      const run = await selectRun(runStruct.documentId);
-      updateStopList(run);
-      showRuns();
-      selectCard(runCard);
-
-      //update map markers
-      updateMapMarkers(run);
-      updatePolylines(run);
-      updateMapPosition(mainMap, run)
-
-    });
+    runCard.addEventListener('click', getRunCardEventListener(runStruct, runCard));
 
   }else{
 
@@ -1197,6 +1218,17 @@ async function generateDeleteWidget(){
 
 }
 
+function updateCurrentSelectedRunCard(runCard, run){
+
+  const newRunCard = createRunCard(run);
+
+  runCard.replaceWith(newRunCard);
+
+  newRunCard.addEventListener('click', getRunCardEventListener(run, newRunCard));
+
+  currentSelectedRunCard = newRunCard;
+
+}
 
 async function updateRunsList(shipmentName){
 
@@ -1276,8 +1308,6 @@ async function updateRunsList(shipmentName){
 
 async function selectShipment(shipmentName){
 
-  console.log(shipmentName);
-
   removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
   const shipmentData = await fetchShipment(shipmentName);
@@ -1291,12 +1321,17 @@ async function selectShipment(shipmentName){
   const runIDs = shipmentData.data()['runs'];
 
   const runData = await fetchRunsInShipment(runIDs);
+  const fuelSettings = await fetchFuelSettings();
+
+  if(fuelSettings === false){
+    showNotification("Error!", "Error fetching fuel costs");
+  } 
 
   const runsList = [];
 
   for(let i = 0; i < runData.length; i++){
 
-    runsList.push(parseRunData(runData[i]));
+    runsList.push(parseRunData(runData[i], fuelSettings.data()));
 
   }
 

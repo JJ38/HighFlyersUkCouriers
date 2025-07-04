@@ -498,7 +498,6 @@ function generateRunDoc(runName, deliveryWeek){
   const run = {
 
     assignedDriver: "",
-    fuelCost: "",
     runName: runName,
     runWeek: deliveryWeek,
     isOptimised: false,
@@ -511,7 +510,7 @@ function generateRunDoc(runName, deliveryWeek){
 }
 
 export async function fetchShipment(shipmentName){
-  console.log(shipmentName);
+  
   const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", shipmentName), limit(1)));
 
   if(shipmentData.empty){
@@ -527,7 +526,9 @@ export async function fetchShipment(shipmentName){
 export async function selectRun(documentID){
 
   const runDocument = await fetchRun(documentID);
-  const runObject = parseRunInfo(runDocument);
+  const fuelSettings = await fetchFuelSettings();
+
+  const runObject = parseRunInfo(runDocument, fuelSettings);
 
   const orders = await getRunStopsOrderData(runObject.stops);
   mergeStopsWithOrderData(runObject.stops, orders);
@@ -1171,22 +1172,66 @@ function toggleStopLockInRun(stopBeingToggleLocked, runStops){
 }
 
 
-export function parseRunInfo(doc){
+export function parseRunInfo(doc, fuelSettings){
+
+  // console.log("parseRunInfo");
 
   const runData = doc.data();
 
   const runStruct = {
     documentId: doc.id,
     assignedDriver: runData['assignedDriver'],
-    fuelCost: runData['fuelCost'],
     stops: runData['stops'],
     runName: runData['runName'],
     runWeek: runData['runWeek'],
     isOptimised: runData['isOptimised'],
     optimisedRoute: runData['optimisedRoute']
   }
+
+  if(runStruct.isOptimised && fuelSettings !== false){
+
+    runStruct.fuelCost = calculateFuelCost(runData['optimisedRoute']['metrics']['aggregatedRouteMetrics']['travelDistanceMeters'], fuelSettings);
+     
+  }
   
   return runStruct;
+
+}
+
+export function calculateFuelCost(travelDistanceMeters, fuelSettings){
+
+  console.log(fuelSettings);
+  console.log(travelDistanceMeters);
+
+  const costPerLiterPence = fuelSettings['fuelCost']; 
+  const milesPerGallon = fuelSettings['milesPerGallon'];
+
+  //4.54609 liters in an imperial gallon
+  const milesPerLiter = milesPerGallon / 4.54609;
+
+  //1609.34 meters in a mile
+  const kilometersPerLiter = milesPerLiter * 1.60934
+
+  const kilometersTraveled = travelDistanceMeters / 1000;
+  const numberOfLitersUsed = kilometersTraveled / kilometersPerLiter;
+
+
+
+  const costOfRunPence = numberOfLitersUsed * costPerLiterPence;
+  const costOfRunPounds = Number.parseFloat(costOfRunPence / 100).toFixed(2);
+
+  console.log(costOfRunPounds);
+
+  return costOfRunPounds;
+
+}
+
+export async function fetchFuelSettings(){
+
+  const docRef = doc(db, 'Settings', 'fuelSettings');
+  const fuelSettingsDocument = await getDocument(docRef);
+
+  return fuelSettingsDocument;
 
 }
 

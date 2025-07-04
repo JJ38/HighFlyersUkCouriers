@@ -457,6 +457,9 @@ export function createTableOrderCard(doc){
 
 export function createRunCard(runStruct){
 
+  // console.log(runStruct);
+  console.log("createRunCard");
+
   const runCard = document.createElement('div');
   runCard.classList = "runCard";
   runCard.id = runStruct.documentId
@@ -508,7 +511,7 @@ export function createRunCard(runStruct){
   fuelCostIcon.innerText = "local_gas_station";
 
   const fuelCost = document.createElement('p');
-  fuelCost.innerText = "£" + runStruct.fuelCost;
+  fuelCost.innerText = "£" + (runStruct.isOptimised == true ? runStruct.fuelCost : "0");
 
   fuelCostWrapper.appendChild(fuelCostIcon);
   fuelCostWrapper.appendChild(fuelCost);
