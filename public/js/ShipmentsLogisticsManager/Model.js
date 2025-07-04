@@ -950,7 +950,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   }
 
-  batch.update(runRemovingStopRef, {"stops": stopsWithStopsRemoved})
+  batch.update(runRemovingStopRef, {"stops": stopsWithStopsRemoved, isOptimised: false})
 
   //add runs to run document
   const stopsToAdd = stopsOfRunRemovingStops.filter((stop) => {
@@ -1720,7 +1720,7 @@ export async function updateStopAddress(address, run, stopToUpdate){
 
   const batch = writeBatch(db);
 
-  batch.update(runRef, {"stops": databaseStops});
+  batch.update(runRef, {"stops": databaseStops, isOptimised: false});
 
 
   //update orderdata

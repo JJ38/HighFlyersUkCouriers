@@ -172,11 +172,7 @@ function addEventListeners(){
     if(isCardBeingDragged){
 
       await dropStopCard();
-
-      removePolylines();
-
-      console.log(currentSelectedRun); 
-      updateMapMarkers(currentSelectedRun);
+      showUnoptimisedRunState();
 
     }
 
@@ -779,7 +775,8 @@ function addEventListeners(){
       if(currentlySelectedAddressSuggestionCard != null){
 
         const result = await updateStopAddress(currentlySelectedSuggestionAddress, currentSelectedRun, currentlySelectedStop);
-        if(result ===  false){
+        
+        if(result === false){
           showNotification("Error!", "Error updating stop address");
           return;
         }
@@ -790,12 +787,13 @@ function addEventListeners(){
         const runObject = await selectRun(currentSelectedRun.documentId);
         console.log(runObject);
 
+        currentSelectedRun = runObject;
+
         if(currentSelectedRun.runName == null){
           updateUnassignedOrdersTable(runObject);
         }else{
 
-          updateStopList(runObject);
-          updateMapMarkers(runObject);
+          showUnoptimisedRunState();
 
         }
         
@@ -1029,6 +1027,16 @@ function clearAndHideRunStopsUI(){
   runStopsContainer.innerHTML = "";
   hideUI(runStopsContainer);
   hideUI(selectedRunView);
+
+}
+
+
+function showUnoptimisedRunState(){
+
+  removePolylines();
+  updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
+  updateMapMarkers(currentSelectedRun);
+  updateStopList(currentSelectedRun);
 
 }
 
@@ -1522,7 +1530,7 @@ function updateStopList(runStruct){
     }
 
   }
-
+ 
   updateStopLockButtons();
 
   if(stops.length == 0){
@@ -1581,6 +1589,8 @@ function getDragDetectionZone(detectionZoneType){
 
 
 function addLabelsToStopsList(){
+
+  console.log("addLablesToStopList");
 
   const stopCards = runStopsContainer.querySelectorAll('.stopCardWrapper');
   const filteredStopCards = Array.from(stopCards).filter((stopCard) => {
@@ -1692,9 +1702,7 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
       currentSelectedRun.isOptimised = false;
       currentSelectedRun.fuelCost = 0;
 
-      removePolylines();
-      updateMapMarkers(currentSelectedRun);
-      updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
+      showUnoptimisedRunState();
 
     }
 
@@ -1722,11 +1730,14 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
     if(result){
 
       showNotification("Success!", "Removed stop from run");
+
       const runObject = await selectRun(runDocumentID);
+      currentSelectedRun = runObject;
       updateStopList(runObject);
 
       await updateRunsList(selectedShipment.value);
-      updateMapMarkers(runObject);
+
+      showUnoptimisedRunState();
 
       return;
     } 
@@ -1968,7 +1979,6 @@ async function dropStopCard(){
 
   disableDragZones();
   updateStopLockButtons();
-  updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun)
 
   window.removeEventListener('mousemove', mouseMoveCallback);
 
