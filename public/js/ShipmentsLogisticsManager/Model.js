@@ -1136,7 +1136,7 @@ export async function toggleStopLock(stopBeingToggleLocked, runStruct){
 
   }
 
-  const result = await updateRun(runStruct.documentId, {stops: databaseStops});
+  const result = await updateRun(runStruct.documentId, {stops: databaseStops, isOptimised: false});
 
   if(result){
 

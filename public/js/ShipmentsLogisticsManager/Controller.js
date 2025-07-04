@@ -1220,9 +1220,6 @@ async function generateDeleteWidget(){
 
 function updateCurrentSelectedRunCard(runCard, run){
 
-  console.log(run);
-  console.log(runCard);
-
   const newRunCard = createRunCard(run);
 
   runCard.replaceWith(newRunCard);
@@ -1689,6 +1686,17 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
     const stopNumber = stopCardWrapper.previousElementSibling.firstChild;
 
     setStopLock(stop['isLocked'], lockIcon, lockOpenIcon, stopNumber, stopCardWrapper.firstChild);
+
+    if(currentSelectedRun.isOptimised){
+
+      currentSelectedRun.isOptimised = false;
+      currentSelectedRun.fuelCost = 0;
+
+      removePolylines();
+      updateMapMarkers(currentSelectedRun);
+      updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
+
+    }
 
   });
 
