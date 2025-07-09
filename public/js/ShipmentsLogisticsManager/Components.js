@@ -133,6 +133,22 @@ export function createStopCard(stop, stopMetaDataContainer, buttonWrapper){
   stopCustomerName.classList = "stopCustomerName";
   stopCustomerName.innerText = stopData['name'];
 
+
+
+  const animalTypeQuantityContainer = document.createElement('div'); 
+  animalTypeQuantityContainer.classList = "animalTypeQuantityContainer";
+
+  const animalType = document.createElement('p');
+  animalType.innerText = stopData['animalType'];
+
+  const quantity = document.createElement('p');
+  quantity.innerText = "x" + stopData['quantity'];
+
+  animalTypeQuantityContainer.appendChild(animalType);
+  animalTypeQuantityContainer.appendChild(quantity);
+
+
+
   const stopAddressLine1 = document.createElement('p');
   stopAddressLine1.classList = "stopAddressLine1";
   stopAddressLine1.innerText = stopData['address1'];
@@ -162,6 +178,7 @@ export function createStopCard(stop, stopMetaDataContainer, buttonWrapper){
 
   stopCard.appendChild(stopMetaDataContainer);
   stopCard.appendChild(stopCustomerName);
+  stopCard.appendChild(animalTypeQuantityContainer);
   stopCard.appendChild(stopAddressLine1);
   stopCard.appendChild(stopAddressWrapper);
   stopCard.appendChild(buttonWrapper);
@@ -457,9 +474,6 @@ export function createTableOrderCard(doc){
 
 export function createRunCard(runStruct){
 
-  // console.log(runStruct);
-  console.log("createRunCard");
-
   const runCard = document.createElement('div');
   runCard.classList = "runCard";
   runCard.id = runStruct.documentId
@@ -676,7 +690,6 @@ export function createShipmentOptions(shipmentName, shipments){
   deleteShipmentOption.value = "DELETE_SHIPMENT";
   deleteShipmentOption.innerText = "-- delete a shipment --";
   shipmentOptions.push(deleteShipmentOption);
-
 
   return shipmentOptions
 

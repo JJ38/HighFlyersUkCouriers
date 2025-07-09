@@ -208,6 +208,8 @@ function addEventListeners(){
       selectedRunView.classList.add('hidden');
       updateRunsList(currentSelectedShipmentName);
 
+      removePolylines();
+
     });
 
   }
@@ -324,8 +326,9 @@ function addEventListeners(){
 
       const shipmentData = await fetchShipment(selectedShipment.value);
       const runData = await fetchRunsInShipment(shipmentData.data()['runs']);
+      const fuelSettings = await fetchFuelSettings();
 
-      updateSelectRunAssignStops(runData);
+      updateSelectRunAssignStops(runData, fuelSettings.data());
 
       showUI(assignStopsWidget);
 
@@ -1042,13 +1045,13 @@ function showUnoptimisedRunState(){
 
 
 //updates select options in assign run widget
-function updateSelectRunAssignStops(runData){
+function updateSelectRunAssignStops(runData, fuelSettings){
 
   const runs = [];
 
   for(let i = 0; i < runData.length; i++){
 
-    runs.push(parseRunInfo(runData[i]));
+    runs.push(parseRunInfo(runData[i], fuelSettings));
 
   }
 
@@ -1644,6 +1647,7 @@ function getMimicCard(){
 
 function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
   
+  console.log(stop);
   const stopMetaData = createStopMetaData(stop);
 
   const lockIcon = createLockIcon();
@@ -1703,6 +1707,7 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
       currentSelectedRun.fuelCost = 0;
 
       showUnoptimisedRunState();
+
 
     }
 

@@ -745,7 +745,7 @@ function getStopAddressString(orderData, stopType){
 
 export async function fetchStopCoordinates(addressString){
 
-  const url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressString + '&key=' + GeocodingAPIKey;
+  const url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressString + '&components=country:UK&key=' + GeocodingAPIKey;
 
   try {
 
@@ -1174,7 +1174,7 @@ function toggleStopLockInRun(stopBeingToggleLocked, runStops){
 
 export function parseRunInfo(doc, fuelSettings){
 
-  // console.log("parseRunInfo");
+  console.log(fuelSettings);
 
   const runData = doc.data();
 
@@ -1190,6 +1190,9 @@ export function parseRunInfo(doc, fuelSettings){
 
   if(runStruct.isOptimised && fuelSettings !== false){
 
+    console.log(runStruct);
+    console.log(runData);
+
     runStruct.fuelCost = calculateFuelCost(runData['optimisedRoute']['metrics']['aggregatedRouteMetrics']['travelDistanceMeters'], fuelSettings);
      
   }
@@ -1199,6 +1202,8 @@ export function parseRunInfo(doc, fuelSettings){
 }
 
 export function calculateFuelCost(travelDistanceMeters, fuelSettings){
+
+  console.log(fuelSettings);
 
   const costPerLiterPence = fuelSettings['fuelCost']; 
   const milesPerGallon = fuelSettings['milesPerGallon'];

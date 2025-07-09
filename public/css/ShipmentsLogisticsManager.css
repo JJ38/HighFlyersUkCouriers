@@ -392,6 +392,15 @@ p{
 
 }
 
+.animalTypeQuantityContainer{
+    
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: 300;
+
+}
+
 .buttonWrapper{
 
     display: flex;
@@ -497,7 +506,7 @@ p{
 
     font-size: 1.3rem;
     font-weight: 500;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     line-height: 1.3rem;
 
 }
