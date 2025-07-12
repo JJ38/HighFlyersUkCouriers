@@ -1,3 +1,6 @@
+
+
+
 export function createLoader(){
 
   const loader = document.createElement('div');
@@ -117,7 +120,7 @@ export function createStopContainer(stopNumber, stopCard){
 }
 
 
-export function createStopCard(stop, stopMetaDataContainer, buttonWrapper){
+export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, buttonWrapper){
 
   const stopData = stop['stopData'];
 
@@ -131,7 +134,7 @@ export function createStopCard(stop, stopMetaDataContainer, buttonWrapper){
 
   const stopCustomerName = document.createElement('p');
   stopCustomerName.classList = "stopCustomerName";
-  stopCustomerName.innerText = stopData['name'];
+  stopCustomerName.innerText = stop.stopType == "collection" ? stopData['collectionName'] : stopData['deliveryName'];
 
 
 
@@ -148,39 +151,10 @@ export function createStopCard(stop, stopMetaDataContainer, buttonWrapper){
   animalTypeQuantityContainer.appendChild(quantity);
 
 
-
-  const stopAddressLine1 = document.createElement('p');
-  stopAddressLine1.classList = "stopAddressLine1";
-  stopAddressLine1.innerText = stopData['address1'];
-
-
-  const stopAddressWrapper = document.createElement('div');
-  stopAddressWrapper.classList = "stopAddressWrapper";
-
-  const stopAddressLine2 = document.createElement('p');
-  stopAddressLine2.classList = "stopAddressLine2";
-  stopAddressLine2.innerHTML = stopData['address2'] + ",&nbsp;";
-
-  const stopAddressLine3 = document.createElement('p');
-  stopAddressLine3.classList = "stopAddressLine3";
-  stopAddressLine3.innerHTML = stopData['address3'] + ",&nbsp;";
-
-  const stopPostcode = document.createElement('p');
-  stopPostcode.classList = "stopPostcode";
-  stopPostcode.innerText = stopData['postcode'];
-
-
-
-  stopAddressWrapper.appendChild(stopAddressLine2);
-  stopAddressWrapper.appendChild(stopAddressLine3);
-  stopAddressWrapper.appendChild(stopPostcode);
-
-
   stopCard.appendChild(stopMetaDataContainer);
   stopCard.appendChild(stopCustomerName);
   stopCard.appendChild(animalTypeQuantityContainer);
-  stopCard.appendChild(stopAddressLine1);
-  stopCard.appendChild(stopAddressWrapper);
+  stopCard.appendChild(stopsWrapper);
   stopCard.appendChild(buttonWrapper);
 
 
@@ -188,6 +162,107 @@ export function createStopCard(stop, stopMetaDataContainer, buttonWrapper){
 
   return stopCardWrapper;
 
+}
+
+
+export function createStopsWrapper(stopAddress, opposingStopAddress){
+
+  const stopsWrapper = document.createElement('div');
+  stopsWrapper.classList = "stopsWrapper";
+
+  stopsWrapper.appendChild(stopAddress);
+  stopsWrapper.appendChild(opposingStopAddress);
+
+  return stopsWrapper
+
+}
+
+
+export function createStopAddress(stop, isActiveStop){
+
+  let address1;
+  let address2;
+  let address3;
+  let postcode;
+
+  const stopData = stop.stopData;
+
+  const container = document.createElement('div');
+
+  if(isActiveStop){
+    //get active stop address
+
+    if(stop.stopType == "collection"){
+
+      address1 = stopData['collectionAddress1'];
+      address2 = stopData['collectionAddress2'];
+      address3 = stopData['collectionAddress3'];
+      postcode = stopData['collectionPostcode'];
+
+    }else{
+
+      address1 = stopData['deliveryAddress1'];
+      address2 = stopData['deliveryAddress2'];
+      address3 = stopData['deliveryAddress3'];
+      postcode = stopData['deliveryPostcode'];
+
+    }
+
+
+  }else{
+
+    //get opposing stop address
+    if(stop.stopType == "collection"){
+
+      address1 = stopData['deliveryAddress1'];
+      address2 = stopData['deliveryAddress2'];
+      address3 = stopData['deliveryAddress3'];
+      postcode = stopData['deliveryPostcode'];
+
+    }else{
+
+      address1 = stopData['collectionAddress1'];
+      address2 = stopData['collectionAddress2'];
+      address3 = stopData['collectionAddress3'];
+      postcode = stopData['collectionPostcode'];
+
+    }
+
+    container.classList = "hidden";
+
+  }
+
+
+  const stopAddressLine1 = document.createElement('p');
+  stopAddressLine1.classList = "stopAddressLine1";
+  stopAddressLine1.innerText = address1;
+
+
+  const stopAddressWrapper = document.createElement('div');
+  stopAddressWrapper.classList = "stopAddressWrapper";
+
+  const stopAddressLine2 = document.createElement('p');
+  stopAddressLine2.classList = "stopAddressLine2";
+  stopAddressLine2.innerHTML = address2 + ",&nbsp;";
+
+  const stopAddressLine3 = document.createElement('p');
+  stopAddressLine3.classList = "stopAddressLine3";
+  stopAddressLine3.innerHTML = address3 + ",&nbsp;";
+
+  const stopPostcode = document.createElement('p');
+  stopPostcode.classList = "stopPostcode";
+  stopPostcode.innerText = postcode;
+
+
+  stopAddressWrapper.appendChild(stopAddressLine2);
+  stopAddressWrapper.appendChild(stopAddressLine3);
+  stopAddressWrapper.appendChild(stopPostcode);
+
+
+  container.appendChild(stopAddressLine1);
+  container.appendChild(stopAddressWrapper);
+
+  return container;
 }
 
 

@@ -1,7 +1,7 @@
 import { db, getDocuments, filterSearch } from "/js/Firebase.js";
 import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
-import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
+import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
 import { calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
@@ -12,6 +12,14 @@ let GooglePinElement;
 let GoogleAutocomplete;
 let GoogleMap;
 let GoogleGeometry;
+
+
+const ADDRESS_TYPE = {
+
+  ACTIVE: true,
+  OPPOSING: false,
+
+}
 
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -97,6 +105,7 @@ const stopCardLongClickTime = 1000;
 
 const autocompleteDebounce = 2000;
 
+
 let autocompleteSessionActive = false;
 let lastAutoCompleteInput;
 let currentSessionToken;
@@ -106,8 +115,9 @@ let currentSelectedRunCard = null;
 let currentSelectedRun = null;
 let currentSelectedShipmentName = null;
 
-let currentlyStopMetaData = null;
+let currentStopMetaData = null;
 let currentStopButtonWrapper = null;
+let currentOpposingStopAddress = null;
 
 let lastMouseDown = 0;
 let lastMouseUp = 0;
@@ -1659,8 +1669,13 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
   const deleteButton = createDeleteStopButton();
 
   const buttonWrapper = createButtonWrapper(stopLockButton, editButton ,deleteButton);
- 
-  const stopCardWrapper = createStopCard(stop, stopMetaData, buttonWrapper);
+
+  const stopAddress = createStopAddress(stop, ADDRESS_TYPE.ACTIVE); 
+  const opposingStopAddress = createStopAddress(stop, ADDRESS_TYPE.OPPOSING);
+  
+  const stopsWrapper = createStopsWrapper(stopAddress, opposingStopAddress);
+
+  const stopCardWrapper = createStopCard(stop, stopMetaData, stopsWrapper, buttonWrapper);
 
   const dragZoneTop = getDragDetectionZone("top");
   const dragZoneBottom= getDragDetectionZone("bottom");
@@ -1786,7 +1801,7 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
 
     if(mouseupTime - lastMouseDown < stopCardLongClickTime){
 
-      selectStop(stopMetaData, buttonWrapper);
+      selectStop(stopMetaData, buttonWrapper, opposingStopAddress);
 
     }
 
@@ -1833,6 +1848,8 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
   return stopCardWrapper;
 
 }
+
+
 
 
 function setStopLock(isLocked, lockIcon, lockOpenIcon, stopNumber, stopCard){
@@ -2074,33 +2091,41 @@ function setTop(top, element){
 }
 
 
-function selectStop(stopMetaData, buttonWrapper){
+function selectStop(stopMetaData, buttonWrapper, opposingStopAddress){
 
-  if(currentlyStopMetaData == stopMetaData && currentStopButtonWrapper == buttonWrapper){
+  if(currentStopMetaData == stopMetaData && currentStopButtonWrapper == buttonWrapper && currentOpposingStopAddress == opposingStopAddress){
     //deselect 
-    currentlyStopMetaData = null; 
+    currentStopMetaData = null; 
     currentStopButtonWrapper= null;
+    currentOpposingStopAddress = null
 
     hideUI(stopMetaData);
     hideUI(buttonWrapper);
+    hideUI(opposingStopAddress);
 
     return;
 
   }
 
-  if(currentlyStopMetaData != null){
-    hideUI(currentlyStopMetaData);
+  if(currentStopMetaData != null){
+    hideUI(currentStopMetaData);
   }
 
   if(currentStopButtonWrapper != null){
     hideUI(currentStopButtonWrapper);
   }
 
+  if(currentOpposingStopAddress != null){
+    hideUI(currentOpposingStopAddress);
+  }
+
   showUI(stopMetaData);
   showUI(buttonWrapper);
+  showUI(opposingStopAddress);
 
-  currentlyStopMetaData = stopMetaData;
+  currentStopMetaData = stopMetaData;
   currentStopButtonWrapper = buttonWrapper;
+  currentOpposingStopAddress = opposingStopAddress;
 
 }
 

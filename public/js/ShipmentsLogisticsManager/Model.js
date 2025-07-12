@@ -4,6 +4,8 @@ import { GeocodingAPIKey, calculateRouteEndpoint } from '/js/Settings.js';
 
 let GoogleAutocomplete;
 
+
+
 export const sortAlphabetically = (a, b) => {
 
   if(a.runName < b.runName){
@@ -1366,26 +1368,19 @@ export function mergeStopsWithOrderData(stops, orders){
         stopData['payment'] = orderData['payment'];
         stopData['code'] = orderData['code'];
 
+        stopData['collectionAddress1'] = orderData['collectionAddress1'];
+        stopData['collectionAddress2'] = orderData['collectionAddress2'];
+        stopData['collectionAddress3'] = orderData['collectionAddress3'];
+        stopData['collectionName'] = orderData['collectionName'];
+        stopData['collectionPostcode'] = orderData['collectionPostcode'];
+        stopData['collectionPhoneNumber'] = orderData['collectionPhoneNumber'];
 
-        if(stops[i].stopType == "collection"){
-          //add collection data to stop
-          stopData['address1'] = orderData['collectionAddress1'];
-          stopData['address2'] = orderData['collectionAddress2'];
-          stopData['address3'] = orderData['collectionAddress3'];
-          stopData['name'] = orderData['collectionName'];
-          stopData['postcode'] = orderData['collectionPostcode'];
-          stopData['phoneNumber'] = orderData['collectionPhoneNumber'];
-
-        }else if(stops[i].stopType == "delivery"){
-          //add delivery data to stop
-          stopData['address1'] = orderData['deliveryAddress1'];
-          stopData['address2'] = orderData['deliveryAddress2'];
-          stopData['address3'] = orderData['deliveryAddress3'];
-          stopData['name'] = orderData['deliveryName'];
-          stopData['postcode'] = orderData['deliveryPostcode'];
-          stopData['phoneNumber'] = orderData['deliveryPhoneNumber'];
-
-        }
+        stopData['deliveryAddress1'] = orderData['deliveryAddress1'];
+        stopData['deliveryAddress2'] = orderData['deliveryAddress2'];
+        stopData['deliveryAddress3'] = orderData['deliveryAddress3'];
+        stopData['deliveryName'] = orderData['deliveryName'];
+        stopData['deliveryPostcode'] = orderData['deliveryPostcode'];
+        stopData['deliveryPhoneNumber'] = orderData['deliveryPhoneNumber'];
 
         stops[i]['stopData'] = stopData;
     
