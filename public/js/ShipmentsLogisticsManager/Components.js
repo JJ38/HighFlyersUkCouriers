@@ -436,6 +436,8 @@ export function createUnassignedStopCardClickableElement(stopData){
 
 export function createUnassignedOrdersTableCard(stopData, clickableElement){
 
+  console.log(stopData);
+
   //clickableElement is either a checkbox or button
 
   const tableRow = document.createElement('tr');
@@ -448,18 +450,41 @@ export function createUnassignedOrdersTableCard(stopData, clickableElement){
   tableRow.appendChild(tableData(stopData['stopData']['quantity']));
   tableRow.appendChild(tableData(stopData['stopType']));
 
-  tableRow.appendChild(tableData(stopData['stopData']['name']));
 
-  tableRow.appendChild(
-    createTableAddress(
-      stopData['stopData']['address1'],
-      stopData['stopData']['address2'],
-      stopData['stopData']['address3'],
-      stopData['stopData']['postcode'],
+  let stopAddress;
+  let stopName;
+  let stopPhoneNumber;
+
+  if(stopData.stopType == "collection"){
+
+    stopAddress = createTableAddress(
+      stopData['stopData']['collectionAddress1'],
+      stopData['stopData']['collectionAddress2'],
+      stopData['stopData']['collectionAddress3'],
+      stopData['stopData']['collectionPostcode'],
     )
-  );
 
-  tableRow.appendChild(tableData(stopData['stopData']['phoneNumber']));
+    stopName = tableData(stopData['stopData']['collectionName']);
+    stopPhoneNumber = tableData(stopData['stopData']['collectionPhoneNumber']);
+
+  }else{
+
+    stopAddress = createTableAddress(
+      stopData['stopData']['deliveryAddress1'],
+      stopData['stopData']['deliveryAddress2'],
+      stopData['stopData']['deliveryAddress3'],
+      stopData['stopData']['deliveryPostcode'],
+    )
+
+    stopName = tableData(stopData['stopData']['deliveryName']);
+    stopPhoneNumber = tableData(stopData['stopData']['deliveryPhoneNumber']);
+
+  }
+
+  tableRow.appendChild(stopName);
+  tableRow.appendChild(stopAddress);
+  tableRow.appendChild(stopPhoneNumber);
+
   tableRow.appendChild(tableData(stopData['stopData']['payment']));
 
  
