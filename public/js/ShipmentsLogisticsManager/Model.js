@@ -194,10 +194,8 @@ function addStopNumbersToStops(runDocuments){
 }
 
 
-function generateRunDocs(runDefinitions, runDefaultSettings, shipmentDeliveryWeekInput){
+function generateRunDocs(runDefinitions, runDefaultSettings, shipmentDeliveryWeekInput, shipmentType){
   
-  console.log(runDefaultSettings)
-
   const runSet = new Set();
 
   //for unassigned stops document
@@ -211,13 +209,24 @@ function generateRunDocs(runDefinitions, runDefaultSettings, shipmentDeliveryWee
 
   runSet.forEach((runName) => {
 
-    let runDefaults = null;
+    let runProperties = null;
 
     if(runDefaultSettings[runName] != null){
-      runDefaults = runDefaultSettings[runName];
+
+      if(shipmentType == "collection"){
+
+        runProperties = runDefaultSettings[runName]['collection'];
+
+      }else{
+
+        runProperties = runDefaultSettings[runName]['delivery'];
+
+      }
+
+
     }
 
-    runDocumentList.push(generateRunDoc(runName, runDefaults, shipmentDeliveryWeekInput));
+    runDocumentList.push(generateRunDoc(runName, runProperties, shipmentDeliveryWeekInput));
 
   });
   
@@ -393,7 +402,7 @@ async function storeShipment(runDocuments, shipmentName, deliveryWeek){
 
     runs: runDocRefs,
     shipmentName: shipmentName,
-    shipmentWeek: deliveryWeek
+    shipmentWeek: deliveryWeek,
 
   });
 
@@ -415,16 +424,17 @@ async function storeShipment(runDocuments, shipmentName, deliveryWeek){
 
 }
 
-function generateRunDoc(runName, runDefaultSettings, deliveryWeek){
+function generateRunDoc(runName, runDefaultProperties, deliveryWeek){
 
-  console.log(runDefaultSettings);
+  console.log(runDefaultProperties);
 
   if(deliveryWeek == null){
     deliveryWeek = -1;
   }
 
   const run = {
-    settings: runDefaultSettings,
+
+    settings: runDefaultProperties,
     assignedDriver: "",
     runName: runName,
     runWeek: deliveryWeek,
@@ -930,7 +940,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 } 
 
 //returns the id of the run document added to shipment or false
-export async function addRunToShipment(runName, runDefaultSettings, shipmentName){
+export async function addRunToShipment(runName, runDefaultProperties, shipmentName){
 
   //get shipment doc ref
   const shipmentDoc = await fetchShipment(shipmentName); 
@@ -953,7 +963,7 @@ export async function addRunToShipment(runName, runDefaultSettings, shipmentName
 
     console.log(runRef.id);
 
-    const runDoc = generateRunDoc(runName, runDefaultSettings, deliveryWeek);
+    const runDoc = generateRunDoc(runName, runDefaultProperties, deliveryWeek);
 
     batch.set(runRef, runDoc);
 
@@ -1108,8 +1118,10 @@ export function parseRunInfo(doc, fuelSettings){
     stops: runData['stops'],
     runName: runData['runName'],
     runWeek: runData['runWeek'],
+    runType: runData['runType'],
     isOptimised: runData['isOptimised'],
-    optimisedRoute: runData['optimisedRoute']
+    optimisedRoute: runData['optimisedRoute'],
+    settings: runData['settings']
   }
 
   if(runStruct.isOptimised && fuelSettings !== false){

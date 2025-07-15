@@ -99,6 +99,20 @@ const assignStopButton = document.getElementById('assign_stop_button');
 const removeStopButton = document.getElementById('remove_stop_button');
 const addStopButton = document.getElementById('add_stop_button');
 
+const runOriginAddress1 = document.getElementById('run_origin_address_line_1');
+const runOriginAddress2 = document.getElementById('run_origin_address_line_2');
+const runOriginAddress3 = document.getElementById('run_origin_address_line_3');
+const runOriginPostcode = document.getElementById('run_origin_postcode');
+const runOriginHour = document.getElementById('run_origin_hour');
+const runOriginMinute = document.getElementById('run_origin_minute');
+
+const runDestinationAddress1 = document.getElementById('run_destination_address_line_1');
+const runDestinationAddress2 = document.getElementById('run_destination_address_line_2');
+const runDestinationAddress3 = document.getElementById('run_destination_address_line_3');
+const runDestinationPostcode = document.getElementById('run_destination_postcode');
+
+
+
 const mapWrapper = document.getElementById("map");
 
 const stopCardLongClickTime = 1000;
@@ -1087,6 +1101,7 @@ function getRunCardEventListener(runStruct, runCard){
 
     const run = await selectRun(runStruct.documentId);
     updateStopList(run);
+    updateOptionsTab(run);
     showRuns();
     selectCard(runCard);
 
@@ -1511,11 +1526,11 @@ function removePolylines(){
 
 }
 
-function updateStopList(runStruct){
+function updateStopList(runObject){
 
-  currentSelectedRun = runStruct;
+  currentSelectedRun = runObject;
 
-  const stops = runStruct.stops
+  const stops = runObject.stops
   runStopsContainer.innerHTML = "";
 
   for(let i = 0; i < stops.length; i++){
@@ -1526,13 +1541,13 @@ function updateStopList(runStruct){
 
         let label = stops[j].stopNumber;
 
-        if(!runStruct.isOptimised){
+        if(!runObject.isOptimised){
 
           label = convertStopNumberToLetter(stops[j].stopNumber);
         }
 
         const stopNumber = createStopLabel(label, stops[j].isLocked);
-        const stopCard = getStopCard(stops[j], runStruct.documentId, stopNumber.firstChild);
+        const stopCard = getStopCard(stops[j], runObject.documentId, stopNumber.firstChild);
 
         runStopsContainer.appendChild(stopNumber);
         runStopsContainer.appendChild(stopCard);
@@ -1550,6 +1565,61 @@ function updateStopList(runStruct){
     runStopsContainer.innerText = "No Stops in run";
 
   }
+
+}
+
+
+function updateOptionsTab(runObject){
+
+  console.log(runObject.settings);
+
+  if(runObject.settings == null){
+    clearRunOriginDestinationOptions();
+    return;
+  }
+
+  let origin;
+  let destination ;
+
+  if(runObject.runType == "collection"){
+
+    origin = runObject.settings.start;
+    destination = runObject.settings.end;
+
+  }else{
+
+    origin = runObject.settings.start;
+    destination = runObject.settings.end;
+
+  }
+
+  runOriginAddress1.value = origin.address.address1;    
+  runOriginAddress2.value = origin.address.address2;  
+  runOriginAddress3.value = origin.address.address3; 
+  runOriginPostcode.value = origin.address.postcode;  
+  runOriginHour.value = origin.time.hour;
+  runOriginMinute.value = origin.time.minute;
+
+  runDestinationAddress1.value = destination.address.address1;    
+  runDestinationAddress2.value = destination.address.address2;  
+  runDestinationAddress3.value = destination.address.address3; 
+  runDestinationPostcode.value = destination.address.postcode;  
+
+}
+
+function clearRunOriginDestinationOptions(){
+
+  runOriginAddress1.value = '';    
+  runOriginAddress2.value = '';  
+  runOriginAddress3.value = ''; 
+  runOriginPostcode.value = '';  
+  runOriginHour.value = '';
+  runOriginMinute.value = '';
+
+  runDestinationAddress1.value = '';   
+  runDestinationAddress2.value = ''; 
+  runDestinationAddress3.value = '';
+  runDestinationPostcode.value = ''; 
 
 }
 
