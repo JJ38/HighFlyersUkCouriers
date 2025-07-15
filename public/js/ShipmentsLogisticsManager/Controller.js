@@ -529,7 +529,7 @@ function addEventListeners(){
 
       if(addRunNameInput.value != null){
 
-        const result = await addRunToShipment(addRunNameInput.value, currentSelectedShipmentName);
+        const result = await addRunToShipment(addRunNameInput.value, null, currentSelectedShipmentName);
 
         if(result === false){
 

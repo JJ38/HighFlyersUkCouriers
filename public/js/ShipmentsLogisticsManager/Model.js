@@ -930,7 +930,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 } 
 
 //returns the id of the run document added to shipment or false
-export async function addRunToShipment(runName, shipmentName){
+export async function addRunToShipment(runName, runDefaultSettings, shipmentName){
 
   //get shipment doc ref
   const shipmentDoc = await fetchShipment(shipmentName); 
@@ -953,7 +953,7 @@ export async function addRunToShipment(runName, shipmentName){
 
     console.log(runRef.id);
 
-    const runDoc = generateRunDoc(runName, deliveryWeek);
+    const runDoc = generateRunDoc(runName, runDefaultSettings, deliveryWeek);
 
     batch.set(runRef, runDoc);
 
