@@ -157,7 +157,7 @@ export async function generateShipment(shipmentName, shipmentType, shipmentDeliv
     const orderDataQuery = await getDocuments(q);
 
     //create run documents
-    const runDocuments = generateRunDocs(runDefinitions.data(), runDefaults.data(), shipmentDeliveryWeekInput);
+    const runDocuments = generateRunDocs(runDefinitions.data(), runDefaults.data(), shipmentDeliveryWeekInput, shipmentType);
 
     //create a list of stops from orders
     await generateStopsFromOrders(orderDataQuery.docs, shipmentType, runDocuments, runDefinitions.data());
@@ -217,7 +217,7 @@ function generateRunDocs(runDefinitions, runDefaultSettings, shipmentDeliveryWee
 
         runProperties = runDefaultSettings[runName]['collection'];
 
-      }else{
+      }else if(shipmentType == "delivery"){
 
         runProperties = runDefaultSettings[runName]['delivery'];
 
@@ -425,8 +425,6 @@ async function storeShipment(runDocuments, shipmentName, deliveryWeek){
 }
 
 function generateRunDoc(runName, runDefaultProperties, deliveryWeek){
-
-  console.log(runDefaultProperties);
 
   if(deliveryWeek == null){
     deliveryWeek = -1;
@@ -1185,6 +1183,25 @@ export async function updateRun(documentId, fieldsToUpdate){
   }
 
   return true;
+}
+
+export async function updateRunSettings(runSettings, runDocumentID){
+
+  const runRef = doc(db, "Runs", runDocumentID);
+ 
+  try{
+
+    await updateDocument(runRef, {"settings": runSettings});
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  return true;
+
 }
 
 export function isStopInShipment(runDocuments, stopsToAdd){

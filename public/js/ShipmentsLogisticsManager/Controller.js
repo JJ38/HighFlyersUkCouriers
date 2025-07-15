@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
-import { calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
+import { updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -75,6 +75,7 @@ const removeRunButton = document.getElementById('remove_run_button');
 const removeRunWidget = document.getElementById('remove_run_widget');
 const calculateRouteButton = document.getElementById('calculate_route_button');
 const calculateRouteButtonWrapper = document.getElementById('calculate_route_button_wrapper');
+const updateRunSettingsButton = document.getElementById('update_run_settings_button');
 
 const validateAddressWidget = document.getElementById('validate_address_widget');
 const validateAddressAutocompleteInput = document.getElementById('validate_address_autocomplete_input');
@@ -831,11 +832,72 @@ function addEventListeners(){
 
   }
 
+  if(updateRunSettingsButton != null){
+
+    updateRunSettingsButton.addEventListener('click', async () => {
+
+      await updateRunSettingsController();
+    
+    });
+
+  }
+
 }
+
+
+async function updateRunSettingsController(){
+
+  const runSettings  = {
+
+      start: {
+
+        address:{
+
+          address1: runOriginAddress1.value,
+          address2: runOriginAddress2.value,
+          address3: runOriginAddress3.value,
+          postcode: runOriginPostcode.value
+
+        },
+        time:{
+
+          hour: parseInt(runOriginHour.value),
+          minute: parseInt(runOriginMinute.value),
+
+        }
+
+      },
+
+      end: {
+
+        address:{
+
+          address1: runDestinationAddress1.value,
+          address2: runDestinationAddress2.value,
+          address3: runDestinationAddress3.value,
+          postcode: runDestinationPostcode.value,
+
+        }
+      
+      }
+
+  }
+
+  const hasUpdated = await updateRunSettings(runSettings, currentSelectedRun.documentId);
+
+  if(hasUpdated){
+    showNotification("Success!", "Successfully updated run settings");
+    return
+  } 
+
+  showNotification("Error!", "Error updating run settings");
+
+}
+
 
 function drawPolyline(polylineString){
 
-  //in case there is no rouote as there is a second delivery at the location
+  //in case there is no route as there is a second delivery at the location
   if(polylineString != null){
 
     const decodedPath = GoogleGeometry.decodePath(polylineString);

@@ -800,6 +800,27 @@ td > div{
 
 }
 
+.updateRunSettingsButton{
+
+    display: flex;
+    color: white;
+    align-items: center;
+    border-radius: 5px;
+    background-color: rgb(32, 189, 64);
+    border: 1px solid rgb(32, 189, 64);
+    padding: 5px 10px;
+    width: fit-content;
+
+}
+
+.updateRunSettingsButton:hover{
+
+    cursor: pointer;
+    color: rgb(32, 189, 64);
+    background-color: white;
+    
+}
+
 .removeRunButton{
 
     display: flex;
