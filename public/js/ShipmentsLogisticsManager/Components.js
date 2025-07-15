@@ -132,6 +132,11 @@ export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, button
   stopCard.classList = "stopCard";
 
 
+  const stopTime = document.createElement('p');
+  stopTime.classList = "stopTime";
+  stopTime.innerText = "14:32pm";
+
+
   const stopCustomerName = document.createElement('p');
   stopCustomerName.classList = "stopCustomerName";
   stopCustomerName.innerText = stop.stopType == "collection" ? stopData['collectionName'] : stopData['deliveryName'];
@@ -152,6 +157,7 @@ export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, button
 
 
   stopCard.appendChild(stopMetaDataContainer);
+  stopCard.appendChild(stopTime);
   stopCard.appendChild(stopCustomerName);
   stopCard.appendChild(animalTypeQuantityContainer);
   stopCard.appendChild(stopsWrapper);

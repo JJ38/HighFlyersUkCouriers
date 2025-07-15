@@ -1530,10 +1530,8 @@ function updateStopList(runStruct){
           label = convertStopNumberToLetter(stops[j].stopNumber);
         }
 
-        const hasLockButton = stops[j].stopNumber == 1 ? true : (stops[j].stopNumber == stops.length) ? true : false
-
         const stopNumber = createStopLabel(label, stops[j].isLocked);
-        const stopCard = getStopCard(stops[j], runStruct.documentId, stopNumber.firstChild, hasLockButton);
+        const stopCard = getStopCard(stops[j], runStruct.documentId, stopNumber.firstChild);
 
         runStopsContainer.appendChild(stopNumber);
         runStopsContainer.appendChild(stopCard);
@@ -1567,7 +1565,6 @@ function getDragDetectionZone(detectionZoneType){
         return;
       }
 
-      //remove mimic card
       if(mimicCard != null){
         mimicCard.remove();
       }
@@ -1615,10 +1612,8 @@ function addLabelsToStopsList(){
 
     const stopNumber = createStopLabel(convertStopNumberToLetter(i + 1));
     const stopCard = filteredStopCards[i].querySelector('.stopCard');
-    //console.log(stopCard);
 
     const isLocked = stopCard.classList.contains('lockedCard');
-    //console.log(isLocked);
 
     filteredStopCards[i].before(stopNumber);
 
@@ -1655,9 +1650,8 @@ function getMimicCard(){
 }
 
 
-function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
+function getStopCard(stop, runDocumentID, stopNumber){
   
-  console.log(stop);
   const stopMetaData = createStopMetaData(stop);
 
   const lockIcon = createLockIcon();

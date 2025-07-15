@@ -148,12 +148,16 @@ export async function generateShipment(shipmentName, shipmentType, shipmentDeliv
     const docRef = doc(db, 'Settings', 'runDefinitions');
     const runDefinitions = await getDocument(docRef); //postcodes for runs
 
+    //fetch postcode run defaults
+    const runDefaultsDocRef = doc(db, 'Settings', 'runDefaults');
+    const runDefaults = await getDocument(runDefaultsDocRef); //postcodes for runs
+  
     //get orders by delivery week
     const q = query(collection(db, "Orders"), orderBy('ID', 'asc'), where("deliveryWeek", "==", deliveryWeek));
     const orderDataQuery = await getDocuments(q);
 
     //create run documents
-    const runDocuments = generateRunDocs(runDefinitions.data(), shipmentDeliveryWeekInput);
+    const runDocuments = generateRunDocs(runDefinitions.data(), runDefaults.data(), shipmentDeliveryWeekInput);
 
     //create a list of stops from orders
     await generateStopsFromOrders(orderDataQuery.docs, shipmentType, runDocuments, runDefinitions.data());
@@ -190,8 +194,10 @@ function addStopNumbersToStops(runDocuments){
 }
 
 
-function generateRunDocs(runDefinitions, shipmentDeliveryWeekInput){
+function generateRunDocs(runDefinitions, runDefaultSettings, shipmentDeliveryWeekInput){
   
+  console.log(runDefaultSettings)
+
   const runSet = new Set();
 
   //for unassigned stops document
@@ -205,7 +211,13 @@ function generateRunDocs(runDefinitions, shipmentDeliveryWeekInput){
 
   runSet.forEach((runName) => {
 
-    runDocumentList.push(generateRunDoc(runName, shipmentDeliveryWeekInput));
+    let runDefaults = null;
+
+    if(runDefaultSettings[runName] != null){
+      runDefaults = runDefaultSettings[runName];
+    }
+
+    runDocumentList.push(generateRunDoc(runName, runDefaults, shipmentDeliveryWeekInput));
 
   });
   
@@ -403,102 +415,16 @@ async function storeShipment(runDocuments, shipmentName, deliveryWeek){
 
 }
 
+function generateRunDoc(runName, runDefaultSettings, deliveryWeek){
 
-function generateRuns(runDefinitions, orderData, shipmentTypeInput, deliveryWeek){
-
-  const runStructList = [];
-
-  const runType = shipmentTypeInput == 'collection' ? 'collectionPostcode' : 'deliveryPostcode';
-
-  for(let i = 0; i < orderData.length; i++){
-   
-    //find corrosponding key in rundefinitions and get value
-    const orderPostcode = orderData[i].data()[runType];
-
-    if(orderPostcode != null){
-
-      let runName = null;
-
-      if(runDefinitions[orderPostcode.substring(0,4)] != null){
-
-        runName = runDefinitions[orderPostcode.substring(0,4)];
-
-      }else if(runDefinitions[orderPostcode.substring(0,3)] != null){
-
-        runName = runDefinitions[orderPostcode.substring(0,3)];
-
-      }else if(runDefinitions[orderPostcode.substring(0,2)] != null){
-
-        runName = runDefinitions[orderPostcode.substring(0,2)];
-
-      }
-
-      generateStopForRun(runName, orderData[i], shipmentTypeInput, deliveryWeek, runStructList);
-
-    }
-
-  }
-
-  //check if unassigned stops run has been created
-  const unassignedStopsRunCreated = runStructList.find((run) => {
-    return run.runName === null;
-  });
-
-  if(!unassignedStopsRunCreated){
-
-    runStructList.push(generateRunDoc(null, deliveryWeek));
-
-  }
-
-  return runStructList;
-
-}
-
-function generateStopForRun(runName, orderData, stopType, deliveryWeek, runStructList){
-
-  //does run exist in run list
-  let run = runStructList.find((run) => {
-    return run.runName === runName;
-  })
-
-  if(run == null){
-
-    run = generateRunDoc(runName, deliveryWeek);
-
-    run.stops.push(
-      {
-        orderID: orderData.id,
-        stopType: stopType, //collection or delivery
-        isLocked: false,
-        stopNumber: 1
-      }
-    );
-      
-    runStructList.push(run);
-
-    return;
-  }
-
-  run.stops.push(
-  {
-    orderID: orderData.id,
-    stopType: stopType, //collection or delivery
-    isLocked: false,
-    stopNumber: run.stops.length + 1
-  });
-
-  return runStructList;
-
-}
-
-function generateRunDoc(runName, deliveryWeek){
+  console.log(runDefaultSettings);
 
   if(deliveryWeek == null){
     deliveryWeek = -1;
   }
 
   const run = {
-
+    settings: runDefaultSettings,
     assignedDriver: "",
     runName: runName,
     runWeek: deliveryWeek,
@@ -1046,8 +972,6 @@ export async function addRunToShipment(runName, shipmentName){
 
   }
 
-
-
 }
 
 
@@ -1176,8 +1100,6 @@ function toggleStopLockInRun(stopBeingToggleLocked, runStops){
 
 export function parseRunInfo(doc, fuelSettings){
 
-  console.log(fuelSettings);
-
   const runData = doc.data();
 
   const runStruct = {
@@ -1242,12 +1164,6 @@ export async function updateRun(documentId, fieldsToUpdate){
   try{
 
     await updateDocument(runRef, fieldsToUpdate);
-
-    // if(Math.floor(Math.random() * 2)){
-
-    //   throw new Error("awdwad");
-
-    // }
 
   }catch(e){
 
