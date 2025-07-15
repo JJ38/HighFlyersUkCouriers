@@ -510,15 +510,111 @@
 
                 <div id="run_options_container" class="runOptionsContainer hidden">
 
-                  <div>
+                  <div class="runProperties">
 
-                    <label for="driver_select" class="bold">Assign Driver: </label>
+                    <!-- <label for="driver_select" class="bold">Assign Driver: </label>
                     <select name="driver_select" id="driver_select" class="addOrderSearchFilter">
 
                       <option value="opunuoien">Stephen</option>
                       <option value="pojjesPIOFJEI">Anne</option>
                   
-                    </select>
+                    </select> -->
+
+                    <div class="runStartProperties runPropertiesWrapper">
+
+                      <h3>Origin Settings</h3>
+
+                        <div class="runAddressPropertyWrapper">
+
+                          <label for="run_origin_address_line_1">Address Line 1:  </label>
+                          <input id= "run_origin_address_line_1" type="text"/>
+
+                        </div>
+
+                        <div class="runAddressPropertyWrapper">
+                           
+                          <label for="run_origin_address_line_2">Address Line 2:  </label>
+                          <input id= "run_origin_address_line_2" type="text"/>
+                          
+                        </div>
+
+                        <div class="runAddressPropertyWrapper">
+
+                          <label for="run_origin_address_line_3">Address Line 3:  </label>
+                          <input id= "run_origin_address_line_3" type="text"/>
+                          
+                        </div>
+
+                        <div class="runAddressPropertyWrapper">
+
+                          <label for="run_origin_postcode">Postcode:  </label>
+                          <input id= "run_origin_postcode" type="text"/>
+                          
+                        </div>
+
+                        <div class="runAddressPropertyWrapper">
+
+                          <label for="run_origin_hour">Hour:  </label>
+                          <input id= "run_origin_hour" type="number" min="0" max="23"/>
+                       
+                        </div>
+
+                        <div class="runAddressPropertyWrapper">
+
+                          <label for="run_origin_minute">Minute:  </label>
+                          <input id= "run_origin_minute" type="number" min="0" max="59"/>
+                          
+                        </div>
+
+                    </div>
+                  
+                    <div class="runEndProperties runPropertiesWrapper">
+                  
+                      <h3>Destination Settings</h3>
+
+                      <div class="runAddressPropertyWrapper">
+
+                        <label for="run_destination_address_line_1">Address Line 1:  </label>
+                        <input id ="run_destination_address_line_1" type="text"/>
+
+                      </div>  
+
+                      <div class="runAddressPropertyWrapper">
+
+                        <label for="run_destination_address_line_2">Address Line 2:  </label>
+                        <input id= "run_destination_address_line_2" type="text"/>
+                        
+                      </div>
+
+                      <div class="runAddressPropertyWrapper">
+
+                        <label for="run_destination_address_line_3">Address Line 3:  </label>
+                        <input id= "run_destination_address_line_3" type="text"/>
+                        
+                      </div>
+
+                      <div class="runAddressPropertyWrapper">
+
+                        <label for="run_destination_postcode">Postcode:  </label>
+                        <input id= "run_destination_postcode" type="text"/>
+                        
+                      </div>
+
+                      <div class="runAddressPropertyWrapper">
+
+                        <label for="run_destination_hour">Hour:  </label>
+                        <input id= "run_destination_hour" type="number" min="0" max="23"/>
+                        
+                      </div>
+           
+                      <div class="runAddressPropertyWrapper">
+
+                        <label for="run_destination_minute">Minute:  </label>
+                        <input id= "run_destination_minute" type="number" min="0" max="59"/>
+                        
+                      </div>
+
+                    </div>
 
                   </div>
 
@@ -541,8 +637,6 @@
                 </div>
 
               </div>
-
-              
 
             </div>
 

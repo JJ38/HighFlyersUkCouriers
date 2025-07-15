@@ -311,7 +311,6 @@ p{
 
     max-width: 350px;
     height: 100%;
-    gap:5px
 
 }
 
@@ -779,8 +778,25 @@ td > div{
     gap: 20px;
     flex-direction: column;
     min-width: 300px;
-
     padding: 15px 15px;
+    overflow-y: scroll;
+
+}
+
+.runAddressPropertyWrapper{
+
+    display: flex;
+    flex-direction: column;
+    line-height: 1em;
+
+}
+
+.runPropertiesWrapper{
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 30px;
 
 }
 
