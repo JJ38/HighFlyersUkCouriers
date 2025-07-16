@@ -312,6 +312,55 @@ h4{
     
 }
 
+.defaultsWrapper{
+
+    display: flex;
+    gap: 30px;
+
+}
+
+.startTimeWrapper{
+
+    display: flex;
+
+}
+
+.runTypeContainer{
+
+    flex: 1;
+
+}
+
+.runTypeTitle{
+
+
+}
+
+.tableAddressWrapper{
+
+    display: flex;
+    flex-direction: column;
+
+}
+
+.tableAddressLineSecondary{
+
+    display: flex;
+    flex-wrap: wrap;
+    font-weight: 300;
+    font-size: 0.9rem;
+
+}
+
+.addressWrapper{
+
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    /* justify-content: space-between; */
+}
+
+
 .add{
     color: #2881FF;
 }

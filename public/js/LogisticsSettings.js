@@ -1,5 +1,5 @@
 import { db, auth, getDocument, updateDocument } from '/js/firebase';
-import { query, doc } from 'firebase/firestore';
+import { query, doc, collection } from 'firebase/firestore';
 import { showNotification } from '/js/Notification';
 
 const fuelCostInput = document.getElementById('fuel_cost_input');
@@ -7,6 +7,7 @@ const milesPerGallonInput = document.getElementById('mile_per_gallon_input');
 const addRunButton = document.getElementById('addRunButton');
 const addPostcodeButton = document.getElementById('addPostcodeButton');
 const updateFuelSettingsButton = document.getElementById('update_fuel_settings_button');
+const runDefaultsWrapper = document.getElementById('run_defaults_wrapper');
 const runDefinitionsWrapper = document.getElementById('run_definitions_wrapper');
 const postcodeExceptionsWrapper = document.getElementById('postcode_exceptions_wrapper');
 
@@ -19,7 +20,8 @@ let milesPerGallonUserInput;
 
 addEventListeners();
 fetchFuelSettings();
-fetchPostcodes();
+fetchRunDefaults();
+fetchRunDefinitions();
 fetchPostcodeExceptions();
 
 
@@ -111,7 +113,32 @@ async function fetchFuelSettings(){
 
 }
 
-async function fetchPostcodes(){
+
+async function fetchRunDefaults(){
+
+    const runDefaultsDocument = await getDocument(query(doc(db, 'Settings', 'runDefaults')));
+    const runDefaults = runDefaultsDocument.data();
+    
+    const runsList = [];
+
+    for (const run in runDefaults) {
+
+        runsList.push(run);
+
+    }
+
+    runsList.sort();
+
+    for(let i = 0; i < runsList.length; i++){
+
+        runDefaultsWrapper.appendChild(createRunDefaultCard(runsList[i], runDefaults[runsList[i]]));
+
+    }
+
+}
+
+
+async function fetchRunDefinitions(){
 
     const runDefinitionsDocument = await getDocument(query(doc(db, 'Settings', 'runDefinitions')));
     const runDefinitions = runDefinitionsDocument.data();
@@ -168,6 +195,144 @@ async function fetchPostcodes(){
         }
 
     }
+
+}
+
+
+async function fetchPostcodeExceptions(){
+
+    const postcodeExceptionsDocument = await getDocument(query(doc(db, 'Settings', 'postcodeExceptions')));
+    const postcodeExceptions = postcodeExceptionsDocument.data()['exceptions'];
+
+    console.log(postcodeExceptions);
+
+    for(let i = 0; i < postcodeExceptions.length; i++){
+
+        const postcodeExceptionCard = createPostcodeExceptionCard(postcodeExceptions[i]);
+        postcodeExceptionsWrapper.appendChild(postcodeExceptionCard);
+    }
+
+}
+
+
+function createRunDefaultCard(run, runDefaultProperties){
+
+    const card = document.createElement('div');
+    card.classList = "card";
+
+    const runName = document.createElement('h3');
+    runName.classList = "runName";
+    runName.innerText = run;
+
+
+    const collectionDefaults = createRunTypeContainer(runDefaultProperties.collection, "Collection");
+    const deliveryDefaults = createRunTypeContainer(runDefaultProperties.delivery, "Delivery");
+
+    const defaultsWrapper = document.createElement('div');
+    defaultsWrapper.classList = "defaultsWrapper";
+
+    defaultsWrapper.appendChild(collectionDefaults);
+    defaultsWrapper.appendChild(deliveryDefaults);
+
+    const startTime = createStartTime(runDefaultProperties.collection.start.time);
+
+    card.appendChild(runName);
+    card.appendChild(defaultsWrapper);
+    card.appendChild(startTime);
+
+
+    return card;
+
+}
+
+
+function createStartTime(time){
+
+    const startTimeWrapper = document.createElement('div');
+    startTimeWrapper.classList = "startTimeWrapper";
+
+    const title = document.createElement('h4');
+    title.innerHTML = "Start Time: &nbsp;";
+
+    const startTime = document.createElement('p');
+    startTime.innerText = time.hour + ":" + time.minute;
+
+    startTimeWrapper.appendChild(title);
+    startTimeWrapper.appendChild(startTime);
+
+    return startTimeWrapper;
+
+}
+
+
+function createRunTypeContainer(runDefaultProperties, runType){
+    
+    const startAddress = runDefaultProperties.start.address;
+    const endAddress = runDefaultProperties.end.address;
+
+
+    const startAddressContainer = createAddress(startAddress.address1, startAddress.address2, startAddress.address3, startAddress.postcode);
+    const endAddressContainer = createAddress(endAddress.address1, endAddress.address2, endAddress.address3, endAddress.postcode);
+
+    const runTypeContainer = document.createElement('div');
+    runTypeContainer.classList = "runTypeContainer";
+
+    const runTypeTitle = document.createElement('h4');
+    runTypeTitle.classList = "runTypeTitle";
+    runTypeTitle.innerText = runType;
+
+    const arrow = document.createElement('span');
+    arrow.classList = "material-symbols-outlined";
+    arrow.innerText = "east";
+
+    const addressWrapper = document.createElement('div');
+    addressWrapper.classList = "addressWrapper";
+    
+    addressWrapper.appendChild(startAddressContainer);
+    addressWrapper.appendChild(arrow);
+    addressWrapper.appendChild(endAddressContainer);
+
+
+    runTypeContainer.appendChild(runTypeTitle);
+    runTypeContainer.appendChild(addressWrapper);
+
+    return runTypeContainer;
+
+}
+
+function createAddress(addressLine1, addressLine2, addressLine3, addressPostcode){
+
+  const addressContainer = document.createElement('div');
+
+  const wrapper = document.createElement('div');
+  wrapper.classList = "tableAddressWrapper";
+
+  const address1 = document.createElement('p');
+  address1.innerHTML = addressLine1
+  address1.classList = "tableAddressLineMain";
+
+  const secondaryAddressWrapper = document.createElement('div');
+  secondaryAddressWrapper.classList = "tableAddressLineSecondary";
+  
+  const address2 = document.createElement('p');
+  address2.innerHTML = addressLine2 + ",&nbsp;";
+
+  const address3 = document.createElement('p');
+  address3.innerHTML = addressLine3 + ",&nbsp;";
+
+  const postcode = document.createElement('p');
+  postcode.innerText = addressPostcode;
+
+  secondaryAddressWrapper.appendChild(address2);
+  secondaryAddressWrapper.appendChild(address3);
+  secondaryAddressWrapper.appendChild(postcode);
+  
+  wrapper.appendChild(address1);
+  wrapper.appendChild(secondaryAddressWrapper);
+
+  addressContainer.appendChild(wrapper);
+
+  return addressContainer;
 
 }
 
@@ -231,25 +396,9 @@ function createPostcodePill(postcodeDefinition){
 }
 
 
-async function fetchPostcodeExceptions(){
-
-    const postcodeExceptionsDocument = await getDocument(query(doc(db, 'Settings', 'postcodeExceptions')));
-    const postcodeExceptions = postcodeExceptionsDocument.data()['exceptions'];
-
-    console.log(postcodeExceptions);
-
-    for(let i = 0; i < postcodeExceptions.length; i++){
-
-        const postcodeExceptionCard = createPostcodeExceptionCard(postcodeExceptions[i]);
-        postcodeExceptionsWrapper.appendChild(postcodeExceptionCard);
-    }
-
-}
 
 
 function createPostcodeExceptionCard(postcodeException){
-
-    console.log(postcodeException.exceptionTypes);
 
     const postcodeExceptionCard = document.createElement('div')
     postcodeExceptionCard.classList = "card";
@@ -297,30 +446,16 @@ function createPostcodeExceptionCard(postcodeException){
 
 }
 
-
-function areaCodePillController(){
-
-
-
-}
-
-
 function fuelSettingsContoller(){
 
     if(updateFuelSettingsButton == null){
         return;
     }   
 
-    console.log(fuelCost);
-    console.log(fuelUserInput);
-
     if(fuelUserInput != fuelCost){
         updateFuelSettingsButton.classList.remove('hidden');
         return;
     }
-
-    console.log(milesPerGallon);
-    console.log(milesPerGallonUserInput);
 
     if(milesPerGallonUserInput != milesPerGallon){
         updateFuelSettingsButton.classList.remove('hidden');
