@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
-import { updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
+import { fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -864,7 +864,8 @@ async function updateRunSettingsController(){
           hour: parseInt(runOriginHour.value),
           minute: parseInt(runOriginMinute.value),
 
-        }
+        },
+        location:{}
 
       },
 
@@ -877,11 +878,27 @@ async function updateRunSettingsController(){
           address3: runDestinationAddress3.value,
           postcode: runDestinationPostcode.value,
 
-        }
+        },
+        location:{}
       
       }
 
   }
+
+  const coordinates = await fetchCoordinatesForUpdatedRunSettings(runSettings);
+
+  if(coordinates === false){
+
+    showNotification("Error!", "Error finding address");
+    return;
+
+  }
+
+  runSettings.start.location.lat = coordinates.startCoordinates.lat;
+  runSettings.start.location.lng = coordinates.startCoordinates.lng;
+
+  runSettings.end.location.lat = coordinates.endCoordinates.lat;
+  runSettings.end.location.lng = coordinates.endCoordinates.lng;
 
   const hasUpdated = await updateRunSettings(runSettings, currentSelectedRun.documentId);
 

@@ -778,6 +778,32 @@ export function parseAddress(addressComponents){
 
 }
 
+export async function fetchCoordinatesForUpdatedRunSettings(runSettings){
+
+  const startAddressString = runSettings.start.address.address1 + "," + runSettings.start.address.address2 + "," + runSettings.start.address.address3 + "," + runSettings.start.address.postcode
+  const endAddressString = runSettings.end.address.address1 + "," + runSettings.end.address.address2 + "," + runSettings.end.address.address3 + "," + runSettings.end.address.postcode
+
+  try{
+
+    const startAddressJson = await fetchStopCoordinates(startAddressString);
+    const endAddressJson = await fetchStopCoordinates(endAddressString);
+
+    const startCoordinates = getCoordinates(startAddressJson);
+    const endCoordinates = getCoordinates(endAddressJson);
+
+    return {
+      startCoordinates: startCoordinates,
+      endCoordinates: endCoordinates
+    }
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+  }
+
+}
+
 export async function removeStopsFromShipment(stops, unassignedStopsDocumentID){
 
   const runRef = doc(db, 'Runs', unassignedStopsDocumentID);
