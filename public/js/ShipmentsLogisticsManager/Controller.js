@@ -946,6 +946,11 @@ async function updateRunSettingsController(){
 
   const hasUpdated = await updateRunSettings(runSettings, currentSelectedRun.documentId);
 
+  currentSelectedRun.settings = runSettings;
+  currentSelectedRun.isOptimised = false;
+
+  showUnoptimisedRunState();
+
   if(hasUpdated){
     showNotification("Success!", "Successfully updated run settings");
     return
@@ -1537,6 +1542,7 @@ function initValidateAddressMap(){
 
 function addMarkerToMap(map, pinText, coordinates){
 
+  
   const pinTextGlyph = new GooglePinElement({
     glyph: pinText.toString(),
     glyphColor: "white",
@@ -1551,10 +1557,13 @@ function addMarkerToMap(map, pinText, coordinates){
     collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
   }));
 
+  
 }
 
-function updateMapMarkers(run){ 
 
+
+function updateMapMarkers(run){ 
+  console.log(run.settings);
   removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
   const stops = run.stops;
@@ -1593,9 +1602,70 @@ function updateMapMarkers(run){
 
   }
 
+  // if(run.isOptimised){
+  mainMapMarkerClusters = new MarkerClusterer({ markers: mainMapMarkers, map: mainMap });
+
+  if(run.settings == null){
+    return;
+  }
+
+  const startPosition = 
+  {
+
+    lat: run.settings.start.location.lat,
+    lng: run.settings.start.location.lng,
+
+  }
+
+  const startIcon = document.createElement('span');
+  startIcon.classList = "material-symbols-outlined startFlag";
+  startIcon.innerText = "flag"
+
+  const startPinTextGlyph = new GooglePinElement({
+    glyph: startIcon,
+    glyphColor: "black",
+    background: '#FFFFFF',
+    borderColor: '#000000'
+  });
+
+  mainMapMarkers.push(new GoogleAdvancedMarkerElement({
+    map: mainMap,
+    position: startPosition,
+    content: startPinTextGlyph.element,
+    collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
+  }));
+
+    const endPosition = 
+  {
+
+    lat: run.settings.end.location.lat,
+    lng: run.settings.end.location.lng,
+
+  }
+
+  const endIcon = document.createElement('span');
+  endIcon.classList = "material-symbols-outlined endFlag";
+  endIcon.innerText = "sports_score";
+
+
+  const endPinTextGlyph = new GooglePinElement({
+    glyph: endIcon,
+    glyphColor: "white",
+    background: '#000000',
+    borderColor: '#000000'
+  });
+
+  mainMapMarkers.push(new GoogleAdvancedMarkerElement({
+    map: mainMap,
+    position: endPosition,
+    content: endPinTextGlyph.element,
+    collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
+  }));
+
+  // }
+
   
 
-  mainMapMarkerClusters = new MarkerClusterer({ markers: mainMapMarkers, map: mainMap });
 
 }
 

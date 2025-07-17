@@ -1510,7 +1510,14 @@ export async function calculateRoute(run){
 
   const optimisedRoutesJSON = []
 
-  optimisedRoutesJSON.push(JSON.parse(optimisedRoutes[0]));
+  for(let i = 0; i < optimisedRoutes.length; i++){
+
+    optimisedRoutesJSON.push(JSON.parse(optimisedRoutes[i]));
+
+  }
+
+  console.log(optimisedRoutesJSON);
+
   const updatedStops = updateStopOrder(optimisedRoutesJSON, run);
   const databaseStops = removeStopDataFromStop(run.stops);
 
