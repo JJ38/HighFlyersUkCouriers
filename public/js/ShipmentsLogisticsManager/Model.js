@@ -788,12 +788,12 @@ export async function fetchCoordinatesForUpdatedRunSettings(runSettings){
     const startAddressJson = await fetchStopCoordinates(startAddressString);
     const endAddressJson = await fetchStopCoordinates(endAddressString);
 
-    const startCoordinates = getCoordinates(startAddressJson);
-    const endCoordinates = getCoordinates(endAddressJson);
+    const originCoordinates = getCoordinates(startAddressJson);
+    const destinationCoordinates = getCoordinates(endAddressJson);
 
     return {
-      startCoordinates: startCoordinates,
-      endCoordinates: endCoordinates
+      originCoordinates: originCoordinates,
+      destinationCoordinates: destinationCoordinates
     }
 
   }catch(e){
@@ -1455,23 +1455,73 @@ export async function calculateRoute(run){
 
   const stops = run.stops;
 
-  const originAndDestination = getOriginAndDestination(stops);
+  console.log(run.settings);
+  const originCoordinates = run.settings.start.location;
+  const destinationCoordinates = run.settings.end.location;
+
+  const routes = [];
+
+  //check if either first or last stop is locked
+  
+  const lockedStops = getLockedStops(run.stops);
   const stopLocations = getStopLocations(stops);
-  const requestBody = getRouteOptimisationRequestBody(originAndDestination.origin, originAndDestination.destination, stopLocations);
 
-  const optimisedRoute = await fetchOptimisedRoute(requestBody);
+  //if neither is locked you can send one route optimisation request with
 
-  if(optimisedRoute === false){
+  if(!lockedStops.start.isLocked && !lockedStops.end.isLocked){
+
+    console.log("neither stop is locked");
+    routes.push(getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopLocations));
+
+  }
+
+  //if start stop is locked calculate from locked stop to end destination and then concat route between start location and first locked stop
+
+  // if(lockedStops.start.isLocked && !lockedStops.end.isLocked){
+
+  //   routes.push(getRouteOptimisationRequestBody(originCoordinates, lockedStops.start.coordinates, ));
+  //   routes.push(getRouteOptimisationRequestBody(lockedStops.start.coordinates, destinationCoordinates, stops));
+
+  // }
+
+  //if end stop is locked calculate from start location and then concat route between start location and end locked stop
+  //if both start and end are locked calculated from start to 1st locked stop. Inbetween both locked stops and then from last locked stop to destination location. The concat all three
+
+
+  // const originAndDestination = getOriginAndDestination(stops);
+  // const requestBody = getRouteOptimisationRequestBody(originAndDestination.origin, originAndDestination.destination, stopLocations);
+
+  const optimisedRoutesPromises = [];
+
+
+  for(let i = 0; i < routes.length; i++){
+
+    optimisedRoutesPromises.push(fetchOptimisedRoute(routes[i]));
+
+  }
+
+  const optimisedRoutes = await Promise.all(optimisedRoutesPromises);
+
+  console.log(optimisedRoutes);
+
+  if(optimisedRoutes.includes(false)){
     return false;
   }
 
+  const optimisedRoutesJSON = []
+
+  optimisedRoutesJSON.push(JSON.parse(optimisedRoutes[0]));
+  const updatedStops = updateStopOrder(optimisedRoutesJSON, run);
+  const databaseStops = removeStopDataFromStop(run.stops);
+
+  
+  const combinedRouteJSON = optimisedRoutesJSON[0];
+  const combinedDatabaseStops = databaseStops;
+
+
   try{ 
 
-    const optimisedRouteJSON = JSON.parse(optimisedRoute);
-    const updatedStops = updateStopOrder(optimisedRouteJSON, run);
-
-    const databaseStops = removeStopDataFromStop(run.stops);
-    const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON, databaseStops);
+    const storedResult = await storeOptimisedRoute(run.documentId, combinedRouteJSON, combinedDatabaseStops);
 
     if(storedResult === false){
       return false;
@@ -1480,7 +1530,7 @@ export async function calculateRoute(run){
     run.stops = updatedStops;
     run.isOptimised = true;
 
-    return optimisedRouteJSON;
+    return optimisedRoutesJSON[0];
 
   }catch(e){
     console.log(e);
@@ -1490,8 +1540,12 @@ export async function calculateRoute(run){
 }
 
 
-function updateStopOrder(optimisedRouteJSON, run){ 
+function updateStopOrder(optimisedRoutesJSON, run){ 
+
+
+  const optimisedRouteJSON = optimisedRoutesJSON[0];
   
+
   const stops = Object.assign([], run.stops);
   console.log(stops);
   console.log(optimisedRouteJSON['routes'][0]['visits']);
@@ -1577,35 +1631,7 @@ function getOriginAndDestination(stops){
 
   const numberOfStops = stops.length;
 
-  for(let i = 0; i < stops.length; i++){
-
-    if(stops[i].stopNumber == 1){
-
-      if(stops[i].isLocked){
-        origin = {
-          
-          lat: stops[i].coordinates.lat,
-          lng: stops[i].coordinates.lng,
-
-        }
-      }
-
-    }
-
-    if(stops[i].stopNumber == numberOfStops){
-      console.log(stops[i].stopNumber == numberOfStops);
-      if(stops[i].isLocked){
-        destination = {
-
-          lat: stops[i].coordinates.lat,
-          lng: stops[i].coordinates.lng,
-
-        }
-      }
-
-    }
-
-  }
+  
 
   if(origin == null){
 
@@ -1620,6 +1646,60 @@ function getOriginAndDestination(stops){
   }
 
   return {origin: origin, destination: destination};
+
+}
+
+function getLockedStops(stops){
+
+  let start = {isLocked: false};
+  let end = {isLocked: false};
+
+  const numberOfStops = stops.length;
+  
+  for(let i = 0; i < stops.length; i++){
+
+    if(stops[i].stopNumber == 1){
+
+      if(stops[i].isLocked){
+
+        start = {
+
+          isLocked: true,
+          coordinates: {
+
+            lat: stops[i].coordinates.lat,
+            lng: stops[i].coordinates.lng,
+          
+          }
+
+        }
+
+      }
+
+    }
+
+    if(stops[i].stopNumber == numberOfStops){
+
+      if(stops[i].isLocked){
+
+        end = {
+
+          isLocked: true,
+          coordinates: {
+
+            lat: stops[i].coordinates.lat,
+            lng: stops[i].coordinates.lng,
+
+          }
+
+        }
+      }
+
+    }
+
+  }
+
+  return {start: start, end: end}
 
 }
 

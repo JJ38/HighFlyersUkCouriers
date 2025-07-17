@@ -660,6 +660,15 @@ function addEventListeners(){
 
       const routeJSON = await calculateRoute(currentSelectedRun);
 
+      if(routeJSON === false){
+
+        showNotification("Error!", "Error calculating route");   
+        showUI(calculateRouteButton);
+        loader.remove();
+    
+        return;
+      }
+
       console.log(routeJSON);
 
       try{
@@ -675,12 +684,6 @@ function addEventListeners(){
 
       showUI(calculateRouteButton);
       loader.remove();
-      
-      if(routeJSON === false){
-        showNotification("Error!", "Error calculating route");   
-    
-        return;
-      }
     
       const transitions = routeJSON['routes'][0]['transitions'];
      
@@ -927,7 +930,7 @@ async function updateRunSettingsController(){
   }
 
   const coordinates = await fetchCoordinatesForUpdatedRunSettings(runSettings);
-
+  console.log(coordinates);
   if(coordinates === false){
 
     showNotification("Error!", "Error finding address");
@@ -935,11 +938,11 @@ async function updateRunSettingsController(){
 
   }
 
-  runSettings.start.location.lat = coordinates.startCoordinates.lat;
-  runSettings.start.location.lng = coordinates.startCoordinates.lng;
+  runSettings.start.location.lat = coordinates.originCoordinates.lat;
+  runSettings.start.location.lng = coordinates.originCoordinates.lng;
 
-  runSettings.end.location.lat = coordinates.endCoordinates.lat;
-  runSettings.end.location.lng = coordinates.endCoordinates.lng;
+  runSettings.end.location.lat = coordinates.destinationCoordinates.lat;
+  runSettings.end.location.lng = coordinates.destinationCoordinates.lng;
 
   const hasUpdated = await updateRunSettings(runSettings, currentSelectedRun.documentId);
 
