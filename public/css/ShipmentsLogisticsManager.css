@@ -676,7 +676,7 @@ td > div{
 
 }
 
-.addOrderSearchFilter{
+.selectOption{
 
     border: 0px;
     background-color: #F5F4F4;
@@ -794,6 +794,29 @@ td > div{
     margin-bottom: 30px;
 
 }
+
+.splitRunSettingsButton{
+
+    display: flex;
+    color: white;
+    align-items: center;
+    border-radius: 5px;
+    border: 1px solid #2881FF;
+    background-color: #2881FF;
+    padding: 5px 10px;
+    margin-top: 10px; 
+    width: fit-content;
+
+}
+
+.splitRunSettingsButton:hover{
+
+    cursor: pointer;
+    color: #2881FF;
+    background-color: white;
+
+}
+
 
 .updateRunSettingsButton{
 

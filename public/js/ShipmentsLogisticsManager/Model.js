@@ -1008,6 +1008,93 @@ export async function addRunToShipment(runName, runDefaultProperties, shipmentNa
 
 }
 
+export async function splitRun(runToBeSplit, ratioToBeSplitTo, shipmentName){
+
+  const shipmentDoc = await fetchShipment(shipmentName); 
+
+  if(shipmentDoc === false){
+    return false;
+  }
+
+  let shipmentRunIDs = shipmentDoc.data().runs;
+
+  const runDocs = getSplitRunDocuments(runToBeSplit, ratioToBeSplitTo);
+
+  const batch = writeBatch(db);
+  const runIDs = [];
+
+  for(let i = 0; i < runDocs.length; i++){
+
+    const runRef = doc(collection(db, 'Runs'));
+    runIDs.push(runRef.id);
+    batch.set(runRef, runDocs[i]);
+
+  }
+
+  //remove runToBeSplitID
+  shipmentRunIDs.splice(shipmentRunIDs.indexOf(runToBeSplit.documentId), 1);
+
+  //add the IDs of the new run documents
+  shipmentRunIDs = shipmentRunIDs.concat(runIDs);
+
+  const shipmentDocRef = doc(db, 'Shipments', shipmentDoc.id);
+
+  batch.update(shipmentDocRef, {"runs": shipmentRunIDs});
+
+  try{
+
+    await batch.commit();
+    return true;
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+}
+
+function getSplitRunDocuments(runToBeSplit, ratioToBeSplitTo){
+
+  const runs = [];
+
+  for(let i = 0; i < ratioToBeSplitTo; i++){
+
+    let runName = runToBeSplit.runName;
+
+    if(i != 0){
+      runName += " (" + i + ")";
+    }
+
+    runs.push(generateRunDoc(runName, runToBeSplit.settings, runToBeSplit.runWeek));
+
+  }
+
+  const stops = Object.assign([], runToBeSplit.stops);
+
+  const chunk = stops.length / ratioToBeSplitTo
+
+  for(let i = 0; i < ratioToBeSplitTo; i++){
+
+    const newStops = stops.slice(i * chunk, chunk * (i + 1));
+
+    for(let j = 0; j < newStops.length; j++){
+
+      newStops[j].stopNumber = j + 1;
+      newStops[j].isLocked = false;  
+      delete newStops[j].stopData;
+
+    }
+
+    runs[i].stops = newStops;
+
+  }
+
+  return runs;
+
+}
+
 
 export async function getRunStopsOrderData(stops){
 

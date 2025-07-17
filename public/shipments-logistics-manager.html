@@ -320,7 +320,7 @@
 
                     <input id="unassigned_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
 
-                    <select name="" id="unassigned_order_search_filter" class="addOrderSearchFilter">
+                    <select name="" id="unassigned_order_search_filter" class="selectOption">
 
                       <option value="ID">ID</option>
                       <option value="animalType">Animal Type</option>
@@ -411,7 +411,7 @@
 
                     <input id="add_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
 
-                    <select name="" id="add_order_search_filter" class="addOrderSearchFilter">
+                    <select name="" id="add_order_search_filter" class="selectOption">
 
                       <option value="ID">ID</option>
                       <option value="animalType">Animal Type</option>
@@ -513,14 +513,34 @@
                   <div class="runProperties">
 
                     <!-- <label for="driver_select" class="bold">Assign Driver: </label>
-                    <select name="driver_select" id="driver_select" class="addOrderSearchFilter">
+                    <select name="driver_select" id="driver_select" class="selectOption">
 
                       <option value="opunuoien">Stephen</option>
                       <option value="pojjesPIOFJEI">Anne</option>
                   
                     </select> -->
 
-                    <div class="runStartProperties runPropertiesWrapper">
+                    <div class="splitRunWrapper">
+
+                      <label for="split_run_select" class="bold">Split Run: </label>
+                      <select name="split_run_select" id="split_run_select" class="selectOption">
+
+                        <option value="" selected>Select split amount</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+
+                    
+                      </select>
+
+                      <div id="split_run_settings_button" class="splitRunSettingsButton hidden">
+                        <p>Split Run</p>
+                        <span class="delete material-symbols-outlined">content_cut</span>
+                      </div>
+
+                    </div>
+
+                    <div class="runPropertiesWrapper">
 
                       <h3>Origin Settings</h3>
 
@@ -568,7 +588,7 @@
 
                     </div>
                   
-                    <div class="runEndProperties runPropertiesWrapper">
+                    <div class="runPropertiesWrapper">
                   
                       <h3>Destination Settings</h3>
 
