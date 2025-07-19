@@ -18,7 +18,6 @@ class CalculateRouteModel
     public function calculateRoute($accessToken, $model){
 
         $projectId = "highflyersukcouriers";
-        $projectNumber = "683549936058";
         $endpoint = "https://routeoptimization.googleapis.com/v1/projects/{$projectId}:optimizeTours";
 
         // Prepare the full request body structure
@@ -27,6 +26,8 @@ class CalculateRouteModel
             'searchMode' => 'RETURN_FAST', //CONSUME_ALL_AVAILABLE_TIME', // Or 'RETURN_FAST'
             "populateTransitionPolylines" => true,
         ];
+
+        $requestBody = $model;
 
         try {
             // $response = $client->post($endpoint, $request);

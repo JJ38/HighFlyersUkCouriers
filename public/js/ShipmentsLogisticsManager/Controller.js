@@ -1397,8 +1397,6 @@ function updateCurrentSelectedRunCard(runCard, run){
 
 async function updateRunsList(shipmentName){
 
-  console.log(shipmentName);
-
   if(shipmentName === "SELECT_SHIPMENT"){
     return;
   }
@@ -1563,7 +1561,7 @@ function addMarkerToMap(map, pinText, coordinates){
 
 
 function updateMapMarkers(run){ 
-  console.log(run.settings);
+
   removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
   const stops = run.stops;
@@ -1602,7 +1600,6 @@ function updateMapMarkers(run){
 
   }
 
-  // if(run.isOptimised){
   mainMapMarkerClusters = new MarkerClusterer({ markers: mainMapMarkers, map: mainMap });
 
   if(run.settings == null){
@@ -1635,7 +1632,8 @@ function updateMapMarkers(run){
     collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
   }));
 
-    const endPosition = 
+
+  const endPosition = 
   {
 
     lat: run.settings.end.location.lat,
@@ -1661,11 +1659,6 @@ function updateMapMarkers(run){
     content: endPinTextGlyph.element,
     collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
   }));
-
-  // }
-
-  
-
 
 }
 
@@ -1763,8 +1756,6 @@ function updateStopList(runObject){
 
 
 function updateOptionsTab(runObject){
-
-  console.log(runObject.settings);
 
   if(runObject.settings == null){
     clearRunOriginDestinationOptions();

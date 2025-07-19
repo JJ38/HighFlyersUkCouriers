@@ -1095,7 +1095,13 @@ td > div{
 
 }
 
-.mapMarkerIcon{
+.startFlag{
+
+    color: #000000;
+
+}
+
+.endFlag{
 
     color: white;
     /* background: #2881FF; */

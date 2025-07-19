@@ -4,8 +4,6 @@ import { GeocodingAPIKey, calculateRouteEndpoint } from '/js/Settings.js';
 
 let GoogleAutocomplete;
 
-
-
 export const sortAlphabetically = (a, b) => {
 
   if(a.runName < b.runName){
@@ -1455,80 +1453,31 @@ export async function calculateRoute(run){
 
   const stops = run.stops;
 
-  console.log(run.settings);
   const originCoordinates = run.settings.start.location;
   const destinationCoordinates = run.settings.end.location;
 
-  const routes = [];
-
   //check if either first or last stop is locked
   
-  const lockedStops = getLockedStops(run.stops);
+  const lockedStops = getLockedStops(stops);
   const stopLocations = getStopLocations(stops);
 
-  //if neither is locked you can send one route optimisation request with
+  const precedenceRules = getPrecedenceRules(lockedStops, stops.length);
 
-  if(!lockedStops.start.isLocked && !lockedStops.end.isLocked){
+  console.log(precedenceRules);
 
-    console.log("neither stop is locked");
-    routes.push(getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopLocations));
+  const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopLocations, precedenceRules);
 
-  }
+  const optimisedRoute = await fetchOptimisedRoute(requestBody);
 
-  //if start stop is locked calculate from locked stop to end destination and then concat route between start location and first locked stop
+  const optimisedRouteJSON = JSON.parse(optimisedRoute);
+  console.log(optimisedRouteJSON);
 
-  // if(lockedStops.start.isLocked && !lockedStops.end.isLocked){
-
-  //   routes.push(getRouteOptimisationRequestBody(originCoordinates, lockedStops.start.coordinates, ));
-  //   routes.push(getRouteOptimisationRequestBody(lockedStops.start.coordinates, destinationCoordinates, stops));
-
-  // }
-
-  //if end stop is locked calculate from start location and then concat route between start location and end locked stop
-  //if both start and end are locked calculated from start to 1st locked stop. Inbetween both locked stops and then from last locked stop to destination location. The concat all three
-
-
-  // const originAndDestination = getOriginAndDestination(stops);
-  // const requestBody = getRouteOptimisationRequestBody(originAndDestination.origin, originAndDestination.destination, stopLocations);
-
-  const optimisedRoutesPromises = [];
-
-
-  for(let i = 0; i < routes.length; i++){
-
-    optimisedRoutesPromises.push(fetchOptimisedRoute(routes[i]));
-
-  }
-
-  const optimisedRoutes = await Promise.all(optimisedRoutesPromises);
-
-  console.log(optimisedRoutes);
-
-  if(optimisedRoutes.includes(false)){
-    return false;
-  }
-
-  const optimisedRoutesJSON = []
-
-  for(let i = 0; i < optimisedRoutes.length; i++){
-
-    optimisedRoutesJSON.push(JSON.parse(optimisedRoutes[i]));
-
-  }
-
-  console.log(optimisedRoutesJSON);
-
-  const updatedStops = updateStopOrder(optimisedRoutesJSON, run);
+  const updatedStops = updateStopOrder(optimisedRouteJSON, run);
   const databaseStops = removeStopDataFromStop(run.stops);
-
-  
-  const combinedRouteJSON = optimisedRoutesJSON[0];
-  const combinedDatabaseStops = databaseStops;
-
 
   try{ 
 
-    const storedResult = await storeOptimisedRoute(run.documentId, combinedRouteJSON, combinedDatabaseStops);
+    const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON, databaseStops);
 
     if(storedResult === false){
       return false;
@@ -1537,7 +1486,7 @@ export async function calculateRoute(run){
     run.stops = updatedStops;
     run.isOptimised = true;
 
-    return optimisedRoutesJSON[0];
+    return optimisedRouteJSON;
 
   }catch(e){
     console.log(e);
@@ -1547,12 +1496,8 @@ export async function calculateRoute(run){
 }
 
 
-function updateStopOrder(optimisedRoutesJSON, run){ 
-
-
-  const optimisedRouteJSON = optimisedRoutesJSON[0];
+function updateStopOrder(optimisedRouteJSON, run){ 
   
-
   const stops = Object.assign([], run.stops);
   console.log(stops);
   console.log(optimisedRouteJSON['routes'][0]['visits']);
@@ -1672,6 +1617,7 @@ function getLockedStops(stops){
         start = {
 
           isLocked: true,
+          index: i,
           coordinates: {
 
             lat: stops[i].coordinates.lat,
@@ -1692,6 +1638,7 @@ function getLockedStops(stops){
         end = {
 
           isLocked: true,
+          index: i,
           coordinates: {
 
             lat: stops[i].coordinates.lat,
@@ -1738,28 +1685,89 @@ function getStopLocations(stops){
 
 }
 
-//https://developers.google.com/maps/documentation/route-optimization/construct-request?_gl=1*ftiy74*_up*MQ..*_ga*MTQ5NDczNjIwMi4xNzQ5NjU4OTYy*_ga_NRWSTWS78N*czE3NDk2NTg5NjIkbzEkZzEkdDE3NDk2NTkxNzckajI2JGwwJGgw
-function getRouteOptimisationRequestBody(origin, destination, stops){
+function getPrecedenceRules(lockedStops, numberOfStops){
 
-  const request =
-  {
-    "model": {
-      "shipments": stops,
-      "vehicles": [
-        {
-          "startLocation": {
-            "latitude": origin.lat,
-            "longitude": origin.lng
-          },
-          "endLocation": {
-            "latitude": destination.lat,
-            "longitude": destination.lng
-          },
-          "costPerKilometer": 1.0
+  const rules = []; 
+
+  if(lockedStops.start.isLocked){
+
+    console.log("first stop is locked");
+
+    for(let i = 0; i < numberOfStops; i++){
+
+      if(i != lockedStops.start.index){
+
+        const rule =  {
+          "firstIsDelivery": true,
+          "secondIsDelivery": true,
+          "firstIndex": lockedStops.start.index,
+          "secondIndex": i
         }
-      ],
+
+        rules.push(rule);
+
+      }
+
+    }
+
+  }
+
+  if(lockedStops.end.isLocked){
+    console.log("end stop is locked");
+
+    for(let i = 0; i < numberOfStops; i++){
+
+      if(i != lockedStops.end.index){
+
+        const rule =  {
+          "firstIsDelivery": true,
+          "secondIsDelivery": true,
+          "firstIndex": i,
+          "secondIndex": lockedStops.end.index
+        }
+
+        rules.push(rule);
+
+      }
+
     }
   }
+
+  return rules;
+
+}
+
+//https://developers.google.com/maps/documentation/route-optimization/construct-request?_gl=1*ftiy74*_up*MQ..*_ga*MTQ5NDczNjIwMi4xNzQ5NjU4OTYy*_ga_NRWSTWS78N*czE3NDk2NTg5NjIkbzEkZzEkdDE3NDk2NTkxNzckajI2JGwwJGgw
+function getRouteOptimisationRequestBody(origin, destination, stops, precedenceRules){
+
+
+  const request = 
+  {
+    "model": {
+        "globalStartTime": "2025-07-20T03:00:00Z",
+        "globalEndTime": "2025-07-20T23:00:00Z",
+        "shipments": stops,
+        "vehicles": [
+            {
+                "label": "DeliveryVan1",
+                "startLocation": {
+                  "latitude": origin.lat,
+                  "longitude": origin.lng
+                },
+                "endLocation":{
+                  "latitude": destination.lat,
+                  "longitude": destination.lng
+                },
+                "costPerKilometer": 1
+            }
+        ],
+        "precedenceRules": precedenceRules,
+    },
+    "parent": "projects/highflyersukcouriers/locations/global",
+    "searchMode": "RETURN_FAST",
+    "populateTransitionPolylines": true,
+  }
+
 
   return request;
 
