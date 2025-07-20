@@ -1689,20 +1689,23 @@ function getLockedStops(stops){
 
 function getStopLocations(stops, runTimings){
 
-  console.log(runTimings.stopDurationSeconds + "s");
+  //find duplicate stops
+  const groupedStops = getDuplicationStopLocations(stops);
+
+  const nonDuplicateStops = groupedStops.nonDuplicateStops;
 
   const stopObjects = [];
 
-  for(let i = 0; i < stops.length; i++){
+  for(let i = 0; i < nonDuplicateStops.length; i++){
 
     const stopObject = 
     {
-      "label": stops[i].orderID + "_" + stops[i].stopType,
+      "label": nonDuplicateStops[i].orderID + "_" + nonDuplicateStops[i].stopType,
       "deliveries": [
         {
           "arrivalLocation": {
-            "latitude": stops[i].coordinates.lat,
-            "longitude": stops[i].coordinates.lng
+            "latitude": nonDuplicateStops[i].coordinates.lat,
+            "longitude": nonDuplicateStops[i].coordinates.lng
           },
           "duration": runTimings.stopDurationSeconds + "s"
         }
@@ -1713,7 +1716,101 @@ function getStopLocations(stops, runTimings){
     
   }
 
+
+  groupedStops.duplicateStops.forEach((duplicateStops, key, map) => {
+
+    for(let j = 0; j < duplicateStops.length; j++){
+
+      const duration = j == 0 ? runTimings.stopDurationSeconds : runTimings.additionalStopDurationSeconds
+
+      const stopObject = 
+      {
+        "label": duplicateStops[j].orderID + "_" + duplicateStops[j].stopType,
+        "deliveries": [
+          {
+            "arrivalLocation": {
+              "latitude": duplicateStops[j].coordinates.lat,
+              "longitude": duplicateStops[j].coordinates.lng
+            },
+            "duration": duration + "s"
+          }
+        ]
+      }
+
+      stopObjects.push(stopObject);
+      
+    }
+    
+  });
+
   return stopObjects;
+
+}
+
+function getDuplicationStopLocations(stops){
+
+  const nonDuplicateStops = [];
+  const groupedDuplicatedStops = new Map();
+
+  for(let i = 0; i < stops.length; i++){
+
+    const isDuplicate = isDuplicateCoordinate(stops, stops[i]);
+
+    if(isDuplicate){
+
+      const coordinateKey = stops[i].coordinates.lat + "_" + stops[i].coordinates.lng;
+
+      if(groupedDuplicatedStops.has(coordinateKey)){
+
+        console.log("Key exists");
+        groupedDuplicatedStops.get(coordinateKey).push(stops[i]);
+
+      }else{
+        console.log("Key doesnt exists");
+        console.log(coordinateKey);
+        groupedDuplicatedStops.set(coordinateKey, [stops[i]]);
+
+      }
+
+    }else{
+
+      nonDuplicateStops.push(stops[i])
+
+    }
+
+  }
+
+  return {duplicateStops: groupedDuplicatedStops, nonDuplicateStops: nonDuplicateStops};
+
+}
+
+function isDuplicateCoordinate(stops, stop){
+
+  for(let i = 0; i < stops.length; i++){
+
+    if((stops[i].orderID != stop.orderID) && compareCoordinates(stops[i].coordinates, stop.coordinates)){
+
+      return true;
+
+    }
+    
+  }
+
+  return false;
+
+}
+
+function compareCoordinates(a, b){
+
+  if(a.lat !== b.lat){
+    return false;
+  }
+
+  if(a.lng !== b.lng){
+    return false;
+  }
+
+  return true;
 
 }
 
