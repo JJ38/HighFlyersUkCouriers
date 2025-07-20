@@ -669,8 +669,6 @@ function addEventListeners(){
         return;
       }
 
-      console.log(routeJSON);
-
       try{
 
         const fuelSettings = await fetchFuelSettings();
@@ -1733,7 +1731,7 @@ function updateStopList(runObject){
         }
 
         const stopNumber = createStopLabel(label, stops[j].isLocked);
-        const stopCard = getStopCard(stops[j], runObject.documentId, stopNumber.firstChild);
+        const stopCard = getStopCard(stops[j], runObject.documentId, stopNumber.firstChild, runObject.isOptimised);
 
         runStopsContainer.appendChild(stopNumber);
         runStopsContainer.appendChild(stopCard);
@@ -1905,7 +1903,7 @@ function getMimicCard(){
 }
 
 
-function getStopCard(stop, runDocumentID, stopNumber){
+function getStopCard(stop, runDocumentID, stopNumber, isOptimised){
   
   const stopMetaData = createStopMetaData(stop);
 
@@ -1924,7 +1922,7 @@ function getStopCard(stop, runDocumentID, stopNumber){
   
   const stopsWrapper = createStopsWrapper(stopAddress, opposingStopAddress);
 
-  const stopCardWrapper = createStopCard(stop, stopMetaData, stopsWrapper, buttonWrapper);
+  const stopCardWrapper = createStopCard(stop, stopMetaData, stopsWrapper, buttonWrapper, isOptimised);
 
   const dragZoneTop = getDragDetectionZone("top");
   const dragZoneBottom= getDragDetectionZone("bottom");

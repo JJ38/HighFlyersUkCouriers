@@ -120,7 +120,7 @@ export function createStopContainer(stopNumber, stopCard){
 }
 
 
-export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, buttonWrapper){
+export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, buttonWrapper, isOptimised){
 
   const stopData = stop['stopData'];
 
@@ -134,7 +134,7 @@ export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, button
 
   const stopTime = document.createElement('p');
   stopTime.classList = "stopTime";
-  stopTime.innerText = "14:32pm";
+  stopTime.innerText = isOptimised ? stop.stopTime : "";
 
 
   const stopCustomerName = document.createElement('p');
@@ -157,7 +157,10 @@ export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, button
 
 
   stopCard.appendChild(stopMetaDataContainer);
+
   stopCard.appendChild(stopTime);
+  
+
   stopCard.appendChild(stopCustomerName);
   stopCard.appendChild(animalTypeQuantityContainer);
   stopCard.appendChild(stopsWrapper);

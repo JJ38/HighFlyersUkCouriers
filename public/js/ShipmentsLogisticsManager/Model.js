@@ -1235,9 +1235,6 @@ export function parseRunInfo(doc, fuelSettings){
 
   if(runStruct.isOptimised && fuelSettings !== false){
 
-    console.log(runStruct);
-    console.log(runData);
-
     runStruct.fuelCost = calculateFuelCost(runData['optimisedRoute']['metrics']['aggregatedRouteMetrics']['travelDistanceMeters'], fuelSettings);
      
   }
@@ -1247,8 +1244,6 @@ export function parseRunInfo(doc, fuelSettings){
 }
 
 export function calculateFuelCost(travelDistanceMeters, fuelSettings){
-
-  console.log(fuelSettings);
 
   const costPerLiterPence = fuelSettings['fuelCost']; 
   const milesPerGallon = fuelSettings['milesPerGallon'];
@@ -1463,14 +1458,11 @@ export async function calculateRoute(run){
 
   const precedenceRules = getPrecedenceRules(lockedStops, stops.length);
 
-  console.log(precedenceRules);
-
-  const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopLocations, precedenceRules);
+  const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopLocations, precedenceRules, run.settings.start.time);
 
   const optimisedRoute = await fetchOptimisedRoute(requestBody);
 
   const optimisedRouteJSON = JSON.parse(optimisedRoute);
-  console.log(optimisedRouteJSON);
 
   const updatedStops = updateStopOrder(optimisedRouteJSON, run);
   const databaseStops = removeStopDataFromStop(run.stops);
@@ -1499,10 +1491,10 @@ export async function calculateRoute(run){
 function updateStopOrder(optimisedRouteJSON, run){ 
   
   const stops = Object.assign([], run.stops);
-  console.log(stops);
-  console.log(optimisedRouteJSON['routes'][0]['visits']);
 
   const optimisedStops = optimisedRouteJSON['routes'][0]['visits'];
+  const optimisedTransitions = optimisedRouteJSON['routes'][0]['transitions'];
+
 
   for(let i = 0; i < optimisedStops.length; i++){
 
@@ -1512,18 +1504,42 @@ function updateStopOrder(optimisedRouteJSON, run){
 
       if(primaryKey === optimisedStops[i]['shipmentLabel']){
         stops[j].stopNumber = i + 1;
-        console.log(primaryKey + " " + (i + 1))
+        stops[j].stopTime = getStopArrivalTime(optimisedTransitions[i]);
       }
 
     }
 
   }
   
-  console.log(stops);
   return stops;
 
 }
 
+function getStopArrivalTime(optimisedStop){
+  
+  const startTimeDate = optimisedStop.startTime;
+  const durationSecondsString = optimisedStop.travelDuration;
+
+  const durationSecondsInt = parseInt(durationSecondsString.replaceAll("s", ""));
+
+  const startTimeString = startTimeDate.substring(startTimeDate.indexOf("T") + 1, startTimeDate.length).replaceAll(["Z"], "");
+  
+  const startTimeComponentsStrings = startTimeString.split(":");
+
+  const startTimeSecondsInt = (parseInt(startTimeComponentsStrings[0]) * 60 * 60) + (parseInt(startTimeComponentsStrings[1]) * 60) + parseInt(startTimeComponentsStrings[2]);
+
+  //%86400 to handle case where time passes midnight
+  const arrivalTimeSeconds = (startTimeSecondsInt + durationSecondsInt) % 86400;
+
+  const arrivalTimeHour = Math.floor(arrivalTimeSeconds / 3600);
+  const arrivalTimeMinute = Math.floor(arrivalTimeSeconds / 60) % 60;
+
+  const arrivalTimeHourString = arrivalTimeHour < 10 ? "0" + arrivalTimeHour : arrivalTimeHour.toString();
+  const arrivalTimeMinuteString = arrivalTimeMinute < 10 ? "0" + arrivalTimeMinute : arrivalTimeMinute.toString();
+
+  return arrivalTimeHourString + ":" + arrivalTimeMinuteString;
+
+}
 
 async function storeOptimisedRoute(runID, optimisedRoute, stops){
 
@@ -1531,8 +1547,13 @@ async function storeOptimisedRoute(runID, optimisedRoute, stops){
 
     const runRef = doc(db, 'Runs', runID);
 
-    await updateDocument(runRef, {optimisedRoute: optimisedRoute, isOptimised: true, stops:stops});
+    const result = await updateDocument(runRef, {optimisedRoute: optimisedRoute, isOptimised: true, stops:stops});
     
+    if(result === false){
+
+      return false;
+
+    }
 
   }catch(e){
 
@@ -1738,14 +1759,14 @@ function getPrecedenceRules(lockedStops, numberOfStops){
 }
 
 //https://developers.google.com/maps/documentation/route-optimization/construct-request?_gl=1*ftiy74*_up*MQ..*_ga*MTQ5NDczNjIwMi4xNzQ5NjU4OTYy*_ga_NRWSTWS78N*czE3NDk2NTg5NjIkbzEkZzEkdDE3NDk2NTkxNzckajI2JGwwJGgw
-function getRouteOptimisationRequestBody(origin, destination, stops, precedenceRules){
+function getRouteOptimisationRequestBody(origin, destination, stops, precedenceRules, startTime){
 
 
   const request = 
   {
     "model": {
-        "globalStartTime": "2025-07-20T03:00:00Z",
-        "globalEndTime": "2025-07-20T23:00:00Z",
+        "globalStartTime": "1970-01-01T" + startTime.hour + ":" + startTime.minute + ":00Z",
+        "globalEndTime": "1970-01-02T23:00:00Z",
         "shipments": stops,
         "vehicles": [
             {
