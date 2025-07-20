@@ -10,12 +10,20 @@ const updateFuelSettingsButton = document.getElementById('update_fuel_settings_b
 const runDefaultsWrapper = document.getElementById('run_defaults_wrapper');
 const runDefinitionsWrapper = document.getElementById('run_definitions_wrapper');
 const postcodeExceptionsWrapper = document.getElementById('postcode_exceptions_wrapper');
+const stopDurationInput = document.getElementById('stop_duration_input');
+const additionalStopDurationInput = document.getElementById('additional_stop_duration_input');
+const updateStopSettingsButton = document.getElementById('update_stop_duration_button');
+
 
 
 let fuelCost;
 let milesPerGallon;
 let fuelUserInput;
 let milesPerGallonUserInput;
+let stopDurationSeconds;
+let additionalStopDurationSeconds;
+let stopDurationSecondsInput;
+let additionalStopDurationSecondsInput;
 
 
 addEventListeners();
@@ -23,6 +31,7 @@ fetchFuelSettings();
 fetchRunDefaults();
 fetchRunDefinitions();
 fetchPostcodeExceptions();
+fetchRunTimings();
 
 
 const sortAlphabetically = (a, b) => {
@@ -89,9 +98,56 @@ function addEventListeners(){
         });
 
     }
+    if(updateStopSettingsButton != null){
+
+        updateStopSettingsButton.addEventListener('click', () => {
+
+            updateStopSettingsButtonController();
+
+        });
+
+    }
+
+    if(stopDurationInput != null){
+
+        stopDurationInput.addEventListener('input', () => {
+
+            stopDurationSecondsInput = stopDurationInput.value;
+            stopSettingsContoller();
+
+        });
+
+    }
+
+    if(additionalStopDurationInput != null){
+
+        additionalStopDurationInput.addEventListener('input', () => {
+
+            additionalStopDurationSecondsInput = additionalStopDurationInput.value;
+            stopSettingsContoller();
+
+        });
+
+    }
 
 }
 
+async function fetchRunTimings(){
+
+    const runTimingsDocument = await getDocument(query(doc(db, 'Settings', 'runTimings')));
+    console.log(runTimingsDocument);
+    stopDurationSeconds = runTimingsDocument.data()['stopDurationSeconds'];
+    if(stopDurationInput != null){
+        stopDurationInput.value = stopDurationSeconds;
+        stopDurationSecondsInput = stopDurationSeconds;
+    }
+
+    additionalStopDurationSeconds = runTimingsDocument.data()['additionalStopDurationSeconds'];
+    if(additionalStopDurationInput != null){
+        additionalStopDurationInput.value = additionalStopDurationSeconds;
+        additionalStopDurationSecondsInput = additionalStopDurationSeconds;
+    }
+}
 
 async function fetchFuelSettings(){
 
@@ -466,6 +522,43 @@ function fuelSettingsContoller(){
 
 }
 
+
+function stopSettingsContoller(){
+
+    if(updateFuelSettingsButton == null){
+        return;
+    }   
+
+    if(stopDurationSecondsInput != stopDurationSeconds){
+        updateStopSettingsButton.classList.remove('hidden');
+        return;
+    }
+
+    if(additionalStopDurationSecondsInput != additionalStopDurationSeconds){
+        updateStopSettingsButton.classList.remove('hidden');
+        return;
+    }
+
+    updateStopSettingsButton.classList.add('hidden');
+
+}
+
+function updateStopSettingsButtonController(){
+
+    if(stopDurationSecondsInput < 0){
+        alert("Error - stop duration must be greater than -1");
+        return;
+    }
+
+    if(additionalStopDurationSecondsInput < 0){
+        alert("Error - additional stop duration must be greater than -1");
+        return;
+    }  
+
+    updateStopSettings();
+
+}
+
 function updateFuelSettingsButtonController(){
 
 
@@ -501,6 +594,29 @@ function updateFuelSettings(){
     }).catch(() => {
 
         showNotification("Error!", "Fuel cost has not been updated");
+
+    });
+
+}
+
+function updateStopSettings(){
+
+    updateDocument(doc(db, 'Settings', 'runTimings'), 
+        {
+            stopDurationSeconds: parseInt(stopDurationSecondsInput),
+            additionalStopDurationSeconds: parseInt(additionalStopDurationSecondsInput)
+        }
+    ).then(() => {
+
+        showNotification("Success!", "Stop settings have been updated");
+        stopDurationSeconds = stopDurationSecondsInput;
+        additionalStopDurationSeconds = additionalStopDurationSecondsInput;
+
+        updateStopSettingsButton.classList.add('hidden');
+
+    }).catch(() => {
+
+        showNotification("Error!", "Stop settings have not been updated");
 
     });
 

@@ -406,7 +406,7 @@ function addEventListeners(){
 
       
       if(result){
-
+        
         showNotification("Success!", "Stop(s) successfully assigned to run");
 
       }else{

@@ -1451,10 +1451,18 @@ export async function calculateRoute(run){
   const originCoordinates = run.settings.start.location;
   const destinationCoordinates = run.settings.end.location;
 
-  //check if either first or last stop is locked
+  const runTimingsDocument = await getDocument(query(doc(db, 'Settings', 'runTimings')));
+
+  if(runTimingsDocument === false){
+
+    return false;
+
+  }
+
+  console.log(runTimingsDocument.data());
   
   const lockedStops = getLockedStops(stops);
-  const stopLocations = getStopLocations(stops);
+  const stopLocations = getStopLocations(stops, runTimingsDocument.data());
 
   const precedenceRules = getPrecedenceRules(lockedStops, stops.length);
 
@@ -1679,7 +1687,9 @@ function getLockedStops(stops){
 }
 
 
-function getStopLocations(stops){
+function getStopLocations(stops, runTimings){
+
+  console.log(runTimings.stopDurationSeconds + "s");
 
   const stopObjects = [];
 
@@ -1693,7 +1703,8 @@ function getStopLocations(stops){
           "arrivalLocation": {
             "latitude": stops[i].coordinates.lat,
             "longitude": stops[i].coordinates.lng
-          }
+          },
+          "duration": runTimings.stopDurationSeconds + "s"
         }
       ]
     }
