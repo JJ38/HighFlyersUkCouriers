@@ -945,7 +945,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
 
   const newStops = runDocument.data()['stops'].concat(stopsToAdd);
-  batch.update(runRef, {"stops": newStops});
+  batch.update(runRef, {"stops": newStops, isOptimised: false});
 
   try{
 
