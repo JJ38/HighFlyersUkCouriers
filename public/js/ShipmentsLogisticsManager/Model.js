@@ -1458,8 +1458,6 @@ export async function calculateRoute(run){
     return false;
 
   }
-
-  console.log(runTimingsDocument.data());
   
   const lockedStops = getLockedStops(stops);
   const stopLocations = getStopLocations(stops, runTimingsDocument.data());
@@ -2007,8 +2005,6 @@ export async function updateStopAddress(address, run, stopToUpdate){
 
   //update orderdata
   const newOrderDocument = updateOrderDocumentAddress(stopToUpdate.stopType, address.address, orderDocument.data());
-
-  console.log(newOrderDocument);
 
   if(newOrderDocument === false){
     return false;
