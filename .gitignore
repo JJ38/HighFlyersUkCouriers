@@ -7,4 +7,4 @@ route-optimisation-key.json
 private/app/settings.php
 vendor/
 TODO.txt
-js/Settings.js
+public/js/Settings.js
