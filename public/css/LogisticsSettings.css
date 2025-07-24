@@ -3,8 +3,15 @@
 
 
 .maincontent{
+
+    overflow-x: hidden;
     width: 100%;
     padding: 30px 30px 0px 30px;
+
+}
+
+.mainContent{
+   
 }
 
 .title{
@@ -39,17 +46,30 @@ h4{
     font-weight: 300;
 }
 
-.fuelcostinput{
+.numberInput{
 
     border: 1px solid #9A9A9A;
     border-radius: 5px;
-    padding: 7px 20px 7px 7px;
+    padding: 7px 0px 7px 7px;
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     font-weight: 300;
     font-style: normal;
     background-color: #FCFCFC;
     max-width: 150px;
+
+}
+
+.fuelCostInput{
+
+    padding-right: 20px;
+  
+}
+
+.milesPerGallonInput{
+
+    padding-right: 45px;
+
 }
 
 .fuelcostinputwrapper{
@@ -66,7 +86,7 @@ h4{
 
 }
 
-.updatefuelcostbutton{
+.updateButton{
 
     width: min-content;
     padding: 8px;
@@ -186,20 +206,74 @@ h4{
 }
 
 
-.run{
+.card{
+
     display: flex;
-    gap: 30px;
+    flex-direction: column;
     background-color: white;
     border-radius: 5px;
     padding: 15px 30px;
     filter: drop-shadow(2px 3px 5px #00000040);
-    height: 70px;
+    height: fit-content;
+    max-width: 100%;
     /* align-items: center; */
 }
 
-.runname{
-    font-size: 24px;
+.runName{
+    font-size: 20px;
 }
+
+.cardWrapper{
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+}
+
+.runNameButtonWrapper{
+
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.toggleButton{
+    
+    padding: 10px 13px;
+    font-size: 18px;
+    background-color: white;
+    line-height: 1em;
+    border-radius: 10px;
+    filter: drop-shadow(0px 0px 5px #00000040);
+    transition: ease-in 0.2s;
+
+
+}
+
+.toggleButton:hover{
+
+    cursor: pointer;
+    background-color: rgb(225, 225, 225);
+
+}
+
+.postcodeWrapper{
+
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+
+
+}
+
+
+.exceptionMessage{
+
+    font-weight: 300;
+
+}
+
 
 .removeareacodebutton{
     font-size: 0.8rem;
@@ -238,6 +312,55 @@ h4{
     
 }
 
+.defaultsWrapper{
+
+    display: flex;
+    gap: 30px;
+
+}
+
+.startTimeWrapper{
+
+    display: flex;
+
+}
+
+.runTypeContainer{
+
+    flex: 1;
+
+}
+
+.runTypeTitle{
+
+
+}
+
+.tableAddressWrapper{
+
+    display: flex;
+    flex-direction: column;
+
+}
+
+.tableAddressLineSecondary{
+
+    display: flex;
+    flex-wrap: wrap;
+    font-weight: 300;
+    font-size: 0.9rem;
+
+}
+
+.addressWrapper{
+
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    /* justify-content: space-between; */
+}
+
+
 .add{
     color: #2881FF;
 }
@@ -260,5 +383,14 @@ h4{
 }
 
 .hidden{
+
     display: none;
+
+}
+
+.rotateButton{
+
+    transform: rotate(180deg);
+    transition: ease-in 0.2s;
+
 }

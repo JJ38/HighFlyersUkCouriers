@@ -10,17 +10,42 @@ export const auth = getAuth(app);
 export const db = getFirestore(app, databaseName);
 export async function getDocuments(q){
 
-   return await getDocs(q); 
+    try{
+
+        return await getDocs(q); 
+
+    }catch(e){
+
+        console.log(e);
+        return false
+    }
 }
 
 export async function getDocument(q){
 
-    return await getDoc(q); 
+    try{
+
+        return await getDoc(q); 
+
+    }catch(e){
+
+        console.log(e);
+        return false
+    }
 }
 
 export async function updateDocument(docRef, fieldsToUpdate){
 
-    return await updateDoc(docRef, fieldsToUpdate); 
+    try{
+
+        return await updateDoc(docRef, fieldsToUpdate); 
+
+    }catch(e){
+
+        console.log(e);
+        return false
+    }
+
 }
 
 export async function bulkReadTransaction(docIDs, collectionPath){

@@ -25,6 +25,8 @@ $app->post('/calculate-route', function (Request $request, Response $response) u
 
     //contact google routes optimisation api
 
+    // return $response->withJson($model);
+
     $container = $app->getContainer();
     $authentcation_model = $container->get('authenticationModel');
     $calculate_route_model = $container->get('calculateRouteModel');
@@ -40,7 +42,7 @@ $app->post('/calculate-route', function (Request $request, Response $response) u
         'https://www.googleapis.com/auth/cloud-platform'
     ];
 
-    $serviceAccountPath = '../route-optimisation-credentials.json';
+    $serviceAccountPath = '../route-optimisation-key.json';
 
     try {
 
@@ -48,77 +50,7 @@ $app->post('/calculate-route', function (Request $request, Response $response) u
 
         // var_dump($model);
 
-        $minimalOptimizationModel = [
-            'model' => [
-                'shipments' => [
-                    [
-                        'pickups' => [
-                            [
-                                'arrivalLocation' => [
-                                    'latitude' => 51.5074,
-                                    'longitude' => -0.1278
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
-                'vehicles' => [
-                    [
-                        'startLocation' => [
-                            'latitude' => 51.5,
-                            'longitude' => -0.1
-                        ],
-                        'endLocation' => [
-                            'latitude' => 51.5,
-                            'longitude' => -0.1
-                        ],
-                        'costPerKilometer' => 1
-                    ]
-                ]
-            ],
-        ]; 
-
-        $example = 
-        [
-            "model" => [
-                "shipments" => [
-                    [
-                        "pickups" => [
-                            [
-                                "arrivalLocation" => [
-                                    "latitude" => 37.73881799999999,
-                                    "longitude" => -122.4161
-                                ]
-                            ]
-                        ],
-                        "deliveries" => [
-                            [
-                                "arrivalLocation" => [
-                                    "latitude" => 37.79581,
-                                    "longitude" => -122.4218856
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
-                "vehicles" => [
-                    [
-                        "startLocation" => [
-                            "latitude" => 37.73881799999999,
-                            "longitude" => -122.4161
-                        ],
-                        "endLocation" => [
-                            "latitude" => 37.73881799999999,
-                            "longitude" => -122.4161
-                        ],
-                        "costPerKilometer" => 1.0
-                    ]
-                ],
-                "globalStartTime" => "2024-02-13T00:00:00.000Z",
-                "globalEndTime"=> "2024-02-14T06:00:00.000Z"
-            ]
-        ];
-
+        // return $response->withJson($model);
         $route = $calculate_route_model->calculateRoute($accessToken, $model); 
 
         // var_dump($route);

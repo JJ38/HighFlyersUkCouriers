@@ -1,3 +1,6 @@
+
+
+
 export function createLoader(){
 
   const loader = document.createElement('div');
@@ -117,7 +120,7 @@ export function createStopContainer(stopNumber, stopCard){
 }
 
 
-export function createStopCard(stop, stopMetaDataContainer, buttonWrapper){
+export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, buttonWrapper, isOptimised){
 
   const stopData = stop['stopData'];
 
@@ -129,41 +132,38 @@ export function createStopCard(stop, stopMetaDataContainer, buttonWrapper){
   stopCard.classList = "stopCard";
 
 
+  const stopTime = document.createElement('p');
+  stopTime.classList = "stopTime";
+  stopTime.innerText = isOptimised ? stop.stopTime : "";
+
+
   const stopCustomerName = document.createElement('p');
   stopCustomerName.classList = "stopCustomerName";
-  stopCustomerName.innerText = stopData['name'];
-
-  const stopAddressLine1 = document.createElement('p');
-  stopAddressLine1.classList = "stopAddressLine1";
-  stopAddressLine1.innerText = stopData['address1'];
-
-
-  const stopAddressWrapper = document.createElement('div');
-  stopAddressWrapper.classList = "stopAddressWrapper";
-
-  const stopAddressLine2 = document.createElement('p');
-  stopAddressLine2.classList = "stopAddressLine2";
-  stopAddressLine2.innerHTML = stopData['address2'] + ",&nbsp;";
-
-  const stopAddressLine3 = document.createElement('p');
-  stopAddressLine3.classList = "stopAddressLine3";
-  stopAddressLine3.innerHTML = stopData['address3'] + ",&nbsp;";
-
-  const stopPostcode = document.createElement('p');
-  stopPostcode.classList = "stopPostcode";
-  stopPostcode.innerText = stopData['postcode'];
+  stopCustomerName.innerText = stop.stopType == "collection" ? stopData['collectionName'] : stopData['deliveryName'];
 
 
 
-  stopAddressWrapper.appendChild(stopAddressLine2);
-  stopAddressWrapper.appendChild(stopAddressLine3);
-  stopAddressWrapper.appendChild(stopPostcode);
+  const animalTypeQuantityContainer = document.createElement('div'); 
+  animalTypeQuantityContainer.classList = "animalTypeQuantityContainer";
+
+  const animalType = document.createElement('p');
+  animalType.innerText = stopData['animalType'];
+
+  const quantity = document.createElement('p');
+  quantity.innerText = "x" + stopData['quantity'];
+
+  animalTypeQuantityContainer.appendChild(animalType);
+  animalTypeQuantityContainer.appendChild(quantity);
 
 
   stopCard.appendChild(stopMetaDataContainer);
+
+  stopCard.appendChild(stopTime);
+  
+
   stopCard.appendChild(stopCustomerName);
-  stopCard.appendChild(stopAddressLine1);
-  stopCard.appendChild(stopAddressWrapper);
+  stopCard.appendChild(animalTypeQuantityContainer);
+  stopCard.appendChild(stopsWrapper);
   stopCard.appendChild(buttonWrapper);
 
 
@@ -171,6 +171,107 @@ export function createStopCard(stop, stopMetaDataContainer, buttonWrapper){
 
   return stopCardWrapper;
 
+}
+
+
+export function createStopsWrapper(stopAddress, opposingStopAddress){
+
+  const stopsWrapper = document.createElement('div');
+  stopsWrapper.classList = "stopsWrapper";
+
+  stopsWrapper.appendChild(stopAddress);
+  stopsWrapper.appendChild(opposingStopAddress);
+
+  return stopsWrapper
+
+}
+
+
+export function createStopAddress(stop, isActiveStop){
+
+  let address1;
+  let address2;
+  let address3;
+  let postcode;
+
+  const stopData = stop.stopData;
+
+  const container = document.createElement('div');
+
+  if(isActiveStop){
+    //get active stop address
+
+    if(stop.stopType == "collection"){
+
+      address1 = stopData['collectionAddress1'];
+      address2 = stopData['collectionAddress2'];
+      address3 = stopData['collectionAddress3'];
+      postcode = stopData['collectionPostcode'];
+
+    }else{
+
+      address1 = stopData['deliveryAddress1'];
+      address2 = stopData['deliveryAddress2'];
+      address3 = stopData['deliveryAddress3'];
+      postcode = stopData['deliveryPostcode'];
+
+    }
+
+
+  }else{
+
+    //get opposing stop address
+    if(stop.stopType == "collection"){
+
+      address1 = stopData['deliveryAddress1'];
+      address2 = stopData['deliveryAddress2'];
+      address3 = stopData['deliveryAddress3'];
+      postcode = stopData['deliveryPostcode'];
+
+    }else{
+
+      address1 = stopData['collectionAddress1'];
+      address2 = stopData['collectionAddress2'];
+      address3 = stopData['collectionAddress3'];
+      postcode = stopData['collectionPostcode'];
+
+    }
+
+    container.classList = "hidden";
+
+  }
+
+
+  const stopAddressLine1 = document.createElement('p');
+  stopAddressLine1.classList = "stopAddressLine1";
+  stopAddressLine1.innerText = address1;
+
+
+  const stopAddressWrapper = document.createElement('div');
+  stopAddressWrapper.classList = "stopAddressWrapper";
+
+  const stopAddressLine2 = document.createElement('p');
+  stopAddressLine2.classList = "stopAddressLine2";
+  stopAddressLine2.innerHTML = address2 + ",&nbsp;";
+
+  const stopAddressLine3 = document.createElement('p');
+  stopAddressLine3.classList = "stopAddressLine3";
+  stopAddressLine3.innerHTML = address3 + ",&nbsp;";
+
+  const stopPostcode = document.createElement('p');
+  stopPostcode.classList = "stopPostcode";
+  stopPostcode.innerText = postcode;
+
+
+  stopAddressWrapper.appendChild(stopAddressLine2);
+  stopAddressWrapper.appendChild(stopAddressLine3);
+  stopAddressWrapper.appendChild(stopPostcode);
+
+
+  container.appendChild(stopAddressLine1);
+  container.appendChild(stopAddressWrapper);
+
+  return container;
 }
 
 
@@ -344,6 +445,8 @@ export function createUnassignedStopCardClickableElement(stopData){
 
 export function createUnassignedOrdersTableCard(stopData, clickableElement){
 
+  console.log(stopData);
+
   //clickableElement is either a checkbox or button
 
   const tableRow = document.createElement('tr');
@@ -356,18 +459,41 @@ export function createUnassignedOrdersTableCard(stopData, clickableElement){
   tableRow.appendChild(tableData(stopData['stopData']['quantity']));
   tableRow.appendChild(tableData(stopData['stopType']));
 
-  tableRow.appendChild(tableData(stopData['stopData']['name']));
 
-  tableRow.appendChild(
-    createTableAddress(
-      stopData['stopData']['address1'],
-      stopData['stopData']['address2'],
-      stopData['stopData']['address3'],
-      stopData['stopData']['postcode'],
+  let stopAddress;
+  let stopName;
+  let stopPhoneNumber;
+
+  if(stopData.stopType == "collection"){
+
+    stopAddress = createTableAddress(
+      stopData['stopData']['collectionAddress1'],
+      stopData['stopData']['collectionAddress2'],
+      stopData['stopData']['collectionAddress3'],
+      stopData['stopData']['collectionPostcode'],
     )
-  );
 
-  tableRow.appendChild(tableData(stopData['stopData']['phoneNumber']));
+    stopName = tableData(stopData['stopData']['collectionName']);
+    stopPhoneNumber = tableData(stopData['stopData']['collectionPhoneNumber']);
+
+  }else{
+
+    stopAddress = createTableAddress(
+      stopData['stopData']['deliveryAddress1'],
+      stopData['stopData']['deliveryAddress2'],
+      stopData['stopData']['deliveryAddress3'],
+      stopData['stopData']['deliveryPostcode'],
+    )
+
+    stopName = tableData(stopData['stopData']['deliveryName']);
+    stopPhoneNumber = tableData(stopData['stopData']['deliveryPhoneNumber']);
+
+  }
+
+  tableRow.appendChild(stopName);
+  tableRow.appendChild(stopAddress);
+  tableRow.appendChild(stopPhoneNumber);
+
   tableRow.appendChild(tableData(stopData['stopData']['payment']));
 
  
@@ -508,7 +634,7 @@ export function createRunCard(runStruct){
   fuelCostIcon.innerText = "local_gas_station";
 
   const fuelCost = document.createElement('p');
-  fuelCost.innerText = "£" + runStruct.fuelCost;
+  fuelCost.innerText = "£" + (runStruct.isOptimised == true ? runStruct.fuelCost : "0");
 
   fuelCostWrapper.appendChild(fuelCostIcon);
   fuelCostWrapper.appendChild(fuelCost);
@@ -673,7 +799,6 @@ export function createShipmentOptions(shipmentName, shipments){
   deleteShipmentOption.value = "DELETE_SHIPMENT";
   deleteShipmentOption.innerText = "-- delete a shipment --";
   shipmentOptions.push(deleteShipmentOption);
-
 
   return shipmentOptions
 

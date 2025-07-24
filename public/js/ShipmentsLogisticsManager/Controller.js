@@ -1,9 +1,9 @@
 import { db, getDocuments, filterSearch } from "/js/Firebase.js";
 import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
-import { createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
+import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
-import { convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
+import { splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -12,6 +12,14 @@ let GooglePinElement;
 let GoogleAutocomplete;
 let GoogleMap;
 let GoogleGeometry;
+
+
+const ADDRESS_TYPE = {
+
+  ACTIVE: true,
+  OPPOSING: false,
+
+}
 
 
 const unassignedOrdersContainer = document.getElementById('unassigned_orders_details');
@@ -67,6 +75,9 @@ const removeRunButton = document.getElementById('remove_run_button');
 const removeRunWidget = document.getElementById('remove_run_widget');
 const calculateRouteButton = document.getElementById('calculate_route_button');
 const calculateRouteButtonWrapper = document.getElementById('calculate_route_button_wrapper');
+const updateRunSettingsButton = document.getElementById('update_run_settings_button');
+const splitRunSelect = document.getElementById('split_run_select');
+const splitRunSettingsButton = document.getElementById('split_run_settings_button');
 
 const validateAddressWidget = document.getElementById('validate_address_widget');
 const validateAddressAutocompleteInput = document.getElementById('validate_address_autocomplete_input');
@@ -91,11 +102,26 @@ const assignStopButton = document.getElementById('assign_stop_button');
 const removeStopButton = document.getElementById('remove_stop_button');
 const addStopButton = document.getElementById('add_stop_button');
 
+const runOriginAddress1 = document.getElementById('run_origin_address_line_1');
+const runOriginAddress2 = document.getElementById('run_origin_address_line_2');
+const runOriginAddress3 = document.getElementById('run_origin_address_line_3');
+const runOriginPostcode = document.getElementById('run_origin_postcode');
+const runOriginHour = document.getElementById('run_origin_hour');
+const runOriginMinute = document.getElementById('run_origin_minute');
+
+const runDestinationAddress1 = document.getElementById('run_destination_address_line_1');
+const runDestinationAddress2 = document.getElementById('run_destination_address_line_2');
+const runDestinationAddress3 = document.getElementById('run_destination_address_line_3');
+const runDestinationPostcode = document.getElementById('run_destination_postcode');
+
+
+
 const mapWrapper = document.getElementById("map");
 
 const stopCardLongClickTime = 1000;
 
 const autocompleteDebounce = 2000;
+
 
 let autocompleteSessionActive = false;
 let lastAutoCompleteInput;
@@ -106,8 +132,9 @@ let currentSelectedRunCard = null;
 let currentSelectedRun = null;
 let currentSelectedShipmentName = null;
 
-let currentlyStopMetaData = null;
+let currentStopMetaData = null;
 let currentStopButtonWrapper = null;
+let currentOpposingStopAddress = null;
 
 let lastMouseDown = 0;
 let lastMouseUp = 0;
@@ -172,11 +199,7 @@ function addEventListeners(){
     if(isCardBeingDragged){
 
       await dropStopCard();
-
-      removePolylines();
-
-      console.log(currentSelectedRun); 
-      updateMapMarkers(currentSelectedRun);
+      showUnoptimisedRunState();
 
     }
 
@@ -211,6 +234,8 @@ function addEventListeners(){
 
       selectedRunView.classList.add('hidden');
       updateRunsList(currentSelectedShipmentName);
+
+      removePolylines();
 
     });
 
@@ -328,8 +353,9 @@ function addEventListeners(){
 
       const shipmentData = await fetchShipment(selectedShipment.value);
       const runData = await fetchRunsInShipment(shipmentData.data()['runs']);
+      const fuelSettings = await fetchFuelSettings();
 
-      updateSelectRunAssignStops(runData);
+      updateSelectRunAssignStops(runData, fuelSettings.data());
 
       showUI(assignStopsWidget);
 
@@ -380,7 +406,7 @@ function addEventListeners(){
 
       
       if(result){
-
+        
         showNotification("Success!", "Stop(s) successfully assigned to run");
 
       }else{
@@ -520,7 +546,8 @@ function addEventListeners(){
 
       if(addRunNameInput.value != null){
 
-        const result = await addRunToShipment(addRunNameInput.value, currentSelectedShipmentName);
+        const runDefaultSettings = null;
+        const result = await addRunToShipment(addRunNameInput.value, runDefaultSettings, currentSelectedShipmentName);
 
         if(result === false){
 
@@ -633,16 +660,29 @@ function addEventListeners(){
 
       const routeJSON = await calculateRoute(currentSelectedRun);
 
-      showUI(calculateRouteButton);
-      loader.remove();
-      
       if(routeJSON === false){
+
         showNotification("Error!", "Error calculating route");   
+        showUI(calculateRouteButton);
+        loader.remove();
     
         return;
       }
-    
 
+      try{
+
+        const fuelSettings = await fetchFuelSettings();
+        currentSelectedRun.fuelCost = calculateFuelCost(routeJSON['metrics']['aggregatedRouteMetrics']['travelDistanceMeters'], fuelSettings.data());
+        
+      }catch(e){
+
+        console.log(e);
+
+      }
+
+      showUI(calculateRouteButton);
+      loader.remove();
+    
       const transitions = routeJSON['routes'][0]['transitions'];
      
       removePolylines();
@@ -655,6 +695,7 @@ function addEventListeners(){
 
       updateMapMarkers(currentSelectedRun);
       updateStopList(currentSelectedRun);
+      updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
 
     });
 
@@ -766,7 +807,8 @@ function addEventListeners(){
       if(currentlySelectedAddressSuggestionCard != null){
 
         const result = await updateStopAddress(currentlySelectedSuggestionAddress, currentSelectedRun, currentlySelectedStop);
-        if(result ===  false){
+        
+        if(result === false){
           showNotification("Error!", "Error updating stop address");
           return;
         }
@@ -777,12 +819,13 @@ function addEventListeners(){
         const runObject = await selectRun(currentSelectedRun.documentId);
         console.log(runObject);
 
+        currentSelectedRun = runObject;
+
         if(currentSelectedRun.runName == null){
           updateUnassignedOrdersTable(runObject);
         }else{
 
-          updateStopList(runObject);
-          updateMapMarkers(runObject);
+          showUnoptimisedRunState();
 
         }
         
@@ -792,11 +835,133 @@ function addEventListeners(){
 
   }
 
+  if(updateRunSettingsButton != null){
+
+    updateRunSettingsButton.addEventListener('click', async () => {
+
+      await updateRunSettingsController();
+    
+    });
+
+  }
+
+  if(splitRunSelect != null){
+
+    splitRunSelect.addEventListener('change', (e) => {
+
+      console.log(e.target.value);
+      if(e.target.value == ""){
+
+        hideUI(splitRunSettingsButton);
+        return;
+      }
+
+      showUI(splitRunSettingsButton);
+
+    });
+
+  }
+
+  if(splitRunSettingsButton != null){
+
+    splitRunSettingsButton.addEventListener('click', async () => {
+
+      const result = await splitRun(currentSelectedRun, splitRunSelect.value, selectedShipment.value);
+
+      if(result){
+
+        updateRunsList(selectedShipment.value);
+        clearAndHideRunStopsUI();
+        removePolylines();
+        showNotification("Success!", "Successfully split run");
+        return;
+
+      } 
+
+      showNotification("Error!", "Error splitting run");
+
+    });
+
+  }
+
 }
+
+
+async function updateRunSettingsController(){
+
+  const runSettings  = {
+
+      start: {
+
+        address:{
+
+          address1: runOriginAddress1.value,
+          address2: runOriginAddress2.value,
+          address3: runOriginAddress3.value,
+          postcode: runOriginPostcode.value
+
+        },
+        time:{
+
+          hour: parseInt(runOriginHour.value),
+          minute: parseInt(runOriginMinute.value),
+
+        },
+        location:{}
+
+      },
+
+      end: {
+
+        address:{
+
+          address1: runDestinationAddress1.value,
+          address2: runDestinationAddress2.value,
+          address3: runDestinationAddress3.value,
+          postcode: runDestinationPostcode.value,
+
+        },
+        location:{}
+      
+      }
+
+  }
+
+  const coordinates = await fetchCoordinatesForUpdatedRunSettings(runSettings);
+  console.log(coordinates);
+  if(coordinates === false){
+
+    showNotification("Error!", "Error finding address");
+    return;
+
+  }
+
+  runSettings.start.location.lat = coordinates.originCoordinates.lat;
+  runSettings.start.location.lng = coordinates.originCoordinates.lng;
+
+  runSettings.end.location.lat = coordinates.destinationCoordinates.lat;
+  runSettings.end.location.lng = coordinates.destinationCoordinates.lng;
+
+  const hasUpdated = await updateRunSettings(runSettings, currentSelectedRun.documentId);
+
+  currentSelectedRun.settings = runSettings;
+  currentSelectedRun.isOptimised = false;
+
+  showUnoptimisedRunState();
+
+  if(hasUpdated){
+    showNotification("Success!", "Successfully updated run settings");
+    return
+  } 
+
+  showNotification("Error!", "Error updating run settings");
+
+}
+
 
 function drawPolyline(polylineString){
 
-  //in case there is no rouote as there is a second delivery at the location
+  //in case there is no route as there is a second delivery at the location
   if(polylineString != null){
 
     const decodedPath = GoogleGeometry.decodePath(polylineString);
@@ -1020,14 +1185,24 @@ function clearAndHideRunStopsUI(){
 }
 
 
+function showUnoptimisedRunState(){
+
+  removePolylines();
+  updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
+  updateMapMarkers(currentSelectedRun);
+  updateStopList(currentSelectedRun);
+
+}
+
+
 //updates select options in assign run widget
-function updateSelectRunAssignStops(runData){
+function updateSelectRunAssignStops(runData, fuelSettings){
 
   const runs = [];
 
   for(let i = 0; i < runData.length; i++){
 
-    runs.push(parseRunInfo(runData[i]));
+    runs.push(parseRunInfo(runData[i], fuelSettings));
 
   }
 
@@ -1046,10 +1221,32 @@ function updateSelectRunAssignStops(runData){
 
 }
 
+function getRunCardEventListener(runStruct, runCard){
 
-function parseRunData(runData){
+  const runCardEventListener = async () => {
 
-  const runStruct = parseRunInfo(runData);
+    const run = await selectRun(runStruct.documentId);
+    updateStopList(run);
+    updateOptionsTab(run);
+    showRuns();
+    selectCard(runCard);
+
+    //update map markers
+    updateMapMarkers(run);
+    updatePolylines(run);
+    updateMapPosition(mainMap, run);
+
+  }
+
+  return runCardEventListener;
+
+}
+
+
+
+function parseRunData(runData, fuelSettings){
+
+  const runStruct = parseRunInfo(runData, fuelSettings);
 
   if(runStruct.runName != null){
     
@@ -1057,20 +1254,7 @@ function parseRunData(runData){
 
     runStruct.runCard = runCard;
     
-    runCard.addEventListener('click', async () => {
-
-      //fetch run to make sure client is showing the correct state and order of stops.
-      const run = await selectRun(runStruct.documentId);
-      updateStopList(run);
-      showRuns();
-      selectCard(runCard);
-
-      //update map markers
-      updateMapMarkers(run);
-      updatePolylines(run);
-      updateMapPosition(mainMap, run)
-
-    });
+    runCard.addEventListener('click', getRunCardEventListener(runStruct, runCard));
 
   }else{
 
@@ -1197,10 +1381,19 @@ async function generateDeleteWidget(){
 
 }
 
+function updateCurrentSelectedRunCard(runCard, run){
+
+  const newRunCard = createRunCard(run);
+
+  runCard.replaceWith(newRunCard);
+
+  newRunCard.addEventListener('click', getRunCardEventListener(run, newRunCard));
+
+  currentSelectedRunCard = newRunCard;
+
+}
 
 async function updateRunsList(shipmentName){
-
-  console.log(shipmentName);
 
   if(shipmentName === "SELECT_SHIPMENT"){
     return;
@@ -1276,8 +1469,6 @@ async function updateRunsList(shipmentName){
 
 async function selectShipment(shipmentName){
 
-  console.log(shipmentName);
-
   removeMapMarkers(mainMapMarkers, mainMapMarkerClusters);
 
   const shipmentData = await fetchShipment(shipmentName);
@@ -1291,12 +1482,17 @@ async function selectShipment(shipmentName){
   const runIDs = shipmentData.data()['runs'];
 
   const runData = await fetchRunsInShipment(runIDs);
+  const fuelSettings = await fetchFuelSettings();
+
+  if(fuelSettings === false){
+    showNotification("Error!", "Error fetching fuel costs");
+  } 
 
   const runsList = [];
 
   for(let i = 0; i < runData.length; i++){
 
-    runsList.push(parseRunData(runData[i]));
+    runsList.push(parseRunData(runData[i], fuelSettings.data()));
 
   }
 
@@ -1342,6 +1538,7 @@ function initValidateAddressMap(){
 
 function addMarkerToMap(map, pinText, coordinates){
 
+  
   const pinTextGlyph = new GooglePinElement({
     glyph: pinText.toString(),
     glyphColor: "white",
@@ -1356,7 +1553,10 @@ function addMarkerToMap(map, pinText, coordinates){
     collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
   }));
 
+  
 }
+
+
 
 function updateMapMarkers(run){ 
 
@@ -1398,9 +1598,65 @@ function updateMapMarkers(run){
 
   }
 
-  
-
   mainMapMarkerClusters = new MarkerClusterer({ markers: mainMapMarkers, map: mainMap });
+
+  if(run.settings == null){
+    return;
+  }
+
+  const startPosition = 
+  {
+
+    lat: run.settings.start.location.lat,
+    lng: run.settings.start.location.lng,
+
+  }
+
+  const startIcon = document.createElement('span');
+  startIcon.classList = "material-symbols-outlined startFlag";
+  startIcon.innerText = "flag"
+
+  const startPinTextGlyph = new GooglePinElement({
+    glyph: startIcon,
+    glyphColor: "black",
+    background: '#FFFFFF',
+    borderColor: '#000000'
+  });
+
+  mainMapMarkers.push(new GoogleAdvancedMarkerElement({
+    map: mainMap,
+    position: startPosition,
+    content: startPinTextGlyph.element,
+    collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
+  }));
+
+
+  const endPosition = 
+  {
+
+    lat: run.settings.end.location.lat,
+    lng: run.settings.end.location.lng,
+
+  }
+
+  const endIcon = document.createElement('span');
+  endIcon.classList = "material-symbols-outlined endFlag";
+  endIcon.innerText = "sports_score";
+
+
+  const endPinTextGlyph = new GooglePinElement({
+    glyph: endIcon,
+    glyphColor: "white",
+    background: '#000000',
+    borderColor: '#000000'
+  });
+
+  mainMapMarkers.push(new GoogleAdvancedMarkerElement({
+    map: mainMap,
+    position: endPosition,
+    content: endPinTextGlyph.element,
+    collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
+  }));
 
 }
 
@@ -1454,11 +1710,11 @@ function removePolylines(){
 
 }
 
-function updateStopList(runStruct){
+function updateStopList(runObject){
 
-  currentSelectedRun = runStruct;
+  currentSelectedRun = runObject;
 
-  const stops = runStruct.stops
+  const stops = runObject.stops
   runStopsContainer.innerHTML = "";
 
   for(let i = 0; i < stops.length; i++){
@@ -1469,15 +1725,13 @@ function updateStopList(runStruct){
 
         let label = stops[j].stopNumber;
 
-        if(!runStruct.isOptimised){
+        if(!runObject.isOptimised){
 
           label = convertStopNumberToLetter(stops[j].stopNumber);
         }
 
-        const hasLockButton = stops[j].stopNumber == 1 ? true : (stops[j].stopNumber == stops.length) ? true : false
-
         const stopNumber = createStopLabel(label, stops[j].isLocked);
-        const stopCard = getStopCard(stops[j], runStruct.documentId, stopNumber.firstChild, hasLockButton);
+        const stopCard = getStopCard(stops[j], runObject.documentId, stopNumber.firstChild, runObject.isOptimised);
 
         runStopsContainer.appendChild(stopNumber);
         runStopsContainer.appendChild(stopCard);
@@ -1487,7 +1741,7 @@ function updateStopList(runStruct){
     }
 
   }
-
+ 
   updateStopLockButtons();
 
   if(stops.length == 0){
@@ -1495,6 +1749,59 @@ function updateStopList(runStruct){
     runStopsContainer.innerText = "No Stops in run";
 
   }
+
+}
+
+
+function updateOptionsTab(runObject){
+
+  if(runObject.settings == null){
+    clearRunOriginDestinationOptions();
+    return;
+  }
+
+  let origin;
+  let destination ;
+
+  if(runObject.runType == "collection"){
+
+    origin = runObject.settings.start;
+    destination = runObject.settings.end;
+
+  }else{
+
+    origin = runObject.settings.start;
+    destination = runObject.settings.end;
+
+  }
+
+  runOriginAddress1.value = origin.address.address1;    
+  runOriginAddress2.value = origin.address.address2;  
+  runOriginAddress3.value = origin.address.address3; 
+  runOriginPostcode.value = origin.address.postcode;  
+  runOriginHour.value = origin.time.hour;
+  runOriginMinute.value = origin.time.minute;
+
+  runDestinationAddress1.value = destination.address.address1;    
+  runDestinationAddress2.value = destination.address.address2;  
+  runDestinationAddress3.value = destination.address.address3; 
+  runDestinationPostcode.value = destination.address.postcode;  
+
+}
+
+function clearRunOriginDestinationOptions(){
+
+  runOriginAddress1.value = '';    
+  runOriginAddress2.value = '';  
+  runOriginAddress3.value = ''; 
+  runOriginPostcode.value = '';  
+  runOriginHour.value = '';
+  runOriginMinute.value = '';
+
+  runDestinationAddress1.value = '';   
+  runDestinationAddress2.value = ''; 
+  runDestinationAddress3.value = '';
+  runDestinationPostcode.value = ''; 
 
 }
 
@@ -1511,7 +1818,6 @@ function getDragDetectionZone(detectionZoneType){
         return;
       }
 
-      //remove mimic card
       if(mimicCard != null){
         mimicCard.remove();
       }
@@ -1547,6 +1853,8 @@ function getDragDetectionZone(detectionZoneType){
 
 function addLabelsToStopsList(){
 
+  console.log("addLablesToStopList");
+
   const stopCards = runStopsContainer.querySelectorAll('.stopCardWrapper');
   const filteredStopCards = Array.from(stopCards).filter((stopCard) => {
 
@@ -1557,10 +1865,8 @@ function addLabelsToStopsList(){
 
     const stopNumber = createStopLabel(convertStopNumberToLetter(i + 1));
     const stopCard = filteredStopCards[i].querySelector('.stopCard');
-    //console.log(stopCard);
 
     const isLocked = stopCard.classList.contains('lockedCard');
-    //console.log(isLocked);
 
     filteredStopCards[i].before(stopNumber);
 
@@ -1597,7 +1903,7 @@ function getMimicCard(){
 }
 
 
-function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
+function getStopCard(stop, runDocumentID, stopNumber, isOptimised){
   
   const stopMetaData = createStopMetaData(stop);
 
@@ -1610,8 +1916,13 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
   const deleteButton = createDeleteStopButton();
 
   const buttonWrapper = createButtonWrapper(stopLockButton, editButton ,deleteButton);
- 
-  const stopCardWrapper = createStopCard(stop, stopMetaData, buttonWrapper);
+
+  const stopAddress = createStopAddress(stop, ADDRESS_TYPE.ACTIVE); 
+  const opposingStopAddress = createStopAddress(stop, ADDRESS_TYPE.OPPOSING);
+  
+  const stopsWrapper = createStopsWrapper(stopAddress, opposingStopAddress);
+
+  const stopCardWrapper = createStopCard(stop, stopMetaData, stopsWrapper, buttonWrapper, isOptimised);
 
   const dragZoneTop = getDragDetectionZone("top");
   const dragZoneBottom= getDragDetectionZone("bottom");
@@ -1652,6 +1963,16 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
 
     setStopLock(stop['isLocked'], lockIcon, lockOpenIcon, stopNumber, stopCardWrapper.firstChild);
 
+    if(currentSelectedRun.isOptimised){
+
+      currentSelectedRun.isOptimised = false;
+      currentSelectedRun.fuelCost = 0;
+
+      showUnoptimisedRunState();
+
+
+    }
+
   });
 
 
@@ -1676,11 +1997,14 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
     if(result){
 
       showNotification("Success!", "Removed stop from run");
+
       const runObject = await selectRun(runDocumentID);
+      currentSelectedRun = runObject;
       updateStopList(runObject);
 
       await updateRunsList(selectedShipment.value);
-      updateMapMarkers(runObject);
+
+      showUnoptimisedRunState();
 
       return;
     } 
@@ -1724,7 +2048,7 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
 
     if(mouseupTime - lastMouseDown < stopCardLongClickTime){
 
-      selectStop(stopMetaData, buttonWrapper);
+      selectStop(stopMetaData, buttonWrapper, opposingStopAddress);
 
     }
 
@@ -1771,6 +2095,8 @@ function getStopCard(stop, runDocumentID, stopNumber, hasLockButton){
   return stopCardWrapper;
 
 }
+
+
 
 
 function setStopLock(isLocked, lockIcon, lockOpenIcon, stopNumber, stopCard){
@@ -1902,6 +2228,7 @@ async function dropStopCard(){
   //update client side order as database has updated successfully
   currentSelectedRun.stops = updatedStops;
   currentSelectedRun.isOptimised = false;
+  currentSelectedRun.fuelCost = 0;
 
 
   if(cardBeingDragged != null){
@@ -2011,33 +2338,41 @@ function setTop(top, element){
 }
 
 
-function selectStop(stopMetaData, buttonWrapper){
+function selectStop(stopMetaData, buttonWrapper, opposingStopAddress){
 
-  if(currentlyStopMetaData == stopMetaData && currentStopButtonWrapper == buttonWrapper){
+  if(currentStopMetaData == stopMetaData && currentStopButtonWrapper == buttonWrapper && currentOpposingStopAddress == opposingStopAddress){
     //deselect 
-    currentlyStopMetaData = null; 
+    currentStopMetaData = null; 
     currentStopButtonWrapper= null;
+    currentOpposingStopAddress = null
 
     hideUI(stopMetaData);
     hideUI(buttonWrapper);
+    hideUI(opposingStopAddress);
 
     return;
 
   }
 
-  if(currentlyStopMetaData != null){
-    hideUI(currentlyStopMetaData);
+  if(currentStopMetaData != null){
+    hideUI(currentStopMetaData);
   }
 
   if(currentStopButtonWrapper != null){
     hideUI(currentStopButtonWrapper);
   }
 
+  if(currentOpposingStopAddress != null){
+    hideUI(currentOpposingStopAddress);
+  }
+
   showUI(stopMetaData);
   showUI(buttonWrapper);
+  showUI(opposingStopAddress);
 
-  currentlyStopMetaData = stopMetaData;
+  currentStopMetaData = stopMetaData;
   currentStopButtonWrapper = buttonWrapper;
+  currentOpposingStopAddress = opposingStopAddress;
 
 }
 

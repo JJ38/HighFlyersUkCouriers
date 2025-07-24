@@ -146,12 +146,16 @@ export async function generateShipment(shipmentName, shipmentType, shipmentDeliv
     const docRef = doc(db, 'Settings', 'runDefinitions');
     const runDefinitions = await getDocument(docRef); //postcodes for runs
 
+    //fetch postcode run defaults
+    const runDefaultsDocRef = doc(db, 'Settings', 'runDefaults');
+    const runDefaults = await getDocument(runDefaultsDocRef); //postcodes for runs
+  
     //get orders by delivery week
     const q = query(collection(db, "Orders"), orderBy('ID', 'asc'), where("deliveryWeek", "==", deliveryWeek));
     const orderDataQuery = await getDocuments(q);
 
     //create run documents
-    const runDocuments = generateRunDocs(runDefinitions.data(), shipmentDeliveryWeekInput);
+    const runDocuments = generateRunDocs(runDefinitions.data(), runDefaults.data(), shipmentDeliveryWeekInput, shipmentType);
 
     //create a list of stops from orders
     await generateStopsFromOrders(orderDataQuery.docs, shipmentType, runDocuments, runDefinitions.data());
@@ -188,7 +192,7 @@ function addStopNumbersToStops(runDocuments){
 }
 
 
-function generateRunDocs(runDefinitions, shipmentDeliveryWeekInput){
+function generateRunDocs(runDefinitions, runDefaultSettings, shipmentDeliveryWeekInput, shipmentType){
   
   const runSet = new Set();
 
@@ -203,7 +207,24 @@ function generateRunDocs(runDefinitions, shipmentDeliveryWeekInput){
 
   runSet.forEach((runName) => {
 
-    runDocumentList.push(generateRunDoc(runName, shipmentDeliveryWeekInput));
+    let runProperties = null;
+
+    if(runDefaultSettings[runName] != null){
+
+      if(shipmentType == "collection"){
+
+        runProperties = runDefaultSettings[runName]['collection'];
+
+      }else if(shipmentType == "delivery"){
+
+        runProperties = runDefaultSettings[runName]['delivery'];
+
+      }
+
+
+    }
+
+    runDocumentList.push(generateRunDoc(runName, runProperties, shipmentDeliveryWeekInput));
 
   });
   
@@ -379,7 +400,7 @@ async function storeShipment(runDocuments, shipmentName, deliveryWeek){
 
     runs: runDocRefs,
     shipmentName: shipmentName,
-    shipmentWeek: deliveryWeek
+    shipmentWeek: deliveryWeek,
 
   });
 
@@ -401,95 +422,7 @@ async function storeShipment(runDocuments, shipmentName, deliveryWeek){
 
 }
 
-
-function generateRuns(runDefinitions, orderData, shipmentTypeInput, deliveryWeek){
-
-  const runStructList = [];
-
-  const runType = shipmentTypeInput == 'collection' ? 'collectionPostcode' : 'deliveryPostcode';
-
-  for(let i = 0; i < orderData.length; i++){
-   
-    //find corrosponding key in rundefinitions and get value
-    const orderPostcode = orderData[i].data()[runType];
-
-    if(orderPostcode != null){
-
-      let runName = null;
-
-      if(runDefinitions[orderPostcode.substring(0,4)] != null){
-
-        runName = runDefinitions[orderPostcode.substring(0,4)];
-
-      }else if(runDefinitions[orderPostcode.substring(0,3)] != null){
-
-        runName = runDefinitions[orderPostcode.substring(0,3)];
-
-      }else if(runDefinitions[orderPostcode.substring(0,2)] != null){
-
-        runName = runDefinitions[orderPostcode.substring(0,2)];
-
-      }
-
-      generateStopForRun(runName, orderData[i], shipmentTypeInput, deliveryWeek, runStructList);
-
-    }
-
-  }
-
-  //check if unassigned stops run has been created
-  const unassignedStopsRunCreated = runStructList.find((run) => {
-    return run.runName === null;
-  });
-
-  if(!unassignedStopsRunCreated){
-
-    runStructList.push(generateRunDoc(null, deliveryWeek));
-
-  }
-
-  return runStructList;
-
-}
-
-function generateStopForRun(runName, orderData, stopType, deliveryWeek, runStructList){
-
-  //does run exist in run list
-  let run = runStructList.find((run) => {
-    return run.runName === runName;
-  })
-
-  if(run == null){
-
-    run = generateRunDoc(runName, deliveryWeek);
-
-    run.stops.push(
-      {
-        orderID: orderData.id,
-        stopType: stopType, //collection or delivery
-        isLocked: false,
-        stopNumber: 1
-      }
-    );
-      
-    runStructList.push(run);
-
-    return;
-  }
-
-  run.stops.push(
-  {
-    orderID: orderData.id,
-    stopType: stopType, //collection or delivery
-    isLocked: false,
-    stopNumber: run.stops.length + 1
-  });
-
-  return runStructList;
-
-}
-
-function generateRunDoc(runName, deliveryWeek){
+function generateRunDoc(runName, runDefaultProperties, deliveryWeek){
 
   if(deliveryWeek == null){
     deliveryWeek = -1;
@@ -497,8 +430,8 @@ function generateRunDoc(runName, deliveryWeek){
 
   const run = {
 
+    settings: runDefaultProperties,
     assignedDriver: "",
-    fuelCost: "",
     runName: runName,
     runWeek: deliveryWeek,
     isOptimised: false,
@@ -511,7 +444,7 @@ function generateRunDoc(runName, deliveryWeek){
 }
 
 export async function fetchShipment(shipmentName){
-  console.log(shipmentName);
+  
   const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", shipmentName), limit(1)));
 
   if(shipmentData.empty){
@@ -527,7 +460,9 @@ export async function fetchShipment(shipmentName){
 export async function selectRun(documentID){
 
   const runDocument = await fetchRun(documentID);
-  const runObject = parseRunInfo(runDocument);
+  const fuelSettings = await fetchFuelSettings();
+
+  const runObject = parseRunInfo(runDocument, fuelSettings);
 
   const orders = await getRunStopsOrderData(runObject.stops);
   mergeStopsWithOrderData(runObject.stops, orders);
@@ -744,7 +679,7 @@ function getStopAddressString(orderData, stopType){
 
 export async function fetchStopCoordinates(addressString){
 
-  const url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressString + '&key=' + GeocodingAPIKey;
+  const url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressString + '&components=country:UK&key=' + GeocodingAPIKey;
 
   try {
 
@@ -838,6 +773,32 @@ export function parseAddress(addressComponents){
   }
 
   return address;
+
+}
+
+export async function fetchCoordinatesForUpdatedRunSettings(runSettings){
+
+  const startAddressString = runSettings.start.address.address1 + "," + runSettings.start.address.address2 + "," + runSettings.start.address.address3 + "," + runSettings.start.address.postcode
+  const endAddressString = runSettings.end.address.address1 + "," + runSettings.end.address.address2 + "," + runSettings.end.address.address3 + "," + runSettings.end.address.postcode
+
+  try{
+
+    const startAddressJson = await fetchStopCoordinates(startAddressString);
+    const endAddressJson = await fetchStopCoordinates(endAddressString);
+
+    const originCoordinates = getCoordinates(startAddressJson);
+    const destinationCoordinates = getCoordinates(endAddressJson);
+
+    return {
+      originCoordinates: originCoordinates,
+      destinationCoordinates: destinationCoordinates
+    }
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+  }
 
 }
 
@@ -949,7 +910,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   }
 
-  batch.update(runRemovingStopRef, {"stops": stopsWithStopsRemoved})
+  batch.update(runRemovingStopRef, {"stops": stopsWithStopsRemoved, isOptimised: false})
 
   //add runs to run document
   const stopsToAdd = stopsOfRunRemovingStops.filter((stop) => {
@@ -984,7 +945,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
 
   const newStops = runDocument.data()['stops'].concat(stopsToAdd);
-  batch.update(runRef, {"stops": newStops});
+  batch.update(runRef, {"stops": newStops, isOptimised: false});
 
   try{
 
@@ -1001,7 +962,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 } 
 
 //returns the id of the run document added to shipment or false
-export async function addRunToShipment(runName, shipmentName){
+export async function addRunToShipment(runName, runDefaultProperties, shipmentName){
 
   //get shipment doc ref
   const shipmentDoc = await fetchShipment(shipmentName); 
@@ -1024,7 +985,7 @@ export async function addRunToShipment(runName, shipmentName){
 
     console.log(runRef.id);
 
-    const runDoc = generateRunDoc(runName, deliveryWeek);
+    const runDoc = generateRunDoc(runName, runDefaultProperties, deliveryWeek);
 
     batch.set(runRef, runDoc);
 
@@ -1043,7 +1004,92 @@ export async function addRunToShipment(runName, shipmentName){
 
   }
 
+}
 
+export async function splitRun(runToBeSplit, ratioToBeSplitTo, shipmentName){
+
+  const shipmentDoc = await fetchShipment(shipmentName); 
+
+  if(shipmentDoc === false){
+    return false;
+  }
+
+  let shipmentRunIDs = shipmentDoc.data().runs;
+
+  const runDocs = getSplitRunDocuments(runToBeSplit, ratioToBeSplitTo);
+
+  const batch = writeBatch(db);
+  const runIDs = [];
+
+  for(let i = 0; i < runDocs.length; i++){
+
+    const runRef = doc(collection(db, 'Runs'));
+    runIDs.push(runRef.id);
+    batch.set(runRef, runDocs[i]);
+
+  }
+
+  //remove runToBeSplitID
+  shipmentRunIDs.splice(shipmentRunIDs.indexOf(runToBeSplit.documentId), 1);
+
+  //add the IDs of the new run documents
+  shipmentRunIDs = shipmentRunIDs.concat(runIDs);
+
+  const shipmentDocRef = doc(db, 'Shipments', shipmentDoc.id);
+
+  batch.update(shipmentDocRef, {"runs": shipmentRunIDs});
+
+  try{
+
+    await batch.commit();
+    return true;
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+}
+
+function getSplitRunDocuments(runToBeSplit, ratioToBeSplitTo){
+
+  const runs = [];
+
+  for(let i = 0; i < ratioToBeSplitTo; i++){
+
+    let runName = runToBeSplit.runName;
+
+    if(i != 0){
+      runName += " (" + i + ")";
+    }
+
+    runs.push(generateRunDoc(runName, runToBeSplit.settings, runToBeSplit.runWeek));
+
+  }
+
+  const stops = Object.assign([], runToBeSplit.stops);
+
+  const chunk = stops.length / ratioToBeSplitTo
+
+  for(let i = 0; i < ratioToBeSplitTo; i++){
+
+    const newStops = stops.slice(i * chunk, chunk * (i + 1));
+
+    for(let j = 0; j < newStops.length; j++){
+
+      newStops[j].stopNumber = j + 1;
+      newStops[j].isLocked = false;  
+      delete newStops[j].stopData;
+
+    }
+
+    runs[i].stops = newStops;
+
+  }
+
+  return runs;
 
 }
 
@@ -1135,7 +1181,7 @@ export async function toggleStopLock(stopBeingToggleLocked, runStruct){
 
   }
 
-  const result = await updateRun(runStruct.documentId, {stops: databaseStops});
+  const result = await updateRun(runStruct.documentId, {stops: databaseStops, isOptimised: false});
 
   if(result){
 
@@ -1171,22 +1217,59 @@ function toggleStopLockInRun(stopBeingToggleLocked, runStops){
 }
 
 
-export function parseRunInfo(doc){
+export function parseRunInfo(doc, fuelSettings){
 
   const runData = doc.data();
 
   const runStruct = {
     documentId: doc.id,
     assignedDriver: runData['assignedDriver'],
-    fuelCost: runData['fuelCost'],
     stops: runData['stops'],
     runName: runData['runName'],
     runWeek: runData['runWeek'],
+    runType: runData['runType'],
     isOptimised: runData['isOptimised'],
-    optimisedRoute: runData['optimisedRoute']
+    optimisedRoute: runData['optimisedRoute'],
+    settings: runData['settings']
+  }
+
+  if(runStruct.isOptimised && fuelSettings !== false){
+
+    runStruct.fuelCost = calculateFuelCost(runData['optimisedRoute']['metrics']['aggregatedRouteMetrics']['travelDistanceMeters'], fuelSettings);
+     
   }
   
   return runStruct;
+
+}
+
+export function calculateFuelCost(travelDistanceMeters, fuelSettings){
+
+  const costPerLiterPence = fuelSettings['fuelCost']; 
+  const milesPerGallon = fuelSettings['milesPerGallon'];
+
+  //4.54609 liters in an imperial gallon
+  const milesPerLiter = milesPerGallon / 4.54609;
+
+  //1609.34 meters in a mile
+  const kilometersPerLiter = milesPerLiter * 1.60934
+
+  const kilometersTraveled = travelDistanceMeters / 1000;
+  const numberOfLitersUsed = kilometersTraveled / kilometersPerLiter;
+
+  const costOfRunPence = numberOfLitersUsed * costPerLiterPence;
+  const costOfRunPounds = Number.parseFloat(costOfRunPence / 100).toFixed(2);
+
+  return costOfRunPounds;
+
+}
+
+export async function fetchFuelSettings(){
+
+  const docRef = doc(db, 'Settings', 'fuelSettings');
+  const fuelSettingsDocument = await getDocument(docRef);
+
+  return fuelSettingsDocument;
 
 }
 
@@ -1198,11 +1281,23 @@ export async function updateRun(documentId, fieldsToUpdate){
 
     await updateDocument(runRef, fieldsToUpdate);
 
-    // if(Math.floor(Math.random() * 2)){
+  }catch(e){
 
-    //   throw new Error("awdwad");
+    console.log(e);
+    return false;
 
-    // }
+  }
+
+  return true;
+}
+
+export async function updateRunSettings(runSettings, runDocumentID){
+
+  const runRef = doc(db, "Runs", runDocumentID);
+ 
+  try{
+
+    await updateDocument(runRef, {"settings": runSettings});
 
   }catch(e){
 
@@ -1212,6 +1307,7 @@ export async function updateRun(documentId, fieldsToUpdate){
   }
 
   return true;
+
 }
 
 export function isStopInShipment(runDocuments, stopsToAdd){
@@ -1323,26 +1419,19 @@ export function mergeStopsWithOrderData(stops, orders){
         stopData['payment'] = orderData['payment'];
         stopData['code'] = orderData['code'];
 
+        stopData['collectionAddress1'] = orderData['collectionAddress1'];
+        stopData['collectionAddress2'] = orderData['collectionAddress2'];
+        stopData['collectionAddress3'] = orderData['collectionAddress3'];
+        stopData['collectionName'] = orderData['collectionName'];
+        stopData['collectionPostcode'] = orderData['collectionPostcode'];
+        stopData['collectionPhoneNumber'] = orderData['collectionPhoneNumber'];
 
-        if(stops[i].stopType == "collection"){
-          //add collection data to stop
-          stopData['address1'] = orderData['collectionAddress1'];
-          stopData['address2'] = orderData['collectionAddress2'];
-          stopData['address3'] = orderData['collectionAddress3'];
-          stopData['name'] = orderData['collectionName'];
-          stopData['postcode'] = orderData['collectionPostcode'];
-          stopData['phoneNumber'] = orderData['collectionPhoneNumber'];
-
-        }else if(stops[i].stopType == "delivery"){
-          //add delivery data to stop
-          stopData['address1'] = orderData['deliveryAddress1'];
-          stopData['address2'] = orderData['deliveryAddress2'];
-          stopData['address3'] = orderData['deliveryAddress3'];
-          stopData['name'] = orderData['deliveryName'];
-          stopData['postcode'] = orderData['deliveryPostcode'];
-          stopData['phoneNumber'] = orderData['deliveryPhoneNumber'];
-
-        }
+        stopData['deliveryAddress1'] = orderData['deliveryAddress1'];
+        stopData['deliveryAddress2'] = orderData['deliveryAddress2'];
+        stopData['deliveryAddress3'] = orderData['deliveryAddress3'];
+        stopData['deliveryName'] = orderData['deliveryName'];
+        stopData['deliveryPostcode'] = orderData['deliveryPostcode'];
+        stopData['deliveryPhoneNumber'] = orderData['deliveryPhoneNumber'];
 
         stops[i]['stopData'] = stopData;
     
@@ -1359,22 +1448,33 @@ export async function calculateRoute(run){
 
   const stops = run.stops;
 
-  const originAndDestination = getOriginAndDestination(stops);
-  const stopLocations = getStopLocations(stops);
-  const requestBody = getRouteOptimisationRequestBody(originAndDestination.origin, originAndDestination.destination, stopLocations);
+  const originCoordinates = run.settings.start.location;
+  const destinationCoordinates = run.settings.end.location;
+
+  const runTimingsDocument = await getDocument(query(doc(db, 'Settings', 'runTimings')));
+
+  if(runTimingsDocument === false){
+
+    return false;
+
+  }
+  
+  const lockedStops = getLockedStops(stops);
+  const stopLocations = getStopLocations(stops, runTimingsDocument.data());
+
+  const precedenceRules = getPrecedenceRules(lockedStops, stops.length);
+
+  const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopLocations, precedenceRules, run.settings.start.time);
 
   const optimisedRoute = await fetchOptimisedRoute(requestBody);
 
-  if(optimisedRoute === false){
-    return false;
-  }
+  const optimisedRouteJSON = JSON.parse(optimisedRoute);
+
+  const updatedStops = updateStopOrder(optimisedRouteJSON, run);
+  const databaseStops = removeStopDataFromStop(run.stops);
 
   try{ 
 
-    const optimisedRouteJSON = JSON.parse(optimisedRoute);
-    const updatedStops = updateStopOrder(optimisedRouteJSON, run);
-
-    const databaseStops = removeStopDataFromStop(run.stops);
     const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON, databaseStops);
 
     if(storedResult === false){
@@ -1397,10 +1497,10 @@ export async function calculateRoute(run){
 function updateStopOrder(optimisedRouteJSON, run){ 
   
   const stops = Object.assign([], run.stops);
-  console.log(stops);
-  console.log(optimisedRouteJSON['routes'][0]['visits']);
 
   const optimisedStops = optimisedRouteJSON['routes'][0]['visits'];
+  const optimisedTransitions = optimisedRouteJSON['routes'][0]['transitions'];
+
 
   for(let i = 0; i < optimisedStops.length; i++){
 
@@ -1410,18 +1510,42 @@ function updateStopOrder(optimisedRouteJSON, run){
 
       if(primaryKey === optimisedStops[i]['shipmentLabel']){
         stops[j].stopNumber = i + 1;
-        console.log(primaryKey + " " + (i + 1))
+        stops[j].stopTime = getStopArrivalTime(optimisedTransitions[i]);
       }
 
     }
 
   }
   
-  console.log(stops);
   return stops;
 
 }
 
+function getStopArrivalTime(optimisedStop){
+  
+  const startTimeDate = optimisedStop.startTime;
+  const durationSecondsString = optimisedStop.travelDuration;
+
+  const durationSecondsInt = parseInt(durationSecondsString.replaceAll("s", ""));
+
+  const startTimeString = startTimeDate.substring(startTimeDate.indexOf("T") + 1, startTimeDate.length).replaceAll(["Z"], "");
+  
+  const startTimeComponentsStrings = startTimeString.split(":");
+
+  const startTimeSecondsInt = (parseInt(startTimeComponentsStrings[0]) * 60 * 60) + (parseInt(startTimeComponentsStrings[1]) * 60) + parseInt(startTimeComponentsStrings[2]);
+
+  //%86400 to handle case where time passes midnight
+  const arrivalTimeSeconds = (startTimeSecondsInt + durationSecondsInt) % 86400;
+
+  const arrivalTimeHour = Math.floor(arrivalTimeSeconds / 3600);
+  const arrivalTimeMinute = Math.floor(arrivalTimeSeconds / 60) % 60;
+
+  const arrivalTimeHourString = arrivalTimeHour < 10 ? "0" + arrivalTimeHour : arrivalTimeHour.toString();
+  const arrivalTimeMinuteString = arrivalTimeMinute < 10 ? "0" + arrivalTimeMinute : arrivalTimeMinute.toString();
+
+  return arrivalTimeHourString + ":" + arrivalTimeMinuteString;
+
+}
 
 async function storeOptimisedRoute(runID, optimisedRoute, stops){
 
@@ -1429,8 +1553,13 @@ async function storeOptimisedRoute(runID, optimisedRoute, stops){
 
     const runRef = doc(db, 'Runs', runID);
 
-    await updateDocument(runRef, {optimisedRoute: optimisedRoute, isOptimised: true, stops:stops});
+    const result = await updateDocument(runRef, {optimisedRoute: optimisedRoute, isOptimised: true, stops:stops});
     
+    if(result === false){
+
+      return false;
+
+    }
 
   }catch(e){
 
@@ -1481,35 +1610,7 @@ function getOriginAndDestination(stops){
 
   const numberOfStops = stops.length;
 
-  for(let i = 0; i < stops.length; i++){
-
-    if(stops[i].stopNumber == 1){
-
-      if(stops[i].isLocked){
-        origin = {
-          
-          lat: stops[i].coordinates.lat,
-          lng: stops[i].coordinates.lng,
-
-        }
-      }
-
-    }
-
-    if(stops[i].stopNumber == numberOfStops){
-      console.log(stops[i].stopNumber == numberOfStops);
-      if(stops[i].isLocked){
-        destination = {
-
-          lat: stops[i].coordinates.lat,
-          lng: stops[i].coordinates.lng,
-
-        }
-      }
-
-    }
-
-  }
+  
 
   if(origin == null){
 
@@ -1527,22 +1628,84 @@ function getOriginAndDestination(stops){
 
 }
 
+function getLockedStops(stops){
 
-function getStopLocations(stops){
+  let start = {isLocked: false};
+  let end = {isLocked: false};
+
+  const numberOfStops = stops.length;
+  
+  for(let i = 0; i < stops.length; i++){
+
+    if(stops[i].stopNumber == 1){
+
+      if(stops[i].isLocked){
+
+        start = {
+
+          isLocked: true,
+          index: i,
+          coordinates: {
+
+            lat: stops[i].coordinates.lat,
+            lng: stops[i].coordinates.lng,
+          
+          }
+
+        }
+
+      }
+
+    }
+
+    if(stops[i].stopNumber == numberOfStops){
+
+      if(stops[i].isLocked){
+
+        end = {
+
+          isLocked: true,
+          index: i,
+          coordinates: {
+
+            lat: stops[i].coordinates.lat,
+            lng: stops[i].coordinates.lng,
+
+          }
+
+        }
+      }
+
+    }
+
+  }
+
+  return {start: start, end: end}
+
+}
+
+
+function getStopLocations(stops, runTimings){
+
+  //find duplicate stops
+  const groupedStops = getDuplicationStopLocations(stops);
+
+  const nonDuplicateStops = groupedStops.nonDuplicateStops;
 
   const stopObjects = [];
 
-  for(let i = 0; i < stops.length; i++){
+  for(let i = 0; i < nonDuplicateStops.length; i++){
 
     const stopObject = 
     {
-      "label": stops[i].orderID + "_" + stops[i].stopType,
+      "label": nonDuplicateStops[i].orderID + "_" + nonDuplicateStops[i].stopType,
       "deliveries": [
         {
           "arrivalLocation": {
-            "latitude": stops[i].coordinates.lat,
-            "longitude": stops[i].coordinates.lng
-          }
+            "latitude": nonDuplicateStops[i].coordinates.lat,
+            "longitude": nonDuplicateStops[i].coordinates.lng
+          },
+          "duration": runTimings.stopDurationSeconds + "s"
         }
       ]
     }
@@ -1551,32 +1714,187 @@ function getStopLocations(stops){
     
   }
 
+
+  groupedStops.duplicateStops.forEach((duplicateStops, key, map) => {
+
+    for(let j = 0; j < duplicateStops.length; j++){
+
+      const duration = j == 0 ? runTimings.stopDurationSeconds : runTimings.additionalStopDurationSeconds
+
+      const stopObject = 
+      {
+        "label": duplicateStops[j].orderID + "_" + duplicateStops[j].stopType,
+        "deliveries": [
+          {
+            "arrivalLocation": {
+              "latitude": duplicateStops[j].coordinates.lat,
+              "longitude": duplicateStops[j].coordinates.lng
+            },
+            "duration": duration + "s"
+          }
+        ]
+      }
+
+      stopObjects.push(stopObject);
+      
+    }
+    
+  });
+
   return stopObjects;
 
 }
 
-//https://developers.google.com/maps/documentation/route-optimization/construct-request?_gl=1*ftiy74*_up*MQ..*_ga*MTQ5NDczNjIwMi4xNzQ5NjU4OTYy*_ga_NRWSTWS78N*czE3NDk2NTg5NjIkbzEkZzEkdDE3NDk2NTkxNzckajI2JGwwJGgw
-function getRouteOptimisationRequestBody(origin, destination, stops){
+function getDuplicationStopLocations(stops){
 
-  const request =
-  {
-    "model": {
-      "shipments": stops,
-      "vehicles": [
-        {
-          "startLocation": {
-            "latitude": origin.lat,
-            "longitude": origin.lng
-          },
-          "endLocation": {
-            "latitude": destination.lat,
-            "longitude": destination.lng
-          },
-          "costPerKilometer": 1.0
+  const nonDuplicateStops = [];
+  const groupedDuplicatedStops = new Map();
+
+  for(let i = 0; i < stops.length; i++){
+
+    const isDuplicate = isDuplicateCoordinate(stops, stops[i]);
+
+    if(isDuplicate){
+
+      const coordinateKey = stops[i].coordinates.lat + "_" + stops[i].coordinates.lng;
+
+      if(groupedDuplicatedStops.has(coordinateKey)){
+
+        console.log("Key exists");
+        groupedDuplicatedStops.get(coordinateKey).push(stops[i]);
+
+      }else{
+        console.log("Key doesnt exists");
+        console.log(coordinateKey);
+        groupedDuplicatedStops.set(coordinateKey, [stops[i]]);
+
+      }
+
+    }else{
+
+      nonDuplicateStops.push(stops[i])
+
+    }
+
+  }
+
+  return {duplicateStops: groupedDuplicatedStops, nonDuplicateStops: nonDuplicateStops};
+
+}
+
+function isDuplicateCoordinate(stops, stop){
+
+  for(let i = 0; i < stops.length; i++){
+
+    if((stops[i].orderID != stop.orderID) && compareCoordinates(stops[i].coordinates, stop.coordinates)){
+
+      return true;
+
+    }
+    
+  }
+
+  return false;
+
+}
+
+function compareCoordinates(a, b){
+
+  if(a.lat !== b.lat){
+    return false;
+  }
+
+  if(a.lng !== b.lng){
+    return false;
+  }
+
+  return true;
+
+}
+
+function getPrecedenceRules(lockedStops, numberOfStops){
+
+  const rules = []; 
+
+  if(lockedStops.start.isLocked){
+
+    console.log("first stop is locked");
+
+    for(let i = 0; i < numberOfStops; i++){
+
+      if(i != lockedStops.start.index){
+
+        const rule =  {
+          "firstIsDelivery": true,
+          "secondIsDelivery": true,
+          "firstIndex": lockedStops.start.index,
+          "secondIndex": i
         }
-      ],
+
+        rules.push(rule);
+
+      }
+
+    }
+
+  }
+
+  if(lockedStops.end.isLocked){
+    console.log("end stop is locked");
+
+    for(let i = 0; i < numberOfStops; i++){
+
+      if(i != lockedStops.end.index){
+
+        const rule =  {
+          "firstIsDelivery": true,
+          "secondIsDelivery": true,
+          "firstIndex": i,
+          "secondIndex": lockedStops.end.index
+        }
+
+        rules.push(rule);
+
+      }
+
     }
   }
+
+  return rules;
+
+}
+
+//https://developers.google.com/maps/documentation/route-optimization/construct-request?_gl=1*ftiy74*_up*MQ..*_ga*MTQ5NDczNjIwMi4xNzQ5NjU4OTYy*_ga_NRWSTWS78N*czE3NDk2NTg5NjIkbzEkZzEkdDE3NDk2NTkxNzckajI2JGwwJGgw
+function getRouteOptimisationRequestBody(origin, destination, stops, precedenceRules, startTime){
+
+
+  const request = 
+  {
+    "model": {
+        "globalStartTime": "1970-01-01T" + startTime.hour + ":" + startTime.minute + ":00Z",
+        "globalEndTime": "1970-01-02T23:00:00Z",
+        "shipments": stops,
+        "vehicles": [
+            {
+                "label": "DeliveryVan1",
+                "startLocation": {
+                  "latitude": origin.lat,
+                  "longitude": origin.lng
+                },
+                "endLocation":{
+                  "latitude": destination.lat,
+                  "longitude": destination.lng
+                },
+                "costPerKilometer": 1
+            }
+        ],
+        "precedenceRules": precedenceRules,
+    },
+    "parent": "projects/highflyersukcouriers/locations/global",
+    "searchMode": "RETURN_FAST",
+    "populateTransitionPolylines": true,
+  }
+
 
   return request;
 
@@ -1682,13 +2000,11 @@ export async function updateStopAddress(address, run, stopToUpdate){
 
   const batch = writeBatch(db);
 
-  batch.update(runRef, {"stops": databaseStops});
+  batch.update(runRef, {"stops": databaseStops, isOptimised: false});
 
 
   //update orderdata
   const newOrderDocument = updateOrderDocumentAddress(stopToUpdate.stopType, address.address, orderDocument.data());
-
-  console.log(newOrderDocument);
 
   if(newOrderDocument === false){
     return false;

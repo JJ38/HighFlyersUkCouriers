@@ -311,7 +311,6 @@ p{
 
     max-width: 350px;
     height: 100%;
-    gap:10px
 
 }
 
@@ -377,8 +376,7 @@ p{
     background-color: white;
     border-radius: 10px;
     filter: drop-shadow(2px 3px 8px #00000040);
-    margin: 10px 0px;
-    padding: 25px 30px;
+    padding: 15px 30px 25px 30px;
     width: 100%;
     transition: all 0.5s;
 
@@ -388,7 +386,15 @@ p{
 
     display: flex;
     justify-content: space-between;
+    
+}
+
+.animalTypeQuantityContainer{
+    
+    display: flex;
+    justify-content: space-between;
     margin-bottom: 10px;
+    font-weight: 300;
 
 }
 
@@ -497,7 +503,8 @@ p{
 
     font-size: 1.3rem;
     font-weight: 500;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    margin-top: 10px;
     line-height: 1.3rem;
 
 }
@@ -508,6 +515,14 @@ p{
     font-weight: 400;
     margin-bottom: 10px;
     line-height: 1.1rem;
+
+}
+
+.stopsWrapper{
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 
 }
 
@@ -643,11 +658,6 @@ td > div{
 
 }
 
-.tableAddressLineMain{
-
-
-}
-
 .tableAddressLineSecondary{
 
     display: flex;
@@ -667,7 +677,7 @@ td > div{
 
 }
 
-.addOrderSearchFilter{
+.selectOption{
 
     border: 0px;
     background-color: #F5F4F4;
@@ -764,9 +774,70 @@ td > div{
     gap: 20px;
     flex-direction: column;
     min-width: 300px;
-
     padding: 15px 15px;
+    overflow-y: scroll;
 
+}
+
+.runAddressPropertyWrapper{
+
+    display: flex;
+    flex-direction: column;
+    line-height: 1em;
+
+}
+
+.runPropertiesWrapper{
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 30px;
+
+}
+
+.splitRunSettingsButton{
+
+    display: flex;
+    color: white;
+    align-items: center;
+    border-radius: 5px;
+    border: 1px solid #2881FF;
+    background-color: #2881FF;
+    padding: 5px 10px;
+    margin-top: 10px; 
+    width: fit-content;
+
+}
+
+.splitRunSettingsButton:hover{
+
+    cursor: pointer;
+    color: #2881FF;
+    background-color: white;
+
+}
+
+
+.updateRunSettingsButton{
+
+    display: flex;
+    color: white;
+    align-items: center;
+    border-radius: 5px;
+    background-color: rgb(32, 189, 64);
+    border: 1px solid rgb(32, 189, 64);
+    padding: 5px 10px;
+    width: fit-content;
+
+}
+
+.updateRunSettingsButton:hover{
+
+    cursor: pointer;
+    color: rgb(32, 189, 64);
+    background-color: white;
+    
 }
 
 .removeRunButton{
@@ -1022,5 +1093,18 @@ td > div{
 .validateAddressWidgetButton{
 
     margin: 3px 0px;
+
+}
+
+.startFlag{
+
+    color: #000000;
+
+}
+
+.endFlag{
+
+    color: white;
+    /* background: #2881FF; */
 
 }

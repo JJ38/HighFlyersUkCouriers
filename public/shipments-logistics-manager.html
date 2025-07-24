@@ -204,7 +204,7 @@
 
           <div id="validate_address_form" class="validateAddressForm">
 
-            <h2>Validate Address</h2>
+            <h2>Find Address</h2>
 
             <label for="validate_address_autocomplete_input">Search for an address: </label>
             <input id="validate_address_autocomplete_input" type="text" placeholder="Search for a place..." />
@@ -320,7 +320,7 @@
 
                     <input id="unassigned_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
 
-                    <select name="" id="unassigned_order_search_filter" class="addOrderSearchFilter">
+                    <select name="" id="unassigned_order_search_filter" class="selectOption">
 
                       <option value="ID">ID</option>
                       <option value="animalType">Animal Type</option>
@@ -411,7 +411,7 @@
 
                     <input id="add_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
 
-                    <select name="" id="add_order_search_filter" class="addOrderSearchFilter">
+                    <select name="" id="add_order_search_filter" class="selectOption">
 
                       <option value="ID">ID</option>
                       <option value="animalType">Animal Type</option>
@@ -510,21 +510,123 @@
 
                 <div id="run_options_container" class="runOptionsContainer hidden">
 
-                  <div>
+                  <div class="runProperties">
 
-                    <label for="driver_select" class="bold">Assign Driver: </label>
-                    <select name="driver_select" id="driver_select" class="addOrderSearchFilter">
+                    <!-- <label for="driver_select" class="bold">Assign Driver: </label>
+                    <select name="driver_select" id="driver_select" class="selectOption">
 
                       <option value="opunuoien">Stephen</option>
                       <option value="pojjesPIOFJEI">Anne</option>
                   
-                    </select>
+                    </select> -->
+
+                    <div class="splitRunWrapper">
+
+                      <label for="split_run_select" class="bold">Split Run: </label>
+                      <select name="split_run_select" id="split_run_select" class="selectOption">
+
+                        <option value="" selected>Select split amount</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+
+                    
+                      </select>
+
+                      <div id="split_run_settings_button" class="splitRunSettingsButton hidden">
+                        <p>Split Run</p>
+                        <span class="delete material-symbols-outlined">content_cut</span>
+                      </div>
+
+                    </div>
+
+                    <div class="runPropertiesWrapper">
+
+                      <h3>Origin Settings</h3>
+
+                        <div class="runAddressPropertyWrapper">
+
+                          <label for="run_origin_address_line_1">Address Line 1:  </label>
+                          <input id= "run_origin_address_line_1" type="text"/>
+
+                        </div>
+
+                        <div class="runAddressPropertyWrapper">
+                           
+                          <label for="run_origin_address_line_2">Address Line 2:  </label>
+                          <input id= "run_origin_address_line_2" type="text"/>
+                          
+                        </div>
+
+                        <div class="runAddressPropertyWrapper">
+
+                          <label for="run_origin_address_line_3">Address Line 3:  </label>
+                          <input id= "run_origin_address_line_3" type="text"/>
+                          
+                        </div>
+
+                        <div class="runAddressPropertyWrapper">
+
+                          <label for="run_origin_postcode">Postcode:  </label>
+                          <input id= "run_origin_postcode" type="text"/>
+                          
+                        </div>
+
+                        <div class="runAddressPropertyWrapper">
+
+                          <label for="run_origin_hour">Start hour:  </label>
+                          <input id= "run_origin_hour" type="number" min="0" max="23"/>
+                       
+                        </div>
+
+                        <div class="runAddressPropertyWrapper">
+
+                          <label for="run_origin_minute">Start minute:  </label>
+                          <input id= "run_origin_minute" type="number" min="0" max="59"/>
+                          
+                        </div>
+
+                    </div>
+                  
+                    <div class="runPropertiesWrapper">
+                  
+                      <h3>Destination Settings</h3>
+
+                      <div class="runAddressPropertyWrapper">
+
+                        <label for="run_destination_address_line_1">Address Line 1:  </label>
+                        <input id ="run_destination_address_line_1" type="text"/>
+
+                      </div>  
+
+                      <div class="runAddressPropertyWrapper">
+
+                        <label for="run_destination_address_line_2">Address Line 2:  </label>
+                        <input id= "run_destination_address_line_2" type="text"/>
+                        
+                      </div>
+
+                      <div class="runAddressPropertyWrapper">
+
+                        <label for="run_destination_address_line_3">Address Line 3:  </label>
+                        <input id= "run_destination_address_line_3" type="text"/>
+                        
+                      </div>
+
+                      <div class="runAddressPropertyWrapper">
+
+                        <label for="run_destination_postcode">Postcode:  </label>
+                        <input id= "run_destination_postcode" type="text"/>
+                        
+                      </div>                   
+
+                    </div>
 
                   </div>
 
-                  <div id="remove_run_button" class="removeRunButton">
-                    <p>Remove Run</p>
-                    <span class="delete material-symbols-outlined">delete</span>
+                  <div id="update_run_settings_button" class="updateRunSettingsButton">
+                    <p>Update Settings</p>
+                    <span class="delete material-symbols-outlined">sync</span>
                   </div>
 
                   <div id="calculate_route_button_wrapper">
@@ -538,11 +640,14 @@
                     </div>
                   </div>
 
+                  <div id="remove_run_button" class="removeRunButton">
+                    <p>Remove Run</p>
+                    <span class="delete material-symbols-outlined">delete</span>
+                  </div>
+
                 </div>
 
               </div>
-
-              
 
             </div>
 
