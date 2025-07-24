@@ -5,7 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 
 $app->get('/about-us', function (Request $request, Response $response) use ($app) : Response{
-
+    
     return $this->view->render($response,'about-us.html', array(
             'page_title' => APP_TITLE,
             'css_file' => CSS_PATH . "AboutUs.css",

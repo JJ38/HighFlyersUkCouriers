@@ -9,16 +9,16 @@
 
     <title>HighFlyersUkCouriers</title>
 
-  <script type="module" crossorigin src="./assets/LogisticsSettings-CULml-Ii.js"></script>
+  <script type="module" crossorigin src="./assets/LogisticsSettings-BgV0mkge.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="./assets/Notification-D0jEUT8q.js">
   <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-B1C6gsaD.js">
-  <link rel="modulepreload" crossorigin href="./assets/Firebase-Crudew6x.js">
+  <link rel="modulepreload" crossorigin href="./assets/Firebase-BO2m8rLx.js">
   <link rel="stylesheet" crossorigin href="./assets/Notification-BHB7FqS3.css">
-  <link rel="stylesheet" crossorigin href="./assets/LogisticsSettings-XAkUg1CR.css">
+  <link rel="stylesheet" crossorigin href="./assets/LogisticsSettings-FSW5sSU2.css">
   <link rel="stylesheet" crossorigin href="./assets/Navbar-ClBKpNFz.css">
   <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
-  <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-UkFB9euZ.css">
+  <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-DW9mHC9O.css">
 </head>
 <body>
     <header>
@@ -69,141 +69,90 @@
           <h1 class="title">Settings</h1>
 
           <section class="fuelsettingswrapper">
+
             <h2 class="title">Fuel Settings</h2>
             <div class="subsection">
 
               <div class="titledinputwrapper">
+
                 <label class="inputlable" for="fuelcostinput">Fuel Price</label>
                 <div class="fuelcostinputwrapper">
-                  <input id="fuelCostInput" class="fuelcostinput" name="fuelcostinput" type="number">
+                  <input id="fuel_cost_input" class="fuelCostInput numberInput" name="fuelcostinput" type="number">
                   <p class="pence">p</p>
                 </div>
+
               </div>
 
-              <button id="updateFuelCostButton" class="updatefuelcostbutton hidden">Update</button>
-    
-            </div>           
+
+              <div class="titledinputwrapper">
+
+                <label class="inputlable" for="milespergalloninput">Miles Per Gallon</label>
+                <div class="fuelcostinputwrapper">
+                  <input id="mile_per_gallon_input" class="milesPerGallonInput numberInput" name="milespergalloninput" type="number">
+                  <p class="pence">mpg</p>
+                </div>
+
+              </div>
+
+              <button id="update_fuel_settings_button" class="updateButton hidden">Update</button>
+
+            </div>
+
+          </section>
+
+          <section class="fuelsettingswrapper">
+
+            <h2 class="title">Stop Settings</h2>
+            <div class="subsection">
+
+              <div class="titledinputwrapper">
+
+                <label class="inputlable" for="stop_duration_input">Stop Duration </label>
+                <div class="fuelcostinputwrapper">
+                  <input id="stop_duration_input" class="fuelCostInput numberInput" name="stop_duration_input" type="number">
+                  <p class="pence">s</p>
+                </div>
+
+              </div>
+
+
+              <div class="titledinputwrapper">
+
+                <label class="inputlable" for="additional_stop_duration_input">Additonal Stop Duration </label>
+                <div class="fuelcostinputwrapper">
+                  <input id="additional_stop_duration_input" class="fuelCostInput numberInput" name="additional_stop_duration_input" type="number">
+                  <p class="pence">s</p>
+                </div>
+
+              </div>
+
+              <button id="update_stop_duration_button" class="updateButton hidden">Update</button>
+
+            </div>
+
           </section>
 
           <section class="rundefinitionswrapper">
             <h2 class="title">Run Settings</h2>
+          
             <div class="subsection">
 
-              <div class="warningwrapper">
-                <span class="material-symbols-rounded warningtriangle">
-                  warning
-                </span>
-                <h3 class="warningtitle">Unassigned area codes</h3>
+              <h3>Run Defaults</h3>
+
+              <div id="run_defaults_wrapper" class="cardWrapper">
+                
               </div>
 
-              <div class="unassignedareacodeswrapper">
-                    <div class="areacodepill">DE</div>
-                    <div class="areacodepill">SW</div>
-              </div>
-
-            </div>
-
-            <div class="subsection">
               <h3>Run Definitions</h3>
 
-              <div class="rundefinitionbuttonwrapper">
-                <div id="addRunButton" class="rundefinitionbutton">
-                  <p class="plus">+</p>
-                  <p>Add Run</p>
-                </div>
-                <div id="addPostcodeButton" class="rundefinitionbutton">
-                  <p class="plus">+</p>
-                  <p>Add Postcode</p>
-                </div>
-              </div>  
+              <div id="run_definitions_wrapper" class="cardWrapper">
 
-              <div class="run">
-                <h4 class="runname">Cumbria</h4>
-                <div id="areacodewrapper" class="areacodewrapper">
-
-                  <div class="areacodepill">
-                    <div class="removeareacodebutton">x</div>
-                    <p>CA</p>
-                  </div>
-
-                  <div class="areacodepill">
-                    <div class="removeareacodebutton">x</div>
-                    <p>LA</p>
-                  </div>
-
-                  <div class="runbuttonwrapper">
-                    <div class="runbutton add">
-                      <span class="material-symbols-outlined">
-                        add
-                      </span>
-                    </div>
-                    <div class="runbutton delete">
-                      <span class="material-symbols-outlined">
-                        delete
-                      </span>
-                    </div>
-                  </div>
-               
-                </div>
-              </div>
-              <div class="run">
-                <h4 class="runname">Bristol</h4>
-                <div id="areacodewrapper" class="areacodewrapper">
-
-                  <div class="areacodepill">
-                    <div class="removeareacodebutton">x</div>
-                    <p>CA</p>
-                  </div>
-
-                  <div class="areacodepill">
-                    <div class="removeareacodebutton">x</div>
-                    <p>LA</p>
-                  </div>
-
-                  <div class="runbuttonwrapper">
-                    <div class="runbutton add">
-                      <span class="material-symbols-outlined">
-                        add
-                      </span>
-                    </div>
-                    <div class="runbutton delete">
-                      <span class="material-symbols-outlined">
-                        delete
-                      </span>
-                    </div>
-                  </div>
-               
-                </div>
               </div>
 
-              <div class="run">
-                <h4 class="runname">North East Scotland</h4>
-                <div id="areacodewrapper" class="areacodewrapper">
+              <h3>Postcode Exceptions</h3>
 
-                  <div class="areacodepill">
-                    <div class="removeareacodebutton">x</div>
-                    <p>CA</p>
-                  </div>
+              <div id="postcode_exceptions_wrapper" class="cardWrapper">
 
-                  <div class="areacodepill">
-                    <div class="removeareacodebutton">x</div>
-                    <p>LA</p>
-                  </div>
-
-                  <div class="runbuttonwrapper">
-                    <div class="runbutton add">
-                      <span class="material-symbols-outlined">
-                        add
-                      </span>
-                    </div>
-                    <div class="runbutton delete">
-                      <span class="material-symbols-outlined">
-                        delete
-                      </span>
-                    </div>
-                  </div>
-               
-                </div>
               </div>
 
             </div>

@@ -208,6 +208,8 @@ class DoctrineWrapper
                 ->from('orders', 'o')
                 ->where($this->query_builder->expr()->in('o.' . $field_name, $value));
                 
+                
+
             $query = $query_builder->execute();
             $query_result = $query->fetchAll();
 
@@ -633,6 +635,7 @@ class DoctrineWrapper
         }
     }
 
+    
 
     public function fetchCustomerDetails($username) : void
     {

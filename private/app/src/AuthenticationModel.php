@@ -124,12 +124,10 @@ class AuthenticationModel
             $projectID = $env['FIREBASE_PROJECT_ID'];
             $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
         
-            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [] , $client);
+            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+                'database' => '(default)',
+            ], $client);
 
-            FirestoreClient::setConfig([
-                'database' => $env['FIREBASE_FIRESTORE_DATABASE_NAME'],
-                'projectId' => $projectID,
-            ]);
             
         }catch(\Exception $e){
 
@@ -146,7 +144,7 @@ class AuthenticationModel
 
     }
 
-    public function fetchGoogleCloudAccessToken($serviceAccountKeyPath, $scopes){
+     public function fetchGoogleCloudAccessToken($serviceAccountKeyPath, $scopes){
 
         if (!file_exists($serviceAccountKeyPath)) {
             throw new Exception("Service account key file not found at: " . $serviceAccountKeyPath);
@@ -193,5 +191,3 @@ class AuthenticationModel
     }
 
 }
-
-

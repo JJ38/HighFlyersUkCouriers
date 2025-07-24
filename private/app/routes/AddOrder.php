@@ -5,48 +5,13 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Kreait\Firebase\Contract\Auth;
 use Kreait\Firebase\Firestore;
-// use MrShan0\PHPFirestore\FirestoreClient;
+use MrShan0\PHPFirestore\FirestoreClient;
 use DateTime;
-use Google\Cloud\Firestore\FirestoreClient;
 
 $app->get('/add-order', function (Request $request, Response $response, $args) use ($app) : Response{
 
   
   $account_type = $request->getAttribute('accountType');
-  putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
-  putenv('GOOGLE_SDK_PHP_LOGGING=true');
-
-  try{
-    
-    $db = new FirestoreClient([
-      // 'projectId' => "highflyersukcouriers-a9c17",
-      'database' => "development"
-    ]);
-
-    var_dump($db);
-
-    $data = [
-    'name' => 'Los Angeles',
-    'state' => 'CA',
-    'country' => 'USA'
-    ];
-
-    $docRef = $db->collection('Settings')->document('fuelcost');
-    $snapshot = $docRef->snapshot();
-    echo $snapshot;
-
-  }catch(\Exception $e){
-
-    echo $e;
-
-  }
-  // $collectionReference = $firestore->collection('Settings');
-  // $documentReference = $collectionReference->document('fuelcost');
-  // $snapshot = $documentReference->snapshot();
-
-  // echo "Hello " . $snapshot['fuelcost'];
-
-  return $response;
 
   if($account_type == "admin" || $account_type == "staff"){
 
@@ -130,6 +95,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   }
 
 
+
   putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
 
   $container = $app->getContainer();
@@ -154,6 +120,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   $accessToken = $authentication_model->getOAuth2Token();
   $firestore = $authentication_model->getAuthenticatedFirebaseClient();
+
 
   if($firestore == null){
     return $response->withRedirect('/manage-accounts?error=dberror', 302);

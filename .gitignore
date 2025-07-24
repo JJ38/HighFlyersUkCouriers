@@ -8,3 +8,5 @@ private/app/settings.php
 vendor/
 TODO.txt
 public/js/Settings.js
+public/.htaccess
+liveSiteCredentials

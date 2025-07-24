@@ -19,8 +19,6 @@ $app->get('/calculate-route', function (Request $request, Response $response) us
 $app->post('/calculate-route', function (Request $request, Response $response) use ($app) : Response
 {
 
-    // $response->getBody()->write('{"result": "calculate Route route with direct string as json"}');
-
     $model = $request->getParsedBody();
 
     //contact google routes optimisation api
@@ -28,11 +26,11 @@ $app->post('/calculate-route', function (Request $request, Response $response) u
     // return $response->withJson($model);
 
     $container = $app->getContainer();
-    $authentcation_model = $container->get('authenticationModel');
+    $authentication_model = $container->get('authenticationModel');
     $calculate_route_model = $container->get('calculateRouteModel');
     $logger = $container->get('logger');
 
-    $authentcation_model->setLogger($logger);
+    $authentication_model->setLogger($logger);
     $calculate_route_model->setLogger($logger);
 
 
@@ -46,14 +44,9 @@ $app->post('/calculate-route', function (Request $request, Response $response) u
 
     try {
 
-        $accessToken = $authentcation_model->fetchGoogleCloudAccessToken($serviceAccountPath, $scopes);
+        $accessToken = $authentication_model->fetchGoogleCloudAccessToken($serviceAccountPath, $scopes);
 
-        // var_dump($model);
-
-        // return $response->withJson($model);
         $route = $calculate_route_model->calculateRoute($accessToken, $model); 
-
-        // var_dump($route);
 
         return $response->withJson($route);
 
