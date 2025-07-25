@@ -6,8 +6,6 @@ import { checkPostcodeForException } from '/js/ValidateAddress.js';
 
 const postcodeExceptions = await getDocument(doc(db, "Settings", "postcodeExceptions"));
 
-//function checkPostcodeForException(postcodeInput, postcodeExceptions, postcodeType)
-
 
 //delivery postcodes that are allowed 
 test('Allowed delivery postcode all uppercase with one space', () => {
@@ -94,11 +92,15 @@ test('Allowed collection postcode uppercase no space', () => {
 
 
 //collection postcodes that arent allowed
-test('Aberdeen collection postcode', async () => {
+test('Aberdeen collection postcode', () => {
+  expect(checkPostcodeForException("AB30", postcodeExceptions, "COLLECTION")).not.toBe(false);
+});
+
+test('Aberdeen collection postcode', () => {
   expect(checkPostcodeForException("AB10 1AH", postcodeExceptions, "COLLECTION")).not.toBe(false);
 });
 
-test('Inverness collection postcode', async () => {
+test('Inverness collection postcode', () => {
   expect(checkPostcodeForException("IV1 1AX", postcodeExceptions, "COLLECTION")).not.toBe(false);
 });
 

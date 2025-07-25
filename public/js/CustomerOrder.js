@@ -216,7 +216,7 @@ async function validateOrder(){
         return "Payment method is not valid";
     }
 
-    const validatePostcodesResult = await validatePostcodes(collectionPostcode.value, deliveryPostcode.value);
+    const validatePostcodesResult = await validatePostcodes(deliveryPostcode.value, collectionPostcode.value);
     console.log(validatePostcodesResult);
     if(validatePostcodesResult != false){
         return validatePostcodesResult;

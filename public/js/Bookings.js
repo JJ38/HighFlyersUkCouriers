@@ -99,7 +99,7 @@ async function validateForm(){
         return "Email is not valid";
     }
 
-    const validatePostcodesResult = await validatePostcodes(collectionPostcode.value, deliveryPostcode.value);
+    const validatePostcodesResult = await validatePostcodes(deliveryPostcode.value, collectionPostcode.value);
 
     if(validatePostcodesResult != false){
         return validatePostcodesResult;

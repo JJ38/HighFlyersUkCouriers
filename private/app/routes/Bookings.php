@@ -59,6 +59,7 @@ $app->get('/bookings[/invalidform]', function (Request $request, Response $respo
 $app->post('/bookings', function (Request $request, Response $response) use ($app) : Response
 {
 
+  return $response;
   $container = $app->getContainer();
   $logger = $container->get("logger"); 
   $tainted_parameters = $request->getParsedBody();
