@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
-import { splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
+import { getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -78,6 +78,8 @@ const calculateRouteButtonWrapper = document.getElementById('calculate_route_but
 const updateRunSettingsButton = document.getElementById('update_run_settings_button');
 const splitRunSelect = document.getElementById('split_run_select');
 const splitRunSettingsButton = document.getElementById('split_run_settings_button');
+const printPostcodesButton = document.getElementById('print_postcodes_button');
+
 
 const validateAddressWidget = document.getElementById('validate_address_widget');
 const validateAddressAutocompleteInput = document.getElementById('validate_address_autocomplete_input');
@@ -884,8 +886,46 @@ function addEventListeners(){
 
   }
 
+  if(printPostcodesButton != null){
+
+    printPostcodesButton.addEventListener('click', () => {
+
+      const printableForm = getPostcodesToPrint(currentSelectedRun);
+
+      print(printableForm);
+
+    });
+
+  }
+
 }
 
+function print(form){
+
+  const hideFrame = document.createElement("iframe");
+  hideFrame.onload = setPrint;
+  hideFrame.style.position = "fixed";
+  hideFrame.style.right = "0";
+  hideFrame.style.bottom = "0";
+  hideFrame.style.width = "0";
+  hideFrame.style.height = "0";
+  hideFrame.style.border = "0";
+
+  hideFrame.srcdoc = form;
+  document.body.appendChild(hideFrame);
+}
+
+function setPrint() {
+  this.contentWindow.__container__ = this;
+  this.contentWindow.onbeforeunload = closePrint;
+
+  this.contentWindow.focus(); // Required for IE
+  this.contentWindow.print();
+}
+
+function closePrint() {
+  document.body.removeChild(this.__container__);
+}
 
 async function updateRunSettingsController(){
 

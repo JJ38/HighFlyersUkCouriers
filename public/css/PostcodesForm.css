@@ -1,0 +1,15 @@
+body{
+    padding: 10px;
+}
+
+p{
+    font-size: larger;
+}
+
+.postcodesWrapper{
+
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+
+}

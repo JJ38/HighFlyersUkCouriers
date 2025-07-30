@@ -8,4 +8,4 @@ export const firebaseConfig = {
     measurementId: "G-93M1E0Q9FJ",
 };
 
-export const databaseName = "(default)";
+export const databaseName = "development";

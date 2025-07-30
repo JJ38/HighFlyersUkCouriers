@@ -59,12 +59,10 @@ function parseFile(fileData){
       const fieldArray = orderArray[i].split("|");
 
       addDocument(fieldArray);
-      
-      
+    
   }
   
   console.log(orderArray);
-
 
 }
 

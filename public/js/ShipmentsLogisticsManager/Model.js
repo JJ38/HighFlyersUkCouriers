@@ -1760,12 +1760,10 @@ function getDuplicationStopLocations(stops){
 
       if(groupedDuplicatedStops.has(coordinateKey)){
 
-        console.log("Key exists");
         groupedDuplicatedStops.get(coordinateKey).push(stops[i]);
 
       }else{
-        console.log("Key doesnt exists");
-        console.log(coordinateKey);
+
         groupedDuplicatedStops.set(coordinateKey, [stops[i]]);
 
       }
@@ -2082,5 +2080,104 @@ export function convertStopNumberToLetter(stopNumber){
   }
 
   return stopLetter;
+
+}
+
+export function getPostcodesToPrint(run){
+
+  const uniquePostcodes = getUniquePostcodes(run.stops);
+
+  console.log(uniquePostcodes);
+
+  let html;
+
+  let boilerplateTop = '<!DOCTYPE html>'+
+    '<html lang="en">'+
+      '<head>'+
+        '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'+
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
+        '<script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>'+
+        '<link rel="stylesheet" href="css/PostcodesForm.css" type="text/css">'+
+        ''+
+      '</head>'+
+        '<body>'+
+          '<h1>' + run.runName + '</h1>'+
+          '<div class="postcodesWrapper">';
+         
+        
+
+  let boilerplateBottom = '</div></body>'+  
+  '</html>';
+
+  
+  html = boilerplateTop;
+
+  for(const postcode of uniquePostcodes){
+
+    console.log(postcode);
+    html += '<p>' + postcode + '</p>';
+
+  }
+
+  html = html + boilerplateBottom;
+
+  console.log(html);
+
+  return html;
+  
+}  
+
+
+function getUniquePostcodes(stops){
+
+  const uniquePostcodesSet = new Set();
+
+  for(let i = 0; i < stops.length; i++){
+
+    const stopType = stops[i].stopType;
+
+    if(stopType == "collection"){
+
+      uniquePostcodesSet.add(getOutwardPostcode(stops[i].stopData.collectionPostcode));
+
+    }else{
+
+      uniquePostcodesSet.add(getOutwardPostcode(stops[i].stopData.deliveryPostcode));
+
+    }
+
+  }
+
+  const uniquePostcodesArray = Array.from(uniquePostcodesSet);
+
+  uniquePostcodesArray.sort();
+
+  return uniquePostcodesArray;
+
+}
+
+function getOutwardPostcode(postcode){
+  
+  const trimmedPostcode = postcode.replaceAll(" ", "");
+
+  if(trimmedPostcode.length == 5){
+
+    return trimmedPostcode.substring(0,2);
+
+  }
+
+  
+  if(trimmedPostcode.length == 6){
+
+    return trimmedPostcode.substring(0,3);
+
+  }
+
+  
+  if(trimmedPostcode.length == 7){
+
+    return trimmedPostcode.substring(0,4);
+
+  }
 
 }

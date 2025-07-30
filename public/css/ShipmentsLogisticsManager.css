@@ -840,6 +840,27 @@ td > div{
     
 }
 
+.printPostcodesButton{
+
+    display: flex;
+    color: white;
+    align-items: center;
+    border-radius: 5px;
+    background-color: rgb(203, 191, 23);
+    border: 1px solid rgb(203, 191, 23);
+    padding: 5px 10px;
+    width: fit-content;
+
+}
+
+.printPostcodesButton:hover{
+
+    cursor: pointer;
+    color: rgb(203, 191, 23);
+    background-color: white;
+    
+}
+
 .removeRunButton{
 
     display: flex;
