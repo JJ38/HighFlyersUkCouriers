@@ -16,21 +16,21 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 
         <script type="module" src="/js/Logout.js"></script>
-        <!-- <script type="text/javascript" src="/js/MobileNavigationBar.js"></script> -->
+        <script type="module" src="/js/MobileNavigationBar.js"></script>
         <script type="module" src="/js/LiveLogisticsManager.js"></script>
         
         <title>HighFlyersUkCouriers</title>
     </head>
     <body>
       <header>
-        <div id="mobilenavmenu"  class="hideMobileMenu">
+        <div id="mobilenavmenu" class="hideMobileMenu">
           <div id="mobilenavwrapper">
             <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
               <a class="logoutButton">Logout</a>
-              <a class="currentpage" href="/manage-orders">Bookings</a>
+              <a href="/manage-orders">Bookings</a>
               <a href="/content-manager">Content Manager</a>
               <a href="/manage-accounts">Accounts</a>
-              <a class="navLinks" href="/live-logistics-manager">Logistics</a>=
+              <a class="currentpage" href="/live-logistics-manager">Logistics</a>
           </div>
         </div>
         <nav id="menu">
@@ -68,14 +68,7 @@
           <div id="driversWindow" class="driversWindow">
             <h1 class="windowTitle">Drivers</h1>
             <div id="driverList" class="driverCardList">
-              <!-- <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
-              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
-              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
-              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
-              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
-              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div>
-              <div class="driverCard"><div class="row"><div class="row flexOne noGap alignItemsCenter"><span class="material-symbols-outlined" style="color: rgb(60, 189, 0);">circle</span><p class="driverStatus">En Route</p></div><p class="driverName flexTwo">Stephen</p></div><p class="runName">Cambridgeshire</p><div class="row"><div class="column flexOne"><p class="runInfoTitle">Stops Remaining</p><p class="runInfo">19</p></div><div class="column flexTwo"><p class="runInfoTitle">Next Stop</p><p class="runInfo">1 Far Laund</p></div></div></div> -->
-              
+       
             </div>
           </div>
 
@@ -91,10 +84,7 @@
             </div>
 
             <div id="selectedRunView">
-              <!-- <gmp-map center="53.1629, -2.2189" zoom="13" map-id="DEMO_MAP_ID"></gmp-map> -->
-          <!-- <Section id="driverRunDetailsWindow" class="hidden">
-                      
-                    </Section>-->
+      
             </div>
           </div>
           
@@ -102,7 +92,6 @@
       </Section>
 
     </body>
-    <!-- <script src={{"https://maps.googleapis.com/maps/api/js?key=#{ places_api_key }&libraries=maps,marker&v=beta"}} defer></script> -->
     
 </html>
 

@@ -14,10 +14,10 @@
 @media (max-width: 850px){
 
   nav{
-    padding-left: 2em !important;
+    padding-left: 1.5em !important;
   }
 
-  nav a{
+  .navLinks{
     display: none;
   }
 
