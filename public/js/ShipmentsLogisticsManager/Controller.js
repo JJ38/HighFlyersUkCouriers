@@ -1362,10 +1362,25 @@ async function updateUnassignedOrdersTable(runObject){
         currentlySelectedStop = runObject.stops[i];
         showUI(validateAddressWidget);
 
-        validateAddressLine1.value = runObject.stops[i]['stopData']['address1'];
-        validateAddressLine2.value = runObject.stops[i]['stopData']['address2'];
-        validateAddressLine3.value = runObject.stops[i]['stopData']['address3'];
-        validateAddressPostcode.value = runObject.stops[i]['stopData']['postcode'];
+        if(runObject.stops[i].stopType == "collection"){
+
+          validateAddressLine1.value = runObject.stops[i]['stopData']['collectionAddress1'];
+          validateAddressLine2.value = runObject.stops[i]['stopData']['collectionAddress2'];
+          validateAddressLine3.value = runObject.stops[i]['stopData']['collectionAddress3'];
+          validateAddressPostcode.value = runObject.stops[i]['stopData']['collectionPostcode'];
+
+        }
+
+        
+        if(runObject.stops[i].stopType == "delivery"){
+
+          validateAddressLine1.value = runObject.stops[i]['stopData']['deliveryAddress1'];
+          validateAddressLine2.value = runObject.stops[i]['stopData']['deliveryAddress2'];
+          validateAddressLine3.value = runObject.stops[i]['stopData']['deliveryAddress3'];
+          validateAddressPostcode.value = runObject.stops[i]['stopData']['deliveryPostcode'];
+
+        }
+
 
       });
 
