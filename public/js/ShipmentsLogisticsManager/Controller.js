@@ -2,9 +2,10 @@ import { db, getDocuments, filterSearch } from "/js/Firebase.js";
 import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
-import { getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
+import { createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
+import {moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
+import { map } from "lodash";
 
 
 let GoogleAdvancedMarkerElement;
@@ -116,6 +117,9 @@ const runDestinationAddress2 = document.getElementById('run_destination_address_
 const runDestinationAddress3 = document.getElementById('run_destination_address_line_3');
 const runDestinationPostcode = document.getElementById('run_destination_postcode');
 
+const unassignedOrdersTableBackArrow = document.getElementById('back_arrow_unassigned_orders_table');
+const addRunsTableBackArrow = document.getElementById('back_arrow_add_runs_table');
+const selectedRunBackArrow = document.getElementById('back_arrow_selected_run_view');
 
 
 const mapWrapper = document.getElementById("map");
@@ -416,7 +420,6 @@ function addEventListeners(){
         showNotification("Error!", "Error assigning stop(s) to run");
 
       }
-
 
       const runObject = await selectRun(currentSelectedRun.documentId);
       currentSelectedRun = runObject;
@@ -898,6 +901,42 @@ function addEventListeners(){
 
   }
 
+  if(unassignedOrdersTableBackArrow != null){
+
+    unassignedOrdersTableBackArrow.addEventListener('click', () => {
+
+      hideUI(unassignedOrdersContainer);
+      hideUI(mapWrapper);
+      deselectCard(currentSelectedRunCard);
+
+    });
+
+  }
+
+  if(addRunsTableBackArrow != null){
+
+    addRunsTableBackArrow.addEventListener('click', () => {
+
+      hideUI(addRunDetailsContainer);
+      hideUI(mapWrapper);
+      deselectCard(currentSelectedRunCard);
+
+    });
+
+  }
+
+  if(selectedRunBackArrow != null){
+
+    selectedRunBackArrow.addEventListener('click', () => {
+
+      hideUI(selectedRunView);
+      hideUI(mapWrapper);
+      deselectCard(currentSelectedRunCard);
+
+    });
+
+  }
+
 }
 
 function print(form){
@@ -1137,7 +1176,7 @@ function showShipment(){
 function showAddOrderTable(){
 
   showUI(addRunDetailsContainer);
-  showUI(selectedRunView);
+  hideUI(selectedRunView);
   hideUI(runStopsContainer);
   hideUI(unassignedOrdersContainer);
   hideUI(runInfoWrapper);
@@ -1200,6 +1239,16 @@ function selectCard(runCard){
   runCard.classList.add('selectedRunCard');
 
   currentSelectedRunCard = runCard;
+
+}
+
+function deselectCard(runCard){
+
+  if(runCard != null){
+    runCard.classList.remove('selectedRunCard');
+  }
+  
+  currentSelectedRunCard = null;
 
 }
 
@@ -1275,6 +1324,7 @@ function getRunCardEventListener(runStruct, runCard){
     updateMapMarkers(run);
     updatePolylines(run);
     updateMapPosition(mainMap, run);
+    showUI(mapWrapper);
 
   }
 
@@ -1786,7 +1836,7 @@ function updateStopList(runObject){
         }
 
         const stopNumber = createStopLabel(label, stops[j].isLocked);
-        const stopCard = getStopCard(stops[j], runObject.documentId, stopNumber.firstChild, runObject.isOptimised);
+        const stopCard = getStopCard(stops[j], runObject.documentId, stopNumber.firstChild, runObject.isOptimised, runObject.stops.length);
 
         runStopsContainer.appendChild(stopNumber);
         runStopsContainer.appendChild(stopCard);
@@ -1958,7 +2008,7 @@ function getMimicCard(){
 }
 
 
-function getStopCard(stop, runDocumentID, stopNumber, isOptimised){
+function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops){
   
   const stopMetaData = createStopMetaData(stop);
 
@@ -1970,7 +2020,13 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised){
   const editButton = createEditButton();
   const deleteButton = createDeleteStopButton();
 
-  const buttonWrapper = createButtonWrapper(stopLockButton, editButton ,deleteButton);
+  const isTopStop = stop.stopNumber == 1;
+  const isBottomStop = stop.stopNumber == numberOfStops;
+
+  const moveUpButton = createMoveUpButton(isTopStop);
+  const moveDownButton = createMoveDownButton(isBottomStop);
+
+  const buttonWrapper = createButtonWrapper(stopLockButton, editButton ,deleteButton, moveUpButton, moveDownButton);
 
   const stopAddress = createStopAddress(stop, ADDRESS_TYPE.ACTIVE); 
   const opposingStopAddress = createStopAddress(stop, ADDRESS_TYPE.OPPOSING);
@@ -2030,7 +2086,6 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised){
 
   });
 
-
   editButton.addEventListener('click', () => {
 
     currentlySelectedStop = stop;
@@ -2043,7 +2098,6 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised){
     validateAddressPostcode.value = stop['stopData']['postcode'];
 
   });
-
 
   deleteButton.addEventListener('click', async () => {
 
@@ -2067,7 +2121,6 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised){
     showNotification("Error!", "Error removing stop from run");
 
   })
-
 
   stopCardWrapper.addEventListener('mousedown', (e) => {
 
@@ -2109,6 +2162,51 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised){
 
   });
 
+  moveUpButton.addEventListener('click', async () => {
+
+    if(stop.isLocked){
+      console.log("locked stop");
+      return;
+    }
+
+    console.log(currentSelectedRun == currentSelectedRun);
+
+    const result = await moveStopToTop(stop, currentSelectedRun);
+
+    if(result === false){
+
+      showNotification("Error!", "Error moving stop to top");
+
+    }
+
+    showUnoptimisedRunState();
+
+    console.log("moveup");
+
+  });
+
+  moveDownButton.addEventListener('click', async () => {
+
+    if(stop.isLocked){
+      console.log("locked stop");
+      return;
+    }
+
+    const result = await moveStopToBottom(stop, currentSelectedRun);
+
+    console.log(currentSelectedRun);
+
+    if(result === false){
+
+      showNotification("Error!", "Error moving stop to bottom");
+
+    }
+
+    // showUnoptimisedRunState();
+
+    console.log("movedown");
+
+  });
 
   stopLockButton.addEventListener('mouseup', (e) => {
 
@@ -2142,6 +2240,30 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised){
   });
 
   deleteButton.addEventListener('mousedown', (e) => {
+
+    e.stopPropagation();
+
+  });
+
+  moveUpButton.addEventListener('mouseup', (e) => {
+
+    e.stopPropagation();
+
+  });
+
+  moveUpButton.addEventListener('mousedown', (e) => {
+
+    e.stopPropagation();
+
+  });
+
+  moveDownButton.addEventListener('mouseup', (e) => {
+
+    e.stopPropagation();
+
+  });
+
+  moveDownButton.addEventListener('mousedown', (e) => {
 
     e.stopPropagation();
 
@@ -2228,13 +2350,12 @@ function stopCardDragAndMove(stopCard, grabPositionOffset){
   mouseMoveCallback = (e) => { moveStopCard(e.clientY, stopCard, grabPositionOffset)} ;
 
   window.addEventListener('mousemove', mouseMoveCallback);
+  // window.addEventListener('touchmove', mouseMoveCallback);
+
 
 }
 
-
-async function dropStopCard(){
-
-  //get position of each stop in list 
+async function updateStopsOrder(){
 
   const stopCardList = Array.from(cardBeingDragged.parentNode.children).filter((element) => {
 
@@ -2250,10 +2371,7 @@ async function dropStopCard(){
 
   });
 
-
   //TODO: has the order changed
-
-
 
   const updatedStops = [];
 
@@ -2265,26 +2383,36 @@ async function dropStopCard(){
     updatedStops.push(updateStopNumberInRun(orderID, stopType, currentSelectedRun.stops, i + 1));
 
   }
-
+  
   const updateDatabaseStops = removeStopDataFromStop(updatedStops);
   
   //update the database
   const result = await updateRun(currentSelectedRun.documentId, {stops: updateDatabaseStops, isOptimised: false});
  
   if(!result){
-
-    showNotification("Error!", "Error updating stops orders");
-    updateStopList(currentSelectedRun);
-
     return false;
   }
-
 
   //update client side order as database has updated successfully
   currentSelectedRun.stops = updatedStops;
   currentSelectedRun.isOptimised = false;
   currentSelectedRun.fuelCost = 0;
 
+
+  return true;
+
+}
+
+async function dropStopCard(){
+
+  const updateResult = await updateStopsOrder(); 
+ 
+  if(updateResult === false){
+
+    showNotification("Error!", "Error updating stops orders");
+    updateStopList(currentSelectedRun);
+
+  }
 
   if(cardBeingDragged != null){
 

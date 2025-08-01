@@ -1138,6 +1138,73 @@ export function updateStopNumberInRun(orderID, stopType, runStops, stopNumber){
 
 }
 
+export async function moveStopToTop(stopToMove, currentSelectedRun){
+
+  const stops = deepCopy(currentSelectedRun.stops);
+
+  console.log(stops);
+  
+  let indexOfStop;
+
+  for(let i = 0; i < stops.length; i++){
+
+    if(compareStops(stops[i], stopToMove)){
+      console.log(i);
+      indexOfStop = i;
+
+    }
+
+  }
+
+  for(let i = 0; i < indexOfStop; i++){
+
+    stops[i].stopNumber += 1;
+
+  }
+
+  stops[indexOfStop].stopNumber = 1;
+
+  console.log(stops);
+  
+}
+
+export async function moveStopToBottom(stopToMove, currentSelectedRun){
+
+  const stops = deepCopy(currentSelectedRun.stops);
+
+  console.log(stops);
+
+  let indexOfStop;
+
+  for(let i = 0; i < stops.length; i++){
+
+    if(compareStops(stops[i], stopToMove)){
+      console.log(i);
+      indexOfStop = i;
+
+    }
+
+  }
+
+  for(let i = indexOfStop; i < stops.length; i++){
+
+    stops[i].stopNumber -= 1;
+
+  }
+
+  stops[indexOfStop].stopNumber = stops.length;
+
+  console.log(stops);
+
+}
+
+function deepCopy(object){
+
+  const copy = JSON.parse(JSON.stringify(object));
+
+  return copy;
+
+}
 
 export function removeStopDataFromStop(updatedStops){
 

@@ -275,13 +275,15 @@ export function createStopAddress(stop, isActiveStop){
 }
 
 
-export function createButtonWrapper(stopLockButton, editButton, deleteButton){
+export function createButtonWrapper(stopLockButton, editButton, deleteButton, moveUpButton, moveDownButton){
 
   const wrapper = document.createElement('div');
   wrapper.classList = "buttonWrapper hidden";
 
   wrapper.appendChild(stopLockButton);
-  wrapper.appendChild(editButton)
+  wrapper.appendChild(editButton);
+  wrapper.appendChild(moveUpButton);
+  wrapper.appendChild(moveDownButton);
   wrapper.appendChild(deleteButton);
 
   return wrapper;
@@ -358,12 +360,50 @@ export function createStopLockButton(isLocked, lockIcon, lockOpenIcon){
 
   }
 
-
   lockButtonWrapper.appendChild(lockIcon);
   lockButtonWrapper.appendChild(lockOpenIcon);
 
-
   return lockButtonWrapper;
+
+}
+
+export function createMoveUpButton(isTopStop){
+
+  const moveUpButtonWrapper = document.createElement('div');
+  moveUpButtonWrapper.classList = "moveUpButtonWrapper"; 
+
+  if(isTopStop){
+    moveUpButtonWrapper.classList += " hidden";
+  }
+
+  const upIcon = document.createElement('span');
+  upIcon.classList = "up material-symbols-outlined";
+  upIcon.innerText = "arrow_upward_alt";
+
+ 
+
+  moveUpButtonWrapper.appendChild(upIcon);
+
+  return moveUpButtonWrapper;
+
+}
+
+export function createMoveDownButton(isBottomStop){
+  
+  const moveDownButtonWrapper = document.createElement('div');
+  moveDownButtonWrapper.classList = "moveDownButtonWrapper"; 
+
+  if(isBottomStop){
+    moveDownButtonWrapper.classList +=  " hidden";
+  }
+
+  const downIcon = document.createElement('span');
+  downIcon.classList = "down material-symbols-outlined";
+  downIcon.innerText = "arrow_downward_alt";
+
+  moveDownButtonWrapper.appendChild(downIcon);
+
+  return moveDownButtonWrapper;
 
 }
 

@@ -87,8 +87,14 @@ a.verticalNavbarLink{
     color: #2881FF;
 }
 
+.subLinks{
+
+    display: none;
+
+}
 
 @media(max-width: 1000px){
+
     td{
       padding: 0 10px;
     }
@@ -99,4 +105,22 @@ a.verticalNavbarLink{
 
     }
 
-  }
+}
+
+
+@media(max-width: 850px){
+
+    .logisticsVerticalNavbar{
+
+        display: none;
+
+    }
+
+    .subLinks{
+
+        display: flex;
+        flex-direction: column;
+        padding-left: 10px;
+    }
+
+}
