@@ -1769,7 +1769,6 @@ function removeMapMarkers(mapMarkers, clusters){
 
   for(let i = 0; i < mapMarkers.length; i++){
 
-    console.log("map = null");
     mapMarkers[i].map = null;
 
   }
@@ -2168,8 +2167,6 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops
       console.log("locked stop");
       return;
     }
-
-    console.log(currentSelectedRun);
 
     const result = await moveStopToTop(stop, currentSelectedRun);
 

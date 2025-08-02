@@ -131,6 +131,10 @@ export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, button
   const stopCard = document.createElement('div');
   stopCard.classList = "stopCard";
 
+  const stopPrimaryKey = document.createElement('p');
+  stopPrimaryKey.innerText = stop.orderID + "_" + stop.stopType;
+  stopPrimaryKey.classList = "primaryKeyDebug"
+
 
   const stopTime = document.createElement('p');
   stopTime.classList = "stopTime";
@@ -157,6 +161,8 @@ export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, button
 
 
   stopCard.appendChild(stopMetaDataContainer);
+
+  stopCard.appendChild(stopPrimaryKey);
 
   stopCard.appendChild(stopTime);
   

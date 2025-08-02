@@ -14,23 +14,23 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-
-        <!-- <script type="text/javascript" src="/js/MobileNavigationBar.js"></script> -->
+
 
         <title>HighFlyersUkCouriers</title>
-      <script type="module" crossorigin src="./assets/ShipmentsLogisticsManager-ENlL4TTF.js"></script>
+      <script type="module" crossorigin src="./assets/ShipmentsLogisticsManager-B4n3tUOw.js"></script>
       <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
       <link rel="modulepreload" crossorigin href="./assets/Notification-D0jEUT8q.js">
       <link rel="modulepreload" crossorigin href="./assets/AddressAutocomplete-CkD3A38D.js">
       <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-B1C6gsaD.js">
       <link rel="modulepreload" crossorigin href="./assets/Firebase-BO2m8rLx.js">
       <link rel="modulepreload" crossorigin href="./assets/Logout-CT4px5gw.js">
+      <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
       <link rel="stylesheet" crossorigin href="./assets/Notification-BHB7FqS3.css">
       <link rel="stylesheet" crossorigin href="./assets/AddressAutocomplete-DluMj-8M.css">
-      <link rel="stylesheet" crossorigin href="./assets/ShipmentsLogisticsManager-D3z5pDY9.css">
+      <link rel="stylesheet" crossorigin href="./assets/ShipmentsLogisticsManager-BkA8ANBT.css">
       <link rel="stylesheet" crossorigin href="./assets/Navbar-ClBKpNFz.css">
-      <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-BGA6MExJ.css">
-      <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-DW9mHC9O.css">
+      <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-CQwji1kb.css">
+      <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-Dem43p4b.css">
     </head>
     <body>
   
@@ -38,11 +38,15 @@
         <div id="mobilenavmenu"  class="hideMobileMenu">
           <div id="mobilenavwrapper">
             <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+
               <a class="logoutButton">Logout</a>
-              <a class="currentpage" href="/manage-orders">Bookings</a>
+              <a href="/manage-orders">Bookings</a>
               <a href="/content-manager">Content Manager</a>
               <a href="/manage-accounts">Accounts</a>
-              <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+              <a href="/live-logistics-manager">Live Logistics</a>
+              <a class="currentpage" href="/shipments-logistics-manager">Shipments Logistics</a>
+              <a href="/logistics-settings">Logistics Settings</a>
+             
           </div>
         </div>
         <nav id="menu">
@@ -272,7 +276,6 @@
         </nav>
 
         <Section class="mainContent">
-
           <Section class="shipmentsLogisticsManagerWrapper">
             <Section class="shipmentsWindow">
 
@@ -308,369 +311,378 @@
               </div> 
 
             </Section>
+              <Section id="dependant_content" class="dependantContent">
+
+                <div id="unassigned_orders_details" class="runDetailsContainer stopsTable hidden">
+
+                  <span id="back_arrow_unassigned_orders_table" class="backArrow material-symbols-outlined">
+                    arrow_back
+                  </span>
+
+                  <h1>Unassigned Stops</h1>
+
+                  <div class="runDetails">
+
+                    <div class="tableActionContainer">
+
+                      <div class="orderFiltersContainer">
+
+                        <input id="unassigned_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
+
+                        <select name="" id="unassigned_order_search_filter" class="selectOption">
+
+                          <option value="ID">ID</option>
+                          <option value="animalType">Animal Type</option>
+                          <option value="quantity">Quantity</option>
+                          <option value="email">Email</option>
+                          <option value="account">Account</option>
+                          <option value="deliveryWeek">Delivery Week</option>
+                          <option value="collectionPhoneNumber">Phone Number</option>
+                          <option value="collectionName">Collection Name</option>
+                          <option value="collectionAddress1">Collection Address 1</option>
+                          <option value="collectionAddress2">Collection Address 2</option>
+                          <option value="collectionAddress3">Collection Address 3</option>
+                          <option value="collectionPostcode">Collection Postcode</option>
+                          <option value="deliveryName">Delivery Name</option>
+                          <option value="deliveryAddress1">Delivery Address 1</option>
+                          <option value="deliveryAddress2">Delivery Address 2</option>
+                          <option value="deliveryAddress3">Delivery Address 3</option>
+                          <option value="deliveryPostcode">Delivery Postcode</option>
+                          <option value="deliveryPhoneNumber">Delivery Phone Number</option>
+                          <option value="payment">Payment</option>
+                          <option value="message">Message</option>
+                          <option value="code">Code</option>
+                          <option value="addedBy">Added By</option>
+                          <option value="printed">Printed</option>
+
+                        </select>
+
+                        <button id="" class="selectAddButton filterButton">Search</button>
+                        <button id="remove_stop_button" class="removeStopButton filterButton">Remove Stop(s)</button>
+
+                      </div>
+
+                      <div class="stopButtonsContainer">
+
+                        <button id="assign_stop_button" class="assignStopButton filterButton">Assign Stop(s)</button>
+
+                      </div>
+
+                    </div>
+
+                    <div class="tableContainer">
+
+                      <table id="unassigned_order_table" class="orderTable">
+
+                        <tbody class="tableHeaderContainer">
+
+                          <tr class="headerRow">               
+                            <th></th>
+                            <th>ID</th>
+                            <th>Animal</th>
+                            <th>Quantity</th>
+
+                            <th>Stop Type</th>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Phone Number</th>
+                            <th>Payment</th>
+                            <th>Message</th>
+                            <th>Code</th>
+                            <th></th>
+                            <th class="tableRowBackground"></th>
+                          </tr>
+
+                        </tbody>
+
+                        <tbody id="unassigned_orders_table_body" class="tableBody">
+
+                          <tr></tr>
+                          <tr></tr>
+                          <tr></tr>
+
+                        </tbody>
+                      </table>
+
+                    </div>
+                  
+                  </div>
+
+                </div>
+
+                <div id="add_run_details" class="runDetails stopsTable hidden">
+
+                  <span id="back_arrow_add_runs_table" class="backArrow material-symbols-outlined">
+                    arrow_back
+                  </span>
+                  <h1>Add Stops</h1>
+
+                    <div class="tableActionContainer">
+
+                      <div class="orderFiltersContainer">
+
+                        <input id="add_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
+
+                        <select name="" id="add_order_search_filter" class="selectOption">
+
+                          <option value="ID">ID</option>
+                          <option value="animalType">Animal Type</option>
+                          <option value="quantity">Quantity</option>
+                          <option value="email">Email</option>
+                          <option value="account">Account</option>
+                          <option value="deliveryWeek">Delivery Week</option>
+                          <option value="collectionPhoneNumber">Phone Number</option>
+                          <option value="collectionName">Collection Name</option>
+                          <option value="collectionAddress1">Collection Address 1</option>
+                          <option value="collectionAddress2">Collection Address 2</option>
+                          <option value="collectionAddress3">Collection Address 3</option>
+                          <option value="collectionPostcode">Collection Postcode</option>
+                          <option value="deliveryName">Delivery Name</option>
+                          <option value="deliveryAddress1">Delivery Address 1</option>
+                          <option value="deliveryAddress2">Delivery Address 2</option>
+                          <option value="deliveryAddress3">Delivery Address 3</option>
+                          <option value="deliveryPostcode">Delivery Postcode</option>
+                          <option value="deliveryPhoneNumber">Delivery Phone Number</option>
+                          <option value="payment">Payment</option>
+                          <option value="message">Message</option>
+                          <option value="code">Code</option>
+                          <option value="addedBy">Added By</option>
+                          <option value="printed">Printed</option>
+
+                        </select>
+
+                        <button id="search_button" class="selectAddButton filterButton">Search</button>
+
+                      </div>
+
+                      <div class="orderButtonsContainer">
+
+                        <button id="add_stop_button" class="addOrderButton filterButton">Add Stop(s)</button>
+
+                      </div>
+
+                    </div>
+
+                    <div class="tableContainer">
+
+                      <table id="order_table" class="orderTable">
+
+                        <tbody class="tableHeaderContainer">
+
+                          <tr class="headerRow">               
+                            <th></th>
+                            <th>ID</th>
+                            <th>Animal</th>
+                            <th>Quantity</th>
+                            <th>Account</th>
+                            <th>Week</th>
+                            <th>Collection Name</th>
+                            <th>Collection Address</th>
+                            <th>Collection Phone Number</th>
+                            <th>Delivery Name</th>
+                            <th>Delivery Address</th>
+                            <th>Delivery Phone Number</th>
+                            <th>Payment</th>
+                            <th>Message</th>
+                            <th>Code</th>
+                            <th id="topright"></th>
+                            <th class="tableRowBackground"></th>
+                          </tr>
+
+                        </tbody>
+
+                        <tbody id="table_body" class="tableBody">
+
+                          <tr></tr>
+                          <tr></tr>
+                          <tr></tr>
+
+                        </tbody>
+                      </table>
+
+                    </div>
+
+                </div>
+              
+                <div id="selected_run_view" class="runDetailsContainer hidden">
+                  
+                  <span id="back_arrow_selected_run_view" class="backArrow material-symbols-outlined">
+                    arrow_back
+                  </span>
+
+                  <div id="run_info_wrapper" class="runDetailsWrapper">
+
+                    <div id="run_tab_buttons_wrapper" class="runTabButtonWrapper">
+
+                      <button id="manage_tab_button" class="runTabButton selectedTabButton">Manage</button>
+                      <button id="option_tab_button" class="runTabButton">Options</button>
+
+                    </div>
+                  
+                    <div id="run_stops_container" class="runStopsContainer">
+
             
-          </Section>
-          <Section id="dependant_content" class="dependantContent">
-
-            <div id="unassigned_orders_details" class="runDetailsContainer stopsTable hidden">
-
-              <h1>Unassigned Stops</h1>
-
-              <div class="runDetails">
-
-                <div class="tableActionContainer">
-
-                  <div class="orderFiltersContainer">
-
-                    <input id="unassigned_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
-
-                    <select name="" id="unassigned_order_search_filter" class="selectOption">
-
-                      <option value="ID">ID</option>
-                      <option value="animalType">Animal Type</option>
-                      <option value="quantity">Quantity</option>
-                      <option value="email">Email</option>
-                      <option value="account">Account</option>
-                      <option value="deliveryWeek">Delivery Week</option>
-                      <option value="collectionPhoneNumber">Phone Number</option>
-                      <option value="collectionName">Collection Name</option>
-                      <option value="collectionAddress1">Collection Address 1</option>
-                      <option value="collectionAddress2">Collection Address 2</option>
-                      <option value="collectionAddress3">Collection Address 3</option>
-                      <option value="collectionPostcode">Collection Postcode</option>
-                      <option value="deliveryName">Delivery Name</option>
-                      <option value="deliveryAddress1">Delivery Address 1</option>
-                      <option value="deliveryAddress2">Delivery Address 2</option>
-                      <option value="deliveryAddress3">Delivery Address 3</option>
-                      <option value="deliveryPostcode">Delivery Postcode</option>
-                      <option value="deliveryPhoneNumber">Delivery Phone Number</option>
-                      <option value="payment">Payment</option>
-                      <option value="message">Message</option>
-                      <option value="code">Code</option>
-                      <option value="addedBy">Added By</option>
-                      <option value="printed">Printed</option>
-
-                    </select>
-
-                    <button id="" class="selectAddButton filterButton">Search</button>
-                    <button id="remove_stop_button" class="removeStopButton filterButton">Remove Stop(s)</button>
-
-                  </div>
-
-                  <div class="stopButtonsContainer">
-
-                    <button id="assign_stop_button" class="assignStopButton filterButton">Assign Stop(s)</button>
-
-                  </div>
-
-                </div>
-
-                <div class="tableContainer">
-
-                  <table id="unassigned_order_table" class="orderTable">
-
-                    <tbody class="tableHeaderContainer">
-
-                      <tr class="headerRow">               
-                        <th></th>
-                        <th>ID</th>
-                        <th>Animal</th>
-                        <th>Quantity</th>
-
-                        <th>Stop Type</th>
-                        <th>Name</th>
-                        <th>Address</th>
-                        <th>Phone Number</th>
-                        <th>Payment</th>
-                        <th>Message</th>
-                        <th>Code</th>
-                        <th></th>
-                        <th class="tableRowBackground"></th>
-                      </tr>
-
-                    </tbody>
-
-                    <tbody id="unassigned_orders_table_body" class="tableBody">
-
-                      <tr></tr>
-                      <tr></tr>
-                      <tr></tr>
-
-                    </tbody>
-                  </table>
-
-                </div>
-              
-              </div>
-
-            </div>
-
-            <div id="add_run_details" class="runDetails stopsTable hidden">
-
-              <h1>Add Stops</h1>
-
-                <div class="tableActionContainer">
-
-                  <div class="orderFiltersContainer">
-
-                    <input id="add_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
-
-                    <select name="" id="add_order_search_filter" class="selectOption">
-
-                      <option value="ID">ID</option>
-                      <option value="animalType">Animal Type</option>
-                      <option value="quantity">Quantity</option>
-                      <option value="email">Email</option>
-                      <option value="account">Account</option>
-                      <option value="deliveryWeek">Delivery Week</option>
-                      <option value="collectionPhoneNumber">Phone Number</option>
-                      <option value="collectionName">Collection Name</option>
-                      <option value="collectionAddress1">Collection Address 1</option>
-                      <option value="collectionAddress2">Collection Address 2</option>
-                      <option value="collectionAddress3">Collection Address 3</option>
-                      <option value="collectionPostcode">Collection Postcode</option>
-                      <option value="deliveryName">Delivery Name</option>
-                      <option value="deliveryAddress1">Delivery Address 1</option>
-                      <option value="deliveryAddress2">Delivery Address 2</option>
-                      <option value="deliveryAddress3">Delivery Address 3</option>
-                      <option value="deliveryPostcode">Delivery Postcode</option>
-                      <option value="deliveryPhoneNumber">Delivery Phone Number</option>
-                      <option value="payment">Payment</option>
-                      <option value="message">Message</option>
-                      <option value="code">Code</option>
-                      <option value="addedBy">Added By</option>
-                      <option value="printed">Printed</option>
-
-                    </select>
-
-                    <button id="search_button" class="selectAddButton filterButton">Search</button>
-
-                  </div>
-
-                  <div class="orderButtonsContainer">
-
-                    <button id="add_stop_button" class="addOrderButton filterButton">Add Stop(s)</button>
-
-                  </div>
-
-                </div>
-
-                <div class="tableContainer">
-
-                  <table id="order_table" class="orderTable">
-
-                    <tbody class="tableHeaderContainer">
-
-                      <tr class="headerRow">               
-                        <th></th>
-                        <th>ID</th>
-                        <th>Animal</th>
-                        <th>Quantity</th>
-                        <th>Account</th>
-                        <th>Week</th>
-                        <th>Collection Name</th>
-                        <th>Collection Address</th>
-                        <th>Collection Phone Number</th>
-                        <th>Delivery Name</th>
-                        <th>Delivery Address</th>
-                        <th>Delivery Phone Number</th>
-                        <th>Payment</th>
-                        <th>Message</th>
-                        <th>Code</th>
-                        <th id="topright"></th>
-                        <th class="tableRowBackground"></th>
-                      </tr>
-
-                    </tbody>
-
-                    <tbody id="table_body" class="tableBody">
-
-                      <tr></tr>
-                      <tr></tr>
-                      <tr></tr>
-
-                    </tbody>
-                  </table>
-
-                 </div>
-
-            </div>
-              
-            <div id="selected_run_view" class="runDetailsContainer hidden">
-              
-              <div id="run_info_wrapper" class="runDetailsWrapper">
-
-                <div id="run_tab_buttons_wrapper" class="runTabButtonWrapper">
-
-                  <button id="manage_tab_button" class="runTabButton selectedTabButton">Manage</button>
-                  <button id="option_tab_button" class="runTabButton">Options</button>
-
-                </div>
-              
-                <div id="run_stops_container" class="runStopsContainer">
-
-         
-                </div>
-
-                <div id="run_options_container" class="runOptionsContainer hidden">
-
-                  <div class="runProperties">
-
-                    <!-- <label for="driver_select" class="bold">Assign Driver: </label>
-                    <select name="driver_select" id="driver_select" class="selectOption">
-
-                      <option value="opunuoien">Stephen</option>
-                      <option value="pojjesPIOFJEI">Anne</option>
-                  
-                    </select> -->
-
-                    <div class="splitRunWrapper">
-
-                      <label for="split_run_select" class="bold">Split Run: </label>
-                      <select name="split_run_select" id="split_run_select" class="selectOption">
-
-                        <option value="" selected>Select split amount</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-
-                    
-                      </select>
-
-                      <div id="split_run_settings_button" class="splitRunSettingsButton hidden">
-                        <p>Split Run</p>
-                        <span class="delete material-symbols-outlined">content_cut</span>
-                      </div>
-
                     </div>
 
-                    <div class="runPropertiesWrapper">
+                    <div id="run_options_container" class="runOptionsContainer hidden">
 
-                      <h3>Origin Settings</h3>
+                      <div class="runProperties">
 
-                        <div class="runAddressPropertyWrapper">
+                        <!-- <label for="driver_select" class="bold">Assign Driver: </label>
+                        <select name="driver_select" id="driver_select" class="selectOption">
 
-                          <label for="run_origin_address_line_1">Address Line 1:  </label>
-                          <input id= "run_origin_address_line_1" type="text"/>
-
-                        </div>
-
-                        <div class="runAddressPropertyWrapper">
-                           
-                          <label for="run_origin_address_line_2">Address Line 2:  </label>
-                          <input id= "run_origin_address_line_2" type="text"/>
-                          
-                        </div>
-
-                        <div class="runAddressPropertyWrapper">
-
-                          <label for="run_origin_address_line_3">Address Line 3:  </label>
-                          <input id= "run_origin_address_line_3" type="text"/>
-                          
-                        </div>
-
-                        <div class="runAddressPropertyWrapper">
-
-                          <label for="run_origin_postcode">Postcode:  </label>
-                          <input id= "run_origin_postcode" type="text"/>
-                          
-                        </div>
-
-                        <div class="runAddressPropertyWrapper">
-
-                          <label for="run_origin_hour">Start hour:  </label>
-                          <input id= "run_origin_hour" type="number" min="0" max="23"/>
-                       
-                        </div>
-
-                        <div class="runAddressPropertyWrapper">
-
-                          <label for="run_origin_minute">Start minute:  </label>
-                          <input id= "run_origin_minute" type="number" min="0" max="59"/>
-                          
-                        </div>
-
-                    </div>
-                  
-                    <div class="runPropertiesWrapper">
-                  
-                      <h3>Destination Settings</h3>
-
-                      <div class="runAddressPropertyWrapper">
-
-                        <label for="run_destination_address_line_1">Address Line 1:  </label>
-                        <input id ="run_destination_address_line_1" type="text"/>
-
-                      </div>  
-
-                      <div class="runAddressPropertyWrapper">
-
-                        <label for="run_destination_address_line_2">Address Line 2:  </label>
-                        <input id= "run_destination_address_line_2" type="text"/>
-                        
-                      </div>
-
-                      <div class="runAddressPropertyWrapper">
-
-                        <label for="run_destination_address_line_3">Address Line 3:  </label>
-                        <input id= "run_destination_address_line_3" type="text"/>
-                        
-                      </div>
-
-                      <div class="runAddressPropertyWrapper">
-
-                        <label for="run_destination_postcode">Postcode:  </label>
-                        <input id= "run_destination_postcode" type="text"/>
-                        
-                      </div>                   
-
-                    </div>
-
-                  </div>
-
-                  <div id="update_run_settings_button" class="updateRunSettingsButton">
-                    <p>Update Settings</p>
-                    <span class="delete material-symbols-outlined">sync</span>
-                  </div>
-
-                  <div id="calculate_route_button_wrapper">
-                    <div id="calculate_route_button" class="calculateRouteButton">
+                          <option value="opunuoien">Stephen</option>
+                          <option value="pojjesPIOFJEI">Anne</option>
                       
-                      <p>Calculate Route</p>
-                      <span class="material-symbols-outlined">
-                        calculate
-                      </span>
+                        </select> -->
+
+                        <div class="splitRunWrapper">
+
+                          <label for="split_run_select" class="bold">Split Run: </label>
+                          <select name="split_run_select" id="split_run_select" class="selectOption">
+
+                            <option value="" selected>Select split amount</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+
+                        
+                          </select>
+
+                          <div id="split_run_settings_button" class="splitRunSettingsButton hidden">
+                            <p>Split Run</p>
+                            <span class="delete material-symbols-outlined">content_cut</span>
+                          </div>
+
+                        </div>
+
+                        <div class="runPropertiesWrapper">
+
+                          <h3>Origin Settings</h3>
+
+                            <div class="runAddressPropertyWrapper">
+
+                              <label for="run_origin_address_line_1">Address Line 1:  </label>
+                              <input id= "run_origin_address_line_1" type="text"/>
+
+                            </div>
+
+                            <div class="runAddressPropertyWrapper">
+                              
+                              <label for="run_origin_address_line_2">Address Line 2:  </label>
+                              <input id= "run_origin_address_line_2" type="text"/>
+                              
+                            </div>
+
+                            <div class="runAddressPropertyWrapper">
+
+                              <label for="run_origin_address_line_3">Address Line 3:  </label>
+                              <input id= "run_origin_address_line_3" type="text"/>
+                              
+                            </div>
+
+                            <div class="runAddressPropertyWrapper">
+
+                              <label for="run_origin_postcode">Postcode:  </label>
+                              <input id= "run_origin_postcode" type="text"/>
+                              
+                            </div>
+
+                            <div class="runAddressPropertyWrapper">
+
+                              <label for="run_origin_hour">Start hour:  </label>
+                              <input id= "run_origin_hour" type="number" min="0" max="23"/>
+                          
+                            </div>
+
+                            <div class="runAddressPropertyWrapper">
+
+                              <label for="run_origin_minute">Start minute:  </label>
+                              <input id= "run_origin_minute" type="number" min="0" max="59"/>
+                              
+                            </div>
+
+                        </div>
+                      
+                        <div class="runPropertiesWrapper">
+                      
+                          <h3>Destination Settings</h3>
+
+                          <div class="runAddressPropertyWrapper">
+
+                            <label for="run_destination_address_line_1">Address Line 1:  </label>
+                            <input id ="run_destination_address_line_1" type="text"/>
+
+                          </div>  
+
+                          <div class="runAddressPropertyWrapper">
+
+                            <label for="run_destination_address_line_2">Address Line 2:  </label>
+                            <input id= "run_destination_address_line_2" type="text"/>
+                            
+                          </div>
+
+                          <div class="runAddressPropertyWrapper">
+
+                            <label for="run_destination_address_line_3">Address Line 3:  </label>
+                            <input id= "run_destination_address_line_3" type="text"/>
+                            
+                          </div>
+
+                          <div class="runAddressPropertyWrapper">
+
+                            <label for="run_destination_postcode">Postcode:  </label>
+                            <input id= "run_destination_postcode" type="text"/>
+                            
+                          </div>                   
+
+                        </div>
+
+                      </div>
+
+                      <div id="update_run_settings_button" class="updateRunSettingsButton">
+                        <p>Update Settings</p>
+                        <span class="delete material-symbols-outlined">sync</span>
+                      </div>
+
+                      <div id="calculate_route_button_wrapper">
+                        <div id="calculate_route_button" class="calculateRouteButton">
+                          
+                          <p>Calculate Route</p>
+                          <span class="material-symbols-outlined">
+                            calculate
+                          </span>
+
+                        </div>
+                      </div>
+
+                      <div id="print_postcodes_button" class="printPostcodesButton">
+                        <p>Print Postcodes</p>
+                        <span class="delete material-symbols-outlined">print</span>
+                      </div>
+
+                      <div id="remove_run_button" class="removeRunButton">
+                        <p>Remove Run</p>
+                        <span class="delete material-symbols-outlined">delete</span>
+                      </div>
 
                     </div>
-                  </div>
 
-                  <div id="print_postcodes_button" class="printPostcodesButton">
-                    <p>Print Postcodes</p>
-                    <span class="delete material-symbols-outlined">print</span>
-                  </div>
-
-                  <div id="remove_run_button" class="removeRunButton">
-                    <p>Remove Run</p>
-                    <span class="delete material-symbols-outlined">delete</span>
                   </div>
 
                 </div>
 
-              </div>
-
-            </div>
-
-            <div id="map"></div>
+              </Section>
 
           </Section>
+        
+
+          <div id="map" class="hidden"></div>
+
         </Section>
       </Section>
     </body>
 
-    <!-- <script async
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_Mgv99mzX9qXTw4DsI6_uYfECGzhopik&loading=async&libraries=geometry&callback=initGeometry">
-    </script>
-     -->
     <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
         ({key: "AIzaSyC_Mgv99mzX9qXTw4DsI6_uYfECGzhopik", v: "beta"});</script>
 
