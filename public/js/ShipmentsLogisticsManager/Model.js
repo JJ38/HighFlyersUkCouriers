@@ -1142,59 +1142,114 @@ export async function moveStopToTop(stopToMove, currentSelectedRun){
 
   const stops = deepCopy(currentSelectedRun.stops);
 
-  console.log(stops);
-  
-  let indexOfStop;
+  let indexOfStopToMove;
 
   for(let i = 0; i < stops.length; i++){
 
     if(compareStops(stops[i], stopToMove)){
-      console.log(i);
-      indexOfStop = i;
+
+      indexOfStopToMove = i;
+
+    }
+
+    if(stops[i].stopNumber == 1){
+
+      stops[i].isLocked = false;
+
+    }
+
+    if(stops[i].stopNumber < stopToMove.stopNumber){
+
+      stops[i].stopNumber += 1;
 
     }
 
   }
 
-  for(let i = 0; i < indexOfStop; i++){
+  stops[indexOfStopToMove].stopNumber = 1;
 
-    stops[i].stopNumber += 1;
+  const result = await updateStopsOrder(stops, currentSelectedRun.documentId);
+
+  if(result === false){
+
+    return false;
+    
+  }
+
+  currentSelectedRun.stops = stops;
+  currentSelectedRun.isOptimised = false;
+
+  return true;
+
+}
+
+async function updateStopsOrder(stops, documentID){
+
+  const databaseStops = removeStopDataFromStop(stops);
+  
+  try{
+
+    const runRef = doc(db, 'Runs', documentID);
+
+    const result = await updateDocument(runRef, {isOptimised: false, stops: databaseStops});
+
+    if(result === false){
+      return false;
+    }
+
+    return true;
+
+  }catch(e){
+
+    console.log(e);
+    return false;
 
   }
 
-  stops[indexOfStop].stopNumber = 1;
-
-  console.log(stops);
-  
-}
+} 
 
 export async function moveStopToBottom(stopToMove, currentSelectedRun){
 
   const stops = deepCopy(currentSelectedRun.stops);
 
-  console.log(stops);
-
-  let indexOfStop;
+  let indexOfStopToMove;
 
   for(let i = 0; i < stops.length; i++){
 
     if(compareStops(stops[i], stopToMove)){
-      console.log(i);
-      indexOfStop = i;
+
+      indexOfStopToMove = i;
+
+    }
+
+    if(stops[i].stopNumber == stops.length){
+
+      stops[i].isLocked = false;
+
+    }
+
+    if(stops[i].stopNumber > stopToMove.stopNumber){
+
+      stops[i].stopNumber -= 1;
 
     }
 
   }
 
-  for(let i = indexOfStop; i < stops.length; i++){
+  stops[indexOfStopToMove].stopNumber = stops.length;
 
-    stops[i].stopNumber -= 1;
+  const result = await updateStopsOrder(stops, currentSelectedRun.documentId);
 
+  if(result === false){
+
+    return false;
+    
   }
 
-  stops[indexOfStop].stopNumber = stops.length;
+  currentSelectedRun.stops = stops;
+  currentSelectedRun.isOptimised = false;
 
-  console.log(stops);
+  return true;
 
 }
 

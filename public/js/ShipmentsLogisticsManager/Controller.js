@@ -2169,7 +2169,7 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops
       return;
     }
 
-    console.log(currentSelectedRun == currentSelectedRun);
+    console.log(currentSelectedRun);
 
     const result = await moveStopToTop(stop, currentSelectedRun);
 
@@ -2180,6 +2180,7 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops
     }
 
     showUnoptimisedRunState();
+    
 
     console.log("moveup");
 
@@ -2202,7 +2203,7 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops
 
     }
 
-    // showUnoptimisedRunState();
+    showUnoptimisedRunState();
 
     console.log("movedown");
 
