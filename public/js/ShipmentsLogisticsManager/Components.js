@@ -491,8 +491,6 @@ export function createUnassignedStopCardClickableElement(stopData){
 
 export function createUnassignedOrdersTableCard(stopData, clickableElement){
 
-  console.log(stopData);
-
   //clickableElement is either a checkbox or button
 
   const tableRow = document.createElement('tr');

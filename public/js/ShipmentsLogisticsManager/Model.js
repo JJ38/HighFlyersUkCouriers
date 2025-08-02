@@ -908,6 +908,8 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
     stopsWithStopsRemoved[i].stopNumber = i + 1;
 
+    //**hotfix for locked stops being moved when a stop is deleted from a run */
+    stopsWithStopsRemoved[i].isLocked = false;
   }
 
   batch.update(runRemovingStopRef, {"stops": stopsWithStopsRemoved, isOptimised: false})
@@ -934,17 +936,36 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   }
 
-  const currentNumberOfStops = runDocument.data()['stops'].length; 
+  const stopsOfRunAddingStops = runDocument.data()['stops'];
+
+  const currentNumberOfStops = stopsOfRunAddingStops.length; 
 
   for(let i = 0; i < stopsToAdd.length; i++){
 
-    stopsToAdd[i].stopNumber = currentNumberOfStops + i + 1;
     stopsToAdd[i].isLocked = false;
 
   }
 
+  let newStops;
 
-  const newStops = runDocument.data()['stops'].concat(stopsToAdd);
+  if(runDocument.data().runName != null){
+
+    const startOfStops = stopsOfRunAddingStops.slice(0, 1);
+    const endOfStops = stopsOfRunAddingStops.slice(1, stopsOfRunAddingStops.length);
+
+    newStops = startOfStops.concat(stopsToAdd).concat(endOfStops);
+    console.log(newStops);
+
+    for(let i = 0; i < newStops.length; i++){
+
+      newStops[i].stopNumber = i + 1;
+
+    }
+
+  }else{
+    newStops = stopsOfRunAddingStops.concat(stopsToAdd);
+  }
+
   batch.update(runRef, {"stops": newStops, isOptimised: false});
 
   try{
@@ -1585,17 +1606,18 @@ export async function calculateRoute(run){
   const groupedStops = getDuplicationStopLocations(stops);
   // console.log(groupedStops);
 
-  const stopLocations = getStopLocations(runTimingsDocument.data(), groupedStops);
+  const stopJSONs = getStopRequestJSON(runTimingsDocument.data(), groupedStops);
+  console.log(stopJSONs);
 
-  const lockedStops = getLockedStops(stopLocations, stops);
-
+  const lockedStops = getLockedStops(stopJSONs, stops);
+  console.log(lockedStops);
   if(lockedStops === false){
     return false;
   }
 
-  const precedenceRules = getPrecedenceRules(lockedStops, stops.length, stopLocations);
+  const precedenceRules = getPrecedenceRules(lockedStops, stopJSONs.length, stopJSONs);
 
-  const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopLocations, precedenceRules, run.settings.start.time);
+  const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, run.settings.start.time);
 
   console.log(requestBody);
 
@@ -1763,15 +1785,12 @@ function getOriginAndDestination(stops){
 
 }
 
-function getLockedStops(stopLocations, stops){
+function getLockedStops(stopJSONs, stops){
 
   let start = {isLocked: false};
   let end = {isLocked: false};
 
   const numberOfStops = stops.length;
-
-  console.log(stops);
-  console.log(stopLocations)
   
   for(let i = 0; i < numberOfStops; i++){
 
@@ -1782,7 +1801,7 @@ function getLockedStops(stopLocations, stops){
         const stopPrimaryKey = stops[i].orderID + "_" + stops[i].stopType;
         console.log(stopPrimaryKey);
 
-        const stopIndex = findStopLabelIndex(stopLocations, stopPrimaryKey);
+        const stopIndex = findStopLabelIndex(stopJSONs, stopPrimaryKey);
         
         if(stopIndex === false){
           return false;
@@ -1812,7 +1831,7 @@ function getLockedStops(stopLocations, stops){
         const stopPrimaryKey = stops[i].orderID + "_" + stops[i].stopType;
         console.log(stopPrimaryKey);
 
-        const stopIndex = findStopLabelIndex(stopLocations, stopPrimaryKey);
+        const stopIndex = findStopLabelIndex(stopJSONs, stopPrimaryKey);
 
         if(stopIndex === false){
           return false;
@@ -1840,14 +1859,14 @@ function getLockedStops(stopLocations, stops){
 
 }
 
-function findStopLabelIndex(stopLocations, labelToFind){
+function findStopLabelIndex(stopJSONs, labelToFind){
 
-  for(let i = 0; i < stopLocations.length; i++){
-    console.log(stopLocations[i].label);
-    console.log(labelToFind);
+  for(let i = 0; i < stopJSONs.length; i++){
 
-    if(stopLocations[i].label.startsWith(labelToFind)){  
+    if(stopJSONs[i].label.startsWith(labelToFind)){  
       console.log(i);
+      console.log(labelToFind);
+
       return i;
     }
 
@@ -1857,7 +1876,7 @@ function findStopLabelIndex(stopLocations, labelToFind){
 
 }
 
-function getStopLocations(runTimings, groupedStops){
+function getStopRequestJSON(runTimings, groupedStops){
 
   const nonDuplicateStops = groupedStops.nonDuplicateStops;
 
@@ -1980,7 +1999,7 @@ function compareCoordinates(a, b){
 
 }
 
-function getPrecedenceRules(lockedStops, numberOfStops, stopLocations){
+function getPrecedenceRules(lockedStops, numberOfStops, stopJSONs){
 
   const rules = []; 
 
@@ -2032,7 +2051,7 @@ function getPrecedenceRules(lockedStops, numberOfStops, stopLocations){
 
   //get a list of all stops 
 
-  // for(let i = 0; i < stopLocations.length; i++){
+  // for(let i = 0; i < stopJSONs.length; i++){
 
 
 
