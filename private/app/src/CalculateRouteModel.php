@@ -20,13 +20,6 @@ class CalculateRouteModel
         $projectId = "highflyersukcouriers";
         $endpoint = "https://routeoptimization.googleapis.com/v1/projects/{$projectId}:optimizeTours";
 
-        // Prepare the full request body structure
-        $requestBody = [
-            'model' => $model['model'],
-            'searchMode' => 'RETURN_FAST', //CONSUME_ALL_AVAILABLE_TIME', // Or 'RETURN_FAST'
-            "populateTransitionPolylines" => true,
-        ];
-
         $requestBody = $model;
 
         try {

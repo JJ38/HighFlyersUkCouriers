@@ -1602,24 +1602,23 @@ export async function calculateRoute(run){
 
   }
   
-
   const groupedStops = getDuplicationStopLocations(stops);
   // console.log(groupedStops);
+  
+  const lockedStops = getLockedStops(stops);
 
-  const stopJSONs = getStopRequestJSON(runTimingsDocument.data(), groupedStops);
-  console.log(stopJSONs);
-
-  const lockedStops = getLockedStops(stopJSONs, stops);
-  console.log(lockedStops);
+  const stopJSONs = getStopRequestJSON(runTimingsDocument.data(), groupedStops, lockedStops);
+  
   if(lockedStops === false){
     return false;
   }
 
-  const precedenceRules = getPrecedenceRules(lockedStops, stopJSONs.length, stopJSONs);
+  console.log(stopJSONs);
+  console.log(lockedStops);
+
+  const precedenceRules = getPrecedenceRules(lockedStops, stopJSONs.length);
 
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, run.settings.start.time);
-
-  console.log(requestBody);
 
   // return false;
 
@@ -1627,8 +1626,21 @@ export async function calculateRoute(run){
 
   const optimisedRouteJSON = JSON.parse(optimisedRoute);
 
-  const updatedStops = updateStopOrder(optimisedRouteJSON, run);
-  const databaseStops = removeStopDataFromStop(run.stops);
+  console.log(optimisedRouteJSON);
+
+  const updatedStops = updateStopOrder(optimisedRouteJSON, groupedStops);
+
+  console.log(updatedStops);
+
+  if(updatedStops === false){
+
+    return false;
+
+  }
+
+  const databaseStops = removeStopDataFromStop(updatedStops);
+
+  console.log(databaseStops);
 
   try{ 
 
@@ -1651,30 +1663,87 @@ export async function calculateRoute(run){
 }
 
 
-function updateStopOrder(optimisedRouteJSON, run){ 
-  
-  const stops = Object.assign([], run.stops);
+function updateStopOrder(optimisedRouteJSON, groupedStops){ 
+
+  console.log(groupedStops);
+
+  const nonDuplicateStops = groupedStops.nonDuplicateStops;
+  const duplicateStops = groupedStops.duplicateStops;
+
+  console.log(nonDuplicateStops);
+  console.log(duplicateStops);
 
   const optimisedStops = optimisedRouteJSON['routes'][0]['visits'];
   const optimisedTransitions = optimisedRouteJSON['routes'][0]['transitions'];
 
+  const newStops = [];
 
+  let stopFound = false;
+
+  //find shipment label in nonduplicateStops
   for(let i = 0; i < optimisedStops.length; i++){
 
-    for(let j = 0; j < stops.length; j++){
+    stopFound = false;
 
-      const primaryKey = stops[j]['orderID'] + "_" + stops[j]['stopType'];
+    const shipmentLabel = optimisedStops[i]['shipmentLabel'];
 
-      if(optimisedStops[i]['shipmentLabel'].startsWith(primaryKey)){
-        stops[j].stopNumber = i + 1;
-        stops[j].stopTime = getStopArrivalTime(optimisedTransitions[i]);
+    for(let j = 0; j < nonDuplicateStops.length; j++){
+
+      const primaryKey = nonDuplicateStops[j].orderID + "_" + nonDuplicateStops[j].stopType;
+
+      if(shipmentLabel == primaryKey){ 
+
+        nonDuplicateStops[j].stopNumber = newStops.length + 1;
+        nonDuplicateStops[j].stopTime = getStopArrivalTime(optimisedTransitions[i]);
+        newStops.push(nonDuplicateStops[j]);
+
+        stopFound = true;
+
+        break;
+      }
+
+    }
+
+    if(!stopFound){
+
+      if(duplicateStops.has(shipmentLabel)){
+
+        const multiStops = duplicateStops.get(shipmentLabel);
+
+        for(let j = 0; j < multiStops.length; j++){
+
+          multiStops[j].stopNumber = newStops.length + 1;
+          multiStops[j].stopTime = getStopArrivalTime(optimisedTransitions[i]);
+
+          newStops.push(multiStops[j]);
+
+        }
+
+      }else{
+        //error key should always be in duplicateStops
+        return false;
       }
 
     }
 
   }
+
   
-  return stops;
+
+    // for(let j = 0; j < stops.length; j++){
+
+    //   const primaryKey = stops[j]['orderID'] + "_" + stops[j]['stopType'];
+
+    //   if(optimisedStops[i]['shipmentLabel'].startsWith(primaryKey)){
+    //     stops[j].stopNumber = i + 1;
+    //     stops[j].stopTime = getStopArrivalTime(optimisedTransitions[i]);
+    //   }
+
+    // }
+
+  
+  
+  return newStops;
 
 }
 
@@ -1745,6 +1814,8 @@ async function fetchOptimisedRoute(requestBody){
     const response = await fetch(url, body);
     const json = await response.json();
 
+    console.log(json);
+
     return json;
 
   } catch (error) {
@@ -1785,7 +1856,7 @@ function getOriginAndDestination(stops){
 
 }
 
-function getLockedStops(stopJSONs, stops){
+function getLockedStops(stops){
 
   let start = {isLocked: false};
   let end = {isLocked: false};
@@ -1799,26 +1870,36 @@ function getLockedStops(stopJSONs, stops){
       if(stops[i].isLocked){
 
         const stopPrimaryKey = stops[i].orderID + "_" + stops[i].stopType;
-        console.log(stopPrimaryKey);
 
-        const stopIndex = findStopLabelIndex(stopJSONs, stopPrimaryKey);
-        
-        if(stopIndex === false){
-          return false;
-        }
+        start = { 
 
-        start = {
-
+          primaryKey: stopPrimaryKey,
           isLocked: true,
-          index: stopIndex,
           coordinates: {
 
             lat: stops[i].coordinates.lat,
             lng: stops[i].coordinates.lng,
           
-          }
+          } 
 
         }
+
+      //   console.log(stopPrimaryKey);
+
+      //   const stopIndex = findStopLabelIndex(stopJSONs, stopPrimaryKey);
+        
+      //   if(stopIndex === false){
+      //     return false;
+      //   }
+
+      //   start = {
+
+      //     isLocked: true,
+      //     primaryKey: stopPrimaryKey,
+      //     index: stopIndex,
+      //     
+
+      //   }
 
       }
 
@@ -1829,26 +1910,38 @@ function getLockedStops(stopJSONs, stops){
       if(stops[i].isLocked){
 
         const stopPrimaryKey = stops[i].orderID + "_" + stops[i].stopType;
-        console.log(stopPrimaryKey);
 
-        const stopIndex = findStopLabelIndex(stopJSONs, stopPrimaryKey);
+        end = { 
 
-        if(stopIndex === false){
-          return false;
-        }
-
-        end = {
-
+          primaryKey: stopPrimaryKey, 
           isLocked: true,
-          index: stopIndex,
-          coordinates: {
+           coordinates: {
 
             lat: stops[i].coordinates.lat,
             lng: stops[i].coordinates.lng,
 
-          }
-
+          } 
         }
+
+        // const stopIndex = findStopLabelIndex(stopJSONs, stopPrimaryKey);
+
+        // if(stopIndex === false){
+        //   return false;
+        // }
+
+        // end = {
+
+        //   isLocked: true,
+        //   primaryKey: stopPrimaryKey,
+        //   index: stopIndex,
+        //   coordinates: {
+
+        //     lat: stops[i].coordinates.lat,
+        //     lng: stops[i].coordinates.lng,
+
+        //   }
+
+        // }
       }
 
     }
@@ -1858,6 +1951,7 @@ function getLockedStops(stopJSONs, stops){
   return {start: start, end: end}
 
 }
+
 
 function findStopLabelIndex(stopJSONs, labelToFind){
 
@@ -1876,7 +1970,7 @@ function findStopLabelIndex(stopJSONs, labelToFind){
 
 }
 
-function getStopRequestJSON(runTimings, groupedStops){
+function getStopRequestJSON(runTimings, groupedStops, lockedStops){
 
   const nonDuplicateStops = groupedStops.nonDuplicateStops;
 
@@ -1898,35 +1992,81 @@ function getStopRequestJSON(runTimings, groupedStops){
       ]
     }
 
+    if(nonDuplicateStops[i].isLocked){
+
+      if(nonDuplicateStops[i].stopNumber == 1){
+
+        lockedStops.start.index = i;
+
+      }else{
+
+        lockedStops.end.index = i;
+
+      }
+
+    }
+
     stopObjects.push(stopObject);
     
   }
 
+  const duplicateStops = groupedStops.duplicateStops;
 
-  groupedStops.duplicateStops.forEach((duplicateStops, key, map) => {
+  let duplicateStopIndex = 0;
+
+  duplicateStops.forEach((duplicateStops, key, map) => {
+
+    const deliveries = [];
 
     for(let j = 0; j < duplicateStops.length; j++){
 
       const duration = j == 0 ? runTimings.stopDurationSeconds : runTimings.additionalStopDurationSeconds;
-      const label = j == 0 ? duplicateStops[j].orderID + "_" + duplicateStops[j].stopType + "_" + "ENDSTOPINMULTIDROP" : duplicateStops[j].orderID + "_" + duplicateStops[j].stopType
 
-      const stopObject = 
+      const deliveryObject = 
       {
-        "label": label,
-        "deliveries": [
-          {
-            "arrivalLocation": {
-              "latitude": duplicateStops[j].coordinates.lat,
-              "longitude": duplicateStops[j].coordinates.lng
-            },
-            "duration": duration + "s"
-          }
-        ]
+        "arrivalLocation": {
+          "latitude": duplicateStops[j].coordinates.lat,
+          "longitude": duplicateStops[j].coordinates.lng
+        },
+        "duration": duration + "s"
       }
 
-      stopObjects.push(stopObject);
+      deliveries.push(deliveryObject);
       
     }
+
+    //find if one of the stops that is a multi stop is locked
+    for(let j = 0; j < duplicateStops.length; j++){
+
+      const primaryKey = duplicateStops[j].orderID + "_" + duplicateStops[j].stopType;
+      
+      console.log(duplicateStops[j]);      
+      //if one of the stops is a multi stop update the index of the stop in the locked stops object to allow for precedence rules to be created later
+      if(lockedStops.start.primaryKey == primaryKey){
+
+        console.log("locked start stop");
+        lockedStops.start.index = stopObjects.length;
+   
+      }
+
+      if(lockedStops.end.primaryKey == primaryKey){
+
+        console.log("locked end stop");
+        lockedStops.end.index = stopObjects.length;
+
+      }
+
+    }
+
+    const stopObject = 
+      {
+        "label": key,
+        "deliveries": deliveries
+      }
+
+    stopObjects.push(stopObject);
+
+    duplicateStopIndex += 1;
     
   });
 
@@ -1999,11 +2139,9 @@ function compareCoordinates(a, b){
 
 }
 
-function getPrecedenceRules(lockedStops, numberOfStops, stopJSONs){
+function getPrecedenceRules(lockedStops, numberOfStops){
 
-  const rules = []; 
-
-  console.log(lockedStops);
+  let rules = []; 
 
   if(lockedStops.start.isLocked){
 
@@ -2029,8 +2167,10 @@ function getPrecedenceRules(lockedStops, numberOfStops, stopJSONs){
   }
 
   if(lockedStops.end.isLocked){
+
     console.log("end stop is locked");
 
+    //find index of all stops with same coordinates
     for(let i = 0; i < numberOfStops; i++){
 
       if(i != lockedStops.end.index){
@@ -2047,16 +2187,98 @@ function getPrecedenceRules(lockedStops, numberOfStops, stopJSONs){
       }
 
     }
+
+    // const groupedRules = getGroupedMultiStopPrecedenceRules(lockedStops, groupedStops.duplicateStops, stopJSONs);
+    // rules = groupedRules.concat(rules);
+
   }
 
-  //get a list of all stops 
+  console.log(rules);
 
-  // for(let i = 0; i < stopJSONs.length; i++){
+  return rules;
+
+}
+
+//This is needed to stop cases where the last stop is seperated from other stops at the same location causing some strange routing.
+function getGroupedMultiStopPrecedenceRules(lockedStops, duplicateStops, stopJSONs){
+
+  const rules = []; 
 
 
+  //find all stops at this location
+  const coordinateKey = lockedStops.end.coordinates.lat + "_" + lockedStops.end.coordinates.lng;
 
-  // }
+  const primaryKeysForGroupedStops = [];
 
+  //create primary keys for all stops with same coordinates
+  if(duplicateStops.has(coordinateKey)){
+
+    const stopsArray = duplicateStops.get(coordinateKey);
+
+    for(let i = 0; i < stopsArray.length; i++){
+
+      const primaryKey = stopsArray[i].orderID + "_" + stopsArray[i].stopType;
+
+      if(lockedStops.end.primaryKey != primaryKey){
+        primaryKeysForGroupedStops.push(primaryKey);
+      }
+
+    }
+
+    console.log(primaryKeysForGroupedStops);
+
+    
+    const indexsOfGroupedStops = [];
+
+    for(let i = 0; i < stopJSONs.length; i++){
+
+      for(let j = 0; j < primaryKeysForGroupedStops.length; j++){
+
+        if(stopJSONs[i].label.startsWith(primaryKeysForGroupedStops[j])){
+
+          indexsOfGroupedStops.push(i);
+
+        }
+
+      }
+      
+    }
+
+    console.log(indexsOfGroupedStops);
+    const indexOfCompletePrecedenceRules = [];
+    //create precedence rules for all stops with same coordinates but make sure locked stop is last
+
+    for(let i = 0; i < indexsOfGroupedStops.length; i++){
+
+      for(let j = 0; j < stopJSONs.length; j++){
+
+        if(j != indexsOfGroupedStops[i]){
+
+          if(!indexOfCompletePrecedenceRules.includes(j) && j != lockedStops.end.index){
+
+            const rule =  {
+              "firstIsDelivery": true,
+              "secondIsDelivery": true,
+              "firstIndex": j,
+              "secondIndex": indexsOfGroupedStops[i]
+            }
+
+            rules.push(rule);
+
+          }
+
+        }
+
+      }
+
+      indexOfCompletePrecedenceRules.push(indexsOfGroupedStops[i]);
+
+    }
+    
+
+  }
+
+  console.log(rules);
 
   return rules;
 
@@ -2070,7 +2292,7 @@ function getRouteOptimisationRequestBody(origin, destination, stops, precedenceR
   {
     "model": {
         "globalStartTime": "1970-01-01T" + startTime.hour + ":" + startTime.minute + ":00Z",
-        "globalEndTime": "1970-01-02T23:00:00Z",
+        "globalEndTime": "1971-01-01T00:00:00Z",
         "shipments": stops,
         "vehicles": [
             {
@@ -2089,10 +2311,9 @@ function getRouteOptimisationRequestBody(origin, destination, stops, precedenceR
         "precedenceRules": precedenceRules,
     },
     "parent": "projects/highflyersukcouriers/locations/global",
-    "searchMode": "RETURN_FAST",
+    "searchMode": "RETURN_FAST", // "RETURN_FAST", CONSUME_ALL_AVAILABLE_TIME
     "populateTransitionPolylines": true,
   }
-
 
   return request;
 
