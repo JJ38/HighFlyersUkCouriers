@@ -115,7 +115,13 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
         $manageAccountsModel->createFirestoreUserDocument();
 
         if($cleaned_parameters['accountType'] == "customer"){
+
             $manageAccountsModel->createFirestoreCustomerDocument();
+
+        }else if($cleaned_parameters['accountType'] == "driver"){
+
+            $manageAccountsModel->createFirestoreDriverDocument();
+
         }
 
 

@@ -214,6 +214,42 @@ class ManageAccountsModel
     }
 
 
+     public function createFirestoreDriverDocument() : void{
+
+        if($this->firebase_firestore != null){
+
+            try{
+
+                //create docuement in users collection to store roles for admin panel to see role information
+
+                $this->firebase_firestore->addDocument('Drivers', [
+                    'driverName' => $this->email,
+                    'driverStatus' => "Offline",
+                ], $this->uid);
+                
+                $this->firebase_firestore_result = true;
+    
+            }catch (\Exception $e) {
+    
+                if ($this->logger !== null) {
+    
+                    $this->logger->error("FIREBASE_FIRESTORE_CREATE_DRIVER_DOCUMENT_ERROR", array($e));
+                    $this->logger->error("FIREBASE_FIRESTORE_CREATE_DRIVER_DOCUMENT_PARAMETERS", array($this->email, $this->role));
+    
+                }
+
+                $this->firebase_firestore_result = false;
+              
+            }
+
+        }else{
+            $this->firebase_firestore_result = false;
+        }
+
+      
+    }
+
+
     public function deleteUser() : void{
 
         if($this->firebase_firestore != null){

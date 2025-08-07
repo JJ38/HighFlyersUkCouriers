@@ -1,4 +1,4 @@
-import { db, dbdev, auth, getDocument, updateDocument } from '/js/firebase';
+import { db, auth, getDocument, updateDocument } from '/js/firebase';
 import { query, doc, collection } from 'firebase/firestore';
 import { showNotification } from '/js/Notification';
 

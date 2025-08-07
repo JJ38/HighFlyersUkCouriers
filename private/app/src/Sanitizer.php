@@ -125,15 +125,20 @@ class Sanitizer
       if($tainted_account_type == "staff"){
         return "staff";
       }
+
       if($tainted_account_type == "admin"){
         return "admin";
+      }
 
-      }if($tainted_account_type == "customer"){
+      if($tainted_account_type == "customer"){
         return "customer";
+      }
+
+       if($tainted_account_type == "driver"){
+        return "driver";
       }
       
       return null;
-      
     
     }
 

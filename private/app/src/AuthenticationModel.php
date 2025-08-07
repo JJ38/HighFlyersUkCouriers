@@ -123,9 +123,11 @@ class AuthenticationModel
         
             $projectID = $env['FIREBASE_PROJECT_ID'];
             $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+            $database = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
         
-            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-                'database' => '(default)',
+            $firestore = new FirestoreClient($firebaseProjectAPIKey, [
+                'database' => $database,
+                'projectId' => $projectID
             ], $client);
 
             
