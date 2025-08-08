@@ -258,7 +258,7 @@ function createDriverCard(driverStruct){
 
   const driverName = document.createElement('p');
   driverName.classList = "driverName flexTwo";
-  driverName.textContent = driverStruct['driverName'];
+  driverName.textContent = driverStruct['driverName'].replace("@placeholder.com", "");
 
   topRow.appendChild(statusWrapper);
   topRow.appendChild(driverName);

@@ -2220,7 +2220,8 @@ function getRouteOptimisationRequestBody(origin, destination, stops, precedenceR
                   "latitude": destination.lat,
                   "longitude": destination.lng
                 },
-                "costPerKilometer": 1
+                "costPerHour": 1000.0,
+                "costPerKilometer": 1.0,
             }
         ],
         "precedenceRules": precedenceRules,
