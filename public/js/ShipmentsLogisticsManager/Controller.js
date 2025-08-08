@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
-import {moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
+import { convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { map } from "lodash";
 
@@ -1821,6 +1821,19 @@ function updateStopList(runObject){
   const stops = runObject.stops
   runStopsContainer.innerHTML = "";
 
+  if(runObject.isOptimised){
+
+    //create card to show total time of run
+    const runTime = document.createElement('p');
+    runTime.innerText = "Total Duration: " + convertSecondsToHoursAndMinutes(runObject.runTime);
+    runTime.id = "runTime";
+
+    console.log(convertSecondsToHoursAndMinutes(runObject.runTime));
+    
+    runStopsContainer.appendChild(runTime);
+
+  }
+
   for(let i = 0; i < stops.length; i++){
 
     for(let j = 0; j < stops.length; j++){
@@ -2358,6 +2371,10 @@ async function updateStopsOrder(){
   const stopCardList = Array.from(cardBeingDragged.parentNode.children).filter((element) => {
 
     if(element.classList.contains('stopNumberWrapper')){
+      return false;
+    }
+
+    if(element.id == "runTime"){
       return false;
     }
 

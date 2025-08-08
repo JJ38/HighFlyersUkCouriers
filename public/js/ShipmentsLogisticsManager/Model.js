@@ -1371,6 +1371,7 @@ export function parseRunInfo(doc, fuelSettings){
     runName: runData['runName'],
     runWeek: runData['runWeek'],
     runType: runData['runType'],
+    runTime: runData['runTime'],
     isOptimised: runData['isOptimised'],
     optimisedRoute: runData['optimisedRoute'],
     settings: runData['settings']
@@ -1603,7 +1604,6 @@ export async function calculateRoute(run){
   }
   
   const groupedStops = getDuplicationStopLocations(stops);
-  // console.log(groupedStops);
   
   const lockedStops = getLockedStops(stops);
 
@@ -1620,17 +1620,15 @@ export async function calculateRoute(run){
 
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, run.settings.start.time);
 
-  // return false;
+  const optimisedRouteJSON = await fetchOptimisedRoute(requestBody);
 
-  const optimisedRoute = await fetchOptimisedRoute(requestBody);
-
-  const optimisedRouteJSON = JSON.parse(optimisedRoute);
+  if(optimisedRouteJSON === false){
+    return false;
+  }
 
   console.log(optimisedRouteJSON);
 
   const updatedStops = updateStopOrder(optimisedRouteJSON, groupedStops);
-
-  console.log(updatedStops);
 
   if(updatedStops === false){
 
@@ -1640,11 +1638,26 @@ export async function calculateRoute(run){
 
   const databaseStops = removeStopDataFromStop(updatedStops);
 
-  console.log(databaseStops);
+
+  let runTime;
+
+  try{
+
+    console.log(optimisedRouteJSON);
+
+    runTime = optimisedRouteJSON['metrics']['aggregatedRouteMetrics']['totalDuration'];
+    console.log(runTime);
+
+  }catch(e){
+    
+    runTime = 0;
+
+  }
+
 
   try{ 
 
-    const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON, databaseStops);
+    const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON, databaseStops, runTime);
 
     if(storedResult === false){
       return false;
@@ -1652,6 +1665,7 @@ export async function calculateRoute(run){
 
     run.stops = updatedStops;
     run.isOptimised = true;
+    run.runTime = runTime;
 
     return optimisedRouteJSON;
 
@@ -1727,21 +1741,6 @@ function updateStopOrder(optimisedRouteJSON, groupedStops){
     }
 
   }
-
-  
-
-    // for(let j = 0; j < stops.length; j++){
-
-    //   const primaryKey = stops[j]['orderID'] + "_" + stops[j]['stopType'];
-
-    //   if(optimisedStops[i]['shipmentLabel'].startsWith(primaryKey)){
-    //     stops[j].stopNumber = i + 1;
-    //     stops[j].stopTime = getStopArrivalTime(optimisedTransitions[i]);
-    //   }
-
-    // }
-
-  
   
   return newStops;
 
@@ -1773,13 +1772,13 @@ function getStopArrivalTime(optimisedStop){
 
 }
 
-async function storeOptimisedRoute(runID, optimisedRoute, stops){
+async function storeOptimisedRoute(runID, optimisedRoute, stops, runTime){
 
   try{
 
     const runRef = doc(db, 'Runs', runID);
 
-    const result = await updateDocument(runRef, {optimisedRoute: optimisedRoute, isOptimised: true, stops:stops});
+    const result = await updateDocument(runRef, {optimisedRoute: optimisedRoute, isOptimised: true, stops:stops, runTime: runTime});
     
     if(result === false){
 
@@ -1812,9 +1811,18 @@ async function fetchOptimisedRoute(requestBody){
     }
 
     const response = await fetch(url, body);
-    const json = await response.json();
+    const jsonString = await response.json();
 
-    console.log(json);
+    const json = JSON.parse(jsonString);
+
+    console.log(json.error);
+
+    if(json['error'] != null){
+
+      console.log(json['error']['message']);
+      return false;
+
+    }
 
     return json;
 
@@ -1825,36 +1833,6 @@ async function fetchOptimisedRoute(requestBody){
 
 }
 
-
-function getOriginAndDestination(stops){
-
-  const depotLatLng = {
-    lat: 53.165573, 
-    lng: -2.204147
-  }
-
-  let origin;
-  let destination;
-
-  const numberOfStops = stops.length;
-
-  
-
-  if(origin == null){
-
-    origin = depotLatLng;
-
-  }
-
-  if(destination == null){
-
-    destination = depotLatLng;
-
-  }
-
-  return {origin: origin, destination: destination};
-
-}
 
 function getLockedStops(stops){
 
@@ -2517,4 +2495,30 @@ function getOutwardPostcode(postcode){
 
   }
 
+}
+
+export function convertSecondsToHoursAndMinutes(secondsString){
+
+  if(secondsString == null){
+    return "0:0";
+  }
+
+  const seconds = parseInt(secondsString.replace("s", ""));
+
+  const totalMinutes = Math.floor(seconds / 60);
+  console.log(totalMinutes);
+  const hours = Math.floor(totalMinutes / 60);
+  console.log(hours);
+
+  let remainingMinutes = totalMinutes % 60;
+  console.log(remainingMinutes);
+
+  if(remainingMinutes < 10){
+
+    remainingMinutes = "0" + remainingMinutes;
+
+  }
+
+
+  return hours + ":" + remainingMinutes;
 }
