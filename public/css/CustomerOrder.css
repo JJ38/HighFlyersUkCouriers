@@ -402,11 +402,26 @@ i{
 #deliverypostcode{
     text-transform: uppercase;
 }
+
 .onelineaddress{
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
   
+}
+
+.disclaimer{
+
+  font-size: large;
+  text-align: center;
+
+}
+
+.flex-col{
+
+    display: flex;
+    flex-direction: column;
+
 }
 
 

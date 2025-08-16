@@ -1,6 +1,3 @@
-
-
-
 export function createLoader(){
 
   const loader = document.createElement('div');
@@ -848,3 +845,41 @@ export function createShipmentOptions(shipmentName, shipments){
 
 }
 
+
+export function createDriverSelectOptions(drivers, shipmentRunIDs, runID){
+
+  const options = [];
+  console.log(runID);
+  for(let i = 0; i < drivers.length; i++){
+
+    const option = createOption(drivers[i].driverName, drivers[i].driverID);
+
+    const driverRunsAndShipmentRuns = drivers[i].assignedRuns.concat(shipmentRunIDs);
+
+    const runIDSet = new Set(driverRunsAndShipmentRuns);
+
+    //if driver already assigned run in shipment
+    if(driverRunsAndShipmentRuns.length != runIDSet.size){
+
+      console.log(drivers[i].assignedRuns)
+
+      if(drivers[i].assignedRuns.includes(runID)){
+
+        option.selected = true;
+
+      }else{
+
+        console.log("driver already assigned run in shipment");
+        option.disabled = true;
+
+      }
+
+    }
+
+    options.push(option);
+
+  }
+
+  return options;
+
+}

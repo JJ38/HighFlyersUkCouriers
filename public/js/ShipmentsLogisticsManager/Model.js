@@ -155,7 +155,7 @@ export async function generateShipment(shipmentName, shipmentType, shipmentDeliv
     const orderDataQuery = await getDocuments(q);
 
     //create run documents
-    const runDocuments = generateRunDocs(runDefinitions.data(), runDefaults.data(), shipmentDeliveryWeekInput, shipmentType);
+    const runDocuments = generateRunDocs(runDefinitions.data(), runDefaults.data(), deliveryWeek, shipmentType);
 
     //create a list of stops from orders
     await generateStopsFromOrders(orderDataQuery.docs, shipmentType, runDocuments, runDefinitions.data());
@@ -1370,7 +1370,6 @@ export function parseRunInfo(doc, fuelSettings){
     stops: runData['stops'],
     runName: runData['runName'],
     runWeek: runData['runWeek'],
-    runType: runData['runType'],
     runTime: runData['runTime'],
     isOptimised: runData['isOptimised'],
     optimisedRoute: runData['optimisedRoute'],
@@ -1608,25 +1607,25 @@ export async function calculateRoute(run){
   const lockedStops = getLockedStops(stops);
 
   const stopJSONs = getStopRequestJSON(runTimingsDocument.data(), groupedStops, lockedStops);
-  
+
+  console.log(stopJSONs);
+
+
   if(lockedStops === false){
     return false;
   }
 
-  console.log(stopJSONs);
-  console.log(lockedStops);
-
   const precedenceRules = getPrecedenceRules(lockedStops, stopJSONs.length);
 
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, run.settings.start.time);
+
+  console.log(requestBody);
 
   const optimisedRouteJSON = await fetchOptimisedRoute(requestBody);
 
   if(optimisedRouteJSON === false){
     return false;
   }
-
-  console.log(optimisedRouteJSON);
 
   const updatedStops = updateStopOrder(optimisedRouteJSON, groupedStops);
 
@@ -1643,10 +1642,7 @@ export async function calculateRoute(run){
 
   try{
 
-    console.log(optimisedRouteJSON);
-
     runTime = optimisedRouteJSON['metrics']['aggregatedRouteMetrics']['totalDuration'];
-    console.log(runTime);
 
   }catch(e){
     
@@ -2017,8 +2013,7 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops){
     for(let j = 0; j < duplicateStops.length; j++){
 
       const primaryKey = duplicateStops[j].orderID + "_" + duplicateStops[j].stopType;
-      
-      console.log(duplicateStops[j]);      
+         
       //if one of the stops is a multi stop update the index of the stop in the locked stops object to allow for precedence rules to be created later
       if(lockedStops.start.primaryKey == primaryKey){
 
@@ -2521,4 +2516,126 @@ export function convertSecondsToHoursAndMinutes(secondsString){
 
 
   return hours + ":" + remainingMinutes;
+}
+
+export async function fetchDrivers(){
+  
+  try{
+
+    const q = query(collection(db, 'Drivers'));
+    const driverDocuments = await getDocuments(q);
+
+    return driverDocuments;
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+  }
+}
+
+
+export function parseDriverDocuments(driverDocuments){
+
+  const docs = driverDocuments.docs;
+
+  if(docs.length == 0){
+    return false;
+  }
+
+  const drivers = [];
+
+  for(let i = 0; i < docs.length; i++){
+
+    const assignedRuns = [];
+    const doc = docs[i].data()
+
+    for(let j = 0; j < doc.assignedRuns.length; j++){
+      
+      assignedRuns.push(doc.assignedRuns[j].runID);
+
+    }
+
+    const driver = {
+      driverID: docs[i].id,
+      driverName: doc.driverName,
+      assignedRuns: assignedRuns
+    }
+
+    drivers.push(driver);
+
+  }
+
+  return drivers;
+
+}
+
+export async function unassignDriver(driverDocID, runID){
+
+
+  return false;
+
+}
+
+
+export async function assignDriver(driverDocID, runID){
+
+  try{
+    const driverDocRef = doc(db, 'Drivers', driverDocID);
+    const runDocRef = doc(db, 'Runs', runID);
+
+    const driverDocument = await getDocument(driverDocRef);
+    const runDocument = await getDocument(runDocRef);
+
+    const runData = runDocument.data();
+
+    if(runData == null){
+      return false;
+    }
+
+    const driverData = driverDocument.data();
+
+    if(driverData == null){
+      return false;
+    }
+
+    const assignedRuns = driverData.assignedRuns;
+
+    const driverRun = {
+      optimisedRoute: runData.optimisedRoute,
+      runID: runDocument.id,
+      stops: runData.stops,
+    }
+
+    assignedRuns.push(driverRun);
+
+    const updatedSuccessfully = await updateDocument(driverDocRef, {"assignedRuns": assignedRuns});
+
+    if(updatedSuccessfully == false){
+      return false;
+    }
+
+    return true;
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+}
+
+export function getCurrentAssignedDriver(drivers, runID){
+
+  for(let i = 0; i < drivers.length; i++){
+
+    if(drivers[i].assignedRuns.includes(runID)){
+      return drivers[i].driverID;
+    }
+
+  }
+
+  return false;
+
 }

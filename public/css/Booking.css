@@ -178,6 +178,13 @@ select{
   font-size: 22px;
 }
 
+.disclaimer{
+
+  font-size: large;
+  text-align: center;
+
+}
+
 @media (max-width: 850px){
   .maincontent{
     padding: 20px 6vw !important

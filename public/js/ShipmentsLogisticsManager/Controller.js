@@ -2,10 +2,9 @@ import { db, getDocuments, filterSearch } from "/js/Firebase.js";
 import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
-import { convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, mergeStopsWithOrderData, getRunStopsOrderData, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment, fetchRun } from "./Model";
+import { createDriverSelectOptions, createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
+import { getCurrentAssignedDriver, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
-import { map } from "lodash";
 
 
 let GoogleAdvancedMarkerElement;
@@ -80,6 +79,9 @@ const updateRunSettingsButton = document.getElementById('update_run_settings_but
 const splitRunSelect = document.getElementById('split_run_select');
 const splitRunSettingsButton = document.getElementById('split_run_settings_button');
 const printPostcodesButton = document.getElementById('print_postcodes_button');
+const selectAssignDriver = document.getElementById('select_assign_driver');
+const selectAssignDriverWrapper = document.getElementById('select_assign_driver_wrapper');
+
 
 
 const validateAddressWidget = document.getElementById('validate_address_widget');
@@ -137,6 +139,9 @@ let currentShipmentUnassignedOrders;
 let currentSelectedRunCard = null;
 let currentSelectedRun = null;
 let currentSelectedShipmentName = null;
+let currentSelectedShipment = null;
+
+let drivers = null;
 
 let currentStopMetaData = null;
 let currentStopButtonWrapper = null;
@@ -701,6 +706,7 @@ function addEventListeners(){
       updateMapMarkers(currentSelectedRun);
       updateStopList(currentSelectedRun);
       updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
+      updateSelectAssignDriver();
 
     });
 
@@ -937,6 +943,68 @@ function addEventListeners(){
 
   }
 
+  if(selectAssignDriver != null){
+
+    selectAssignDriver.addEventListener('change', async (e) => {
+
+      const selectedDriverID = e.target.value;
+
+      console.log(selectedDriverID);
+      console.log(currentSelectedRun);
+
+      const currentAssignedDriver = getCurrentAssignedDriver(drivers, currentSelectedRun.documentId);
+      
+      console.log(currentAssignedDriver);
+  
+
+      if(selectedDriverID == ""){
+
+        console.log("unassign driver");
+        const unassignedDriverSuccessfully = await unassignDriver(currentAssignedDriver, currentSelectedRun.documentId);
+        console.log(unassignedDriverSuccessfully);
+
+        if(!unassignedDriverSuccessfully){
+
+          updateSelectAssignDriver();
+          showNotification("Error!", "Error unassigning driver from run. The driver is still assigned to this run");
+          return;
+
+        }else{
+          showNotification("Success!", "Successfully unassigned driver from run");
+        }
+
+      }else{
+
+        if(currentAssignedDriver != false){
+
+          const unassignedDriverSuccessfully = await unassignDriver(currentAssignedDriver, currentSelectedRun.documentId);
+
+          if(!unassignedDriverSuccessfully){
+
+            updateSelectAssignDriver();
+            showNotification("Error!", "Error unassigning driver from run. The driver is still assigned to this run");
+            return;
+
+          }
+        }
+        const assignedDriverSuccessfully = await assignDriver(selectedDriverID, currentSelectedRun.documentId);
+        
+        if(!assignedDriverSuccessfully){
+
+          showNotification("Error!", "Error assigning driver to run. No driver is currently assigned to this run");        
+          updateSelectAssignDriver();
+          return;
+
+        }else{
+          showNotification("Success!", "Successfully reassigned driver to run");
+        }
+
+      }
+
+    });
+
+  }
+
 }
 
 function print(form){
@@ -1142,6 +1210,7 @@ function selectTab(tabName){
 
     hideUI(runStopsContainer);
     showUI(runOptionsContainer);
+    updateSelectAssignDriver();
     optionTabButton.classList.add('selectedTabButton');
     manageTabButton.classList.remove('selectedTabButton');
 
@@ -1280,6 +1349,49 @@ function showUnoptimisedRunState(){
   updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
   updateMapMarkers(currentSelectedRun);
   updateStopList(currentSelectedRun);
+
+}
+
+function updateOptionsToSelectDriver(options){
+
+  selectAssignDriver.innerHTML = "";
+
+  selectAssignDriver.appendChild(createOption("-- assign driver --", ""));
+
+  for(let i = 0; i < options.length; i++){
+    selectAssignDriver.appendChild(options[i]);
+  }
+
+}
+
+async function updateSelectAssignDriver(){
+  
+  //is route optimised
+  if(!currentSelectedRun.isOptimised){
+    hideUI(selectAssignDriverWrapper);
+    return false;
+  }
+
+  //fetch drivers
+  const driverDocuments = await fetchDrivers();
+
+  if(driverDocuments == false){
+    showNotification("Error!", "Error fetching driver documents. You cant currently assign this run to a driver")
+    return;
+  }
+  
+  drivers = parseDriverDocuments(driverDocuments);
+
+  if(drivers == false){
+    showNotification("Error!", "No drivers found to assign this run to");
+  }
+
+  //create options for select dropdown
+  const options = createDriverSelectOptions(drivers, currentSelectedShipment.runs, currentSelectedRun.documentId);
+
+  updateOptionsToSelectDriver(options);
+
+  showUI(selectAssignDriverWrapper);
 
 }
 
@@ -1583,6 +1695,8 @@ async function selectShipment(shipmentName){
     return false;
 
   }
+
+  currentSelectedShipment = shipmentData.data();
 
   const runIDs = shipmentData.data()['runs'];
 
