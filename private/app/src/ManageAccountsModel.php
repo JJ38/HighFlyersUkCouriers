@@ -223,8 +223,9 @@ class ManageAccountsModel
                 //create docuement in users collection to store roles for admin panel to see role information
 
                 $this->firebase_firestore->addDocument('Drivers', [
-                    'driverName' => $this->email,
-                    'driverStatus' => "Offline",
+                    'assignedRuns' => [],
+                    'driverName' => str_replace("@placeholder.com", "", $this->email),
+                    'driverStatus' => "Offline",                 
                 ], $this->uid);
                 
                 $this->firebase_firestore_result = true;

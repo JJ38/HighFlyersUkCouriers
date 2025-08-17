@@ -53,13 +53,9 @@
 
 }
 
-h1, p{
-    margin: 0;
-    padding: 0;
-}
-
 .notificationTitle{
     font-size: 1.15rem;
+    padding-bottom: 0px !important;
 }
 
 .notificationMessage{
