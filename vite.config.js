@@ -36,6 +36,7 @@ export default defineConfig({
           LogisticsSettings: resolve(root, 'logistics-settings.html'),
           ShipmentsLogisticsManager: resolve(root, 'shipments-logistics-manager.html'),
           ViewOrder: resolve(root, 'view-order.html'),
+          SystemSettings: resolve(root, 'system-settings.html'),
         },
         output: {
           // assetFileNames: "assets/[name][extname]",

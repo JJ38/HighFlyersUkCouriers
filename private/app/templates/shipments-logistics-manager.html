@@ -17,19 +17,19 @@
 
 
         <title>HighFlyersUkCouriers</title>
-      <script type="module" crossorigin src="./assets/ShipmentsLogisticsManager-DUTqVjJE.js"></script>
+      <script type="module" crossorigin src="./assets/ShipmentsLogisticsManager-DqhFIjtf.js"></script>
       <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
       <link rel="modulepreload" crossorigin href="./assets/Notification-D0jEUT8q.js">
       <link rel="modulepreload" crossorigin href="./assets/AddressAutocomplete-CkD3A38D.js">
       <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-B1C6gsaD.js">
-      <link rel="modulepreload" crossorigin href="./assets/Firebase-CdTZfAWC.js">
-      <link rel="modulepreload" crossorigin href="./assets/Logout-Dc8httgf.js">
+      <link rel="modulepreload" crossorigin href="./assets/Firebase-DsAbI0c_.js">
+      <link rel="modulepreload" crossorigin href="./assets/Logout-CM6XPxcm.js">
       <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
       <link rel="stylesheet" crossorigin href="./assets/Notification-BHB7FqS3.css">
       <link rel="stylesheet" crossorigin href="./assets/AddressAutocomplete-DluMj-8M.css">
       <link rel="stylesheet" crossorigin href="./assets/ShipmentsLogisticsManager-wZSp2Ljb.css">
       <link rel="stylesheet" crossorigin href="./assets/Navbar-ClBKpNFz.css">
-      <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-CQwji1kb.css">
+      <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-DTOtsrKl.css">
       <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-Dem43p4b.css">
     </head>
     <body>
@@ -43,6 +43,7 @@
               <a href="/manage-orders">Bookings</a>
               <a href="/content-manager">Content Manager</a>
               <a href="/manage-accounts">Accounts</a>
+              <a href="/system-settings">System Settings</a>
               <a href="/live-logistics-manager">Live Logistics</a>
               <a class="currentpage" href="/shipments-logistics-manager">Shipments Logistics</a>
               <a href="/logistics-settings">Logistics Settings</a>
@@ -59,6 +60,7 @@
           <a class="navLinks" href="/manage-orders">Bookings</a>
           <a class="navLinks" href="/content-manager">Content Manager</a>
           <a class="navLinks" href="/manage-accounts">Accounts</a>
+          <a class="navLinks" href="/system-settings">System Settings</a>
           <a class="navLinks" href="/live-logistics-manager">Logistics</a>
         </nav>
     
@@ -528,13 +530,17 @@
 
                       <div class="runProperties">
 
-                        <!-- <label for="driver_select" class="bold">Assign Driver: </label>
-                        <select name="driver_select" id="driver_select" class="selectOption">
+                        <div id="select_assign_driver_wrapper" class="hidden">
 
-                          <option value="opunuoien">Stephen</option>
-                          <option value="pojjesPIOFJEI">Anne</option>
-                      
-                        </select> -->
+                          <label for="select_assign_driver" class="bold">Assign Driver: </label>
+                          <select name="select_assign_driver" id="select_assign_driver" class="selectOption">
+
+                            <!-- <option value="opunuoien">Stephen</option>
+                            <option value="pojjesPIOFJEI">Anne</option> -->
+                                          
+                          </select>
+
+                        </div>
 
                         <div class="splitRunWrapper">
 
