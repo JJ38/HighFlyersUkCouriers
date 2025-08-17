@@ -2501,19 +2501,16 @@ export function convertSecondsToHoursAndMinutes(secondsString){
   const seconds = parseInt(secondsString.replace("s", ""));
 
   const totalMinutes = Math.floor(seconds / 60);
-  console.log(totalMinutes);
+
   const hours = Math.floor(totalMinutes / 60);
-  console.log(hours);
 
   let remainingMinutes = totalMinutes % 60;
-  console.log(remainingMinutes);
 
   if(remainingMinutes < 10){
 
     remainingMinutes = "0" + remainingMinutes;
 
   }
-
 
   return hours + ":" + remainingMinutes;
 }
@@ -2572,13 +2569,50 @@ export function parseDriverDocuments(driverDocuments){
 
 export async function unassignDriver(driverDocID, runID){
 
+  try{
 
-  return false;
+    const driverDocRef = doc(db, 'Drivers', driverDocID);
+    const driverDocument = await getDocument(driverDocRef);
+
+    const driverData = driverDocument.data();
+
+    if(driverData == null){
+      return false;
+    }
+
+    const assignedRuns = driverData.assignedRuns;
+
+    for(let i = 0; i < assignedRuns.length; i++){
+
+      if(assignedRuns[i].runID == runID){
+        console.log(i);
+        assignedRuns.splice(i, 1);
+        break;
+      }
+
+    }
+
+    console.log(assignedRuns);
+
+    const updatedSuccessfully = await updateDocument(driverDocRef, {"assignedRuns": assignedRuns});
+
+    if(updatedSuccessfully == false){
+      return false;
+    }
+
+    return true;
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
 
 }
 
 
-export async function assignDriver(driverDocID, runID){
+export async function assignDriver(driverDocID, runID, shipmentName){
 
   try{
     const driverDocRef = doc(db, 'Drivers', driverDocID);
@@ -2605,6 +2639,7 @@ export async function assignDriver(driverDocID, runID){
       optimisedRoute: runData.optimisedRoute,
       runID: runDocument.id,
       stops: runData.stops,
+      shipmentName: shipmentName
     }
 
     assignedRuns.push(driverRun);

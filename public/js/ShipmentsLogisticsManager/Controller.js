@@ -949,19 +949,11 @@ function addEventListeners(){
 
       const selectedDriverID = e.target.value;
 
-      console.log(selectedDriverID);
-      console.log(currentSelectedRun);
-
       const currentAssignedDriver = getCurrentAssignedDriver(drivers, currentSelectedRun.documentId);
-      
-      console.log(currentAssignedDriver);
-  
 
       if(selectedDriverID == ""){
 
-        console.log("unassign driver");
         const unassignedDriverSuccessfully = await unassignDriver(currentAssignedDriver, currentSelectedRun.documentId);
-        console.log(unassignedDriverSuccessfully);
 
         if(!unassignedDriverSuccessfully){
 
@@ -970,7 +962,11 @@ function addEventListeners(){
           return;
 
         }else{
+
           showNotification("Success!", "Successfully unassigned driver from run");
+          updateSelectAssignDriver();
+          return;
+
         }
 
       }else{
@@ -987,7 +983,7 @@ function addEventListeners(){
 
           }
         }
-        const assignedDriverSuccessfully = await assignDriver(selectedDriverID, currentSelectedRun.documentId);
+        const assignedDriverSuccessfully = await assignDriver(selectedDriverID, currentSelectedRun.documentId, currentSelectedShipmentName);
         
         if(!assignedDriverSuccessfully){
 
@@ -996,7 +992,11 @@ function addEventListeners(){
           return;
 
         }else{
-          showNotification("Success!", "Successfully reassigned driver to run");
+          
+          showNotification("Success!", "Successfully assigned driver to run");
+          updateSelectAssignDriver();
+          return;
+
         }
 
       }

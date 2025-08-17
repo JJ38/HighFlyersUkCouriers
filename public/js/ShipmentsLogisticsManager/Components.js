@@ -849,7 +849,7 @@ export function createShipmentOptions(shipmentName, shipments){
 export function createDriverSelectOptions(drivers, shipmentRunIDs, runID){
 
   const options = [];
-  console.log(runID);
+
   for(let i = 0; i < drivers.length; i++){
 
     const option = createOption(drivers[i].driverName, drivers[i].driverID);
@@ -860,8 +860,6 @@ export function createDriverSelectOptions(drivers, shipmentRunIDs, runID){
 
     //if driver already assigned run in shipment
     if(driverRunsAndShipmentRuns.length != runIDSet.size){
-
-      console.log(drivers[i].assignedRuns)
 
       if(drivers[i].assignedRuns.includes(runID)){
 
