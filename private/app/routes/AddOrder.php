@@ -105,26 +105,40 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $add_order_model = $container->get('addOrderModel');
   $authentication_model = $container->get('authenticationModel');
   $session_wrapper = $container->get('sessionWrapper');
+  $finance_model = $container->get('financeModel');
 
   $date_time = new DateTime();
   $date_time->setTimezone(new DateTimeZone('Europe/London'));
   $add_order_model->setDateTime($date_time);
 
-
-  $add_order_model->setLogger($logger);
-  $add_order_model->setOrderData($cleaned_parameters);
-  $add_order_model->setSessionWrapper($session_wrapper);
-
   $authentication_model->setLogger($logger);
   $authentication_model->fetchOAuth2Token();
 
   $accessToken = $authentication_model->getOAuth2Token();
+  
+  $finance_model->setLogger($logger);
+  $finance_model->setAccessToken($accessToken);
+  $finance_model->fetchPrices();
+
+  $successfully_fetched_prices = $finance_model->getFirebaseFirestoreResult();
+
+  if(!$successfully_fetched_prices){
+    return $response;
+    return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
+  }
+
+
   $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
 
   if($firestore == null){
     return $response->withRedirect('/manage-accounts?error=dberror', 302);
   }
+
+
+  $add_order_model->setLogger($logger);
+  $add_order_model->setOrderData($cleaned_parameters);
+  $add_order_model->setSessionWrapper($session_wrapper);
 
   $add_order_model->setFirebaseFirestore($firestore);
   //store data

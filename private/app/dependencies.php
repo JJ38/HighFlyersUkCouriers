@@ -98,6 +98,11 @@ $container['calculateRouteModel'] = function () {
   return new \HighFlyersUkCouriers\CalculateRouteModel();
 };
 
+$container['financeModel'] = function () {
+  return new \HighFlyersUkCouriers\FinanceModel();
+};
+
+
 $container['notFoundHandler'] = function ($container) {
   return function ($request, $response) use ($container) {
       return  $response->withRedirect('/', 302);

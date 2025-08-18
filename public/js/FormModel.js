@@ -26,12 +26,6 @@ export async function fetchBirdSpecies(){
 
 export function createAnimalTypeSelectOptions(birdSpecies){
 
-    // const select = document.createElement('select');
-    // select.id = "animal_type";
-
-    // const defaultOption = document.createElement('option');
-    // defaultOption.value = "";
-    // defaultOption.text = "";
 
     const options = [];
 

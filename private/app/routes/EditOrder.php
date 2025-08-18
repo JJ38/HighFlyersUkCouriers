@@ -71,7 +71,7 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
         $cleaned_parameters['printed'] = 0;
 
       }
-
+      
       //store in database
       $logger = $container->get('logger');
       $edit_order_model = $container->get('editOrderModel');

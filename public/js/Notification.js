@@ -25,6 +25,10 @@ function shouldShowNotification(key, value){
                 showNotification("Error!", "Order not added - database error")
             }
 
+            else if(value == "fetchpriceerror"){
+                showNotification("Error!", "Order not added - error fetching price data. Try manually adding the price instead")
+            }
+
             else{
                 showNotification("Error!", "Order not added - an error occured")
             }
