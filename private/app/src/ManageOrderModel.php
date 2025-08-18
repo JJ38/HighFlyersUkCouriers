@@ -252,7 +252,7 @@ class ManageOrderModel
     for($i = 1; $i < $number_of_orders + 1; $i++){
       $tainted_order = [];
 
-      $tainted_order['animalType'] = $tainted_parameters['collection'][$i][0];
+      $tainted_order['animal_type'] = $tainted_parameters['collection'][$i][0];
       $tainted_order['quantity'] = $tainted_parameters['collection'][$i][1];
       $tainted_order['collectionName'] = $tainted_parameters['collection'][$i][2];
       $tainted_order['collectionAddress1'] = $tainted_parameters['collection'][$i][3];

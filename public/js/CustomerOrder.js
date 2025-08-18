@@ -4,6 +4,7 @@ import { db, auth, getDocument } from "/js/Firebase.js";
 import { doc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { validatePostcodes } from "/js/ValidateAddress.js";
+import { fetchBirdSpecies, createAnimalTypeSelectOptions, createDescriptionTable } from "/js/FormModel.js";
 
 
 const quickCollectionAddress = document.querySelector('.quickcollectionaddresswrapper');
@@ -16,7 +17,7 @@ const addToBasketButton = document.getElementById('addToBasketButton');
 const submitOrderButton = document.getElementById('submitorders');
 
 //inputform elements
-const animalType = document.getElementById('animal');
+
 const code = document.getElementById('code');
 const quantity = document.getElementById('quantity');
 const quickAddress = document.getElementById('quickaddress');
@@ -40,6 +41,11 @@ const deliveryPhoneNumber = document.getElementById('deliveryPhoneNumber');
 const deliveryPostcode = document.getElementById('deliveryPostcode');
 const paymentOption = document.getElementById('payment');
 const message = document.getElementById('message');
+
+const animalType = document.getElementById('animal_type');
+
+const animalTypeWrapper = document.getElementById('animal_type_wrapper');
+const hintWrapper = document.getElementById('question_mark_wrapper');
 
 const requiredFields = [collectionName, collectionAddress1, collectionPostcode, collectionPhoneNumber, email, deliveryName, deliveryAddress1, 
     deliveryPostcode, deliveryPhoneNumber, paymentOption, quantity, 
@@ -71,6 +77,32 @@ let addedToBasket = false;
 let idBookmark = 0;
 var uid;
 
+let animalDescriptionTable;
+
+init();
+
+async function init(){
+
+    const birdSpecies = await fetchBirdSpecies();
+
+    const options = createAnimalTypeSelectOptions(birdSpecies);
+
+    for(let i =0; i < options.length; i++){
+        animalType.appendChild(options[i]);
+    }
+
+    const animalDescriptionTableAnchor = document.createElement('div');
+    animalDescriptionTableAnchor.classList = "animalDescriptionTableAnchor";
+    animalTypeWrapper.appendChild(animalDescriptionTableAnchor);
+
+    animalDescriptionTable = createDescriptionTable(birdSpecies);
+    animalDescriptionTableAnchor.appendChild(animalDescriptionTable);
+
+    setupEventListeners();
+
+}
+
+
 onAuthStateChanged(auth, (user) => {
 
     if (user) {
@@ -93,9 +125,6 @@ onAuthStateChanged(auth, (user) => {
 
 });
 
-setupEventListeners();
-
-// loadBasket();
 
 function setProfileData(customerProfileData){
 
@@ -129,6 +158,16 @@ onresize = (event) => {
 }
 
 function setupEventListeners(){
+
+    if(hintWrapper != null){
+
+        hintWrapper.addEventListener('click', () => {
+            console.log("awiopjdiopawd");
+            animalDescriptionTable.classList.toggle("hidden");
+
+        });
+
+    }
 
     quickCollectionAddress.addEventListener('click', (e) => {
 
@@ -500,6 +539,8 @@ function submitOrders(){
     //add profile email
     form.appendChild(profileEmail);
 
+    console.log(form);
+
     //submit form
-    form.submit();
+    // form.submit();
 }

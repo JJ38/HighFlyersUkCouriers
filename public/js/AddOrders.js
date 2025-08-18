@@ -1,4 +1,4 @@
-import { fetchBirdSpecies, createAnimalTypeSelectOptions, createDescriptionTable } from "/js/FormModel.js";
+import { fetchBirdSpecies, createAnimalTypeSelectOptions } from "/js/FormModel.js";
 
 
 const email = document.getElementById('email');

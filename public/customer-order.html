@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">
         <link rel="stylesheet" href="/css/CustomerOrder.css" type="text/css">
         <link rel="stylesheet" href="/css/AutoComplete.css" type="text/css">
+        <link rel="stylesheet" href="/css/FormStyles.css" type="text/css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
         <script type="module" src="/js/AddressAutocomplete.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrJDwcnDimqAZ5BZAwk7q9Iw-YE6-A9yY&libraries=places&v=weekly" defer></script>
@@ -58,8 +59,21 @@
                 <hr>
                 <section id="orderinfo" class="info">
                     <div class="forminput">
-                        <label for class>Animal*</label>
-                        <input id="animal" name type="text" required>
+
+                       <section id="animal_type_wrapper" class="bookingInput">
+
+                            <div id="animal_type_hint" class="labelHintWrapper">
+
+                                <label for="animal_type">Bird/Animal type</label>
+                                <div id="question_mark_wrapper" class="questionMarkWrapper"><p class="questionMark">?</p></div>
+                                
+                            </div>
+
+                            <select name="animal_type" id="animal_type" required>
+                                <option value=""> </option>
+                            </select>
+             
+                        </section>
                     </div>
                     <div class="forminput">
                         <label for class="flex">Quantity*<p
