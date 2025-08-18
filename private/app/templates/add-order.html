@@ -3,13 +3,18 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>      
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>      
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrJDwcnDimqAZ5BZAwk7q9Iw-YE6-A9yY&libraries=places&v=weekly" defer></script>
         <title>HighFlyersUKCourier</title>
-      <script type="module" crossorigin src="./assets/AddOrder-5VQEZ4Dt.js"></script>
+      <script type="module" crossorigin src="./assets/AddOrder-xFvVbhO2.js"></script>
       <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
       <link rel="modulepreload" crossorigin href="./assets/AddressAutocomplete-CkD3A38D.js">
+      <link rel="modulepreload" crossorigin href="./assets/index-dfc2d82f-B1C6gsaD.js">
+      <link rel="modulepreload" crossorigin href="./assets/Firebase-DsAbI0c_.js">
+      <link rel="modulepreload" crossorigin href="./assets/Notification-DOW-MnXG.js">
+      <link rel="modulepreload" crossorigin href="./assets/FormModel-DRpgRYXW.js">
       <link rel="stylesheet" crossorigin href="./assets/AddressAutocomplete-DluMj-8M.css">
+      <link rel="stylesheet" crossorigin href="./assets/FormModel-CkSlTrCh.css">
       <link rel="stylesheet" crossorigin href="./assets/Navbar-ClBKpNFz.css">
       <link rel="stylesheet" crossorigin href="./assets/AddOrder-DW0Xcw8W.css">
       <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-DTOtsrKl.css">
@@ -27,10 +32,21 @@
               
               <tr>
                 <td>
-                  <label for="animalType">Bird/Animal type: </label>
+
+                  <section id="animal_type_wrapper" class="bookingInput">
+                    <div id="animal_type_hint" class="labelHintWrapper">
+                      <label for="animal_type">Bird/Animal type</label>
+                                      
+                    </div>
+                  
+                  </section>
+                    
+              </div>
                 </td>
                 <td>
-                  <input id="animalType" name="animalType" type="text" required>
+                  <select name="animal_type" id="animal_type" required>
+                    <option value=""> </option>
+                  </select>
                 </td>
               </tr>
 

@@ -1,14 +1,35 @@
+import { fetchBirdSpecies, createAnimalTypeSelectOptions, createDescriptionTable } from "/js/FormModel.js";
+
+
 const email = document.getElementById('email');
 const submitButton = document.getElementById('submitButton');
 const addOrderForm = document.getElementById('addOrderForm');
 const loadingSymbol = document.getElementById('loadingsymbol');
 const deliveryPhoneNumber = document.getElementById('deliveryPhoneNumber');
-const collectionPhoneNumber = document.getElementById('collectionPhoneNumber'); 
+const collectionPhoneNumber = document.getElementById('collectionPhoneNumber');
 
-addEventListeners()
+const animalTypeSelect = document.getElementById('animal_type');
+
+init();
+
+async function init(){
+
+    const birdSpecies = await fetchBirdSpecies();
+
+    const options = createAnimalTypeSelectOptions(birdSpecies);
+
+    for(let i =0; i < options.length; i++){
+        animalTypeSelect.appendChild(options[i]);
+    }
+
+    addEventListeners();
+
+}
+
 
     
 function addEventListeners(){
+
     
     if(submitButton != null){
   

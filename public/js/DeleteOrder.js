@@ -31,7 +31,7 @@ getDocuments(q).then((documentSnapshots) => {
         field.innerText = fields
 
         const data = document.createElement('td');
-        data.innerText = sortedOrderData[fields];
+        data.innerHTML = sortedOrderData[fields];
 
         tableRow.appendChild(field);
         tableRow.appendChild(data);    

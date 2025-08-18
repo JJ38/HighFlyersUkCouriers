@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="/css/AddOrder.css" type="text/css">
         <link rel="stylesheet" href="/css/AutoComplete.css" type="text/css">   
         <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">   
+        <link rel="stylesheet" href="/css/FormStyles.css" type="text/css">
         <script type="module" src="/js/AddOrders.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrJDwcnDimqAZ5BZAwk7q9Iw-YE6-A9yY&libraries=places&v=weekly" defer></script>
         <script type="module" src="/js/AddressAutocomplete.js" ></script>
@@ -26,10 +27,21 @@
               
               <tr>
                 <td>
-                  <label for="animalType">Bird/Animal type: </label>
+
+                  <section id="animal_type_wrapper" class="bookingInput">
+                    <div id="animal_type_hint" class="labelHintWrapper">
+                      <label for="animal_type">Bird/Animal type</label>
+                                      
+                    </div>
+                  
+                  </section>
+                    
+              </div>
                 </td>
                 <td>
-                  <input id="animalType" name="animalType" type="text" required>
+                  <select name="animal_type" id="animal_type" required>
+                    <option value=""> </option>
+                  </select>
                 </td>
               </tr>
 
