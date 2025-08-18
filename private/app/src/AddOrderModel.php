@@ -133,14 +133,15 @@ class AddOrderModel
 
             $accessToken = $this->access_token;
 
-            $this->logger->error("OAUTH2_TOKEN", array($accessToken));
+            $env = parse_ini_file(realpath('../.env'));
+            $database = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
             
             $ch = curl_init();
 
-            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/(default)/documents:commit?key=AIzaSyDNBL3PpPTm6l69jVFbL');
+            curl_setopt($ch, CURLOPT_URL, 'https://firestore.googleapis.com/v1beta1/projects/highflyersukcouriers-a9c17/databases/' . $database . '/documents:commit?key=AIzaSyDNBL3PpPTm6l69jVFbL');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"writes\":[{\"transform\":{\"document\":\"projects/highflyersukcouriers-a9c17/databases/(default)/documents/MetaData/IDTRACKER\",\"fieldTransforms\":[{\"fieldPath\":\"ID\",\"increment\":{\"integerValue\":1}}]}}]}");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, '{"writes":[{"transform":{"document":"projects/highflyersukcouriers-a9c17/databases/' . $database . '/documents/MetaData/IDTRACKER","fieldTransforms":[{"fieldPath":"ID","increment":{"integerValue":1}}]}}]}');
             curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
             
             $headers = array();

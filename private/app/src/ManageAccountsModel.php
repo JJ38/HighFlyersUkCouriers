@@ -214,7 +214,7 @@ class ManageAccountsModel
     }
 
 
-     public function createFirestoreDriverDocument() : void{
+    public function createFirestoreDriverDocument() : void{
 
         if($this->firebase_firestore != null){
 

@@ -59,7 +59,6 @@ $app->get('/bookings[/invalidform]', function (Request $request, Response $respo
 $app->post('/bookings', function (Request $request, Response $response) use ($app) : Response
 {
 
-  return $response;
   $container = $app->getContainer();
   $logger = $container->get("logger"); 
   $tainted_parameters = $request->getParsedBody();
@@ -71,10 +70,6 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   
   $manage_order_model = $container->get('manageOrderModel');
 
- 
-
-  //$cleaned_parameters = cleanBookingForm($app, $tainted_parameters);
-
   $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
 
   //if one of the parameters does not meet requirements
@@ -84,9 +79,6 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
     $error_message = $manage_order_model->getErrorMessage();
     $error_input_value = $manage_order_model->getErrorInputValue();
 
-    // return $response;
-
-    
     $logger->error("BOOKING-FORM-ERROR", $tainted_parameters);
 
     return $response->withRedirect('/bookings?invalidform=true&errormessage=' . $error_message . '&inputvalue=' . $error_input_value, 301);

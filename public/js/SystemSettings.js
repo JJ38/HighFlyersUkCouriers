@@ -50,7 +50,6 @@ function createBirdSpeciesCard(bird){
     card.classList = "birdSpeciesCard";
 
 
-
     const nameInputWrapper = document.createElement('div');
     nameInputWrapper.classList = "inputWrapper";
 

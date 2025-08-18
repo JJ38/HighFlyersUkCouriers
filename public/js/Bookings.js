@@ -1,4 +1,5 @@
 import { validatePostcodes } from "/js/ValidateAddress.js";
+import { fetchBirdSpecies, createAnimalTypeSelectOptions, createDescriptionTable } from "/js/FormModel.js";
 
 const submitOrdersButton = document.getElementById('submitButton');
 
@@ -17,11 +18,53 @@ const deliveryTelephone = document.getElementById('deliveryTelephone');
 const deliveryPostcode = document.getElementById('deliveryPostcode');
 const paymentOption = document.getElementById('payment');
 
-const animalType = document.getElementById('animalType');
 const quantity = document.getElementById('quantity');
+const animalTypeSelect = document.getElementById('animal_type');
+
+const animalTypeWrapper = document.getElementById('animal_type_wrapper');
+const hintWrapper = document.getElementById('question_mark_wrapper');
 
 const requiredFields = [collectionName, collectionAddress1, collectionPostcode, collectionTelephone, email, deliveryName, deliveryAddress1, 
-    deliveryPostcode, deliveryTelephone, paymentOption, quantity, animalType];
+    deliveryPostcode, deliveryTelephone, paymentOption, quantity, animalTypeSelect];
+
+init();
+
+async function init(){
+
+    const birdSpecies = await fetchBirdSpecies();
+
+    const options = createAnimalTypeSelectOptions(birdSpecies);
+
+    for(let i =0; i < options.length; i++){
+        animalTypeSelect.appendChild(options[i]);
+    }
+
+    // requiredFields.push(animalTypeSelect);
+
+    const animalDescriptionTableAnchor = document.createElement('div');
+    animalDescriptionTableAnchor.classList = "animalDescriptionTableAnchor";
+    animalTypeWrapper.appendChild(animalDescriptionTableAnchor);
+
+    const animalDescriptionTable = createDescriptionTable(birdSpecies);
+    animalDescriptionTableAnchor.appendChild(animalDescriptionTable);
+
+    addEventListeners(animalDescriptionTable);
+
+}
+
+function addEventListeners(animalDescriptionTable){
+
+    if(hintWrapper != null){
+
+        hintWrapper.addEventListener('click', () => {
+
+            animalDescriptionTable.classList.toggle("hidden");
+
+        });
+
+    }
+   
+}
 
 
 async function submitOrders(){
@@ -31,7 +74,7 @@ async function submitOrders(){
     let requiredFieldsMet = true;
 
     for(let i = 0; i < requiredFields.length; i++){
-        
+        console.log(requiredFields[i]);
         requiredFields[i].style.border = "1px solid black";
 
         if(requiredFields[i].value == ""){

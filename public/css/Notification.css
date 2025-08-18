@@ -54,11 +54,13 @@
 }
 
 .notificationTitle{
+    margin: 0px !important;
     font-size: 1.15rem;
     padding-bottom: 0px !important;
 }
 
 .notificationMessage{
+    margin: 0px !important;
     font-size: 0.9rem;
 }
 

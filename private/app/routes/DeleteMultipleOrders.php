@@ -52,39 +52,46 @@ $app->post('/delete-multiple-orders', function (Request $request, Response $resp
 
         $logger = $container->get('logger');  
         $delete_order_model = $container->get('deleteOrderModel');
+        $authentication_model = $container->get('authenticationModel');
         $add_order_model = $container->get('addOrderModel');
 
         $add_order_model->setLogger($logger);
-        $add_order_model->fetchOAuth2Token();
-  
-        $accessToken = $add_order_model->getOAuth2Token();
 
-        try{
+        $authentication_model->setLogger($logger);
+        $authentication_model->fetchOAuth2Token();
+
+        $firestore = $authentication_model->getAuthenticatedFirebaseClient();
+
+        // try{
                              
-            $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
+        //     $client = new GuzzleHttp\Client(['headers' => ['Authorization' => 'Bearer ' . $accessToken]]);
                 
-            $env = parse_ini_file(realpath('../.env'));
+        //     $env = parse_ini_file(realpath('../.env'));
 
-            $projectID = $env['FIREBASE_PROJECT_ID'];
-            $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+        //     $projectID = $env['FIREBASE_PROJECT_ID'];
+        //     $firebaseProjectAPIKey = $env['FIREBASE_PROJECT_API_KEY'];
+        //     $database = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
 
-            $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
-                'database' => '(default)',
-            ], $client);
+        //     $firestore = new FirestoreClient($projectID, $firebaseProjectAPIKey, [
+        //         'database' => $database,
+        //     ], $client);
         
-            $delete_order_model->setFirebaseFirestore($firestore);
+        //     $delete_order_model->setFirebaseFirestore($firestore);
         
-          }catch(Exception $e){
+        //   }catch(Exception $e){
         
-              if($logger != null){
-                  $logger->error('FIREBASE_INIT_ERROR', array($e));
-                  $logger->error('FIREBASE_INIT_ENV', array($env));
-              }
+        //       if($logger != null){
+        //           $logger->error('FIREBASE_INIT_ERROR', array($e));
+        //           $logger->error('FIREBASE_INIT_ENV', array($env));
+        //       }
         
-              return $response->withRedirect('/manage-accounts?error=dberror', 302);
+        //       return $response->withRedirect('/manage-accounts?error=dberror', 302);
         
-          }
+        //   }
 
+        
+        
+        $delete_order_model->setFirebaseFirestore($firestore);
         
         $delete_order_model->setLogger($logger);
         $delete_order_model->setDocRefArray($ids);

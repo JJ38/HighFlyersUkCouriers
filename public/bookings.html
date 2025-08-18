@@ -21,7 +21,7 @@
     <title>HighFlyersUKCourier</title>
   </head>
   <body>
-  <header class="" contenteditable="false">
+  <header class="">
     <div id="mobilenavmenu"  class="hideMobileMenu">
       <div id="mobilenavwrapper">
         <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
@@ -33,7 +33,7 @@
           <a href="/about-us">About Us</a>
       </div>
     </div>
-    <nav class="menu" contenteditable="false">
+    <nav class="menu">
       <div id="mobilenavtoggle">
         <div></div>
         <div></div>
@@ -44,13 +44,13 @@
         <a class="navLinks" href="/">Home</a>
         <div class="underlineHome"></div> 
       </div>
-      <div class="" contenteditable="false">
-        <a class="navLinks" href="/prices" contenteditable="false">Prices</a>
-        <div class="underlinePrices" contenteditable="false"></div>
+      <div class="">
+        <a class="navLinks" href="/prices">Prices</a>
+        <div class="underlinePrices"></div>
       </div>
-      <div class="" contenteditable="false">
+      <div class="">
         <a class="navLinks" href="/bookings">Booking</a>
-        <div class="underlineBooking" contenteditable="false"></div>
+        <div class="underlineBooking"></div>
       </div>
       <div>
         <a class="navLinks" href="/f-a-q">FAQ</a>
@@ -66,44 +66,51 @@
       </div>
     </nav>
   </header>
-  <section class="maincontent" contenteditable="false">
+  <section class="maincontent">
       <form id="bookingForm" action="bookings" method="post" class="">
-        <div class="" contenteditable="false">
-          <h1 class="" contenteditable="false" style="background-color: rgba(255, 255, 255, 0); color: rgb(0, 0, 0); font-family: &quot;Roboto Slab&quot;;">
+        <div class="">
+          <h1 class="" style="background-color: rgba(255, 255, 255, 0); color: rgb(0, 0, 0); font-family: &quot;Roboto Slab&quot;;">
             Booking</h1>
-          <h2 class="" contenteditable="false" style="background-color: rgba(0, 0, 0, 0); font-family: Raleway;">Contact info</h2>
-          <hr class="" contenteditable="false">
+          <h2 class="" style="background-color: rgba(0, 0, 0, 0); font-family: Raleway;">Contact info</h2>
+          <hr class="">
           <section class="formsection">
-            <section class="bookingInput" contenteditable="false" style="background-color: rgba(255, 255, 255, 0);">
-              <label for="email" class="" contenteditable="false" style="font-family: Raleway;">Email</label>
+            <section class="bookingInput" style="background-color: rgba(255, 255, 255, 0);">
+              <label for="email" class="" style="font-family: Raleway;">Email</label>
               <input id="email" name="email" type="email" required="">
             </section>
-            <section class="bookingInput" contenteditable="false" style="background-color: rgba(255, 255, 255, 0);">
-              <label for="confirmEmail" class="" contenteditable="false" style="font-family: Raleway;">Confirm Email</label>
+            <section class="bookingInput" style="background-color: rgba(255, 255, 255, 0);">
+              <label for="confirmEmail" class="" style="font-family: Raleway;">Confirm Email</label>
               <input id="confirmEmail" name="confirmEmail" type="email" required="">
             </section>
           </section>
             
-          <h2 class="" contenteditable="false" style="font-family: Raleway;">
+          <h2 class="" style="font-family: Raleway;">
             Order info
           </h2>
-          <hr class="" contenteditable="false">
+          <hr class="">
           <section class="formsection">
-            <section class="bookingInput">
-              <label for="animalType" class="" contenteditable="false">Bird/Animal type</label>
-              <input id="animalType" name="animalType" type="text" required="">
+            <section id="animal_type_wrapper" class="bookingInput">
+              <div id="animal_type_hint" class="labelHintWrapper">
+                <label for="animal_type">Bird/Animal type</label>
+                <div id="question_mark_wrapper" class="questionMarkWrapper"><p class="questionMark">?</p></div>
+                
+              </div>
+              <select name="animal_type" id="animal_type" required>
+                <option value=""> </option>
+              </select>
+             
             </section>
 
             <section class="bookingInput">
-              <label for="quantity" class="" contenteditable="false">Quantity</label>
-              <input id="quantity" name="quantity" type="number" min="1" required="">
+              <label for="quantity" class="">Quantity</label>
+              <input id="quantity" name="quantity" type="number" min="1" required>
             </section>
           </section>
           <h2>
             Collection info
           </h2>
-          <hr class="" contenteditable="false">
-          <section class="formsection" contenteditable="false">
+          <hr class="">
+          <section class="formsection">
             <section class="bookingInput">
               <label for="collectionName">Collection Name </label>
               <input id="collectionName" name="collectionName" type="text" required="">
@@ -157,7 +164,7 @@
             Delivery info
           </h2>
           <hr>
-          <section class="formsection" contenteditable="false" style="background-color: rgba(0, 0, 0, 0);">
+          <section class="formsection" style="background-color: rgba(0, 0, 0, 0);">
             <section class="bookingInput">
               <label for="deliveryName">Delivery Name </label>
               <input id="deliveryName" name="deliveryName" type="text" required="">
@@ -185,7 +192,7 @@
 
 
             <section class="bookingInput">
-              <label for="deliveryAddress1" class="" contenteditable="false" style="color: rgb(0, 0, 0);">Delivery Address Line 1 </label>
+              <label for="deliveryAddress1" class="" style="color: rgb(0, 0, 0);">Delivery Address Line 1 </label>
               <input id="deliveryAddress1" name="deliveryAddress1" type="text" required="">
             </section>
 
@@ -214,7 +221,7 @@
             Order info
           </h2>
           <hr>
-          <section class="formsection" contenteditable="false">
+          <section class="formsection">
             <section class="bookingInput">
               <label for="payment">Would you like to pay on Pickup or Delivery? </label>
               <select name="payment" id="payment" required="">
@@ -236,7 +243,7 @@
         </div>
       </form>
     </section>
-    <footer class="" contenteditable="false" style="background-color: rgb(222, 222, 222);">
+    <footer class="" style="background-color: rgb(222, 222, 222);">
       <div class="footerlinkswrapper">
         <a class="footerlinks" href="/">Home</a>
         <a class="footerlinks" href="/prices">Prices</a>
