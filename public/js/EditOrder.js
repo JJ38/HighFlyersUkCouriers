@@ -45,7 +45,6 @@ getDocuments(q).then((documentSnapshots) => {
                 printedOpt.value = "Printed";
                 printedOpt.innerText = "Printed";
 
-
                 const notPrintedOpt = document.createElement('option');
                 notPrintedOpt.value = "Not Printed";
                 notPrintedOpt.innerText = "Not Printed";
@@ -64,7 +63,26 @@ getDocuments(q).then((documentSnapshots) => {
 
                 break;
             }
+            case "animalType":
+            {
 
+                const input = document.createElement('input');
+                input.type = "text";
+                input.value = sortedOrderData[fields];
+                input.name = 'animal_type';
+                data.appendChild(input);
+                break;
+            }
+            case "deliveryWeek":
+            {
+
+                const input = document.createElement('input');
+                input.type = "number";
+                input.value = sortedOrderData[fields];
+                input.name = fields;
+                data.appendChild(input);
+                break;
+            }
             default:
             {
                 const input = document.createElement('input');
