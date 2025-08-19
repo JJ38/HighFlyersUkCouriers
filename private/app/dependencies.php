@@ -81,7 +81,6 @@ $container['deleteOrderModel'] = function () {
   return new \HighFlyersUkCouriers\DeleteOrderModel();
 };
 
-
 $container['customerProfileModel'] = function () {
   return new \HighFlyersUkCouriers\CustomerProfileModel();
 };
@@ -102,6 +101,9 @@ $container['financeModel'] = function () {
   return new \HighFlyersUkCouriers\FinanceModel();
 };
 
+$container['restAPIWrapper'] = function () {
+  return new \HighFlyersUkCouriers\RestApiWrapper();
+};
 
 $container['notFoundHandler'] = function ($container) {
   return function ($request, $response) use ($container) {

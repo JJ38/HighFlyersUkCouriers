@@ -241,6 +241,7 @@ class AddOrderModel
                 'message' => $this->order_data['message'],
                 'addedBy' => $this->order_data['added_by'],
                 'printed' => 0,
+                'price' => $this->order_data['price'],
                 'timestamp' => $this->date_time->format("Y-m-d H:i:s"),
             ]);
 

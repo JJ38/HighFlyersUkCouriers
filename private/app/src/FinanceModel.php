@@ -2,113 +2,177 @@
 
 namespace HighFlyersUkCouriers;
 
+use Exception;
 use MrShan0\PHPFirestore\FirestoreClient;
-
 
 class FinanceModel
 {
 
-    private $totalPrice;
-    private $firebase_firestore_result;
-    private $firebase_firestore;
+    private $order_price;
     private $logger;
-    private $access_token;
     private $prices;
-    private $orders;
-
-    public function getTotalPrice(){
-        return $this->totalPrice;
-    }
-
-    public function getFirebaseFirestoreResult() : bool{
-        return $this->firebase_firestore_result;
-    }
-
-    public function setFirebaseFirestore($firebase_firestore) : void{
-        $this->firebase_firestore = $firebase_firestore;
-    } 
+    private $order;
+    private FirebaseDocument $price_document;
+    private FirebaseDocument $postcodes_document;
+    private $finance_result; 
 
     public function setLogger($logger){
         $this->logger = $logger;
     }
 
-    public function setAccessToken($access_token){
-        $this->access_token = $access_token;
+    public function setOrderData($order){
+        $this->order = $order;
     }
 
-    public function setOrders($orders){
-        $this->orders = $orders;
+    public function setPricesDocument($price_document){
+        $this->price_document = $price_document;
     }
 
-    public function fetchPrices(){
+    public function setPostcodesDocument($postcodes_document){
+        $this->postcodes_document = $postcodes_document;
+    }
 
-        //using curl as firestore library didnt like document structure
-        try{
-            $env = parse_ini_file(realpath('../.env'));
-        
-            $projectID = $env['FIREBASE_PROJECT_ID'];
-            $database = $env['FIREBASE_FIRESTORE_DATABASE_NAME'];
-        
-
-            $url = "https://firestore.googleapis.com/v1/projects/{$projectID}/databases/{$database}/documents/Settings/birdSpecies";
-
-            $ch = curl_init();
-
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                "Authorization: Bearer {$this->access_token}",
-                "Content-Type: application/json"
-            ]);
-
-            $response = curl_exec($ch);
-
-            if (curl_errno($ch)) {
-                echo 'Curl error: ' . curl_error($ch);
-                $this->firebase_firestore_result = false;
-
-                if ($this->logger !== null) {
-                    $this->logger->error("FIREBASE_FIRESTORE_FETCH_PRICES_CURL_ERROR", array(curl_error($ch)));
-                }
-
-                return;
-
-            } 
-
-            $data = json_decode($response, true);
-
-            var_dump($data);
-
-            if (isset($data['error'])) {
-
-                $this->firebase_firestore_result = false;
-
-                if ($this->logger !== null) {
-                    $this->logger->error("FIREBASE_FIRESTORE_FETCH_PRICES_ERROR", array($data['error']['message']));
-                }
-
-                return;
-            }
-
-            curl_close($ch);
-
-            $this->prices = $data;
-
-            $this->firebase_firestore_result = true;
-
-
-        }catch(\Exception $e){
-
-            $this->firebase_firestore_result = false;
-
-            if ($this->logger !== null) {
+    public function getOrderPrice(){
+        return $this->order_price;
+    } 
     
-                $this->logger->error("FIREBASE_FIRESTORE_FETCH_PRICES_ERROR", array($e));
-                $this->logger->error("FIREBASE_FIRESTORE_FETCH_PRICES_FIRESTORE_CLIENT", array($this->firebase_firestore));
+    public function getFinanceResult(){
+        return $this->finance_result;
+    }
 
+
+    public function calculateOrderPrice(){
+
+        $collection_outward_postcode = $this->getOutwardPostcode($this->order['collection_postcode']);
+        $delivery_outward_postcode = $this->getOutwardPostcode($this->order['delivery_postcode']);
+
+        if($collection_outward_postcode == false || $delivery_outward_postcode == false){
+            $this->finance_result = false;
+            return;
+        }
+
+        //get run that each postcode is in
+        $collection_run = $this->postcodes_document->getStringField($collection_outward_postcode);
+        $delivery_run = $this->postcodes_document->getStringField($delivery_outward_postcode);
+        
+        //find price for both collection and delivery postcodes
+        $species_prices = $this->getPriceForSpecies();
+
+        if($species_prices == false){
+            $this->finance_result = false;
+            return;
+        }
+
+        //choose higher price
+        $collection_run_pricing = $this->getPricingForRun($collection_run, $species_prices);
+        $delivery_run_pricing = $this->getPricingForRun($delivery_run, $species_prices);
+        
+
+        if($collection_run_pricing == false || $delivery_run_pricing == false){
+            $this->finance_result = false;
+            return;
+        }
+
+        $pricing_to_use_for_order = $this->getHigherRunPricing($collection_run_pricing, $delivery_run_pricing);
+
+        //calculate additional cost if any
+
+        $this->calculateOrderTotalPrice($pricing_to_use_for_order, $species_prices);
+
+        $this->finance_result = true;
+
+    }
+
+    private function getOutwardPostcode($postcode){
+
+        $trimmed_postcode = str_replace(" ", "", $postcode);
+        if(strlen($trimmed_postcode) == 7){
+            return substr($trimmed_postcode, 0, 4);
+        }
+
+        if(strlen($trimmed_postcode) == 6){
+            return substr($trimmed_postcode, 0, 3);
+        }
+
+        if(strlen($trimmed_postcode) == 5){
+            return substr($trimmed_postcode, 0, 1);
+        }
+
+        if($this->logger != null){
+
+            $this->logger->error('GET_OUTWARD_POSTCODE_ERROR', array($postcode));
+
+        }
+
+        return false;
+    }
+    
+    private function getPriceForSpecies(){
+
+        $species = $this->price_document->getArrayField('species');
+
+        $number_of_species = sizeof($species->getDocument());
+
+        var_dump($this->order['animal_type']);
+
+        for($i = 0; $i < $number_of_species; $i++){
+
+            if($species->getMapField($i)->getStringField("name") == $this->order['animal_type']){
+                return $species->getMapField($i);
+            }
+        
+        }
+
+        return false;
+
+    }
+
+
+    private function getPricingForRun($runName, $species_prices){
+
+        $area_prices = $species_prices->getMapField('prices')->getArrayField('areaPrices');
+        $number_of_areas = sizeof($area_prices->getDocument());
+
+        for($i = 0; $i < $number_of_areas; $i++){   
+
+            if($area_prices->getMapField($i)->getStringField('area') == $runName){
+                return $area_prices->getMapField($i);
             }
 
         }
+
+        return false;
+
+    }
+
+    private function getHigherRunPricing($collection_run_pricing, $delivery_run_pricing){
+
+        if($collection_run_pricing->getIntegerField('standardPrice') > $delivery_run_pricing->getIntegerField('standardPrice')){
+
+            return $collection_run_pricing;
+
+        }
+
+        return $delivery_run_pricing;
+
+    }
+
+    private function calculateOrderTotalPrice($pricing_to_use_for_order, $species_prices){
+
+        $tally = $pricing_to_use_for_order->getIntegerField('standardPrice');
+
+        var_dump($this->order['quantity']);
+        var_dump($species_prices->getMapField('prices')->getIntegerField('includedQuantity'));
+
+        $includedQuantity =  $species_prices->getMapField('prices')->getIntegerField('includedQuantity');
+
+        $excess = $this->order['quantity'] > $includedQuantity;
+
+        if($excess > 0){   
+            $tally += ($excess * $pricing_to_use_for_order->getIntegerField('additionalPrice'));
+        }   
+
+        $this->order_price = $tally;
 
     }
 

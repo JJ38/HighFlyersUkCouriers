@@ -142,7 +142,7 @@ class ManageOrderModel
     $sanitizer = $app->getContainer()->get('sanitizer');
     $validator = $app->getContainer()->get('validator');
 
-
+    
     $sanitized_parameters['quantity'] = $sanitizer->sanitizePositiveNumber($tainted_parameters['quantity']);
     $cleaned_parameters['quantity'] = $validator->validatePositiveNumber($sanitized_parameters['quantity']);
     if(!$validator->getValidationResult()){

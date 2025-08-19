@@ -1,12 +1,11 @@
 <?php
 
-use Doctrine\DBAL\DriverManager;
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Kreait\Firebase\Contract\Auth;
-use Kreait\Firebase\Firestore;
-use MrShan0\PHPFirestore\FirestoreClient;
+
 use DateTime;
+use HighFlyersUkCouriers\FirebaseDocument as FirebaseDocument;
 
 $app->get('/add-order', function (Request $request, Response $response, $args) use ($app) : Response{
 
@@ -95,17 +94,15 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   }
 
 
-
   putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
 
   $container = $app->getContainer();
 
-  //store in database
-  
   $add_order_model = $container->get('addOrderModel');
   $authentication_model = $container->get('authenticationModel');
   $session_wrapper = $container->get('sessionWrapper');
   $finance_model = $container->get('financeModel');
+  $rest_API_wrapper = $container->get('restAPIWrapper');
 
   $date_time = new DateTime();
   $date_time->setTimezone(new DateTimeZone('Europe/London'));
@@ -114,18 +111,50 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $authentication_model->setLogger($logger);
   $authentication_model->fetchOAuth2Token();
 
-  $accessToken = $authentication_model->getOAuth2Token();
-  
-  $finance_model->setLogger($logger);
-  $finance_model->setAccessToken($accessToken);
-  $finance_model->fetchPrices();
+  $access_token = $authentication_model->getOAuth2Token();
 
-  $successfully_fetched_prices = $finance_model->getFirebaseFirestoreResult();
+  $rest_API_wrapper->setLogger($logger);
+  $rest_API_wrapper->setAccessToken($access_token);
 
-  if(!$successfully_fetched_prices){
+  $initialise_success = $rest_API_wrapper->initialiseConfig();
+
+  if(!$initialise_success){
+    return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
+  }
+
+  $rest_API_wrapper->fetchMultipleDocuments(['Settings/birdSpecies', 'Settings/runDefinitions']);
+  $successfully_fetched_documents = $rest_API_wrapper->getFirebaseFirestoreResult();
+
+  if(!$successfully_fetched_documents){
+    echo "error fetching documents";
     return $response;
     return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
   }
+
+  $multi_documents = $rest_API_wrapper->getMultiDocuments();
+
+  $prices_firebase_document = new FirebaseDocument();
+  $postcodes_firebase_document = new FirebaseDocument();
+
+  $prices_firebase_document->setData($multi_documents['Settings/birdSpecies']['fields']);
+  $postcodes_firebase_document->setData($multi_documents['Settings/runDefinitions']['fields']);
+
+  $finance_model->setPricesDocument($prices_firebase_document);
+  $finance_model->setPostcodesDocument($postcodes_firebase_document);
+  $finance_model->setOrderData($cleaned_parameters);
+  $finance_model->calculateOrderPrice();
+
+  $successfully_calculated_order_price = $finance_model->getFinanceResult();
+
+  if(!$successfully_calculated_order_price){
+    echo "error calculating order price";
+    return $response;
+    return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
+  }
+
+  $cleaned_parameters['price'] = $finance_model->getOrderPrice();
+
+  $cleaned_parameters['price'];
 
 
   $firestore = $authentication_model->getAuthenticatedFirebaseClient();
@@ -142,7 +171,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   $add_order_model->setFirebaseFirestore($firestore);
   //store data
-  $add_order_model->setOAuth2Token($accessToken);
+  $add_order_model->setOAuth2Token($access_token);
   $add_order_model->storeOrder();
 
 
