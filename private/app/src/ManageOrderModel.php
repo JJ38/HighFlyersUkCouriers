@@ -222,6 +222,8 @@ class ManageOrderModel
 
 
     $cleaned_parameters['animal_type'] = $sanitizer->sanitizeString($tainted_parameters['animal_type']);
+    $cleaned_parameters['animal_type'] = htmlspecialchars_decode($cleaned_parameters['animal_type']);
+
     $cleaned_parameters['collection_name'] = $sanitizer->sanitizeString($tainted_parameters['collectionName']);
     $cleaned_parameters['collection_address_1'] = $sanitizer->sanitizeString($tainted_parameters['collectionAddress1']);
     $cleaned_parameters['collection_address_2'] = $sanitizer->sanitizeString($tainted_parameters['collectionAddress2']);

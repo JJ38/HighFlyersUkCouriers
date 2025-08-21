@@ -14,7 +14,7 @@ class FinanceModel
     private $order;
     private FirebaseDocument $price_document;
     private FirebaseDocument $postcodes_document;
-    private $finance_result; 
+    private $finance_result;
 
     public function setLogger($logger){
         $this->logger = $logger;
@@ -126,6 +126,13 @@ class FinanceModel
         
         }
 
+        if($this->logger != null){
+
+            $this->logger->error('ERROR_GETTING_PRICE_FOR_SPECIES', array($species));
+            $this->logger->error('ERROR_GETTING_PRICE_FOR_SPECIES_ANIMAL_TYPE', array($this->order['animal_type']));
+
+        }
+
         return false;
 
     }
@@ -141,6 +148,14 @@ class FinanceModel
             if($area_prices->getMapField($i)->getStringField('area') == $runName){
                 return $area_prices->getMapField($i);
             }
+
+        }
+
+        if($this->logger != null){
+
+            $this->logger->error('ERROR_GETTING_PRICE_FOR_RUN', array($area_prices));
+            $this->logger->error('ERROR_GETTING_PRICE_FOR_RUN_NAME', array($runName));
+            $this->logger->error('ERROR_GETTING_PRICE_FOR_RUN_SPECIES_PRICES', array($$species_prices));
 
         }
 

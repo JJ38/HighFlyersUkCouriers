@@ -137,6 +137,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $prices_firebase_document->setData($multi_documents['Settings/birdSpecies']['fields']);
   $postcodes_firebase_document->setData($multi_documents['Settings/priceDefinitions']['fields']);
 
+  $finance_model->setLogger($logger);
   $finance_model->setPricesDocument($prices_firebase_document);
   $finance_model->setPostcodesDocument($postcodes_firebase_document);
   $finance_model->setOrderData($cleaned_parameters);
@@ -149,9 +150,6 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   }
 
   $cleaned_parameters['price'] = $finance_model->getOrderPrice();
-
-  $cleaned_parameters['price'];
-
 
   $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
