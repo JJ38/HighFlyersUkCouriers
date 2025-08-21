@@ -61,6 +61,27 @@ class Sanitizer
         return $cleaned_string;
     }
 
+     public function sanitizePrice($tainted_price) : string
+    {
+        $cleaned_string = '';
+
+        if($tainted_price == "0"){
+          return $tainted_price;
+        }
+
+        if (!empty($tainted_price)) {
+
+          $cleaned_string = filter_var(
+              $tainted_price,
+              FILTER_SANITIZE_FULL_SPECIAL_CHARS, //replaced FILTER_SANITIZE_STRING
+              FILTER_FLAG_NO_ENCODE_QUOTES
+          );
+        }
+
+        return $cleaned_string;
+    }
+
+
     public function sanitizeEmail($tainted_email) : string
     {
       $cleaned_email = '';

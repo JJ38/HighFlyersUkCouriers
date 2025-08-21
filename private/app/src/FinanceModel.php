@@ -2,15 +2,13 @@
 
 namespace HighFlyersUkCouriers;
 
-use Exception;
-use MrShan0\PHPFirestore\FirestoreClient;
+use HighFlyersUkCouriers\FirebaseDocument;
 
 class FinanceModel
 {
 
     private $order_price;
     private $logger;
-    private $prices;
     private $order;
     private FirebaseDocument $price_document;
     private FirebaseDocument $postcodes_document;
@@ -19,7 +17,7 @@ class FinanceModel
     public function setLogger($logger){
         $this->logger = $logger;
     }
-
+    
     public function setOrderData($order){
         $this->order = $order;
     }
@@ -40,14 +38,20 @@ class FinanceModel
         return $this->finance_result;
     }
 
-
     public function calculateOrderPrice(){
+
+        $this->order_price = "N/A";
+        $this->finance_result = false;
+
+        if($this->price_document == null || $this->postcodes_document == null){
+            return;
+        }
+
 
         $collection_outward_postcode = $this->getOutwardPostcode($this->order['collection_postcode']);
         $delivery_outward_postcode = $this->getOutwardPostcode($this->order['delivery_postcode']);
 
         if($collection_outward_postcode == false || $delivery_outward_postcode == false){
-            $this->finance_result = false;
             return;
         }
 
@@ -56,7 +60,6 @@ class FinanceModel
         $delivery_run = $this->postcodes_document->getStringField($delivery_outward_postcode);
 
         if($collection_run == false || $delivery_run == false){
-            $this->finance_result = false;
             return;
         }
 
@@ -64,7 +67,6 @@ class FinanceModel
         $species_prices = $this->getPriceForSpecies();
 
         if($species_prices == false){
-            $this->finance_result = false;
             return;
         }
 
@@ -74,7 +76,6 @@ class FinanceModel
         
 
         if($collection_run_pricing == false || $delivery_run_pricing == false){
-            $this->finance_result = false;
             return;
         }
 

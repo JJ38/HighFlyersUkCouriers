@@ -4,6 +4,7 @@ use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use MrShan0\PHPFirestore\FirestoreClient;
+use HighFlyersUkCouriers\FirebaseDocument;
 
 $app->get('/edit-order[/id]', function (Request $request, Response $response) use ($app) : Response{
 
@@ -36,11 +37,15 @@ $app->get('/edit-order[/id]', function (Request $request, Response $response) us
 $app->post('/edit-order', function (Request $request, Response $response) use ($app) : Response
 {
   $account_type = $request->getAttribute('accountType');
+
+ 
     
     if($account_type == "admin" || $account_type == "staff"){
 
 
       $tainted_parameters = $request->getParsedBody();
+
+      
 
       $container = $app->getContainer();
       $session_wrapper = $app->getContainer()->get('sessionWrapper');
@@ -83,6 +88,8 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
        
       $authentication_model->setLogger($logger);
       $authentication_model->fetchOAuth2Token();
+
+      $access_token = $authentication_model->getOAuth2Token();
   
       $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
@@ -90,7 +97,56 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
         return $response->withRedirect('/manage-accounts?error=dberror', 302);
       }
 
-   
+      $finance_model = $container->get('financeModel');
+      $rest_API_wrapper = $container->get('restAPIWrapper');
+
+      
+
+      if(empty($cleaned_parameters['price'])){
+
+        //finance
+
+        $rest_API_wrapper->setLogger($logger);
+        $rest_API_wrapper->setAccessToken($access_token);
+
+        $initialise_success = $rest_API_wrapper->initialiseConfig();
+
+        if(!$initialise_success){
+          return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
+        }
+
+        $rest_API_wrapper->fetchMultipleDocuments(['Settings/birdSpecies', 'Settings/priceDefinitions']);
+        $successfully_fetched_documents = $rest_API_wrapper->getFirebaseFirestoreResult();
+
+        if(!$successfully_fetched_documents){
+          return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
+        }
+
+        $multi_documents = $rest_API_wrapper->getMultiDocuments();
+
+        $prices_firebase_document = new FirebaseDocument();
+        $postcodes_firebase_document = new FirebaseDocument();
+
+        $prices_firebase_document->setData($multi_documents['Settings/birdSpecies']['fields']);
+        $postcodes_firebase_document->setData($multi_documents['Settings/priceDefinitions']['fields']);
+
+        $finance_model->setLogger($logger);
+        $finance_model->setPricesDocument($prices_firebase_document);
+        $finance_model->setPostcodesDocument($postcodes_firebase_document);
+        $finance_model->setOrderData($cleaned_parameters);
+        $finance_model->calculateOrderPrice();
+
+        $successfully_calculated_order_price = $finance_model->getFinanceResult();
+
+        // if(!$successfully_calculated_order_price){
+        //   return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
+        // }
+
+        $cleaned_parameters['price'] = $finance_model->getOrderPrice();
+
+      }
+
+
       $edit_order_model->setFirebaseFirestore($firestore);
       $edit_order_model->updateOrder();
       $query_result = $edit_order_model->getFirebaseFirestoreResult();

@@ -261,7 +261,7 @@ export function addOrdersToTable(orderArray, prepend){
           const tableData = document.createElement('td');
 
           if(field == "price"){
-            tableData.innerHTML = sortedOrderData[field] == undefined || sortedOrderData[field] == "N/A" ? "N/A" : "£" + sortedOrderData[field]; 
+            tableData.innerHTML = sortedOrderData[field] == undefined || sortedOrderData[field] == "" || sortedOrderData[field] == null || sortedOrderData[field] == "N/A" ? "N/A" : "£" + sortedOrderData[field]; 
           }else{
             tableData.innerHTML = sortedOrderData[field];
           }

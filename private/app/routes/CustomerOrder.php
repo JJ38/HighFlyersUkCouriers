@@ -4,6 +4,9 @@ use Doctrine\DBAL\DriverManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use MrShan0\PHPFirestore\FirestoreClient;
+use HighFlyersUkCouriers\FirebaseDocument;
+use Exception;
+
 use DateTime;
 
 $app->get('/customer-order', function (Request $request, Response $response) use ($app) : Response{
@@ -19,7 +22,6 @@ $app->get('/customer-order', function (Request $request, Response $response) use
         $container = $app->getContainer();
 
         $santizer = $container->get('sanitizer');
-
 
         $allGetVars = $_GET;
 
@@ -56,9 +58,6 @@ $app->get('/customer-order', function (Request $request, Response $response) use
         }
 
         if($account_type == "customer"){
-
-
-        
 
             return $this->view->render($response,'customer-order.html');
         }
@@ -97,12 +96,84 @@ $app->post('/customer-order', function (Request $request, Response $response) us
             return $response->withRedirect('/customer-order?error=true', 302);
         }
 
-        // Get models + Wrappers
+
         $container = $app->getContainer();
         $logger = $container->get('logger');
+        $authentication_model = $container->get('authenticationModel');
+        $authentication_model->setLogger($logger);
+        $authentication_model->fetchOAuth2Token();
+      
+        $access_token = $authentication_model->getOAuth2Token();
+    
+
+        $finance_model = $container->get('financeModel');
+
+      
+
+        try{        
+            
+            //finance
+            $rest_API_wrapper = $container->get('restAPIWrapper');
+
+            $rest_API_wrapper->setLogger($logger);
+            $rest_API_wrapper->setAccessToken($access_token);
+
+            $initialise_success = $rest_API_wrapper->initialiseConfig();
+
+            if(!$initialise_success){
+                throw new Exception('Error initialising REST API Wrapper');
+            }
+
+            $rest_API_wrapper->fetchMultipleDocuments(['Settings/birdSpecies', 'Settings/priceDefinitions']);
+            $successfully_fetched_documents = $rest_API_wrapper->getFirebaseFirestoreResult();
+
+            if(!$successfully_fetched_documents){
+                throw new Exception('Error fetching documents for calculating order price');
+            }
+
+            $multi_documents = $rest_API_wrapper->getMultiDocuments();
+
+            $prices_firebase_document = new FirebaseDocument();
+            $postcodes_firebase_document = new FirebaseDocument();
+
+            $prices_firebase_document->setData($multi_documents['Settings/birdSpecies']['fields']);
+            $postcodes_firebase_document->setData($multi_documents['Settings/priceDefinitions']['fields']);
+
+        }catch(Exception $e){
+
+            if($logger != null){
+                $logger->error('FINANCE_ERROR', array($e));
+            }
+
+        }
+
+        $finance_model->setLogger($logger);
+        $finance_model->setPricesDocument($prices_firebase_document);
+        $finance_model->setPostcodesDocument($postcodes_firebase_document);
+
+        var_dump($cleaned_orders[1]);
+
+
+        for($i = 1; $i < sizeof($cleaned_orders) + 1; $i++){
+
+            $finance_model->setOrderData($cleaned_orders[$i]);
+            $finance_model->calculateOrderPrice();
+
+            $cleaned_orders[$i]['price'] = $finance_model->getOrderPrice();
+
+        }
+ 
+        // Get models + Wrappers
+    
         $add_order_model = $container->get('addOrderModel');
         $session_wrapper = $container->get('sessionWrapper');
-        $authentication_model = $container->get('authenticationModel');
+
+        $firestore = $authentication_model->getAuthenticatedFirebaseClient();
+
+
+        if($firestore == null){
+            return $response->withRedirect('/customer-order?error=true', 302);
+        }
 
         
         putenv("GOOGLE_APPLICATION_CREDENTIALS=../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json"); 
@@ -113,20 +184,8 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $add_order_model->setLogger($logger);
         $add_order_model->setSessionWrapper($session_wrapper);
     
-
-        $authentication_model->setLogger($logger);
-        $authentication_model->fetchOAuth2Token();
-      
-        $accessToken = $authentication_model->getOAuth2Token();
-        $firestore = $authentication_model->getAuthenticatedFirebaseClient();
-
-
-        if($firestore == null){
-            return $response->withRedirect('/manage-accounts?error=dberror', 302);
-        }
-      
         $add_order_model->setFirebaseFirestore($firestore);
-        $add_order_model->setOAuth2Token($accessToken);
+        $add_order_model->setOAuth2Token($access_token);
     
         $manage_order_model->setOrderData($cleaned_orders);
         $manage_order_model->setAddOrderModel($add_order_model);

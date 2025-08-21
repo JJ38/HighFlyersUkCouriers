@@ -220,6 +220,12 @@ class ManageOrderModel
       $cleaned_parameters['printed'] = "Not Printed";
     }
 
+    if(array_key_exists('price', $tainted_parameters)){
+      $cleaned_parameters['price'] = $sanitizer->sanitizePrice($tainted_parameters['price']);
+    }else{
+      $cleaned_parameters['price'] = null;
+    }
+
 
     $cleaned_parameters['animal_type'] = $sanitizer->sanitizeString($tainted_parameters['animal_type']);
     $cleaned_parameters['animal_type'] = htmlspecialchars_decode($cleaned_parameters['animal_type']);
@@ -235,8 +241,7 @@ class ManageOrderModel
     $cleaned_parameters['delivery_address_3'] = $sanitizer->sanitizeString($tainted_parameters['deliveryAddress3']);
     $cleaned_parameters['delivery_postcode'] = $sanitizer->sanitizeString($tainted_parameters['delivery_postcode']);
     $cleaned_parameters['message'] = $sanitizer->sanitizeString($tainted_parameters['message']);
-    
-    
+  
 
     return $cleaned_parameters;
   }

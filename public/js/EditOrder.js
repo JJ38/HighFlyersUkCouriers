@@ -6,6 +6,37 @@ import { fetchBirdSpecies, createAnimalTypeSelectOptions, createDescriptionTable
 const ID = parseInt(new URLSearchParams(document.location.search).get("id"));
 const q = query(collection(db, "Orders"), where("ID", "==", ID));
 
+const fieldsMap = {
+    ID: "ID:",
+    animalType: "Animal Type:",
+    email: "Email:",
+    quantity: "Quantity:",
+    username: "Username:",
+    deliveryWeek: "Delivery Week:",
+    
+    collectionName: "Collection Name:",
+    collectionAddress1: "Collection Address 1:",  
+    collectionAddress2: "Collection Address 2:",
+    collectionAddress3: "Collection Address 3:",
+    collectionPostcode: "Collection Postcode:",
+    collectionPhoneNumber: "Collection Phonenumber:",
+    
+    deliveryName: "Delivery Name:",
+    deliveryAddress1: "Delivery Address 1:",
+    deliveryAddress2: "Delivery Address 2:",
+    deliveryAddress3: "Delivery Address 3:",
+    deliveryPostcode: "Delivery Postcode:",
+    deliveryPhoneNumber: "Delivery Phonenumber:",
+
+    payment: "Payment:",
+    price: "Price:",
+    message: "Message:",
+    code: "Code:",
+    addedBy: "Added By:",
+    printed: "Printed:",
+    timestamp: "Timestamp:",
+}
+
 let options;
 
 init();
@@ -34,7 +65,7 @@ async function init(){
             const tableRow = document.createElement('tr');
 
             const field = document.createElement('td');
-            field.innerText = fields;
+            field.innerText = fieldsMap[fields];
 
             const data = document.createElement('td');
 
@@ -111,8 +142,9 @@ async function init(){
 
                 }
                 case "deliveryWeek":
+                case "quantity":
+                case "price":
                 {
-
                     const input = document.createElement('input');
                     input.type = "number";
                     input.value = sortedOrderData[fields];
@@ -174,6 +206,7 @@ function sortOrderData(orderFields){
         deliveryPhoneNumber: orderFields['deliveryPhoneNumber'],
 
         payment: orderFields['payment'],
+        price: orderFields['price'],
         message: orderFields['message'],
         code: orderFields['code'],
         addedBy: orderFields['addedBy'],

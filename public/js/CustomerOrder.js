@@ -542,5 +542,5 @@ function submitOrders(){
     console.log(form);
 
     //submit form
-    // form.submit();
+    form.submit();
 }
