@@ -100,7 +100,11 @@ class FinanceModel
         }
 
         if(strlen($trimmed_postcode) == 5){
-            return substr($trimmed_postcode, 0, 1);
+            return substr($trimmed_postcode, 0, 2);
+        }
+
+        if(strlen($trimmed_postcode) <= 4 && strlen($trimmed_postcode) >= 2){
+            return $trimmed_postcode;
         }
 
         if($this->logger != null){

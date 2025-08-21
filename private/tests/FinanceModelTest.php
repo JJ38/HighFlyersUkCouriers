@@ -876,4 +876,132 @@ final class FinanceModelTest extends TestCase {
 
     }
 
+    
+    public function testPostcodeLengthSeven(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Pigeons - Young Birds";
+        $order_data['quantity'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(55, $finance_model->getOrderPrice());
+
+    }
+
+    public function testPostcodeLengthSix(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Pigeons - Young Birds";
+        $order_data['quantity'] = 1;
+        $order_data['collection_postcode'] = "DE5 3GY";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(55, $finance_model->getOrderPrice());
+
+    }
+
+    public function testPostcodeLengthFive(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Pigeons - Young Birds";
+        $order_data['quantity'] = 1;
+        $order_data['collection_postcode'] = "L1 0AA";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(55, $finance_model->getOrderPrice());
+
+    }
+
+    
+    public function testPostcodeLengthFourOutwardOnly(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Pigeons - Young Birds";
+        $order_data['quantity'] = 1;
+        $order_data['collection_postcode'] = "DE56";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(55, $finance_model->getOrderPrice());
+
+    }
+
+    public function testPostcodeLengthThreeOutwardOnly(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Pigeons - Young Birds";
+        $order_data['quantity'] = 1;
+        $order_data['collection_postcode'] = "IV1";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(85, $finance_model->getOrderPrice());
+
+    }
+
+    public function testPostcodeLengthTwoOutwardOnly(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Pigeons - Young Birds";
+        $order_data['quantity'] = 1;
+        $order_data['collection_postcode'] = "L1";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(55, $finance_model->getOrderPrice());
+
+    }
+
 }
