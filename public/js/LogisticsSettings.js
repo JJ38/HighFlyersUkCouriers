@@ -1,4 +1,4 @@
-import { db, auth, getDocument, updateDocument } from '/js/firebase';
+import { db, dbdev, auth, getDocument, updateDocument } from '/js/firebase';
 import { query, doc, collection } from 'firebase/firestore';
 import { showNotification } from '/js/Notification';
 
@@ -38,11 +38,11 @@ fetchRunTimings();
 
 async function transferDocument(){
 
-    const postcodeExceptionsDocument = await getDocument(query(doc(dbdev, 'Settings', 'runTimings')));
+    const postcodeExceptionsDocument = await getDocument(query(doc(dbdev, 'Settings', 'runDefinitions')));
 
     console.log(postcodeExceptionsDocument.data());
 
-    updateDocument(doc(db, 'Settings', 'runTimings'), postcodeExceptionsDocument.data());
+    updateDocument(doc(db, 'Settings', 'priceDefinitions'), postcodeExceptionsDocument.data());
 
 
 }

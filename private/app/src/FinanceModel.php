@@ -54,7 +54,12 @@ class FinanceModel
         //get run that each postcode is in
         $collection_run = $this->postcodes_document->getStringField($collection_outward_postcode);
         $delivery_run = $this->postcodes_document->getStringField($delivery_outward_postcode);
-        
+
+        if($collection_run == false || $delivery_run == false){
+            $this->finance_result = false;
+            return;
+        }
+
         //find price for both collection and delivery postcodes
         $species_prices = $this->getPriceForSpecies();
 
@@ -113,8 +118,6 @@ class FinanceModel
 
         $number_of_species = sizeof($species->getDocument());
 
-        var_dump($this->order['animal_type']);
-
         for($i = 0; $i < $number_of_species; $i++){
 
             if($species->getMapField($i)->getStringField("name") == $this->order['animal_type']){
@@ -159,14 +162,16 @@ class FinanceModel
 
     private function calculateOrderTotalPrice($pricing_to_use_for_order, $species_prices){
 
-        $tally = $pricing_to_use_for_order->getIntegerField('standardPrice');
+        if($this->order['quantity'] < 1){
+            $this->order_price = 0;
+            return;
+        } 
 
-        var_dump($this->order['quantity']);
-        var_dump($species_prices->getMapField('prices')->getIntegerField('includedQuantity'));
+        $tally = $pricing_to_use_for_order->getIntegerField('standardPrice');
 
         $includedQuantity =  $species_prices->getMapField('prices')->getIntegerField('includedQuantity');
 
-        $excess = $this->order['quantity'] > $includedQuantity;
+        $excess = $this->order['quantity'] - $includedQuantity;
 
         if($excess > 0){   
             $tally += ($excess * $pricing_to_use_for_order->getIntegerField('additionalPrice'));

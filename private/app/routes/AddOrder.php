@@ -122,12 +122,10 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
     return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
   }
 
-  $rest_API_wrapper->fetchMultipleDocuments(['Settings/birdSpecies', 'Settings/runDefinitions']);
+  $rest_API_wrapper->fetchMultipleDocuments(['Settings/birdSpecies', 'Settings/priceDefinitions']);
   $successfully_fetched_documents = $rest_API_wrapper->getFirebaseFirestoreResult();
 
   if(!$successfully_fetched_documents){
-    echo "error fetching documents";
-    return $response;
     return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
   }
 
@@ -137,7 +135,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $postcodes_firebase_document = new FirebaseDocument();
 
   $prices_firebase_document->setData($multi_documents['Settings/birdSpecies']['fields']);
-  $postcodes_firebase_document->setData($multi_documents['Settings/runDefinitions']['fields']);
+  $postcodes_firebase_document->setData($multi_documents['Settings/priceDefinitions']['fields']);
 
   $finance_model->setPricesDocument($prices_firebase_document);
   $finance_model->setPostcodesDocument($postcodes_firebase_document);
@@ -147,8 +145,6 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $successfully_calculated_order_price = $finance_model->getFinanceResult();
 
   if(!$successfully_calculated_order_price){
-    echo "error calculating order price";
-    return $response;
     return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
   }
 

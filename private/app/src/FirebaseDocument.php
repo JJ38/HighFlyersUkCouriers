@@ -18,7 +18,7 @@ class FirebaseDocument{
         return $this->data;
     }
 
-    public function getStringField($fieldName) : string{
+    public function getStringField($fieldName){
         return $this->data[$fieldName]['stringValue'];
     }
 

@@ -8,6 +8,8 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app); 
 export const db = getFirestore(app, databaseName);
+export const dbdev = getFirestore(app, 'development');
+
 
 export async function getDocuments(q){
 
