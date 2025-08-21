@@ -2,6 +2,7 @@
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use HighFlyersUkCouriers\FirebaseDocument as FirebaseDocument;
 use Datetime;
 use DateTimeZone;
 
@@ -108,38 +109,41 @@ $app->post('/bookings', function (Request $request, Response $response) use ($ap
   $add_order_model = $container->get('addOrderModel');
   $session_wrapper = $container->get('sessionWrapper');
   $authentication_model = $container->get('authenticationModel');
-  $date_time = new DateTime();
-  $date_time->setTimezone(new DateTimeZone('Europe/London'));
-  $add_order_model->setDateTime($date_time);
-
-  
-  $add_order_model->setLogger($logger);
-  $add_order_model->setOrderData($cleaned_parameters);
-  $add_order_model->setSessionWrapper($session_wrapper);
-
+ 
 
   $authentication_model->setLogger($logger);
   $authentication_model->fetchOAuth2Token();
 
-  $accessToken = $authentication_model->getOAuth2Token();
+  $access_token = $authentication_model->getOAuth2Token();
+
+
+  $cleaned_parameters['price'] = getOrderPrice($container, $access_token, $logger, $cleaned_parameters);
+  
+ //store order
+
   $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
   if($firestore == null){
     return $response->withRedirect('/bookings?error=dberror', 302);
   }
 
-  $add_order_model->setFirebaseFirestore($firestore);
-  $add_order_model->setOAuth2Token($accessToken);
+  $date_time = new DateTime();
+  $date_time->setTimezone(new DateTimeZone('Europe/London'));
 
+  $add_order_model->setDateTime($date_time);
+  $add_order_model->setLogger($logger);
+  $add_order_model->setOrderData($cleaned_parameters);
+  $add_order_model->setSessionWrapper($session_wrapper);
+  $add_order_model->setFirebaseFirestore($firestore);
+  $add_order_model->setOAuth2Token($access_token);
   $add_order_model->storeOrder();
  
-  //store data
+ 
   $query_result = $add_order_model->getFirebaseFirestoreResult();
 
   if($logger != null){
     $logger->error('BOOKING_FORM_POST_STORE_RESULT', array($query_result));
   }
-
 
 
   if(!$query_result){   
@@ -239,4 +243,52 @@ function cleanBookingForm($app, array $tainted_parameters) : array
     $cleaned_parameters['message'] = $sanitizer->sanitizeString($tainted_parameters['message']);
 
     return $cleaned_parameters;
+}
+
+
+function getOrderPrice($container, $access_token, $logger, $cleaned_parameters){
+
+  $finance_model = $container->get('financeModel');
+  $rest_API_wrapper = $container->get('restAPIWrapper');
+
+  //finance
+
+  $rest_API_wrapper->setLogger($logger);
+  $rest_API_wrapper->setAccessToken($access_token);
+
+  $initialise_success = $rest_API_wrapper->initialiseConfig();
+
+  if(!$initialise_success){
+    return "N/A";
+  }
+
+  $rest_API_wrapper->fetchMultipleDocuments(['Settings/birdSpecies', 'Settings/priceDefinitions']);
+  $successfully_fetched_documents = $rest_API_wrapper->getFirebaseFirestoreResult();
+
+  if(!$successfully_fetched_documents){
+    return "N/A";
+  }
+
+  $multi_documents = $rest_API_wrapper->getMultiDocuments();
+
+  $prices_firebase_document = new FirebaseDocument();
+  $postcodes_firebase_document = new FirebaseDocument();
+
+  $prices_firebase_document->setData($multi_documents['Settings/birdSpecies']['fields']);
+  $postcodes_firebase_document->setData($multi_documents['Settings/priceDefinitions']['fields']);
+
+  $finance_model->setLogger($logger);
+  $finance_model->setPricesDocument($prices_firebase_document);
+  $finance_model->setPostcodesDocument($postcodes_firebase_document);
+  $finance_model->setOrderData($cleaned_parameters);
+  $finance_model->calculateOrderPrice();
+
+  $successfully_calculated_order_price = $finance_model->getFinanceResult();
+
+  if(!$successfully_calculated_order_price){
+    return "N/A";
+  }
+
+  return $finance_model->getOrderPrice();
+   
 }

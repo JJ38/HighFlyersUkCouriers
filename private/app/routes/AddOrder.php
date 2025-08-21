@@ -104,14 +104,14 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   $finance_model = $container->get('financeModel');
   $rest_API_wrapper = $container->get('restAPIWrapper');
 
-  $date_time = new DateTime();
-  $date_time->setTimezone(new DateTimeZone('Europe/London'));
-  $add_order_model->setDateTime($date_time);
-
   $authentication_model->setLogger($logger);
   $authentication_model->fetchOAuth2Token();
 
   $access_token = $authentication_model->getOAuth2Token();
+
+
+
+  //finance
 
   $rest_API_wrapper->setLogger($logger);
   $rest_API_wrapper->setAccessToken($access_token);
@@ -151,20 +151,26 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
   $cleaned_parameters['price'] = $finance_model->getOrderPrice();
 
-  $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
+
+
+
+  //store order
+
+  $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
   if($firestore == null){
     return $response->withRedirect('/manage-accounts?error=dberror', 302);
   }
 
+  $date_time = new DateTime();
+  $date_time->setTimezone(new DateTimeZone('Europe/London'));
+  $add_order_model->setDateTime($date_time);
 
   $add_order_model->setLogger($logger);
   $add_order_model->setOrderData($cleaned_parameters);
   $add_order_model->setSessionWrapper($session_wrapper);
-
   $add_order_model->setFirebaseFirestore($firestore);
-  //store data
   $add_order_model->setOAuth2Token($access_token);
   $add_order_model->storeOrder();
 
