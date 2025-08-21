@@ -71,7 +71,16 @@ orderDataWrapper.addEventListener('scroll', (event) => {
 
 searchButton.addEventListener('click', async () => {
 
-  const query = filterSearch(searchOption.value, searchValue.value);
+  const searchOptionInput = searchOption.value;
+  let searchValueInput = searchValue.value;
+
+  if(searchOptionInput == "price"){
+
+    searchValueInput = searchValueInput.replaceAll("£", "");
+
+  }
+
+  const query = filterSearch(searchOptionInput, searchValueInput);
   console.log(query);
 
   const orderData = await getFilterOrders(query);
@@ -250,12 +259,19 @@ export function addOrdersToTable(orderArray, prepend){
       for(var field in sortedOrderData){
 
           const tableData = document.createElement('td');
-          tableData.innerHTML = sortedOrderData[field];
-          tableData.classList.add(field);
-          if(field == "deliveryWeek"){
 
+          if(field == "price"){
+            tableData.innerHTML = sortedOrderData[field] == undefined ? "N/A" : "£" + sortedOrderData[field]; 
+          }else{
+            tableData.innerHTML = sortedOrderData[field];
+          }
+
+          tableData.classList.add(field);
+
+          if(field == "deliveryWeek"){
             tableData.style.background = getDeliveryWeekColour(sortedOrderData['deliveryWeek'])
           }
+          
           tableRow.append(tableData);
       
       }

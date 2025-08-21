@@ -66,6 +66,7 @@ export function sortOrderData(orderFields){
         deliveryPhoneNumber: orderFields['deliveryPhoneNumber'],
 
         payment: orderFields['payment'],
+        price: orderFields['price'],
         message: orderFields['message'],
         code: orderFields['code'],
         addedBy: orderFields['addedBy'],

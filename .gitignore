@@ -10,3 +10,4 @@ TODO.txt
 public/js/Settings.js
 public/.htaccess
 liveSiteCredentials
+public/helpers/get_firebase_rest_api_doc.txt

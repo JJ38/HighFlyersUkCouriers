@@ -94,6 +94,7 @@ export function filterSearch(searchOption, searchValue){
     switch(searchOption){
 
         case "ID":
+        case "price":
         case "quantity":
         
             q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", parseInt(searchValue)));
