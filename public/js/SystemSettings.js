@@ -9,11 +9,6 @@ fetchBirdSpecies();
 fetchPricePostcodeDefinitions();
 addEventListeners();
 
-function addEventListeners(){
-
-
-}
-
 async function fetchBirdSpecies(){
 
     const birdSpeciesDocument = await getDocument(query(doc(db, 'Settings', 'birdSpecies')));
@@ -264,7 +259,7 @@ function createPriceTable(bird){
 
     for(let i = 0; i < bird.prices.areaPrices.length; i++){
 
-       table.appendChild(createAreaPriceCard(bird.prices.areaPrices[i]));
+       table.appendChild(createPriceTableRow(bird.prices.areaPrices[i]));
 
     }
 
@@ -277,7 +272,7 @@ function createPriceTable(bird){
 
 }
 
-function createAreaPriceCard(areaPrice){
+function createPriceTableRow(areaPrice){
 
     const row = document.createElement('div');
     row.classList = "row";

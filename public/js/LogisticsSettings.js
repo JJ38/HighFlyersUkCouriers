@@ -38,7 +38,7 @@ fetchRunTimings();
 
 async function transferDocument(){
 
-    const postcodeExceptionsDocument = await getDocument(query(doc(dbdev, 'Settings', 'runDefinitions')));
+    const postcodeExceptionsDocument = await getDocument(query(doc(dbdev, 'Settings', 'priceDefinitions')));
 
     console.log(postcodeExceptionsDocument.data());
 

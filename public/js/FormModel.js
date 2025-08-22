@@ -1,6 +1,6 @@
-import { db, getDocument, updateDocument } from '/js/firebase';
-import { query, doc, collection } from 'firebase/firestore';
-import { showNotification } from '/js/Notification';
+import { db, getDocument } from '/js/firebase';
+import { query, doc } from 'firebase/firestore';
+import { showNotification } from '/js/Notification.js';
 
 
 export async function fetchBirdSpecies(){
@@ -8,7 +8,8 @@ export async function fetchBirdSpecies(){
     const birdSpeciesDocument = await getDocument(query(doc(db, 'Settings', 'birdSpecies')));
 
     if(birdSpeciesDocument == false){
-        showNotification("Error!", "Error fetching bird species");
+        console.log("waddawd");
+        showNotification("Error!", "Error loading form. Please try again later");
         return;
     }
 
@@ -23,11 +24,178 @@ export async function fetchBirdSpecies(){
 
 }
 
+export async function fetchPricePostcodeDefinitions(){
+
+    const priceDefinitionsDocument = await getDocument(query(doc(db, 'Settings', 'priceDefinitions')));
+
+    if(priceDefinitionsDocument == false){
+        showNotification("Error!", "Error initialising prices. You can still order but wont have a basket price");
+        return;
+    }
+
+    const priceDefinitions = priceDefinitionsDocument.data();
+    
+    if(priceDefinitions == null){
+        showNotification("Error!", "Error initialising prices. You can still order but wont have a basket price");
+        return;
+    }
+
+    return priceDefinitions;
+
+}
+
+export function calculateOrderPrice(collectionPostcodeInput, deliveryPostcodeInput, quantityInput, animalTypeInput, birdSpecies, pricePostcodeDefinitions, birdSpeciesSet){
+    
+    const animalType = validateAnimalType(animalTypeInput, birdSpeciesSet);
+    if(animalType == false){
+        return false;
+    }
+
+    const quantity = validateQuantity(quantityInput);
+    if(quantity == false){
+        return false;
+    }
+
+    const collectionPostcode = validatePostcode(collectionPostcodeInput, pricePostcodeDefinitions);
+    if(collectionPostcode == false){
+        return false;
+    }
+
+    const deliveryPostcode = validatePostcode(deliveryPostcodeInput, pricePostcodeDefinitions);
+    if(deliveryPostcode == false){
+        return false;
+    }
+
+    const pricingForOrder = getPricingForOrder(collectionPostcode, deliveryPostcode, animalType, birdSpecies, pricePostcodeDefinitions);
+
+    let tally = pricingForOrder.pricing.standardPrice;
+
+    const excess = quantity - pricingForOrder.includedQuantity ;
+
+    if(excess > 0){
+        tally += (excess * pricingForOrder.pricing.additionalPrice);
+    }
+
+    return tally;
+
+}
+
+function validateQuantity(quantity){
+
+    const quantityInt = parseInt(quantity);
+    if(quantityInt > 0){
+        return quantityInt;
+    }
+
+    return false;
+}
+
+function validateAnimalType(animalType, validAnimalTypes){
+    
+    if(validAnimalTypes.has(animalType)){
+        return animalType;
+    }
+
+    return false;
+
+}
+
+function validatePostcode(postcode, pricePostcodeDefinitions){
+
+    const outwardPostcode = getOutwardPostcode(postcode);
+
+    if(outwardPostcode == false){
+        return false;
+    }
+
+    //check if valid postcode in system
+    if(pricePostcodeDefinitions[outwardPostcode]){
+        return outwardPostcode;
+    }
+
+    return false;
+    
+}
+
+function getOutwardPostcode(postcode){
+
+    const trimmedPostcode = postcode.replaceAll(" ", "").toUpperCase();
+
+    if(trimmedPostcode.length == 7){
+        return trimmedPostcode.substring(0, 4);
+    }
+
+    if(trimmedPostcode.length == 6){
+        return trimmedPostcode.substring(0, 3);
+    }
+
+    if(trimmedPostcode.length == 5){
+        return trimmedPostcode.substring(0, 2);
+    }
+
+    if(trimmedPostcode.length <= 4 && trimmedPostcode.length >= 2){
+        return trimmedPostcode;
+    }
+
+    return false;
+
+}
+
+function getPricingForOrder(collectionPostcode, deliveryPostcode, animalType, birdSpecies, pricePostcodeDefinitions){
+
+    const pricingForAnimal = getPricingForAnimal(animalType, birdSpecies);
+
+    const collectionAreaName = getAreaName(collectionPostcode, pricePostcodeDefinitions);
+    const deliveryAreaName = getAreaName(deliveryPostcode, pricePostcodeDefinitions);
+
+    const collectionPricing = getAreaPricing(collectionAreaName, pricingForAnimal);
+    const deliveryPricing = getAreaPricing(deliveryAreaName, pricingForAnimal);
+
+    if(collectionPricing.pricing.standardPrice > deliveryPricing.pricing.standardPrice){
+        return collectionPricing;
+    }
+
+    return deliveryPricing;
+}
+
+function getPricingForAnimal(animalType, birdSpecies){
+
+    for(let i = 0; i < birdSpecies.species.length; i++){
+        if(birdSpecies.species[i].name == animalType){
+            return birdSpecies.species[i].prices;
+        }
+    }
+
+}
+
+function getAreaName(postcode, pricePostcodeDefinitions){
+
+    return pricePostcodeDefinitions[postcode];
+
+}
+
+function getAreaPricing(areaName, pricingForAnimal){
+    
+    for(let i = 0; i < pricingForAnimal.areaPrices.length; i++){
+
+        if(pricingForAnimal.areaPrices[i].area == areaName){
+
+            return {pricing: pricingForAnimal.areaPrices[i], includedQuantity: pricingForAnimal.includedQuantity};
+
+        }
+
+    }
+
+}
 
 export function createAnimalTypeSelectOptions(birdSpecies){
 
-
     const options = [];
+
+    console.log(birdSpecies);
+    console.log(typeof(birdSpecies));
+    console.log(birdSpecies.species);
+
 
     for(let i = 0; i < birdSpecies.species.length; i++){
 

@@ -1,5 +1,6 @@
 import { validatePostcodes } from "/js/ValidateAddress.js";
-import { fetchBirdSpecies, createAnimalTypeSelectOptions, createDescriptionTable } from "/js/FormModel.js";
+import { fetchBirdSpecies, fetchPricePostcodeDefinitions, createAnimalTypeSelectOptions, createDescriptionTable } from "/js/FormModel.js";
+import { calculateOrderPrice } from "./FormModel";
 
 const submitOrdersButton = document.getElementById('submitButton');
 
@@ -27,11 +28,39 @@ const hintWrapper = document.getElementById('question_mark_wrapper');
 const requiredFields = [collectionName, collectionAddress1, collectionPostcode, collectionTelephone, email, deliveryName, deliveryAddress1, 
     deliveryPostcode, deliveryTelephone, paymentOption, quantity, animalTypeSelect];
 
+let priceDefinitions;
+let birdSpecies;
+let birdSpeciesSet = new Set();
+
 init();
 
 async function init(){
+    
+    const promisesMap = new Map(); 
+    const promisesArray = [];
 
-    const birdSpecies = await fetchBirdSpecies();
+    const birdSpeciesPromise = fetchBirdSpecies();
+    promisesArray.push(birdSpeciesPromise)
+
+    const fetchPricePostcodeDefinitionsPromise = fetchPricePostcodeDefinitions();
+    promisesArray.push(fetchPricePostcodeDefinitionsPromise)
+
+    promisesMap.set("Settings/birdSpecies", birdSpeciesPromise);
+    promisesMap.set("Settings/priceDefinitions", fetchPricePostcodeDefinitionsPromise);
+
+    await Promise.all(promisesArray);
+
+    birdSpecies = await promisesMap.get('Settings/birdSpecies');
+    priceDefinitions = await promisesMap.get('Settings/priceDefinitions');
+
+
+    for(let i = 0; i < birdSpecies.species.length; i++){
+
+        birdSpeciesSet.add(birdSpecies.species[i].name);
+
+    }   
+
+    calculateOrderPrice("DE56", "SA41", 13, "Pigeons - Young Birds", birdSpecies, priceDefinitions, birdSpeciesSet);
 
     const options = createAnimalTypeSelectOptions(birdSpecies);
 
@@ -45,7 +74,7 @@ async function init(){
     animalDescriptionTableAnchor.classList = "animalDescriptionTableAnchor";
     animalTypeWrapper.appendChild(animalDescriptionTableAnchor);
 
-    const animalDescriptionTable = createDescriptionTable(birdSpecies);
+    const animalDescriptionTable = createDescriptionTable(await promisesMap.get('Settings/birdSpecies'));
     animalDescriptionTableAnchor.appendChild(animalDescriptionTable);
 
     addEventListeners(animalDescriptionTable);
@@ -63,6 +92,58 @@ function addEventListeners(animalDescriptionTable){
         });
 
     }
+
+    if(submitOrdersButton != null){
+    
+        submitOrdersButton.addEventListener('click', () => {
+            
+            submitOrders();
+
+        });
+
+    }
+
+     if(collectionPostcode != null){
+    
+        collectionPostcode.addEventListener('input', () => {
+  
+            calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet);
+
+        });
+
+    }
+
+    if(deliveryPostcode != null){
+    
+        deliveryPostcode.addEventListener('input', () => {
+
+            calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet);
+
+        });
+
+    }
+
+    if(animalTypeSelect != null){
+    
+        animalTypeSelect.addEventListener('input', () => {
+
+            calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet);
+
+        });
+
+    }
+    
+    if(quantity != null){
+    
+        quantity.addEventListener('input', () => {
+
+            calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet);
+
+        });
+
+    }
+
+
    
 }
 
@@ -103,12 +184,6 @@ async function submitOrders(){
 
 }
 
-submitOrdersButton.addEventListener('click', () => {
-    
-    submitOrders();
-
-});
-
 
 async function validateForm(){ 
 
@@ -147,7 +222,6 @@ async function validateForm(){
     if(validatePostcodesResult != false){
         return validatePostcodesResult;
     }   
-
 
     return null;
 
