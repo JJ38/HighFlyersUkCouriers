@@ -45,8 +45,7 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
 
       $tainted_parameters = $request->getParsedBody();
 
-      
-
+    
       $container = $app->getContainer();
       $session_wrapper = $app->getContainer()->get('sessionWrapper');
       $authentication_model = $app->getContainer()->get('authenticationModel');
