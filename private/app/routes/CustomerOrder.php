@@ -118,8 +118,6 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $manage_order_model->setFinanceModel($finance_model);
     
 
-        // var_dump($cleaned_orders[1]);
-
         for($i = 1; $i < sizeof($cleaned_orders) + 1; $i++){
 
             $finance_model->setOrderData($cleaned_orders[$i]);

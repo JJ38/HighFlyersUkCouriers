@@ -466,8 +466,6 @@ function createPostcodePill(postcodeDefinition){
 }
 
 
-
-
 function createPostcodeExceptionCard(postcodeException){
 
     const postcodeExceptionCard = document.createElement('div')
