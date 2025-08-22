@@ -107,57 +107,23 @@ $app->post('/customer-order', function (Request $request, Response $response) us
     
 
         $finance_model = $container->get('financeModel');
+        $rest_API_wrapper = $container->get('restAPIWrapper');
 
-      
-
-        try{        
-            
-            //finance
-            $rest_API_wrapper = $container->get('restAPIWrapper');
-
-            $rest_API_wrapper->setLogger($logger);
-            $rest_API_wrapper->setAccessToken($access_token);
-
-            $initialise_success = $rest_API_wrapper->initialiseConfig();
-
-            if(!$initialise_success){
-                throw new Exception('Error initialising REST API Wrapper');
-            }
-
-            $rest_API_wrapper->fetchMultipleDocuments(['Settings/birdSpecies', 'Settings/priceDefinitions']);
-            $successfully_fetched_documents = $rest_API_wrapper->getFirebaseFirestoreResult();
-
-            if(!$successfully_fetched_documents){
-                throw new Exception('Error fetching documents for calculating order price');
-            }
-
-            $multi_documents = $rest_API_wrapper->getMultiDocuments();
-
-            $prices_firebase_document = new FirebaseDocument();
-            $postcodes_firebase_document = new FirebaseDocument();
-
-            $prices_firebase_document->setData($multi_documents['Settings/birdSpecies']['fields']);
-            $postcodes_firebase_document->setData($multi_documents['Settings/priceDefinitions']['fields']);
-
-        }catch(Exception $e){
-
-            if($logger != null){
-                $logger->error('FINANCE_ERROR', array($e));
-            }
-
-        }
+        $rest_API_wrapper->setLogger($logger);
+        $rest_API_wrapper->setAccessToken($access_token);
 
         $finance_model->setLogger($logger);
-        $finance_model->setPricesDocument($prices_firebase_document);
-        $finance_model->setPostcodesDocument($postcodes_firebase_document);
 
-        var_dump($cleaned_orders[1]);
+        $manage_order_model->setRESTAPIWrapper($rest_API_wrapper);
+        $manage_order_model->setFinanceModel($finance_model);
+    
 
+        // var_dump($cleaned_orders[1]);
 
         for($i = 1; $i < sizeof($cleaned_orders) + 1; $i++){
 
             $finance_model->setOrderData($cleaned_orders[$i]);
-            $finance_model->calculateOrderPrice();
+            $manage_order_model->calculateOrderPrice();
 
             $cleaned_orders[$i]['price'] = $finance_model->getOrderPrice();
 

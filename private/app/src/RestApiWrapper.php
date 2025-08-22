@@ -5,6 +5,7 @@ namespace HighFlyersUkCouriers;
 use Doctrine\DBAL\Schema\View;
 use Exception;
 use Kreait\Firebase\Project\ProjectId;
+use HighFlyersUkCouriers\FirebaseDocument;
 
 class RestApiWrapper{
 
@@ -151,7 +152,7 @@ class RestApiWrapper{
             } while ($running > 0);
 
             // Get the results
-            $responses = [];
+            $documents = [];
             foreach ($ch_handles as $key => $ch) {
 
                 $data = json_decode(curl_multi_getcontent($ch), true);
@@ -173,7 +174,10 @@ class RestApiWrapper{
                     
                 }
 
-                $responses[$key] = $data;
+                $document = new FirebaseDocument();
+                $document->setData($data['fields']);
+     
+                $documents[$key] = $document;
 
                 curl_multi_remove_handle($mh, $ch);
 
@@ -181,7 +185,7 @@ class RestApiWrapper{
 
             curl_multi_close($mh);
 
-            $this->latest_multi_documents = $responses;
+            $this->latest_multi_documents = $documents;
 
             $this->firebase_firestore_result = true;
 

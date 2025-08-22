@@ -12,7 +12,7 @@ class FinanceModel
     private $order;
     private FirebaseDocument $price_document;
     private FirebaseDocument $postcodes_document;
-    private $finance_result;
+    private $finance_result = false;
 
     public function setLogger($logger){
         $this->logger = $logger;
@@ -46,7 +46,6 @@ class FinanceModel
         if($this->price_document == null || $this->postcodes_document == null){
             return;
         }
-
 
         $collection_outward_postcode = $this->getOutwardPostcode($this->order['collection_postcode']);
         $delivery_outward_postcode = $this->getOutwardPostcode($this->order['delivery_postcode']);
@@ -92,6 +91,7 @@ class FinanceModel
     private function getOutwardPostcode($postcode){
 
         $trimmed_postcode = str_replace(" ", "", $postcode);
+
         if(strlen($trimmed_postcode) == 7){
             return substr($trimmed_postcode, 0, 4);
         }
@@ -111,6 +111,8 @@ class FinanceModel
         if($this->logger != null){
 
             $this->logger->error('GET_OUTWARD_POSTCODE_ERROR', array($postcode));
+            $this->logger->error('GET_OUTWARD_POSTCODE_ERROR_ORDER_DATA', array($this->order));
+
 
         }
 

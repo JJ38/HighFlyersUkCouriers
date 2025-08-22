@@ -111,47 +111,19 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   if(empty($cleaned_parameters['price'])){
 
     //finance
-
     $rest_API_wrapper->setLogger($logger);
     $rest_API_wrapper->setAccessToken($access_token);
 
-    $initialise_success = $rest_API_wrapper->initialiseConfig();
-
-    if(!$initialise_success){
-      return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
-    }
-
-    $rest_API_wrapper->fetchMultipleDocuments(['Settings/birdSpecies', 'Settings/priceDefinitions']);
-    $successfully_fetched_documents = $rest_API_wrapper->getFirebaseFirestoreResult();
-
-    if(!$successfully_fetched_documents){
-      return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
-    }
-
-    $multi_documents = $rest_API_wrapper->getMultiDocuments();
-
-    $prices_firebase_document = new FirebaseDocument();
-    $postcodes_firebase_document = new FirebaseDocument();
-
-    $prices_firebase_document->setData($multi_documents['Settings/birdSpecies']['fields']);
-    $postcodes_firebase_document->setData($multi_documents['Settings/priceDefinitions']['fields']);
-
     $finance_model->setLogger($logger);
-    $finance_model->setPricesDocument($prices_firebase_document);
-    $finance_model->setPostcodesDocument($postcodes_firebase_document);
     $finance_model->setOrderData($cleaned_parameters);
-    $finance_model->calculateOrderPrice();
 
-    // $successfully_calculated_order_price = $finance_model->getFinanceResult();
-
-    // if(!$successfully_calculated_order_price){
-    //   return $response->withRedirect('/manage-orders?addorder=fetchpriceerror', 301);
-    // }
+    $manage_order_model->setRESTAPIWrapper($rest_API_wrapper);
+    $manage_order_model->setFinanceModel($finance_model);
+    $manage_order_model->calculateOrderPrice();
 
     $cleaned_parameters['price'] = $finance_model->getOrderPrice();
 
   }
-
 
 
   //store order

@@ -4,6 +4,8 @@ namespace HighFlyersUkCouriers;
 
 use Datetime;
 use DateTimeZone;
+use HighFlyersUkCouriers\FinanceModel;
+use HighFlyersUkCouriers\RestApiWrapper;
 
 class ManageOrderModel
 {
@@ -12,11 +14,13 @@ class ManageOrderModel
   private $order_data;
   private $HTML_order_data;
   private $confirmed_orders;
-  private $is_admin;
   private $error_message;
   private $error_input_value;
   private $add_order_model;
-  private $firebase_firestore;
+  private RestApiWrapper $rest_API_wrapper;
+  private FinanceModel $finance_model;
+  private $logger;
+
 
 
   public function getOrderData() : array|null //for testing purposes
@@ -47,10 +51,30 @@ class ManageOrderModel
   {
     return $this->error_input_value;
   }
+  
+  public function getFinanceModel() : FinanceModel
+  {
+    return  $this->finance_model;
+  }
+  
+  public function setLogger($logger) : void
+  {
+    $this->logger = $logger;
+  }
 
   public function setDoctrineWrapper($doctrine_wrapper) : void
   {
     $this->doctrine_wrapper = $doctrine_wrapper;
+  }
+
+  public function setRESTAPIWrapper($rest_API_wrapper) : void
+  {
+    $this->rest_API_wrapper = $rest_API_wrapper;
+  }
+
+  public function setFinanceModel($finance_model) : void
+  {
+    $this->finance_model = $finance_model;
   }
 
   public function setOrderData($order_data) : void
@@ -61,15 +85,6 @@ class ManageOrderModel
   public function setAddOrderModel($add_order_model) : void
   {
     $this->add_order_model = $add_order_model;
-  }
-
-  public function setFirebaseFirestore($firebase_firestore) : void
-  {
-    $this->firebase_firestore = $firebase_firestore;
-  }
-
-  public function setIsAdmin($is_admin){
-    $this->is_admin = $is_admin;
   }
 
   public function deleteOrderById(string $id) : void
@@ -406,6 +421,32 @@ class ManageOrderModel
     $delivery_week = intval($delivery_date->format('W'));
 
     return $delivery_week; 
+
+  }
+
+  public function calculateOrderPrice(){
+
+    $initialise_success = $this->rest_API_wrapper->initialiseConfig();
+
+    if(!$initialise_success){
+      return;
+    }
+
+    $this->rest_API_wrapper->fetchMultipleDocuments(['Settings/birdSpecies', 'Settings/priceDefinitions']);
+    $successfully_fetched_documents = $this->rest_API_wrapper->getFirebaseFirestoreResult();
+
+    if(!$successfully_fetched_documents){
+      return;
+    }
+
+    $multi_documents = $this->rest_API_wrapper->getMultiDocuments();
+
+    $prices_firebase_document = $multi_documents['Settings/birdSpecies'];
+    $postcodes_firebase_document = $multi_documents['Settings/priceDefinitions'];
+
+    $this->finance_model->setPricesDocument($prices_firebase_document);
+    $this->finance_model->setPostcodesDocument($postcodes_firebase_document);
+    $this->finance_model->calculateOrderPrice();
 
   }
 
