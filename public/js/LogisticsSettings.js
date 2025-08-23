@@ -38,11 +38,11 @@ fetchRunTimings();
 
 async function transferDocument(){
 
-    const postcodeExceptionsDocument = await getDocument(query(doc(dbdev, 'Settings', 'priceDefinitions')));
+    const postcodeExceptionsDocument = await getDocument(query(doc(dbdev, 'Settings', 'birdSpecies')));
 
     console.log(postcodeExceptionsDocument.data());
 
-    updateDocument(doc(db, 'Settings', 'priceDefinitions'), postcodeExceptionsDocument.data());
+    updateDocument(doc(db, 'Settings', 'birdSpecies'), postcodeExceptionsDocument.data());
 
 
 }

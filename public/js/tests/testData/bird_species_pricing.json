@@ -1,19 +1,101 @@
 {
+    "__collections__": {},
     "species": [
         {
-            "name": "Pigeons - Young Birds",
             "description": "Racing Pigeons, Roller Pigeons, Fancy Pigeons, Doves, Crows etc",
             "prices": {
                 "includedQuantity": 12,
                 "areaPrices": [
                     {
-                        "additionalPrice": 2,
+                        "area": "Cornwall",
                         "standardPrice": 60,
-                        "area": "Cornwall"
+                        "additionalPrice": 2
                     },
                     {
                         "area": "South Coast",
+                        "standardPrice": 60,
+                        "additionalPrice": 2
+                    },
+                    {
+                        "area": "London",
+                        "standardPrice": 60,
+                        "additionalPrice": 2
+                    },
+                    {
                         "additionalPrice": 2,
+                        "standardPrice": 60,
+                        "area": "Norfolk"
+                    },
+                    {
+                        "additionalPrice": 2,
+                        "standardPrice": 55,
+                        "area": "Birmingham"
+                    },
+                    {
+                        "standardPrice": 55,
+                        "additionalPrice": 2,
+                        "area": "South Wales"
+                    },
+                    {
+                        "standardPrice": 55,
+                        "area": "North Wales",
+                        "additionalPrice": 2
+                    },
+                    {
+                        "area": "South Yorkshire",
+                        "additionalPrice": 2,
+                        "standardPrice": 55
+                    },
+                    {
+                        "standardPrice": 55,
+                        "area": "North West",
+                        "additionalPrice": 2
+                    },
+                    {
+                        "standardPrice": 55,
+                        "area": "Cumbria",
+                        "additionalPrice": 2
+                    },
+                    {
+                        "standardPrice": 55,
+                        "area": "North East",
+                        "additionalPrice": 2
+                    },
+                    {
+                        "additionalPrice": 2,
+                        "standardPrice": 65,
+                        "area": "Scotland"
+                    },
+                    {
+                        "additionalPrice": 2,
+                        "standardPrice": 75,
+                        "area": "Aberdeen"
+                    },
+                    {
+                        "additionalPrice": 2,
+                        "standardPrice": 85,
+                        "area": "Inverness"
+                    },
+                    {
+                        "additionalPrice": 2,
+                        "area": "Swansea",
+                        "standardPrice": 60
+                    }
+                ]
+            },
+            "name": "Pigeons - Young Birds"
+        },
+        {
+            "prices": {
+                "areaPrices": [
+                    {
+                        "area": "Cornwall",
+                        "additionalPrice": 2,
+                        "standardPrice": 60
+                    },
+                    {
+                        "additionalPrice": 2,
+                        "area": "South Coast",
                         "standardPrice": 60
                     },
                     {
@@ -22,14 +104,14 @@
                         "area": "London"
                     },
                     {
+                        "standardPrice": 60,
                         "additionalPrice": 2,
-                        "area": "Norfolk",
-                        "standardPrice": 60
+                        "area": "Norfolk"
                     },
                     {
                         "area": "Birmingham",
-                        "standardPrice": 55,
-                        "additionalPrice": 2
+                        "additionalPrice": 2,
+                        "standardPrice": 55
                     },
                     {
                         "area": "South Wales",
@@ -37,84 +119,8 @@
                         "additionalPrice": 2
                     },
                     {
-                        "additionalPrice": 2,
-                        "standardPrice": 55,
-                        "area": "North Wales"
-                    },
-                    {
                         "standardPrice": 55,
                         "additionalPrice": 2,
-                        "area": "South Yorkshire"
-                    },
-                    {
-                        "additionalPrice": 2,
-                        "area": "North West",
-                        "standardPrice": 55
-                    },
-                    {
-                        "area": "Cumbria",
-                        "additionalPrice": 2,
-                        "standardPrice": 55
-                    },
-                    {
-                        "area": "North East",
-                        "additionalPrice": 2,
-                        "standardPrice": 55
-                    },
-                    {
-                        "standardPrice": 65,
-                        "area": "Scotland",
-                        "additionalPrice": 2
-                    },
-                    {
-                        "area": "Aberdeen",
-                        "additionalPrice": 2,
-                        "standardPrice": 75
-                    },
-                    {
-                        "area": "Inverness",
-                        "additionalPrice": 2,
-                        "standardPrice": 85
-                    }
-                ]
-            }
-        },
-        {
-            "prices": {
-                "areaPrices": [
-                    {
-                        "additionalPrice": 2,
-                        "area": "Cornwall",
-                        "standardPrice": 60
-                    },
-                    {
-                        "additionalPrice": 2,
-                        "area": "South Coast",
-                        "standardPrice": 60
-                    },
-                    {
-                        "standardPrice": 60,
-                        "additionalPrice": 2,
-                        "area": "London"
-                    },
-                    {
-                        "area": "Norfolk",
-                        "additionalPrice": 2,
-                        "standardPrice": 60
-                    },
-                    {
-                        "area": "Birmingham",
-                        "standardPrice": 55,
-                        "additionalPrice": 2
-                    },
-                    {
-                        "additionalPrice": 2,
-                        "standardPrice": 55,
-                        "area": "South Wales"
-                    },
-                    {
-                        "additionalPrice": 2,
-                        "standardPrice": 55,
                         "area": "North Wales"
                     },
                     {
@@ -123,34 +129,39 @@
                         "standardPrice": 55
                     },
                     {
-                        "area": "North West",
                         "additionalPrice": 2,
+                        "area": "North West",
+                        "standardPrice": 55
+                    },
+                    {
+                        "additionalPrice": 2,
+                        "area": "Cumbria",
                         "standardPrice": 55
                     },
                     {
                         "standardPrice": 55,
-                        "area": "Cumbria",
+                        "area": "North East",
                         "additionalPrice": 2
                     },
                     {
-                        "additionalPrice": 2,
-                        "standardPrice": 55,
-                        "area": "North East"
-                    },
-                    {
-                        "area": "Scotland",
                         "standardPrice": 65,
-                        "additionalPrice": 2
+                        "additionalPrice": 2,
+                        "area": "Scotland"
                     },
                     {
-                        "standardPrice": 75,
                         "area": "Aberdeen",
+                        "standardPrice": 75,
                         "additionalPrice": 2
                     },
                     {
                         "standardPrice": 85,
-                        "area": "Inverness",
-                        "additionalPrice": 2
+                        "additionalPrice": 2,
+                        "area": "Inverness"
+                    },
+                    {
+                        "additionalPrice": 2,
+                        "standardPrice": 60,
+                        "area": "Swansea"
                     }
                 ],
                 "includedQuantity": 12
@@ -159,35 +170,34 @@
             "name": "Pigeons - Old Birds"
         },
         {
+            "name": "Aviary & Cage Birds",
             "description": "Finches, Parrots, Lovebirds, Budgies, Cockateils, Conures, Parakeets, Canaries etc",
-            "name": "Avairy & Cage Birds",
             "prices": {
-                "includedQuantity": 1,
                 "areaPrices": [
                     {
-                        "area": "Cornwall",
-                        "additionalPrice": 10,
-                        "standardPrice": 60
-                    },
-                    {
                         "standardPrice": 60,
-                        "area": "South Coast",
+                        "area": "Cornwall",
                         "additionalPrice": 10
                     },
                     {
-                        "additionalPrice": 10,
                         "standardPrice": 60,
+                        "additionalPrice": 10,
+                        "area": "South Coast"
+                    },
+                    {
+                        "standardPrice": 60,
+                        "additionalPrice": 10,
                         "area": "London"
                     },
                     {
-                        "area": "Norfolk",
                         "standardPrice": 60,
-                        "additionalPrice": 10
+                        "additionalPrice": 10,
+                        "area": "Norfolk"
                     },
                     {
+                        "additionalPrice": 10,
                         "standardPrice": 60,
-                        "area": "Birmingham",
-                        "additionalPrice": 10
+                        "area": "Birmingham"
                     },
                     {
                         "area": "South Wales",
@@ -195,65 +205,73 @@
                         "standardPrice": 60
                     },
                     {
+                        "additionalPrice": 10,
                         "standardPrice": 60,
-                        "area": "North Wales",
-                        "additionalPrice": 10
-                    },
-                    {
-                        "area": "South Yorkshire",
-                        "standardPrice": 60,
-                        "additionalPrice": 10
-                    },
-                    {
-                        "standardPrice": 60,
-                        "area": "North West",
-                        "additionalPrice": 10
-                    },
-                    {
-                        "standardPrice": 60,
-                        "area": "Cumbria",
-                        "additionalPrice": 10
-                    },
-                    {
-                        "area": "North East",
-                        "standardPrice": 60,
-                        "additionalPrice": 10
+                        "area": "North Wales"
                     },
                     {
                         "additionalPrice": 10,
+                        "standardPrice": 60,
+                        "area": "South Yorkshire"
+                    },
+                    {
+                        "additionalPrice": 10,
+                        "area": "North West",
+                        "standardPrice": 60
+                    },
+                    {
+                        "area": "Cumbria",
+                        "additionalPrice": 10,
+                        "standardPrice": 60
+                    },
+                    {
+                        "additionalPrice": 10,
+                        "area": "North East",
+                        "standardPrice": 60
+                    },
+                    {
                         "area": "Scotland",
+                        "additionalPrice": 10,
                         "standardPrice": 65
                     },
                     {
-                        "additionalPrice": 10,
                         "area": "Aberdeen",
+                        "additionalPrice": 10,
                         "standardPrice": 75
                     },
                     {
                         "additionalPrice": 10,
                         "area": "Inverness",
                         "standardPrice": 85
+                    },
+                    {
+                        "additionalPrice": 10,
+                        "area": "Swansea",
+                        "standardPrice": 60
                     }
-                ]
+                ],
+                "includedQuantity": 1
             }
         },
         {
+            "description": "Hawks, Owls, Falcons, Eagles etc.",
             "name": "Birds Of Prey",
             "prices": {
+                "includedQuantity": 1,
                 "areaPrices": [
                     {
-                        "standardPrice": 99,
                         "additionalPrice": 25,
+                        "standardPrice": 99,
                         "area": "Cornwall"
                     },
                     {
+                        "standardPrice": 99,
                         "additionalPrice": 25,
-                        "area": "South Coast",
-                        "standardPrice": 99
+                        "area": "South Coast"
                     },
                     {
-                        "area": "London",
                         "additionalPrice": 25,
+                        "area": "London",
                         "standardPrice": 99
                     },
                     {
@@ -267,54 +285,57 @@
                         "area": "Birmingham"
                     },
                     {
-                        "additionalPrice": 25,
                         "area": "South Wales",
-                        "standardPrice": 99
+                        "standardPrice": 99,
+                        "additionalPrice": 25
                     },
                     {
-                        "additionalPrice": 25,
                         "area": "North Wales",
+                        "additionalPrice": 25,
                         "standardPrice": 99
                     },
                     {
-                        "additionalPrice": 25,
                         "area": "South Yorkshire",
-                        "standardPrice": 99
+                        "standardPrice": 99,
+                        "additionalPrice": 25
                     },
                     {
                         "standardPrice": 99,
-                        "additionalPrice": 25,
-                        "area": "North West"
+                        "area": "North West",
+                        "additionalPrice": 25
+                    },
+                    {
+                        "area": "Cumbria",
+                        "standardPrice": 99,
+                        "additionalPrice": 25
                     },
                     {
                         "standardPrice": 99,
-                        "additionalPrice": 25,
-                        "area": "Cumbria"
-                    },
-                    {
-                        "additionalPrice": 25,
                         "area": "North East",
-                        "standardPrice": 99
+                        "additionalPrice": 25
                     },
                     {
-                        "additionalPrice": 25,
                         "area": "Scotland",
-                        "standardPrice": 99
-                    },
-                    {
-                        "area": "Aberdeen",
-                        "additionalPrice": 25,
-                        "standardPrice": 99
+                        "standardPrice": 99,
+                        "additionalPrice": 25
                     },
                     {
                         "additionalPrice": 25,
-                        "area": "Inverness",
-                        "standardPrice": 99
+                        "standardPrice": 99,
+                        "area": "Aberdeen"
+                    },
+                    {
+                        "standardPrice": 99,
+                        "additionalPrice": 25,
+                        "area": "Inverness"
+                    },
+                    {
+                        "standardPrice": 99,
+                        "area": "Swansea",
+                        "additionalPrice": 25
                     }
-                ],
-                "includedQuantity": 1
-            },
-            "description": "Hawks, Owls, Falcons, Eagles etc."
+                ]
+            }
         },
         {
             "name": "Reptiles",
@@ -323,19 +344,19 @@
                 "includedQuantity": 1,
                 "areaPrices": [
                     {
-                        "additionalPrice": 10,
-                        "area": "Cornwall",
-                        "standardPrice": 65
-                    },
-                    {
                         "standardPrice": 65,
-                        "area": "South Coast",
+                        "area": "Cornwall",
                         "additionalPrice": 10
                     },
                     {
+                        "area": "South Coast",
                         "additionalPrice": 10,
-                        "area": "London",
                         "standardPrice": 65
+                    },
+                    {
+                        "area": "London",
+                        "standardPrice": 65,
+                        "additionalPrice": 10
                     },
                     {
                         "additionalPrice": 10,
@@ -344,8 +365,8 @@
                     },
                     {
                         "additionalPrice": 10,
-                        "area": "Birmingham",
-                        "standardPrice": 65
+                        "standardPrice": 65,
+                        "area": "Birmingham"
                     },
                     {
                         "additionalPrice": 10,
@@ -353,55 +374,63 @@
                         "standardPrice": 65
                     },
                     {
-                        "area": "North Wales",
+                        "standardPrice": 65,
                         "additionalPrice": 10,
-                        "standardPrice": 65
+                        "area": "North Wales"
                     },
                     {
-                        "additionalPrice": 10,
                         "area": "South Yorkshire",
-                        "standardPrice": 65
+                        "standardPrice": 65,
+                        "additionalPrice": 10
                     },
                     {
+                        "standardPrice": 65,
                         "area": "North West",
-                        "standardPrice": 65,
                         "additionalPrice": 10
                     },
                     {
-                        "additionalPrice": 10,
-                        "area": "Cumbria",
-                        "standardPrice": 65
-                    },
-                    {
-                        "area": "North East",
                         "standardPrice": 65,
-                        "additionalPrice": 10
+                        "additionalPrice": 10,
+                        "area": "Cumbria"
                     },
                     {
+                        "standardPrice": 65,
                         "additionalPrice": 10,
-                        "area": "Scotland",
-                        "standardPrice": 65
+                        "area": "North East"
                     },
                     {
+                        "standardPrice": 65,
                         "additionalPrice": 10,
+                        "area": "Scotland"
+                    },
+                    {
+                        "standardPrice": 75,
                         "area": "Aberdeen",
-                        "standardPrice": 75
+                        "additionalPrice": 10
                     },
                     {
+                        "standardPrice": 85,
                         "additionalPrice": 10,
-                        "area": "Inverness",
-                        "standardPrice": 85
+                        "area": "Inverness"
+                    },
+                    {
+                        "standardPrice": 65,
+                        "area": "Swansea",
+                        "additionalPrice": 10
                     }
                 ]
             }
         },
         {
+            "name": "Small Mammals",
+            "description": "Rabbits & Guinea Pigs",
             "prices": {
+                "includedQuantity": 1,
                 "areaPrices": [
                     {
-                        "standardPrice": 99,
+                        "additionalPrice": 25,
                         "area": "Cornwall",
-                        "additionalPrice": 25
+                        "standardPrice": 99
                     },
                     {
                         "standardPrice": 99,
@@ -409,14 +438,14 @@
                         "additionalPrice": 25
                     },
                     {
-                        "additionalPrice": 25,
+                        "standardPrice": 99,
                         "area": "London",
-                        "standardPrice": 99
+                        "additionalPrice": 25
                     },
                     {
-                        "standardPrice": 99,
                         "additionalPrice": 25,
-                        "area": "Norfolk"
+                        "area": "Norfolk",
+                        "standardPrice": 99
                     },
                     {
                         "area": "Birmingham",
@@ -424,8 +453,8 @@
                         "additionalPrice": 25
                     },
                     {
-                        "additionalPrice": 25,
                         "standardPrice": 99,
+                        "additionalPrice": 25,
                         "area": "South Wales"
                     },
                     {
@@ -434,14 +463,14 @@
                         "standardPrice": 99
                     },
                     {
-                        "additionalPrice": 25,
                         "area": "South Yorkshire",
-                        "standardPrice": 99
+                        "standardPrice": 99,
+                        "additionalPrice": 25
                     },
                     {
-                        "area": "North West",
+                        "standardPrice": 99,
                         "additionalPrice": 25,
-                        "standardPrice": 99
+                        "area": "North West"
                     },
                     {
                         "area": "Cumbria",
@@ -449,9 +478,9 @@
                         "additionalPrice": 25
                     },
                     {
+                        "area": "North East",
                         "additionalPrice": 25,
-                        "standardPrice": 99,
-                        "area": "North East"
+                        "standardPrice": 99
                     },
                     {
                         "additionalPrice": 25,
@@ -459,23 +488,24 @@
                         "standardPrice": 99
                     },
                     {
-                        "area": "Aberdeen",
                         "additionalPrice": 25,
+                        "area": "Aberdeen",
                         "standardPrice": 99
                     },
                     {
+                        "additionalPrice": 25,
                         "standardPrice": 99,
-                        "area": "Inverness",
-                        "additionalPrice": 25
+                        "area": "Inverness"
+                    },
+                    {
+                        "additionalPrice": 25,
+                        "area": "Swansea",
+                        "standardPrice": 99
                     }
-                ],
-                "includedQuantity": 1
-            },
-            "description": "Rabbits & Guinea Pigs",
-            "name": "Small Mammals"
+                ]
+            }
         },
         {
-            "name": "Small Rodents",
             "prices": {
                 "includedQuantity": 1,
                 "areaPrices": [
@@ -485,83 +515,88 @@
                         "area": "Cornwall"
                     },
                     {
+                        "additionalPrice": 10,
                         "area": "South Coast",
-                        "additionalPrice": 10,
                         "standardPrice": 65
                     },
                     {
-                        "area": "London",
                         "additionalPrice": 10,
-                        "standardPrice": 65
-                    },
-                    {
                         "standardPrice": 65,
+                        "area": "London"
+                    },
+                    {
                         "area": "London",
+                        "standardPrice": 65,
                         "additionalPrice": 10
                     },
                     {
                         "area": "Birmingham",
-                        "additionalPrice": 10,
-                        "standardPrice": 65
-                    },
-                    {
-                        "area": "South Wales",
-                        "additionalPrice": 10,
-                        "standardPrice": 65
-                    },
-                    {
-                        "area": "North Wales",
                         "standardPrice": 65,
                         "additionalPrice": 10
                     },
                     {
                         "additionalPrice": 10,
                         "standardPrice": 65,
-                        "area": "South Yorkshire"
+                        "area": "South Wales"
+                    },
+                    {
+                        "additionalPrice": 10,
+                        "area": "North Wales",
+                        "standardPrice": 65
+                    },
+                    {
+                        "additionalPrice": 10,
+                        "area": "South Yorkshire",
+                        "standardPrice": 65
                     },
                     {
                         "area": "North West",
-                        "additionalPrice": 10,
-                        "standardPrice": 65
-                    },
-                    {
-                        "area": "Cumbria",
-                        "additionalPrice": 10,
-                        "standardPrice": 65
-                    },
-                    {
-                        "area": "North East",
-                        "additionalPrice": 10,
-                        "standardPrice": 65
-                    },
-                    {
                         "standardPrice": 65,
-                        "area": "Scotland",
                         "additionalPrice": 10
                     },
                     {
+                        "standardPrice": 65,
+                        "additionalPrice": 10,
+                        "area": "Cumbria"
+                    },
+                    {
                         "additionalPrice": 10,
                         "standardPrice": 65,
+                        "area": "North East"
+                    },
+                    {
+                        "area": "Scotland",
+                        "additionalPrice": 10,
+                        "standardPrice": 65
+                    },
+                    {
+                        "standardPrice": 65,
+                        "additionalPrice": 10,
                         "area": "Aberdeen"
                     },
                     {
-                        "area": "Inverness",
                         "additionalPrice": 10,
+                        "area": "Inverness",
                         "standardPrice": 65
+                    },
+                    {
+                        "additionalPrice": 10,
+                        "standardPrice": 65,
+                        "area": "Swansea"
                     }
                 ]
             },
+            "name": "Small Rodents",
             "description": "Mice, Rats, Hedgehogs etc."
         },
         {
-            "name": "Poultry & Gamebirds",
-            "description": "Chickens, Ducks, Geese, Peacocks, Quail, Pheasants etc",
             "prices": {
+                "includedQuantity": 1,
                 "areaPrices": [
                     {
-                        "standardPrice": 99,
+                        "additionalPrice": 10,
                         "area": "Cornwall",
-                        "additionalPrice": 10
+                        "standardPrice": 99
                     },
                     {
                         "area": "South Coast",
@@ -569,24 +604,24 @@
                         "standardPrice": 99
                     },
                     {
-                        "standardPrice": 99,
+                        "additionalPrice": 10,
                         "area": "London",
-                        "additionalPrice": 10
-                    },
-                    {
-                        "area": "Norfolk",
-                        "additionalPrice": 10,
                         "standardPrice": 99
                     },
                     {
                         "standardPrice": 99,
+                        "additionalPrice": 10,
+                        "area": "Norfolk"
+                    },
+                    {
                         "area": "Birmingham",
+                        "standardPrice": 99,
                         "additionalPrice": 10
                     },
                     {
+                        "standardPrice": 99,
                         "area": "South Wales",
-                        "additionalPrice": 10,
-                        "standardPrice": 99
+                        "additionalPrice": 10
                     },
                     {
                         "additionalPrice": 10,
@@ -594,28 +629,28 @@
                         "area": "North Wales"
                     },
                     {
+                        "standardPrice": 99,
                         "additionalPrice": 10,
-                        "area": "South Yorkshire",
+                        "area": "South Yorkshire"
+                    },
+                    {
+                        "area": "North West",
+                        "standardPrice": 99,
+                        "additionalPrice": 10
+                    },
+                    {
+                        "additionalPrice": 10,
+                        "area": "Cumbria",
                         "standardPrice": 99
                     },
                     {
-                        "standardPrice": 99,
                         "additionalPrice": 10,
-                        "area": "North West"
-                    },
-                    {
-                        "standardPrice": 99,
-                        "additionalPrice": 10,
-                        "area": "Cumbria"
-                    },
-                    {
                         "area": "North East",
-                        "additionalPrice": 10,
                         "standardPrice": 99
                     },
                     {
-                        "area": "Scotland",
                         "standardPrice": 99,
+                        "area": "Scotland",
                         "additionalPrice": 10
                     },
                     {
@@ -625,12 +660,18 @@
                     },
                     {
                         "standardPrice": 99,
+                        "area": "Inverness",
+                        "additionalPrice": 10
+                    },
+                    {
+                        "area": "Swansea",
                         "additionalPrice": 10,
-                        "area": "Inverness"
+                        "standardPrice": 99
                     }
-                ],
-                "includedQuantity": 1
-            }
+                ]
+            },
+            "name": "Poultry & Gamebirds",
+            "description": "Chickens, Ducks, Geese, Peacocks, Quail, Pheasants etc"
         }
     ]
 }

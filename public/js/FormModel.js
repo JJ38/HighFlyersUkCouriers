@@ -119,7 +119,7 @@ function validatePostcode(postcode, pricePostcodeDefinitions){
 
 function getOutwardPostcode(postcode){
 
-    const trimmedPostcode = postcode.replaceAll(" ", "").toUpperCase();
+    const trimmedPostcode = postcode.toString().replaceAll(" ", "").toUpperCase();
 
     if(trimmedPostcode.length == 7){
         return trimmedPostcode.substring(0, 4);
