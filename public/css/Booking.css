@@ -185,6 +185,15 @@ select{
 
 }
 
+.orderPriceWrapper{ 
+
+  display: flex;
+  font-family: 'Raleway';
+  font-weight: 700;
+  font-size: xx-large;
+
+}
+
 
 @media (max-width: 850px){
   .maincontent{

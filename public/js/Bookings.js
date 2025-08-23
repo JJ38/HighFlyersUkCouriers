@@ -25,6 +25,9 @@ const animalTypeSelect = document.getElementById('animal_type');
 const animalTypeWrapper = document.getElementById('animal_type_wrapper');
 const hintWrapper = document.getElementById('question_mark_wrapper');
 
+const orderPrice = document.getElementById('order_price');
+
+
 const requiredFields = [collectionName, collectionAddress1, collectionPostcode, collectionTelephone, email, deliveryName, deliveryAddress1, 
     deliveryPostcode, deliveryTelephone, paymentOption, quantity, animalTypeSelect];
 
@@ -59,8 +62,6 @@ async function init(){
         birdSpeciesSet.add(birdSpecies.species[i].name);
 
     }   
-
-    calculateOrderPrice("DE56", "SA41", 13, "Pigeons - Young Birds", birdSpecies, priceDefinitions, birdSpeciesSet);
 
     const options = createAnimalTypeSelectOptions(birdSpecies);
 
@@ -107,7 +108,7 @@ function addEventListeners(animalDescriptionTable){
     
         collectionPostcode.addEventListener('input', () => {
   
-            calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet);
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -117,7 +118,7 @@ function addEventListeners(animalDescriptionTable){
     
         deliveryPostcode.addEventListener('input', () => {
 
-            calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet);
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -127,7 +128,7 @@ function addEventListeners(animalDescriptionTable){
     
         animalTypeSelect.addEventListener('input', () => {
 
-            calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet);
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -137,7 +138,7 @@ function addEventListeners(animalDescriptionTable){
     
         quantity.addEventListener('input', () => {
 
-            calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet);
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -224,5 +225,17 @@ async function validateForm(){
     }   
 
     return null;
+
+}
+
+function updatePrice(price){
+
+    if(price == false){
+        orderPrice.innerText = " N/A";
+        return;
+    }
+
+    orderPrice.innerText = " £" + price;
+
 
 }
