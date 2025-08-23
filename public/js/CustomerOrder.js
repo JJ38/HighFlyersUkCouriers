@@ -4,7 +4,7 @@ import { db, auth, getDocument } from "/js/Firebase.js";
 import { doc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { validatePostcodes } from "/js/ValidateAddress.js";
-import { fetchBirdSpecies, createAnimalTypeSelectOptions, createDescriptionTable } from "/js/FormModel.js";
+import { fetchBirdSpecies, fetchPricePostcodeDefinitions, calculateOrderPrice, createAnimalTypeSelectOptions, createDescriptionTable } from "/js/FormModel.js";
 
 
 const quickCollectionAddress = document.querySelector('.quickcollectionaddresswrapper');
@@ -47,6 +47,8 @@ const animalType = document.getElementById('animal_type');
 const animalTypeWrapper = document.getElementById('animal_type_wrapper');
 const hintWrapper = document.getElementById('question_mark_wrapper');
 
+const orderPrice = document.getElementById('order_price');
+
 const requiredFields = [collectionName, collectionAddress1, collectionPostcode, collectionPhoneNumber, email, deliveryName, deliveryAddress1, 
     deliveryPostcode, deliveryPhoneNumber, paymentOption, quantity, 
     animalType];
@@ -73,24 +75,52 @@ let deliveryTelephoneValue;
 let emailValue;
 let paymentOptionValue;
 let messageValue;
+let orderPriceValue;
 let addedToBasket = false;
 let idBookmark = 0;
 var uid;
 
 let animalDescriptionTable;
 
+let priceDefinitions;
+let birdSpecies;
+let birdSpeciesSet = new Set();
+
+
 init();
 
 async function init(){
 
-    const birdSpecies = await fetchBirdSpecies();
+    const promisesMap = new Map(); 
+    const promisesArray = [];
+
+    const birdSpeciesPromise = fetchBirdSpecies();
+    promisesArray.push(birdSpeciesPromise)
+
+    const fetchPricePostcodeDefinitionsPromise = fetchPricePostcodeDefinitions();
+    promisesArray.push(fetchPricePostcodeDefinitionsPromise)
+
+    promisesMap.set("Settings/birdSpecies", birdSpeciesPromise);
+    promisesMap.set("Settings/priceDefinitions", fetchPricePostcodeDefinitionsPromise);
+
+    await Promise.all(promisesArray);
+
+    birdSpecies = await promisesMap.get('Settings/birdSpecies');
+    priceDefinitions = await promisesMap.get('Settings/priceDefinitions');
+
+
+    for(let i = 0; i < birdSpecies.species.length; i++){
+
+        birdSpeciesSet.add(birdSpecies.species[i].name);
+
+    }   
 
     const options = createAnimalTypeSelectOptions(birdSpecies);
 
     for(let i =0; i < options.length; i++){
         animalType.appendChild(options[i]);
     }
-
+    
     const animalDescriptionTableAnchor = document.createElement('div');
     animalDescriptionTableAnchor.classList = "animalDescriptionTableAnchor";
     animalTypeWrapper.appendChild(animalDescriptionTableAnchor);
@@ -169,6 +199,48 @@ function setupEventListeners(){
 
     }
 
+
+    if(collectionPostcode != null){
+    
+        collectionPostcode.addEventListener('input', () => {
+    
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalType.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+
+        });
+
+    }
+
+    if(deliveryPostcode != null){
+    
+        deliveryPostcode.addEventListener('input', () => {
+
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalType.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+
+        });
+
+    }
+
+    if(animalType != null){
+    
+        animalType.addEventListener('input', () => {
+
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalType.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+
+        });
+
+    }
+    
+    if(quantity != null){
+    
+        quantity.addEventListener('input', () => {
+
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalType.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+
+        });
+
+    }
+
+
     quickCollectionAddress.addEventListener('click', (e) => {
 
         quickCollectionAddress.children[0].classList.toggle('rotate90anticlockwise');
@@ -187,6 +259,21 @@ function setupEventListeners(){
         submitOrders();
 
     });
+
+}
+
+function updatePrice(price){
+
+    orderPriceValue = price;
+
+    console.log(orderPriceValue);
+
+    if(price == false){
+        orderPrice.innerText = " N/A";
+        return;
+    }
+
+    orderPrice.innerText = " £" + price;
 
 }
 
@@ -256,7 +343,7 @@ async function validateOrder(){
     }
 
     const validatePostcodesResult = await validatePostcodes(deliveryPostcode.value, collectionPostcode.value);
-    console.log(validatePostcodesResult);
+
     if(validatePostcodesResult != false){
         return validatePostcodesResult;
     }   
@@ -301,9 +388,6 @@ async function addToBasket(){
             return;
         }
 
-
-
-        
         animalTypeValue = animalType.value;
         quantityValue = quantity.value;
         codeValue = code.value;
@@ -338,6 +422,8 @@ async function addToBasket(){
 }
 
 function addOrderHTML(id){
+
+    console.log(orderPriceValue);
 
     const tableRow = document.createElement('div');
     tableRow.classList = "tablerow";
@@ -387,6 +473,12 @@ function addOrderHTML(id){
                                 '</p>'+
                             '</div>'+
                             '<div>'+
+                                '<i class="fa-solid fa-money-bill"></i>'+
+                                '<p>'+
+                                    orderPriceValue +
+                                '</p>'+
+                            '</div>'+
+                            '<div>'+
                                 '<i class="fa-solid fa-message" title="message"></i>'+
                                 '<p>'+
                                     messageValue +
@@ -428,6 +520,10 @@ function resetFormValues(){
     animalType.value = "";
     quantity.value = "";
     code.value = ""
+
+    orderPriceValue = "N/A";
+    updatePrice(false);
+
 }
 
 function deleteOrder(element){
