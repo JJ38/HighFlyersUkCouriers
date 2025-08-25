@@ -2636,7 +2636,6 @@ export async function assignDriver(driverDocID, runID, shipmentName){
     const assignedRuns = driverData.assignedRuns;
 
     const driverRun = {
-      optimisedRoute: runData.optimisedRoute,
       runID: runDocument.id,
       stops: runData.stops,
       shipmentName: shipmentName
