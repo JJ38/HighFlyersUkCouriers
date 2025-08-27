@@ -2637,7 +2637,6 @@ export async function assignDriver(driverDocID, runID, shipmentName){
 
     const driverRun = {
       runID: runDocument.id,
-      stops: runData.stops,
       shipmentName: shipmentName
     }
 
