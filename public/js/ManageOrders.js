@@ -371,6 +371,9 @@ function addPrintListener(orderFields, localOrderID){
       printType = "SINGULARPRINT";
       orderID = localOrderID;
       isPrinted = orderFields["printed"];
+      
+      orderFields['price'] = "£" + orderFields['price'];
+
       printOrder([orderFields]);
       
   });
@@ -457,7 +460,7 @@ function printSelected(){
   for(let i = 0; i < selectedCheckBoxes.length; i++){
 
     orderIDs.push(selectedCheckBoxes[i].value);
-    hasPrinted.push(selectedCheckBoxes[i].parentElement.parentElement.children[23].textContent);
+    hasPrinted.push(selectedCheckBoxes[i].parentElement.parentElement.children[24].textContent);
     const orderTableRow = selectedCheckBoxes[i].parentElement.parentElement
     orderFields.push(getOrderFields(orderTableRow));
 
@@ -623,6 +626,9 @@ function getOrderHTML(orderFields){
       '<label class="bold">Payment Method: </label>'+
       '<p> Cash On ' + orderFields['payment'] + '</p>'+
       ''+
+      '<label class="bold">Price: </label>'+
+      '<p>' + orderFields['price'] + '</p>'+
+      ''+
       '<label class="bold">Code: </label>'+
       '<p>' + orderFields['code'] + '</p>'+
       '<label class="bold">Notes: </label>'+
@@ -697,6 +703,9 @@ function getOrderHTML(orderFields){
       ''+
       '<label class="bold">Payment Method: </label>'+
       '<p> Cash On ' + orderFields['payment'] + '</p>'+
+      ''+
+      '<label class="bold">Price: </label>'+
+      '<p>' + orderFields['price'] + '</p>'+
       ''+
       '<label class="bold">Code: </label>'+
       '<p>' + orderFields['code'] + '</p>'+

@@ -45,16 +45,16 @@ async function init(){
     const birdSpeciesPromise = fetchBirdSpecies();
     promisesArray.push(birdSpeciesPromise)
 
-    const fetchPricePostcodeDefinitionsPromise = fetchPricePostcodeDefinitions();
-    promisesArray.push(fetchPricePostcodeDefinitionsPromise)
+    // const fetchPricePostcodeDefinitionsPromise = fetchPricePostcodeDefinitions();
+    // promisesArray.push(fetchPricePostcodeDefinitionsPromise)
 
     promisesMap.set("Settings/birdSpecies", birdSpeciesPromise);
-    promisesMap.set("Settings/priceDefinitions", fetchPricePostcodeDefinitionsPromise);
+    // promisesMap.set("Settings/priceDefinitions", fetchPricePostcodeDefinitionsPromise);
 
     await Promise.all(promisesArray);
 
+    // priceDefinitions = await promisesMap.get('Settings/priceDefinitions');
     birdSpecies = await promisesMap.get('Settings/birdSpecies');
-    priceDefinitions = await promisesMap.get('Settings/priceDefinitions');
 
 
     for(let i = 0; i < birdSpecies.species.length; i++){
@@ -108,7 +108,7 @@ function addEventListeners(animalDescriptionTable){
     
         collectionPostcode.addEventListener('input', () => {
   
-            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            // updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -118,7 +118,7 @@ function addEventListeners(animalDescriptionTable){
     
         deliveryPostcode.addEventListener('input', () => {
 
-            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            // updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -128,7 +128,7 @@ function addEventListeners(animalDescriptionTable){
     
         animalTypeSelect.addEventListener('input', () => {
 
-            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            // updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -138,7 +138,7 @@ function addEventListeners(animalDescriptionTable){
     
         quantity.addEventListener('input', () => {
 
-            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            // updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
