@@ -66,22 +66,23 @@ class Mailer{
            
           fwrite($file, $attachment);
           $mail->addAttachment(stream_get_meta_data($file)['uri'], 'YourOrder.html');
+          fclose($file);
+
         
         }
 
-       
         $mail->send();
-        if($attachment != false){
-          //fclose($file);
-        }
+    
 
         
     } catch (Exception $e) {
-        //fclose($file);
-        $error_message = array($mail->ErrorInfo);
-        $this->logger->error("MAILER-ERROR", $error_message);
-        echo $e;
-        //echo "Message could not be sent. Mailer Error: {$error_message}";
+
+      if($attachment != false){
+        fclose($file);
+
+      }
+      $error_message = array($mail->ErrorInfo);
+      $this->logger->error("MAILER-ERROR", $error_message);
 
     }
 
@@ -126,13 +127,14 @@ class Mailer{
     Order ID: {$this->mailer_data['ID']}" . "<br>". "
     Bird/Animal type: {$this->mailer_data['animal_type']}" . "<br>". "
     Quantity: {$this->mailer_data['quantity']}" . "<br>". "
-    Collection Telephone Number: {$this->mailer_data['collection_phone_number']}" . "<br>". "
     Email Address: {$this->mailer_data['email']}" . "<br>". "
+    Boxes: {$this->mailer_data['boxes']}" . "<br>". "
     Collection Name: {$this->mailer_data['collection_name']}" . "<br>". "
     Collection Address 1: {$this->mailer_data['collection_address_1']}" . "<br>". "
     Collection Address 2: {$this->mailer_data['collection_address_2']}" . "<br>". "
     Collection Address 3: {$this->mailer_data['collection_address_3']}" . "<br>". "
     Collection Postcode: {$this->mailer_data['collection_postcode']}" . "<br>". "
+    Collection Telephone Number: {$this->mailer_data['collection_phone_number']}" . "<br>". "
     Delivery Name: {$this->mailer_data['delivery_name']}" . "<br>". "
     Delivery Address Line 1: {$this->mailer_data['delivery_address_1']}" . "<br>". "
     Delivery Address Line 2: {$this->mailer_data['delivery_address_2']}" . "<br>". "
@@ -180,13 +182,14 @@ class Mailer{
     Order ID: {$this->mailer_data['ID']}" . "<br>". "
     Bird/Animal type: {$this->mailer_data['animal_type']}" . "<br>". "
     Quantity: {$this->mailer_data['quantity']}" . "<br>". "
-    Collection Telephone Number: {$this->mailer_data['collection_phone_number']}" . "<br>". "
     Email Address: {$this->mailer_data['email']}" . "<br>". "
+    Boxes: {$this->mailer_data['boxes']}" . "<br>". "
     Collection Name: {$this->mailer_data['collection_name']}" . "<br>". "
     Collection Address 1: {$this->mailer_data['collection_address_1']}" . "<br>". "
     Collection Address 2: {$this->mailer_data['collection_address_2']}" . "<br>". "
     Collection Address 3: {$this->mailer_data['collection_address_3']}" . "<br>". "
     Collection Postcode: {$this->mailer_data['collection_postcode']}" . "<br>". "
+    Collection Telephone Number: {$this->mailer_data['collection_phone_number']}" . "<br>". "
     Delivery Name: {$this->mailer_data['delivery_name']}" . "<br>". "
     Delivery Address Line 1: {$this->mailer_data['delivery_address_1']}" . "<br>". "
     Delivery Address Line 2: {$this->mailer_data['delivery_address_2']}" . "<br>". "
