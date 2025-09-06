@@ -192,8 +192,18 @@ class FinanceModel
         $tally = $pricing_to_use_for_order->getIntegerField('standardPrice');
 
         $includedQuantity =  $species_prices->getMapField('prices')->getIntegerField('includedQuantity');
+        $surchargeType =  $species_prices->getMapField('prices')->getStringField('surchargeType');
+        
+        $excess = 0;
 
-        $excess = $this->order['quantity'] - $includedQuantity;
+        if($surchargeType == "Bird"){
+            $excess = $this->order['quantity'] - $includedQuantity;
+        }
+
+        if($surchargeType == "Box"){
+            $excess = $this->order['boxes'] - $includedQuantity;
+        }
+
 
         if($excess > 0){   
             $tally += ($excess * $pricing_to_use_for_order->getIntegerField('additionalPrice'));

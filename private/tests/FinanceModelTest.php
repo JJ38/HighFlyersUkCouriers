@@ -60,6 +60,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 12;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -81,6 +82,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 13;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -102,6 +104,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -123,6 +126,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 0;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -144,6 +148,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = -1;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -165,6 +170,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Old Birds";
         $order_data['quantity'] = 12;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -187,6 +193,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Old Birds";
         $order_data['quantity'] = 12;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "TW76NY";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -208,6 +215,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Old Birds";
         $order_data['quantity'] = 12;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "ML3 9AD";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -229,6 +237,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Old Birds";
         $order_data['quantity'] = 12;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "AB10 1AB";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -250,6 +259,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Old Birds";
         $order_data['quantity'] = 12;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "IV1 1AD";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -271,6 +281,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Old Birds";
         $order_data['quantity'] = 12;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "SA41 3PL";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -293,7 +304,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Old Birds";
         $order_data['quantity'] = 12;
-
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "S17 3AL";
         $order_data['delivery_postcode'] = "TW76NY";
 
@@ -316,7 +327,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Old Birds";
         $order_data['quantity'] = 12;
-
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "S17 3AL";
         $order_data['delivery_postcode'] = "ML3 9AD";
 
@@ -338,6 +349,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Old Birds";
         $order_data['quantity'] = 12;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "S17 3AL";
         $order_data['delivery_postcode'] = "AB10 1AB";
 
@@ -359,6 +371,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Old Birds";
         $order_data['quantity'] = 12;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "S17 3AL";
         $order_data['delivery_postcode'] = "IV1 1AD";
 
@@ -380,6 +393,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Old Birds";
         $order_data['quantity'] = 12;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "S17 3AL";
         $order_data['delivery_postcode'] = "SA41 3PL";
 
@@ -402,6 +416,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 13;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -424,6 +439,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 22;
+        $order_data['boxes'] = 2;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -445,6 +461,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Aviary & Cage Birds";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -466,13 +483,14 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Aviary & Cage Birds";
         $order_data['quantity'] = 2;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
         $finance_model->setOrderData($order_data);
 
         $finance_model->calculateOrderPrice();
-        $this->assertSame(70, $finance_model->getOrderPrice());
+        $this->assertSame(60, $finance_model->getOrderPrice());
 
     }
 
@@ -487,6 +505,73 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Aviary & Cage Birds";
         $order_data['quantity'] = 10;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(60, $finance_model->getOrderPrice());
+
+    }
+    
+    public function testAviaryAndCageBirdsOneBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Aviary & Cage Birds";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(60, $finance_model->getOrderPrice());
+
+    }
+
+    public function testAviaryAndCageBirdsTwoBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Aviary & Cage Birds";
+        $order_data['quantity'] = 2;
+        $order_data['boxes'] = 2;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(70, $finance_model->getOrderPrice());
+
+    }
+
+    public function testAviaryAndCageBirdsTenBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Aviary & Cage Birds";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 10;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -496,6 +581,7 @@ final class FinanceModelTest extends TestCase {
         $this->assertSame(150, $finance_model->getOrderPrice());
 
     }
+
 
     public function testPoultryAndGamebirdsOne(): void {
 
@@ -508,6 +594,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Poultry & Gamebirds";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -529,13 +616,14 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Poultry & Gamebirds";
         $order_data['quantity'] = 2;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
         $finance_model->setOrderData($order_data);
 
         $finance_model->calculateOrderPrice();
-        $this->assertSame(109, $finance_model->getOrderPrice());
+        $this->assertSame(99, $finance_model->getOrderPrice());
 
     }
 
@@ -550,6 +638,73 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Poultry & Gamebirds";
         $order_data['quantity'] = 10;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(99, $finance_model->getOrderPrice());
+
+    }
+
+    public function testPoultryAndGamebirdsOneBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Poultry & Gamebirds";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(99, $finance_model->getOrderPrice());
+
+    }
+
+    public function testPoultryAndGamebirdsTwoBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Poultry & Gamebirds";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 2;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(109, $finance_model->getOrderPrice());
+
+    }
+
+    public function testPoultryAndGamebirdsTenBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Poultry & Gamebirds";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 10;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -571,6 +726,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Small Mammals";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -592,13 +748,14 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Small Mammals";
         $order_data['quantity'] = 2;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
         $finance_model->setOrderData($order_data);
 
         $finance_model->calculateOrderPrice();
-        $this->assertSame(124, $finance_model->getOrderPrice());
+        $this->assertSame(99, $finance_model->getOrderPrice());
 
     }
 
@@ -613,6 +770,73 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Small Mammals";
         $order_data['quantity'] = 10;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(99, $finance_model->getOrderPrice());
+
+    }
+
+     public function testSmallMammalsOneBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Small Mammals";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(99, $finance_model->getOrderPrice());
+
+    }
+
+    public function testSmallMammalsTwoBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Small Mammals";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 2;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(124, $finance_model->getOrderPrice());
+
+    }
+
+    public function testSmallMammalsTenBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Small Mammals";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 10;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -622,6 +846,7 @@ final class FinanceModelTest extends TestCase {
         $this->assertSame(324, $finance_model->getOrderPrice());
 
     }
+
 
     public function testReptilesOne(): void {
 
@@ -634,6 +859,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Reptiles";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -655,13 +881,14 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Reptiles";
         $order_data['quantity'] = 2;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
         $finance_model->setOrderData($order_data);
 
         $finance_model->calculateOrderPrice();
-        $this->assertSame(75, $finance_model->getOrderPrice());
+        $this->assertSame(65, $finance_model->getOrderPrice());
 
     }
 
@@ -676,6 +903,73 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Reptiles";
         $order_data['quantity'] = 10;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(65, $finance_model->getOrderPrice());
+
+    }
+
+       public function testReptilesOneBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Reptiles";
+        $order_data['quantity'] = 3;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(65, $finance_model->getOrderPrice());
+
+    }
+
+    public function testReptilesTwoBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Reptiles";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 2;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(75, $finance_model->getOrderPrice());
+
+    }
+
+    public function testReptilesTenBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Reptiles";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 10;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -698,6 +992,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Birds Of Prey";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -719,13 +1014,14 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Birds Of Prey";
         $order_data['quantity'] = 2;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
         $finance_model->setOrderData($order_data);
 
         $finance_model->calculateOrderPrice();
-        $this->assertSame(124, $finance_model->getOrderPrice());
+        $this->assertSame(99, $finance_model->getOrderPrice());
 
     }
 
@@ -740,6 +1036,73 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Birds Of Prey";
         $order_data['quantity'] = 10;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(99, $finance_model->getOrderPrice());
+
+    }
+
+    public function testBirdsOfPreyOneBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Birds Of Prey";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(99, $finance_model->getOrderPrice());
+
+    }
+
+    public function testBirdsOfPreyTwoBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Birds Of Prey";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 2;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(124, $finance_model->getOrderPrice());
+
+    }
+
+    public function testBirdsOfPreyTenBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Birds Of Prey";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 10;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -761,6 +1124,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Small Rodents";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -782,13 +1146,14 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Small Rodents";
         $order_data['quantity'] = 2;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
         $finance_model->setOrderData($order_data);
 
         $finance_model->calculateOrderPrice();
-        $this->assertSame(75, $finance_model->getOrderPrice());
+        $this->assertSame(65, $finance_model->getOrderPrice());
 
     }
 
@@ -803,6 +1168,74 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Small Rodents";
         $order_data['quantity'] = 10;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(65, $finance_model->getOrderPrice());
+
+    }
+
+    
+    public function testSmallRodentsOneBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Small Rodents";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(65, $finance_model->getOrderPrice());
+
+    }
+
+    public function testSmallRodentsTwoBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Small Rodents";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 2;
+        $order_data['collection_postcode'] = "DE56 1TP";
+        $order_data['delivery_postcode'] = "S17 3AL";
+
+        $finance_model->setOrderData($order_data);
+
+        $finance_model->calculateOrderPrice();
+        $this->assertSame(75, $finance_model->getOrderPrice());
+
+    }
+
+    public function testSmallRodentsTenBoxes(): void {
+
+        $finance_model = new FinanceModel();
+
+        $finance_model->setPricesDocument(self::$prices_firebase_document);
+        $finance_model->setPostcodesDocument(self::$postcodes_firebase_document);
+
+        $order_data = self::$order_data_defaults;
+
+        $order_data['animal_type'] = "Small Rodents";
+        $order_data['quantity'] = 1;
+        $order_data['boxes'] = 10;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -824,6 +1257,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Birds Of Prey";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "SA41 3PL";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -845,6 +1279,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Small Mammals";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "SA41 3PL";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -866,6 +1301,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Aviary & Cage Birds";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "SA41 3PL";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -888,6 +1324,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56 1TP";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -909,6 +1346,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE5 3GY";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -930,6 +1368,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "L1 0AA";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -952,6 +1391,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "DE56";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -973,6 +1413,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "IV1";
         $order_data['delivery_postcode'] = "S17 3AL";
 
@@ -994,6 +1435,7 @@ final class FinanceModelTest extends TestCase {
 
         $order_data['animal_type'] = "Pigeons - Young Birds";
         $order_data['quantity'] = 1;
+        $order_data['boxes'] = 1;
         $order_data['collection_postcode'] = "L1";
         $order_data['delivery_postcode'] = "S17 3AL";
 
