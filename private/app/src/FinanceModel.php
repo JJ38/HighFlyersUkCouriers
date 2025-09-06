@@ -162,7 +162,7 @@ class FinanceModel
 
             $this->logger->error('ERROR_GETTING_PRICE_FOR_RUN', array($area_prices));
             $this->logger->error('ERROR_GETTING_PRICE_FOR_RUN_NAME', array($runName));
-            $this->logger->error('ERROR_GETTING_PRICE_FOR_RUN_SPECIES_PRICES', array($$species_prices));
+            $this->logger->error('ERROR_GETTING_PRICE_FOR_RUN_SPECIES_PRICES', array($species_prices));
 
         }
 

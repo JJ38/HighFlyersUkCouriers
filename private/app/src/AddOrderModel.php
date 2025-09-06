@@ -221,6 +221,7 @@ class AddOrderModel
                 'ID' => $order_ID,
                 'animalType' => $this->order_data['animal_type'],
                 'quantity' => $this->order_data['quantity'],
+                'boxes' => $this->order_data['boxes'],
                 'email' => $this->order_data['email'],
                 'code' => $this->order_data['code'],
                 'account' => $this->order_data['username'],

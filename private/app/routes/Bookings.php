@@ -22,7 +22,19 @@ $app->get('/bookings[/invalidform]', function (Request $request, Response $respo
         if($cleaned_invalid_form === "false"){
           echo "<script>alert('Booking confirmed - You should recieve an email shortly confirming your booking');</script>";
         }else{
-          echo "<script>alert('invalid form - please submit a valid form');</script>";
+
+          if(!empty($allGetVars['errormessage'])){
+
+            $cleaned_error_message = $sanitizer->sanitizeString($allGetVars['errormessage']);
+
+            echo "<script>alert('invalid form - {$cleaned_error_message}');</script>";
+
+          }else{
+
+            echo "<script>alert('invalid form - please submit a valid form');</script>";
+
+          }
+
         }
       }
     }

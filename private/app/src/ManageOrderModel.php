@@ -167,6 +167,15 @@ class ManageOrderModel
       return $cleaned_parameters;
     }
 
+    $sanitized_parameters['boxes'] = $sanitizer->sanitizePositiveNumber($tainted_parameters['boxes']);
+    $cleaned_parameters['boxes'] = $validator->validatePositiveNumber($sanitized_parameters['boxes']);
+    if(!$validator->getValidationResult()){
+      $cleaned_parameters = array();
+      $this->error_message = "invalid number of boxes";
+      $this->error_input_value = $tainted_parameters['boxes'];
+      return $cleaned_parameters;
+    }
+
     $sanitized_parameters['email'] = $sanitizer->sanitizeEmail($tainted_parameters['email']);
     $cleaned_parameters['email'] = $validator->validateEmail($sanitized_parameters['email']);
     if(!$validator->getValidationResult()){

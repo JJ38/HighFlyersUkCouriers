@@ -48,6 +48,7 @@ export function sortOrderData(orderFields){
         animalType: orderFields['animalType'],
         quantity: orderFields['quantity'],
         email: orderFields['email'],
+        boxes: orderFields['boxes'],
         account: orderFields['account'],
         deliveryWeek: orderFields['deliveryWeek'],
         

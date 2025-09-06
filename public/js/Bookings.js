@@ -21,6 +21,7 @@ const paymentOption = document.getElementById('payment');
 
 const quantity = document.getElementById('quantity');
 const animalTypeSelect = document.getElementById('animal_type');
+const numberOfBoxes = document.getElementById('boxes');
 
 const animalTypeWrapper = document.getElementById('animal_type_wrapper');
 const hintWrapper = document.getElementById('question_mark_wrapper');
@@ -29,7 +30,7 @@ const orderPrice = document.getElementById('order_price');
 
 
 const requiredFields = [collectionName, collectionAddress1, collectionPostcode, collectionTelephone, email, deliveryName, deliveryAddress1, 
-    deliveryPostcode, deliveryTelephone, paymentOption, quantity, animalTypeSelect];
+    deliveryPostcode, deliveryTelephone, paymentOption, quantity, animalTypeSelect, numberOfBoxes];
 
 let priceDefinitions;
 let birdSpecies;

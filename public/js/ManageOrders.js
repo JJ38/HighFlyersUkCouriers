@@ -262,6 +262,8 @@ export function addOrdersToTable(orderArray, prepend){
 
           if(field == "price"){
             tableData.innerHTML = sortedOrderData[field] == undefined || sortedOrderData[field] == "" || sortedOrderData[field] == null || sortedOrderData[field] == "N/A" ? "N/A" : "£" + sortedOrderData[field]; 
+          }else if(field == "boxes"){
+            tableData.innerHTML = sortedOrderData[field] == undefined || sortedOrderData[field] == "" || sortedOrderData[field] == null || sortedOrderData[field] == "N/A" ? "N/A" : sortedOrderData[field];
           }else{
             tableData.innerHTML = sortedOrderData[field];
           }
@@ -460,7 +462,7 @@ function printSelected(){
   for(let i = 0; i < selectedCheckBoxes.length; i++){
 
     orderIDs.push(selectedCheckBoxes[i].value);
-    hasPrinted.push(selectedCheckBoxes[i].parentElement.parentElement.children[24].textContent);
+    hasPrinted.push(selectedCheckBoxes[i].parentElement.parentElement.children[25].textContent);
     const orderTableRow = selectedCheckBoxes[i].parentElement.parentElement
     orderFields.push(getOrderFields(orderTableRow));
 
@@ -626,6 +628,9 @@ function getOrderHTML(orderFields){
       '<label class="bold">Payment Method: </label>'+
       '<p> Cash On ' + orderFields['payment'] + '</p>'+
       ''+
+      '<label class="bold">Boxes: </label>'+
+      '<p>' + orderFields['boxes'] + '</p>'+
+      ''+
       '<label class="bold">Price: </label>'+
       '<p>' + orderFields['price'] + '</p>'+
       ''+
@@ -703,6 +708,9 @@ function getOrderHTML(orderFields){
       ''+
       '<label class="bold">Payment Method: </label>'+
       '<p> Cash On ' + orderFields['payment'] + '</p>'+
+      ''+
+      '<label class="bold">Boxes: </label>'+
+      '<p>' + orderFields['boxes'] + '</p>'+
       ''+
       '<label class="bold">Price: </label>'+
       '<p>' + orderFields['price'] + '</p>'+
