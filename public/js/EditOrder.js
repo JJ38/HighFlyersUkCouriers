@@ -11,6 +11,7 @@ const fieldsMap = {
     animalType: "Animal Type:",
     email: "Email:",
     quantity: "Quantity:",
+    boxes: "Boxes:",
     username: "Username:",
     deliveryWeek: "Delivery Week:",
     
@@ -143,6 +144,7 @@ async function init(){
                 }
                 case "deliveryWeek":
                 case "quantity":
+                case "boxes":
                 case "price":
                 {
                     const input = document.createElement('input');
@@ -188,6 +190,7 @@ function sortOrderData(orderFields){
         animalType: orderFields['animalType'],
         quantity: orderFields['quantity'],
         email: orderFields['email'],
+        boxes: orderFields['boxes'],
         username: orderFields['account'],
         deliveryWeek: orderFields['deliveryWeek'],
         

@@ -35,6 +35,7 @@ class EditOrderModel
                 'animalType' => $this->order_data['animal_type'],
                 'quantity' => $this->order_data['quantity'],
                 'email' => $this->order_data['email'],
+                'boxes' => $this->order_data['boxes'],
                 'code' => $this->order_data['code'],
                 'account' => $this->order_data['username'],
                 'deliveryWeek' => $this->order_data['delivery_week'],

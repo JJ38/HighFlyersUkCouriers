@@ -11,6 +11,10 @@ const collectionPhoneNumber = document.getElementById('collectionPhoneNumber');
 const animalTypeSelect = document.getElementById('animal_type');
 const payment = document.getElementById('payment');
 
+const boxes = document.getElementById('boxes');
+const quantity = document.getElementById('quantity');
+
+
 const validPaymentOptions = ['Account', 'Collection', 'Delivery'];
 const validAnimalTypes = ['Pigeons - Young Birds', 'Pigeons - Old Birds', 'Aviary & Cage Birds', 'Birds Of Prey', 'Reptiles', 'Small Mammals', 'Small Rodents', 'Poultry & Gamebirds'];
 
@@ -95,6 +99,19 @@ function validateForm(){
     if(!validAnimalTypes.includes(animalTypeSelect.value)){
         return "Please select a valid animal type";
     }
+
+    console.log(parseInt(quantity.value));
+    console.log(parseInt(quantity.value) > 0);
+
+
+    if(!isNumber.test(quantity.value) || parseInt(quantity.value) < 1){
+        return "Quantity is not a valid number. Please enter a number greater than 0";
+    }
+
+    if(!isNumber.test(boxes.value) || parseInt(boxes.value) < 1){
+        return "Boxes is not a valid number. Please enter a number greater than 0";
+    }
+
 
     return null;
 
