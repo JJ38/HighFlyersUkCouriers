@@ -92,10 +92,9 @@ i{
 
 .extrainfo{
     display: grid;
-    grid-template-columns: 12fr 6fr 18fr 1fr;
+    grid-template-columns: 12fr 6fr 6fr 6fr 18fr;
     max-height: 200px;
     transition: max-height 0.5s ease-in-out;
-
 }
 
 .extrainfo > div{

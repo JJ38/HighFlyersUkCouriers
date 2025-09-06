@@ -90,8 +90,8 @@ $app->post('/customer-order', function (Request $request, Response $response) us
         $account_name = $session_wrapper->getSessionVar('user');
 
         $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $account_name);
-
-
+        
+       
         if(empty($cleaned_orders)){
             return $response->withRedirect('/customer-order?error=true', 302);
         }

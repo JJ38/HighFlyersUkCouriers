@@ -62,25 +62,18 @@ class Mailer{
         $mail->Subject = $subject;
         $mail->Body    = $message;
         if($attachment != false){
+
           $file = tmpfile();
            
           fwrite($file, $attachment);
           $mail->addAttachment(stream_get_meta_data($file)['uri'], 'YourOrder.html');
-          fclose($file);
 
-        
         }
 
         $mail->send();
     
-
-        
     } catch (Exception $e) {
 
-      if($attachment != false){
-        fclose($file);
-
-      }
       $error_message = array($mail->ErrorInfo);
       $this->logger->error("MAILER-ERROR", $error_message);
 
@@ -301,11 +294,12 @@ class Mailer{
       'margin: 1px 0px;'.
       'margin-right: 10px;'.
     '}'.
-    'div.extrainfo{'.
-      'display: grid;'.
-      'grid-template-columns: 9fr 5fr 5fr 14fr 1fr;'.
-      'max-height: 200px;'.
-      'transition: max-height 0.5s ease-in-out;'.
+    '.extrainfo{'.
+      'display: flex;'.
+      'flex-wrap: wrap;'.
+      'gap: 35px;'.
+      'row-gap: 15px;'.
+      ''.
     '}'.
     'div.extrainfo > div{'.
       'display: flex;'.
@@ -496,6 +490,10 @@ class Mailer{
       '<div>'.
       '<i class="fa-solid fa-ticket-simple" title="code"></i>'.
       '<p>' . $this->mailer_data[$i]['code'] . '</p>'.
+      '</div>'.
+      '<div>'.
+      '<i class="fa-solid fa-boxes-stacked" title="boxes"></i>'.
+      '<p>' . $this->mailer_data[$i]['boxes'] . '</p>'.
       '</div>'.
       '<div>'.
       '<i class="fa-solid fa-message" title="message"></i>'.

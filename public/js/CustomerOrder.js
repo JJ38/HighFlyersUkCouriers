@@ -21,6 +21,8 @@ const submitOrderButton = document.getElementById('submitorders');
 const code = document.getElementById('code');
 const quantity = document.getElementById('quantity');
 const quickAddress = document.getElementById('quickaddress');
+const boxes = document.getElementById('boxes');
+
 
 const quickAddressName = document.getElementById('quickAddressName');
 const quickAddress1 = document.getElementById('quickAddress1');
@@ -51,7 +53,7 @@ const orderPrice = document.getElementById('order_price');
 
 const requiredFields = [collectionName, collectionAddress1, collectionPostcode, collectionPhoneNumber, email, deliveryName, deliveryAddress1, 
     deliveryPostcode, deliveryPhoneNumber, paymentOption, quantity, 
-    animalType];
+    animalType, boxes];
 
 const table = document.getElementById('table');
 const loadingSymbol = document.getElementById('loadingsymbol');
@@ -60,6 +62,7 @@ const submitOrdersButton = document.getElementById('submitorders');
 let animalTypeValue;
 let quantityValue;
 let codeValue = "N/A";
+let boxesValue;
 let collectionNameValue;
 let collectionPostcodeValue;
 let collectionAddress1Value;
@@ -328,8 +331,12 @@ async function validateOrder(){
 
     //validate quantity
 
-    if(!quantity.value.match(isNumber)){
+    if(!quantity.value.match(isNumber) || parseInt(quantity.value) < 1){
         return "Quantity is not a valid number";
+    }
+
+    if(!boxes.value.match(isNumber) || parseInt(boxes.value) < 1){
+        return "Boxes is not a valid number";
     }
 
     //validate email
@@ -393,6 +400,7 @@ async function addToBasket(){
         animalTypeValue = animalType.value;
         quantityValue = quantity.value;
         codeValue = code.value;
+        boxesValue = boxes.value;
         collectionNameValue = collectionName.value;
         collectionPostcodeValue = collectionPostcode.value;
         collectionAddress1Value = collectionAddress1.value;
@@ -474,6 +482,12 @@ function addOrderHTML(id){
                                     codeValue +
                                 '</p>'+
                             '</div>'+
+                            '<div>'+
+                                '<i class="fa-solid fa-boxes-stacked" title="boxes"></i>'+
+                                '<p>'+
+                                    boxesValue +
+                                '</p>'+
+                            '</div>'+
                             // '<div>'+
                             //     '<i class="fa-solid fa-money-bill"></i>'+
                             //     '<p>'+
@@ -521,6 +535,7 @@ function resetFormValues(){
     message.value = "";
     animalType.value = "";
     quantity.value = "";
+    boxes.value = "";
     code.value = ""
 
     orderPriceValue = "N/A";

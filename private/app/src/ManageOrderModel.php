@@ -302,7 +302,8 @@ class ManageOrderModel
       $tainted_order['email'] = $tainted_parameters['extra'][$i][0];
       $tainted_order['payment'] = $tainted_parameters['extra'][$i][1];
       $tainted_order['code'] = $tainted_parameters['extra'][$i][2];
-      $tainted_order['message'] = $tainted_parameters['extra'][$i][3];
+      $tainted_order['boxes'] = $tainted_parameters['extra'][$i][3];
+      $tainted_order['message'] = $tainted_parameters['extra'][$i][4];
 
 
       $tainted_order['username'] = $account_name;
