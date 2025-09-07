@@ -233,8 +233,7 @@ function createBirdSpeciesCard(bird, surchargeTypeSet){
     descriptionInputWrapper.appendChild(descriptionLabel);
     descriptionInputWrapper.appendChild(description);
 
-
-
+    
     const pricesWrapper = document.createElement('div');
     pricesWrapper.classList = "pricesWrapper";  
     pricesWrapper.appendChild(createPriceTable(bird));

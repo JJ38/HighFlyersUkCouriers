@@ -46,15 +46,15 @@ async function init(){
     const birdSpeciesPromise = fetchBirdSpecies();
     promisesArray.push(birdSpeciesPromise)
 
-    // const fetchPricePostcodeDefinitionsPromise = fetchPricePostcodeDefinitions();
-    // promisesArray.push(fetchPricePostcodeDefinitionsPromise)
+    const fetchPricePostcodeDefinitionsPromise = fetchPricePostcodeDefinitions();
+    promisesArray.push(fetchPricePostcodeDefinitionsPromise)
 
     promisesMap.set("Settings/birdSpecies", birdSpeciesPromise);
-    // promisesMap.set("Settings/priceDefinitions", fetchPricePostcodeDefinitionsPromise);
+    promisesMap.set("Settings/priceDefinitions", fetchPricePostcodeDefinitionsPromise);
 
     await Promise.all(promisesArray);
 
-    // priceDefinitions = await promisesMap.get('Settings/priceDefinitions');
+    priceDefinitions = await promisesMap.get('Settings/priceDefinitions');
     birdSpecies = await promisesMap.get('Settings/birdSpecies');
 
 
@@ -109,7 +109,7 @@ function addEventListeners(animalDescriptionTable){
     
         collectionPostcode.addEventListener('input', () => {
   
-            // updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            //updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -119,7 +119,7 @@ function addEventListeners(animalDescriptionTable){
     
         deliveryPostcode.addEventListener('input', () => {
 
-            // updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            //updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -129,7 +129,7 @@ function addEventListeners(animalDescriptionTable){
     
         animalTypeSelect.addEventListener('input', () => {
 
-            // updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            //updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -139,7 +139,17 @@ function addEventListeners(animalDescriptionTable){
     
         quantity.addEventListener('input', () => {
 
-            // updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            //updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+
+        });
+
+    }
+
+    if(numberOfBoxes != null){
+    
+        numberOfBoxes.addEventListener('input', () => {
+
+            //updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 

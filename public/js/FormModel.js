@@ -44,15 +44,20 @@ export async function fetchPricePostcodeDefinitions(){
 
 }
 
-export function calculateOrderPrice(collectionPostcodeInput, deliveryPostcodeInput, quantityInput, animalTypeInput, birdSpecies, pricePostcodeDefinitions, birdSpeciesSet){
+export function calculateOrderPrice(collectionPostcodeInput, deliveryPostcodeInput, quantityInput, boxesInput, animalTypeInput, birdSpecies, pricePostcodeDefinitions, birdSpeciesSet){
     
     const animalType = validateAnimalType(animalTypeInput, birdSpeciesSet);
     if(animalType == false){
         return false;
     }
 
-    const quantity = validateQuantity(quantityInput);
+    const quantity = validatePositiveInteger(quantityInput);
     if(quantity == false){
+        return false;
+    }
+
+    const boxes = validatePositiveInteger(boxesInput);
+    if(boxes == false){
         return false;
     }
 
@@ -70,7 +75,15 @@ export function calculateOrderPrice(collectionPostcodeInput, deliveryPostcodeInp
 
     let tally = pricingForOrder.pricing.standardPrice;
 
-    const excess = quantity - pricingForOrder.includedQuantity ;
+    let excess = 0;
+    
+    if(pricingForOrder.surchargeType == "Bird"){
+        excess = quantity - pricingForOrder.includedQuantity ;
+    }
+
+    if(pricingForOrder.surchargeType == "Box"){
+        excess = boxes - pricingForOrder.includedQuantity ;
+    }
 
     if(excess > 0){
         tally += (excess * pricingForOrder.pricing.additionalPrice);
@@ -80,7 +93,7 @@ export function calculateOrderPrice(collectionPostcodeInput, deliveryPostcodeInp
 
 }
 
-function validateQuantity(quantity){
+function validatePositiveInteger(quantity){
 
     const quantityInt = parseInt(quantity);
     if(quantityInt > 0){
@@ -180,7 +193,7 @@ function getAreaPricing(areaName, pricingForAnimal){
 
         if(pricingForAnimal.areaPrices[i].area == areaName){
 
-            return {pricing: pricingForAnimal.areaPrices[i], includedQuantity: pricingForAnimal.includedQuantity};
+            return {pricing: pricingForAnimal.areaPrices[i], includedQuantity: pricingForAnimal.includedQuantity, surchargeType: pricingForAnimal.surchargeType};
 
         }
 
