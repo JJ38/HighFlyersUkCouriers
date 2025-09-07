@@ -7,7 +7,7 @@ const pricePostcodeDefinitionsWrapper = document.getElementById('price_postcode_
 
 fetchBirdSpecies();
 fetchPricePostcodeDefinitions();
-addEventListeners();
+// addEventListeners();
 
 async function fetchBirdSpecies(){
 
@@ -52,9 +52,15 @@ async function fetchPricePostcodeDefinitions(){
 
 function parseBirdSpecies(birdSpecies){
 
+    const surchargeTypeSet = new Set();
+
+    for(let i = 0; i < birdSpecies.species.length; i++){
+        surchargeTypeSet.add(birdSpecies.species[i].prices.surchargeType);
+    }
+
     for(let i = 0; i < birdSpecies.species.length; i++){
 
-        const card = createBirdSpeciesCard(birdSpecies.species[i]);
+        const card = createBirdSpeciesCard(birdSpecies.species[i], surchargeTypeSet);
         birdSpeciesWrapper.appendChild(card);
 
     }
@@ -158,7 +164,7 @@ function createPostcodePill(postcodeDefinition){
 
 }
 
-function createBirdSpeciesCard(bird){
+function createBirdSpeciesCard(bird, surchargeTypeSet){
 
     const card = document.createElement('div');
     card.classList = "birdSpeciesCard card";
@@ -196,6 +202,19 @@ function createBirdSpeciesCard(bird){
     includedQuantityWrapper.appendChild(includedQuantityLabel);
     includedQuantityWrapper.appendChild(includedQuantity);
 
+
+    const surchargeTypeWrapper = document.createElement('div');
+    surchargeTypeWrapper.classList = "inputWrapper";
+
+    const surchargeTypeLabel = document.createElement('label');
+    surchargeTypeLabel.classList = "inputLabel";
+    surchargeTypeLabel.innerText = "Surcharge Type";
+    surchargeTypeLabel.htmlFor = bird.name + "_surcharge_type"
+
+    const surchargeTypeSelect = getSurchargeTypeSelect(bird, surchargeTypeSet);
+
+    surchargeTypeWrapper.appendChild(surchargeTypeLabel);
+    surchargeTypeWrapper.appendChild(surchargeTypeSelect);
     
 
     const descriptionInputWrapper = document.createElement('div');
@@ -223,12 +242,39 @@ function createBirdSpeciesCard(bird){
 
     card.appendChild(nameInputWrapper);
     card.appendChild(includedQuantityWrapper);
+    card.appendChild(surchargeTypeWrapper);
     card.appendChild(descriptionInputWrapper);
     card.appendChild(pricesWrapper);
 
     return card;
 
 }
+
+function getSurchargeTypeSelect(bird, surchargeTypeSet){
+
+    const surchargeTypeArray = Array.from(surchargeTypeSet);
+
+    const surchargeType = document.createElement('select');
+    surchargeType.classList = "input shortInput";
+    surchargeType.id = bird.name + "_surcharge_type";
+
+    for (let i = 0; i < surchargeTypeArray.length; i++) {
+        const option = document.createElement("option");
+        option.value = surchargeTypeArray[i];
+        option.text = surchargeTypeArray[i];
+
+        if(bird.prices.surchargeType == surchargeTypeArray[i]){
+            option.selected = true;
+        }
+
+        surchargeType.appendChild(option);
+    }
+
+
+
+    return surchargeType;
+
+}   
 
 
 function createPriceTable(bird){
