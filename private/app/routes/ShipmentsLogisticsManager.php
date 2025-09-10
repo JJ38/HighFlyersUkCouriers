@@ -11,7 +11,7 @@ $app->get('/shipments-logistics-manager', function (Request $request, Response $
     $account_type = $request->getAttribute('accountType');
    
 
-    if($account_type == "admin"){
+    if($account_type == "admin" || $account_type == "staff"){
         
         $env = parse_ini_file(realpath('../.env'));
 

@@ -18,15 +18,31 @@ $app->get('/calculate-route', function (Request $request, Response $response) us
 
 $app->post('/calculate-route', function (Request $request, Response $response) use ($app) : Response
 {
+    $container = $app->getContainer();
+    $authentication_model = $container->get('authenticationModel');
 
+    $JWT = $authentication_model->getBearerToken();
+
+    if($JWT == null){
+
+        $response->getBody()->write('{"status": "500", "error": {"message": "UNAUTHORISED", "details": "No JWT found"}}');
+        return $response->withStatus(500);
+
+    }
+
+    $role = $authentication_model->getRoleOfJWT($JWT);
+
+    if($role != "admin"){
+
+        $response->getBody()->write('{"status": "500", "error": {"message": "UNAUTHORISED", "account_type": "' . $role . '"}}');
+        return $response->withStatus(500);
+
+    }
+    
     $model = $request->getParsedBody();
 
     //contact google routes optimisation api
 
-    // return $response->withJson($model);
-
-    $container = $app->getContainer();
-    $authentication_model = $container->get('authenticationModel');
     $calculate_route_model = $container->get('calculateRouteModel');
     $logger = $container->get('logger');
 
@@ -34,9 +50,7 @@ $app->post('/calculate-route', function (Request $request, Response $response) u
     $calculate_route_model->setLogger($logger);
 
 
-    //'https://www.googleapis.com/auth/cloud-platform'
     $scopes = [
-        // 'https://www.googleapis.com/auth/maps-platform.routeoptimization'
         'https://www.googleapis.com/auth/cloud-platform'
     ];
 
@@ -57,7 +71,5 @@ $app->post('/calculate-route', function (Request $request, Response $response) u
         return $response->withStatus(500);
 
     }
-
-    // $json = $response->withJson($requestParameters);
 
 });

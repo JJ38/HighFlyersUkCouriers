@@ -1,4 +1,4 @@
-import { db, getDocuments, filterSearch } from "/js/Firebase.js";
+import { db, getDocuments, filterSearch, auth } from "/js/Firebase.js";
 import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
@@ -668,7 +668,17 @@ function addEventListeners(){
       calculateRouteButtonWrapper.appendChild(loader);
       hideUI(calculateRouteButton);
 
-      const routeJSON = await calculateRoute(currentSelectedRun);
+      const user = auth.currentUser;
+
+      if(user == null){
+        showNotification("Error!", "Error calculating route");   
+        showUI(calculateRouteButton);
+        loader.remove();
+      }
+
+      const JWT = await user.getIdToken();
+
+      const routeJSON = await calculateRoute(currentSelectedRun, JWT);
 
       if(routeJSON === false){
 

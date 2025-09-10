@@ -6,6 +6,7 @@ use MrShan0\PHPFirestore\FirestoreClient;
 use GuzzleHttp\Client;
 use Google\Auth\Credentials\ServiceAccountCredentials;
 use Kreait\Firebase\Project\ProjectId;
+use Kreait\Firebase\Factory;
 use Psr\Http\Message\RequestInterface as Request; 
 use Exception;
 
@@ -189,6 +190,42 @@ class AuthenticationModel
             throw new Exception("");
 
         }
+
+    }
+
+    function getBearerToken() {
+
+        $headers = getallheaders();
+
+        if (isset($headers['Authorization'])) {
+
+            $parts = explode(' ', $headers['Authorization']);
+
+            if (count($parts) == 2 && $parts[0] == 'Bearer') {
+                return $parts[1];
+            }
+
+        }
+
+        return null;
+
+    }
+
+    function getRoleOfJWT($JWT){
+
+        $factory = (new Factory())->withServiceAccount('../highflyersukcouriers-a9c17-firebase-adminsdk-fbsvc-9bf9b914eb.json');
+
+        $auth = $factory->createAuth();
+
+        $verifiedIdToken = $auth->verifyIdToken($JWT, true);
+
+        $claims = $verifiedIdToken->claims();
+
+        if ($claims->has('role')) {
+           return $claims->get('role');
+        }
+
+        return null;
 
     }
 

@@ -1587,7 +1587,7 @@ export function mergeStopsWithOrderData(stops, orders){
 }
 
 
-export async function calculateRoute(run){
+export async function calculateRoute(run, JWT){
 
   const stops = run.stops;
 
@@ -1608,9 +1608,6 @@ export async function calculateRoute(run){
 
   const stopJSONs = getStopRequestJSON(runTimingsDocument.data(), groupedStops, lockedStops);
 
-  console.log(stopJSONs);
-
-
   if(lockedStops === false){
     return false;
   }
@@ -1619,9 +1616,7 @@ export async function calculateRoute(run){
 
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, run.settings.start.time);
 
-  console.log(requestBody);
-
-  const optimisedRouteJSON = await fetchOptimisedRoute(requestBody);
+  const optimisedRouteJSON = await fetchOptimisedRoute(requestBody, JWT);
 
   if(optimisedRouteJSON === false){
     return false;
@@ -1675,13 +1670,9 @@ export async function calculateRoute(run){
 
 function updateStopOrder(optimisedRouteJSON, groupedStops){ 
 
-  console.log(groupedStops);
 
   const nonDuplicateStops = groupedStops.nonDuplicateStops;
   const duplicateStops = groupedStops.duplicateStops;
-
-  console.log(nonDuplicateStops);
-  console.log(duplicateStops);
 
   const optimisedStops = optimisedRouteJSON['routes'][0]['visits'];
   const optimisedTransitions = optimisedRouteJSON['routes'][0]['transitions'];
@@ -1792,9 +1783,11 @@ async function storeOptimisedRoute(runID, optimisedRoute, stops, runTime){
   return true;
 }
 
-async function fetchOptimisedRoute(requestBody){
+async function fetchOptimisedRoute(requestBody, JWT){
 
   const url = calculateRouteEndpoint;
+
+
 
   try {
 
@@ -1802,7 +1795,8 @@ async function fetchOptimisedRoute(requestBody){
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
-        "Content-type": "application/json; charset=UTF-8"
+        "Content-type": "application/json; charset=UTF-8",
+        "Authorization": "Bearer " + JWT
       }
     }
 
@@ -1810,8 +1804,6 @@ async function fetchOptimisedRoute(requestBody){
     const jsonString = await response.json();
 
     const json = JSON.parse(jsonString);
-
-    console.log(json.error);
 
     if(json['error'] != null){
 
