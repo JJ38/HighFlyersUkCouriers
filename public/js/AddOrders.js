@@ -100,15 +100,15 @@ function validateForm(){
         return "Please select a valid animal type";
     }
 
-    console.log(parseInt(quantity.value));
-    console.log(parseInt(quantity.value) > 0);
+    console.log(parseInt(quantity.value) == NaN);
+    console.log(quantity.value == null);
 
 
-    if(!isNumber.test(quantity.value) || parseInt(quantity.value) < 1){
+    if(!isNumber.test(quantity.value) || parseInt(quantity.value) < 1 || quantity.value == ""){
         return "Quantity is not a valid number. Please enter a number greater than 0";
     }
 
-    if(!isNumber.test(boxes.value) || parseInt(boxes.value) < 1){
+    if(!isNumber.test(boxes.value) || parseInt(boxes.value) < 1 || boxes.value == ""){
         return "Boxes is not a valid number. Please enter a number greater than 0";
     }
 

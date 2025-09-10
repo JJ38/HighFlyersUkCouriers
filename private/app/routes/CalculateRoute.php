@@ -49,7 +49,6 @@ $app->post('/calculate-route', function (Request $request, Response $response) u
     $authentication_model->setLogger($logger);
     $calculate_route_model->setLogger($logger);
 
-
     $scopes = [
         'https://www.googleapis.com/auth/cloud-platform'
     ];
