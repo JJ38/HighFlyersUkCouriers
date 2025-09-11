@@ -42,7 +42,21 @@ class AuthenticationMiddleware
      //This is is invoked before every reque
     public function __invoke(Request $request, Response $response, callable $next) : Response
     {
+
+        $origin = $request->getHeaderLine('Origin');
         
+        $allowed_origins = [
+            'https://www.highflyersukcouriers.com',
+            'http://localhost:80',
+            'http://localhost:5173',
+        ];
+
+        if (in_array($origin, $allowed_origins)) {
+            $response = $response->withHeader('Access-Control-Allow-Origin', $origin);
+        } else {
+            $response = $response->withHeader('Access-Control-Allow-Origin', 'https://www.highflyersukcouriers.com');
+        }
+
 
         $is_authenticated = false;
         $username = $this->session_wrapper->getSessionVar('user');
