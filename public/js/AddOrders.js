@@ -100,10 +100,6 @@ function validateForm(){
         return "Please select a valid animal type";
     }
 
-    console.log(parseInt(quantity.value) == NaN);
-    console.log(quantity.value == null);
-
-
     if(!isNumber.test(quantity.value) || parseInt(quantity.value) < 1 || quantity.value == ""){
         return "Quantity is not a valid number. Please enter a number greater than 0";
     }

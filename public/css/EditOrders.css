@@ -61,11 +61,13 @@ input[type=submit]{
   width: auto;
 }
 
+.saveButton{
+  /* width: 100px; */
+}
 
-#savebuttonwrapper{
-  width: auto;
-  display: flex;
-  justify-content: center;
+.saveButtonWrapper{
+  width: min-content;
+  margin: auto;
 }
 
 

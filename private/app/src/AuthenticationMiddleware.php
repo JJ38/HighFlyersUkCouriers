@@ -39,7 +39,7 @@ class AuthenticationMiddleware
      * @throws \Doctrine\DBAL\Exception
      */
 
-     //This is is invoked before every reque
+     //This is is invoked before every request
     public function __invoke(Request $request, Response $response, callable $next) : Response
     {
 
@@ -51,12 +51,13 @@ class AuthenticationMiddleware
             'http://localhost:5173',
         ];
 
-        if (in_array($origin, $allowed_origins)) {
+        $isAllowed = in_array($origin, $allowed_origins);
+
+        if ($isAllowed) {
             $response = $response->withHeader('Access-Control-Allow-Origin', $origin);
         } else {
             $response = $response->withHeader('Access-Control-Allow-Origin', 'https://www.highflyersukcouriers.com');
         }
-
 
         $is_authenticated = false;
         $username = $this->session_wrapper->getSessionVar('user');
