@@ -2656,11 +2656,30 @@ export function getCurrentAssignedDriver(drivers, runID){
   for(let i = 0; i < drivers.length; i++){
 
     if(drivers[i].assignedRuns.includes(runID)){
+      console.log(drivers[i].assignedRuns);
       return drivers[i].driverID;
     }
 
   }
 
   return false;
+
+}
+
+export function getCurrentAssignedDriverName(drivers, runID){
+
+  const assignedDriverID = getCurrentAssignedDriver(drivers, runID);
+  
+  console.log(assignedDriverID);
+
+  for(let i = 0; i < drivers.length; i++){
+
+    if(drivers[i].driverID == assignedDriverID){
+      return drivers[i].driverName;
+    }
+
+  }
+
+  return "unassigned";
 
 }

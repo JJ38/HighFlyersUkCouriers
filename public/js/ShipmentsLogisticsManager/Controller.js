@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createDriverSelectOptions, createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
-import { getCurrentAssignedDriver, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -81,6 +81,8 @@ const splitRunSettingsButton = document.getElementById('split_run_settings_butto
 const printPostcodesButton = document.getElementById('print_postcodes_button');
 const selectAssignDriver = document.getElementById('select_assign_driver');
 const selectAssignDriverWrapper = document.getElementById('select_assign_driver_wrapper');
+const assignedDriverText = document.getElementById('assigned_driver_text');
+const assignedDriverTextWrapper = document.getElementById('assigned_driver_text_wrapper');
 
 
 
@@ -1376,12 +1378,6 @@ function updateOptionsToSelectDriver(options){
 
 async function updateSelectAssignDriver(){
   
-  //is route optimised
-  if(!currentSelectedRun.isOptimised){
-    hideUI(selectAssignDriverWrapper);
-    return false;
-  }
-
   //fetch drivers
   const driverDocuments = await fetchDrivers();
 
@@ -1390,18 +1386,41 @@ async function updateSelectAssignDriver(){
     return;
   }
   
+
   drivers = parseDriverDocuments(driverDocuments);
+  console.log(drivers);
 
   if(drivers == false){
     showNotification("Error!", "No drivers found to assign this run to");
   }
 
-  //create options for select dropdown
-  const options = createDriverSelectOptions(drivers, currentSelectedShipment.runs, currentSelectedRun.documentId);
 
-  updateOptionsToSelectDriver(options);
+  //is route optimised
+  if(currentSelectedRun.isOptimised){
 
-  showUI(selectAssignDriverWrapper);
+    //create options for select dropdown
+    const options = createDriverSelectOptions(drivers, currentSelectedShipment.runs, currentSelectedRun.documentId);
+
+    updateOptionsToSelectDriver(options);
+
+    showUI(selectAssignDriverWrapper);
+    hideUI(assignedDriverTextWrapper);
+    return;
+
+  }else{
+
+    //find assigned driver
+    const assignedDriver = getCurrentAssignedDriverName(drivers, currentSelectedRun.documentId);
+
+    //set 
+    hideUI(selectAssignDriverWrapper);
+    showUI(assignedDriverTextWrapper);
+
+    assignedDriverText.innerText = assignedDriver.replace("@placeholder.com", "");
+
+  }
+
+
 
 }
 
