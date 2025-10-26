@@ -236,6 +236,52 @@ function getDeliveryWeekColour(week){
 
 }
 
+function getAnimalTypeColour(animalType){
+
+  
+  let animalTypeColour;
+
+  switch (animalType) {
+    case "Pigeons - Young Birds":
+      animalTypeColour = "red";
+      break;
+
+    case "Pigeons - Old Birds":
+      animalTypeColour = "green";
+      break;
+
+    case "Aviary & Cage Birds":
+      animalTypeColour = "yellow";
+      break;
+
+    case "Birds Of Prey":
+      animalTypeColour = "blue";
+      break;
+
+    case "Reptiles":
+      animalTypeColour = "#B5651D";
+      break;
+
+    case "Small Mammals":
+      animalTypeColour = "#CBC3E3";
+      break;
+
+    case "Small Rodents":
+      animalTypeColour = "pink";
+      break;
+
+    case "Poultry & Gamebirds":
+      animalTypeColour = "orange";
+      break;
+
+    default:
+      animalTypeColour = "white";
+  }
+
+  return animalTypeColour;
+
+}
+
 export function addOrdersToTable(orderArray, prepend){
 
   console.log(orderArray);
@@ -272,6 +318,10 @@ export function addOrdersToTable(orderArray, prepend){
 
           if(field == "deliveryWeek"){
             tableData.style.background = getDeliveryWeekColour(sortedOrderData['deliveryWeek'])
+          }
+
+          if(field == "animalType"){
+            tableData.style.background = getAnimalTypeColour(sortedOrderData['animalType'])
           }
           
           tableRow.append(tableData);
