@@ -135,9 +135,11 @@ class Mailer{
     Delivery Postcode: {$this->mailer_data['delivery_postcode']}" . "<br>". "
     Delivery telephone Number: {$this->mailer_data['delivery_phone_number']}" . "<br>". "
     Payment on Pickup or Delivery: {$this->mailer_data['payment_option']}" . "<br>". "
-    Message: {$this->mailer_data['message']}" . "<br>". "
-    " . "<br>"
-    ;
+    Message: {$this->mailer_data['message']}" . "<br><br>". "
+    Price: £{$this->mailer_data['price']}" . "<br><br>";
+
+   
+
 
     $message = $message .
     
@@ -190,7 +192,9 @@ class Mailer{
     Delivery Postcode: {$this->mailer_data['delivery_postcode']}" . "<br>". "
     Delivery telephone Number: {$this->mailer_data['delivery_phone_number']}" . "<br>". "
     Payment on Delivery or Collection: {$this->mailer_data['payment_option']}" . "<br>". "
-    Message: {$this->mailer_data['message']}" . "<br>". "
+    Message: {$this->mailer_data['message']}" . "<br><br>". "
+    Price: £{$this->mailer_data['price']}" . "<br>". "
+
 
     ";
     $this->sendMail($email, $subject, $message, false);
@@ -488,6 +492,10 @@ class Mailer{
       '<p>' . $this->mailer_data[$i]['payment_option'] . '</p>'.
       '</div>'.
       '<div>'.
+      '<i class="fa-solid fa-money-bill" title="payment for order"></i>'.
+      '<p>£' . $this->mailer_data[$i]['price'] . '</p>'.
+      '</div>'.
+      '<div>'.
       '<i class="fa-solid fa-ticket-simple" title="code"></i>'.
       '<p>' . $this->mailer_data[$i]['code'] . '</p>'.
       '</div>'.
@@ -504,12 +512,12 @@ class Mailer{
  
 }
 
-$attachment = $attachment . '</tbody>'.
-'</table>'.
-'</div>'.
-'<script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>'.
-'</body>'.
-'</html>';
+  $attachment = $attachment . '</tbody>'.
+  '</table>'.
+  '</div>'.
+  '<script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>'.
+  '</body>'.
+  '</html>';
 
 
 

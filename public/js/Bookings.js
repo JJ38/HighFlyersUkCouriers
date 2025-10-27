@@ -109,7 +109,7 @@ function addEventListeners(animalDescriptionTable){
     
         collectionPostcode.addEventListener('input', () => {
   
-            //updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -119,7 +119,7 @@ function addEventListeners(animalDescriptionTable){
     
         deliveryPostcode.addEventListener('input', () => {
 
-            //updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -129,7 +129,7 @@ function addEventListeners(animalDescriptionTable){
     
         animalTypeSelect.addEventListener('input', () => {
 
-            //updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -139,7 +139,7 @@ function addEventListeners(animalDescriptionTable){
     
         quantity.addEventListener('input', () => {
 
-            //updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 
@@ -149,7 +149,7 @@ function addEventListeners(animalDescriptionTable){
     
         numberOfBoxes.addEventListener('input', () => {
 
-            //updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
 
         });
 

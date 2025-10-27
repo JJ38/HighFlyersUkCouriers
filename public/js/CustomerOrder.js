@@ -277,7 +277,7 @@ function setupEventListeners(){
 
 function updatePrice(price){
 
-    return;
+    // return;
 
     orderPriceValue = price;
 
