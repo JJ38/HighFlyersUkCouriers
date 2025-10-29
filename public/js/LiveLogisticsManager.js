@@ -1,7 +1,7 @@
 import { db, getDocuments } from "/js/Firebase.js";
 import { query, collection, doc, onSnapshot} from "firebase/firestore";
 
-const driverList = document.getElementById("driverList");
+const driverList = document.getElementById("runList");
 
 let numberOfProgressedRuns;
 
@@ -224,6 +224,8 @@ function parseRunInfo(runData, ID){
 
   }
 
+  const timestamp = runData['updatedAt'] != undefined && runData['updatedAt'] != null ? runData['updatedAt'].toDate().toLocaleString() : "00:00:00"
+
   const progressedRunStruct = {
 
     runID: ID,
@@ -236,7 +238,7 @@ function parseRunInfo(runData, ID){
     stopsTitle: runData['stopsTitle'],
     stopsRemaining: (runData['stops'].length - runData['currentStopNumber']) + 1, //+1 to show current stop as a stop thats remaining e.g on stop 10/10 it will say 1 stop remaining
     totalStops: runData['stops'].length,
-    updatedAt: runData['updatedAt'].toDate().toLocaleString()
+    updatedAt: timestamp
 
   }
 
@@ -288,9 +290,11 @@ function createProgressedRunCard(progressedRunStruct){
   statusWrapper.appendChild(circleIcon);
   statusWrapper.appendChild(runStatus);
 
+  const driversNameString = progressedRunStruct['driverName'] == null || progressedRunStruct['driverName'] == undefined ? "unknown" : progressedRunStruct['driverName'].replace("@placeholder.com", "");
+
   const driverName = document.createElement('p');
   driverName.classList = "driverName flexTwo";
-  driverName.textContent = progressedRunStruct['driverName'].replace("@placeholder.com", "");
+  driverName.textContent = driversNameString;
 
   topRow.appendChild(statusWrapper);
   topRow.appendChild(driverName);

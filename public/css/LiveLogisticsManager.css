@@ -1,5 +1,5 @@
 
-.driversWindow{
+.runsWindow{
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -34,7 +34,7 @@ gmp-map{
     background-color: #D9FCFF;
 }
 
-.driverCardList{
+.runCardList{
     display: flex;
     flex-direction: column;
     gap: 15px;

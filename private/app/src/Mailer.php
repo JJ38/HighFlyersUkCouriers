@@ -136,7 +136,7 @@ class Mailer{
     Delivery telephone Number: {$this->mailer_data['delivery_phone_number']}" . "<br>". "
     Payment on Pickup or Delivery: {$this->mailer_data['payment_option']}" . "<br>". "
     Message: {$this->mailer_data['message']}" . "<br><br>". "
-    Price: £{$this->mailer_data['price']}" . "<br><br>";
+    Price: &#163;{$this->mailer_data['price']}" . "<br><br>";
 
    
 
@@ -193,7 +193,7 @@ class Mailer{
     Delivery telephone Number: {$this->mailer_data['delivery_phone_number']}" . "<br>". "
     Payment on Delivery or Collection: {$this->mailer_data['payment_option']}" . "<br>". "
     Message: {$this->mailer_data['message']}" . "<br><br>". "
-    Price: £{$this->mailer_data['price']}" . "<br>". "
+    Price: &#163;{$this->mailer_data['price']}" . "<br>". "
 
 
     ";
@@ -493,7 +493,7 @@ class Mailer{
       '</div>'.
       '<div>'.
       '<i class="fa-solid fa-money-bill" title="payment for order"></i>'.
-      '<p>£' . $this->mailer_data[$i]['price'] . '</p>'.
+      '<p>&#163;' . $this->mailer_data[$i]['price'] . '</p>'.
       '</div>'.
       '<div>'.
       '<i class="fa-solid fa-ticket-simple" title="code"></i>'.
