@@ -3,34 +3,36 @@ import { query, collection, doc, onSnapshot} from "firebase/firestore";
 
 const driverList = document.getElementById("driverList");
 
-let numberOfDrivers;
+let numberOfProgressedRuns;
 
 let map;
 
 let currentSelectDriver = null;
-let enRouteDriverStructList = [];
-let completedDriverStructList = [];
-let offlineDriverStructList = [];
-let driverStructList = [];
+let enRouteProgressedRunStructList = [];
+let completedProgressedRunStructList = [];
+let offlineProgressedRunStructList = [];
+let progressedRunStructList = [];
 
 let subscriptionListeners = [];
 
 let initialQuery = false;
 
 //initMap();
-fetchDriverInfo();
+fetchProgressedRunsInfo();
 
-async function fetchDriverInfo(){
+async function fetchProgressedRunsInfo(){
 
-  const driverData = await getDocuments(query(collection(db, "Drivers")));
-  numberOfDrivers = driverData.docs.length;
+  const progressedRunsData = await getDocuments(query(collection(db, "ProgressedRuns")));
+  numberOfProgressedRuns = progressedRunsData.docs.length;
 
-  for(let i = 0; i < numberOfDrivers; i++){
+  console.log(numberOfProgressedRuns);
+
+  for(let i = 0; i < numberOfProgressedRuns; i++){
 
     //get document id
-    const documentID = driverData.docs[i].id
+    const documentID = progressedRunsData.docs[i].id
     //setup listener on document
-    addListenerToDocument(query(doc(db, 'Drivers', documentID)));
+    addListenerToDocument(query(doc(db, 'ProgressedRuns', documentID)));
 
   }
 
@@ -49,39 +51,42 @@ async function initMap() {
 
 
 function addListenerToDocument(docRef){
-
+  
+  console.log("addListenerToDocument");
   onSnapshot(docRef, (doc) => {
 
-    //parses driver data and add its to driverScructList
-    const driverStruct = parseDriverInfo(doc.data(), docRef);
-    createDriverCard(driverStruct);      
+    console.log("update for " + doc.id);
 
+    //parses driver data and add its to driverScructList
+    const progressedRunStruct = parseRunInfo(doc.data(), doc.id);
+    createProgressedRunCard(progressedRunStruct);      
+    console.log(progressedRunStruct.runCard);
     //update UI
-    updateDriverListUI(driverStruct);
+    updateProgressedRunsUIList(progressedRunStruct);
 
   });
 
 }
 
 
-function updateDriverCard(oldDriverStruct, newDriverStruct){
+function updateRunCard(oldprogressedRunStruct, newprogressedRunStruct){
 
   //update values of driver struct
-  oldDriverStruct.driverStatus = newDriverStruct.driverStatus;
-  oldDriverStruct.nextStop = newDriverStruct.nextStop;
-  oldDriverStruct.nextStopTitle = newDriverStruct.nextStopTitle;
-  oldDriverStruct.statusColour = newDriverStruct.statusColour;
-  oldDriverStruct.stopsTitle = newDriverStruct.stopTitle;
-  oldDriverStruct.stopsRemaining = newDriverStruct.stopsRemaining;
+  oldprogressedRunStruct.driverStatus = newprogressedRunStruct.driverStatus;
+  oldprogressedRunStruct.nextStop = newprogressedRunStruct.nextStop;
+  oldprogressedRunStruct.nextStopTitle = newprogressedRunStruct.nextStopTitle;
+  oldprogressedRunStruct.statusColour = newprogressedRunStruct.statusColour;
+  oldprogressedRunStruct.stopsTitle = newprogressedRunStruct.stopTitle;
+  oldprogressedRunStruct.stopsRemaining = newprogressedRunStruct.stopsRemaining;
 
   //remove old children
-  oldDriverStruct.driverCard.innerHTML = "";
+  oldprogressedRunStruct.runCard.innerHTML = "";
 
   //needed as children are moved from one card to another not copied
-  const noOfChildren = newDriverStruct.driverCard.children.length;
+  const noOfChildren = newprogressedRunStruct.runCard.children.length;
 
   for(let i = 0; i < noOfChildren ; i++){
-    oldDriverStruct.driverCard.appendChild(newDriverStruct.driverCard.children[0]);
+    oldprogressedRunStruct.runCard.appendChild(newprogressedRunStruct.runCard.children[0]);
 
   }
 
@@ -107,19 +112,21 @@ const sortAlphabetically = (a, b) => {
   return 0;
 }
 
-function updateDriverListUI(driverStruct){
+function updateProgressedRunsUIList(progressedRunStruct){
 
-  const indexOfDriverCard = driverStructList.findIndex((driver) => driver.driverID == driverStruct.driverID)
+  console.log("updateProgressedRunsUIList");
+
+  const indexOfRunCard = progressedRunStructList.findIndex((run) => run.runID == progressedRunStruct.runID)
 
   //If in driver list already
-  if(indexOfDriverCard > - 1){
+  if(indexOfRunCard > - 1){
 
     console.log("In List");
 
-    const newDriverStatus = driverStruct.driverStatus;
-    const oldDriverStatus = driverStructList[indexOfDriverCard].driverStatus;
+    const newDriverStatus = progressedRunStruct.runStatus;
+    const oldDriverStatus = progressedRunStructList[indexOfRunCard].runStatus;
 
-    updateDriverCard(driverStructList[indexOfDriverCard], driverStruct);
+    updateRunCard(progressedRunStructList[indexOfRunCard], progressedRunStruct);
 
     //does the card need updating or does the list need rebuilding as its status has changed
     if(newDriverStatus != oldDriverStatus){
@@ -130,7 +137,7 @@ function updateDriverListUI(driverStruct){
 
   }else{
 
-    driverStructList.push(driverStruct);
+    progressedRunStructList.push(progressedRunStruct);
     orderDriverList();
   
   }
@@ -140,31 +147,33 @@ function updateDriverListUI(driverStruct){
 function orderDriverList(){
   
   //if the all data about drivers has'nt been recieved
-  if(numberOfDrivers != driverStructList.length){
+  if(numberOfProgressedRuns != progressedRunStructList.length){
     return;
   }
 
   console.log("orderDriverList");
 
-  enRouteDriverStructList = [];
-  completedDriverStructList = [];
-  offlineDriverStructList = [];
+  enRouteProgressedRunStructList = [];
+  completedProgressedRunStructList = [];
+  offlineProgressedRunStructList = [];
 
   //seperate each driver into list based of status
-  for(const driver of driverStructList){
+  for(const run of progressedRunStructList){
 
-    switch(driver.driverStatus){
+    switch(run.runStatus){
 
-      case 'En Route':
-        enRouteDriverStructList.push(driver);
+      case 'En route':
+      case 'Online':
+      case 'In Progress':
+        enRouteProgressedRunStructList.push(run);
         break;
       
       case 'Completed':
-        completedDriverStructList.push(driver);
+        completedProgressedRunStructList.push(run);
         break;
       
       case 'Offline':
-        offlineDriverStructList.push(driver);
+        offlineProgressedRunStructList.push(run);
         break;
 
     }
@@ -172,71 +181,94 @@ function orderDriverList(){
   }  
 
   //Organise each sublist alphabetically
-  enRouteDriverStructList.sort(sortAlphabetically);
-  completedDriverStructList.sort(sortAlphabetically);
-  offlineDriverStructList.sort(sortAlphabetically);
+  enRouteProgressedRunStructList.sort(sortAlphabetically);
+  completedProgressedRunStructList.sort(sortAlphabetically);
+  offlineProgressedRunStructList.sort(sortAlphabetically);
 
-  driverStructList = [];
-  driverStructList = driverStructList.concat(enRouteDriverStructList);
-  driverStructList = driverStructList.concat(completedDriverStructList);
-  driverStructList = driverStructList.concat(offlineDriverStructList);
+  progressedRunStructList = [];
+  progressedRunStructList = progressedRunStructList.concat(enRouteProgressedRunStructList);
+  progressedRunStructList = progressedRunStructList.concat(completedProgressedRunStructList);
+  progressedRunStructList = progressedRunStructList.concat(offlineProgressedRunStructList);
 
-  console.log(Object.assign({}, driverStructList));
-  driverStructList.forEach((driver) => { driverList.appendChild(driver.driverCard) });
+  console.log(Object.assign({}, progressedRunStructList));
+  progressedRunStructList.forEach((run) => { driverList.appendChild(run.runCard) });
 
 } 
 
 
-function parseDriverInfo(driverData, ID){
+function parseRunInfo(runData, ID){
 
-  switch(driverData['driverStatus']){
+  switch(runData['runStatus']){
 
-    case 'En Route':
+    case 'En route':
 
-      driverData['statusColour'] = "#3CBD00";
+      runData['statusColour'] = "#3CBD00";
       break;
   
     case 'Offline':
 
-      driverData['statusColour'] = "#D70700";
+      runData['statusColour'] = "#D70700";
       break;
     
     case 'Completed':  
 
-      driverData['statusColour'] = "#2881FF";
-      driverData['stopsTitle'] = "Total Stops";
-      driverData['nextStopTitle'] = "Time Completed";
+      runData['statusColour'] = "#2881FF";
+      runData['stopsTitle'] = "Total Stops";
+      runData['nextStopTitle'] = "Time Completed";
       break;
     
     default:
 
-      driverData['statusColour'] = "";
+      runData['statusColour'] = "";
       break;
 
   }
 
-  const driverStruct = {
+  const progressedRunStruct = {
 
-    driverID: ID,
-    driverName: driverData['driverName'],
-    driverStatus: driverData['driverStatus'],
-    nextStop: driverData['nextStop'],
-    nextStopTitle: driverData['nextStopTitle'],
-    runName: driverData['runName'],
-    statusColour: driverData['statusColour'],
-    stopsTitle: driverData['stopsTitle'],
-    stopsRemaining: driverData['stopsRemaining']
+    runID: ID,
+    driverName: runData['driverName'],
+    nextStop: getNextStop(runData['stops'], [(runData['currentStopNumber'] - 1)]), // to fix
+    nextStopTitle: runData['nextStopTitle'],
+    runName: runData['runName'],
+    runStatus: runData['runStatus'],
+    statusColour: runData['statusColour'],
+    stopsTitle: runData['stopsTitle'],
+    stopsRemaining: (runData['stops'].length - runData['currentStopNumber']) + 1, //+1 to show current stop as a stop thats remaining e.g on stop 10/10 it will say 1 stop remaining
+    totalStops: runData['stops'].length,
+    updatedAt: runData['updatedAt'].toDate().toLocaleString()
 
   }
 
-  return driverStruct;
+  return progressedRunStruct;
 
 }
 
-function createDriverCard(driverStruct){
+function getNextStop(stops, indexOfNextStop){
 
-  const driverCard = document.createElement('div');
-  driverCard.classList = "driverCard";
+  const nextStop = {}
+  const stopData = stops[indexOfNextStop]['stopData'];
+
+  if(stopData['address1'] != "" || stopData['address1'] != null){
+    nextStop['address1'] = stopData['address1'] + ",";
+  }
+
+  if(stopData['address2'] != "" || stopData['address2'] != null){
+    nextStop['address2'] = stopData['address2'] + ",";
+  }
+
+  if(stopData['address3'] != "" || stopData['address3'] != null){
+    nextStop['address3'] = stopData['address3'];
+  }
+
+  return nextStop;
+
+}
+
+function createProgressedRunCard(progressedRunStruct){
+
+  const runCard = document.createElement('div');
+  runCard.classList = "runCard";
 
   const topRow = document.createElement('div');
   topRow.classList = "row";
@@ -247,18 +279,18 @@ function createDriverCard(driverStruct){
   const circleIcon = document.createElement('span');
   circleIcon.classList = "material-symbols-outlined";
   circleIcon.textContent = "circle";
-  circleIcon.style.color = driverStruct['statusColour'];
+  circleIcon.style.color = progressedRunStruct['statusColour'];
 
-  const driverStatus = document.createElement('p');
-  driverStatus.classList = "driverStatus";
-  driverStatus.textContent = driverStruct['driverStatus'];
+  const runStatus = document.createElement('p');
+  runStatus.classList = "runStatus";
+  runStatus.textContent = progressedRunStruct['runStatus'];
 
   statusWrapper.appendChild(circleIcon);
-  statusWrapper.appendChild(driverStatus);
+  statusWrapper.appendChild(runStatus);
 
   const driverName = document.createElement('p');
   driverName.classList = "driverName flexTwo";
-  driverName.textContent = driverStruct['driverName'].replace("@placeholder.com", "");
+  driverName.textContent = progressedRunStruct['driverName'].replace("@placeholder.com", "");
 
   topRow.appendChild(statusWrapper);
   topRow.appendChild(driverName);
@@ -267,23 +299,23 @@ function createDriverCard(driverStruct){
 
   const runName = document.createElement('p');
   runName.classList = "runName";
-  runName.textContent = driverStruct['runName'];
+  runName.textContent = progressedRunStruct['runName'];
 
 
 
   const bottomRow = document.createElement('div');
-  bottomRow.classList = "row";
+  bottomRow.classList = "row smallGap alignItemsTop";
 
   const columnLeft = document.createElement('div');
   columnLeft.classList = "column flexOne";
 
   const stopsRemaining = document.createElement('p');
   stopsRemaining.classList = "runInfoTitle";
-  stopsRemaining.textContent = driverStruct['stopsTitle'] == null ? "Stops Remaining" : driverStruct['stopsTitle'];
+  stopsRemaining.textContent = progressedRunStruct['stopsTitle'] == null ? "Stops Pending" : progressedRunStruct['stopsTitle'];
 
   const noOfStopsRemaining = document.createElement('p');
   noOfStopsRemaining.classList = "runInfo";
-  noOfStopsRemaining.textContent = driverStruct['stopsRemaining'];
+  noOfStopsRemaining.textContent = progressedRunStruct['stopsTitle'] == "Total Stops" ? progressedRunStruct['totalStops'] : progressedRunStruct['stopsRemaining'];
 
   columnLeft.appendChild(stopsRemaining);
   columnLeft.appendChild(noOfStopsRemaining);
@@ -294,41 +326,82 @@ function createDriverCard(driverStruct){
 
   const nextStopTitle = document.createElement('p');
   nextStopTitle.classList = "runInfoTitle";
-  nextStopTitle.textContent = driverStruct['nextStopTitle'] == null ? "Next Stop" : driverStruct['nextStopTitle'];
+  nextStopTitle.textContent = progressedRunStruct['nextStopTitle'] == null ? "Next Stop" : progressedRunStruct['nextStopTitle'];
 
-  const nextStopData = document.createElement('p');
-  nextStopData.classList = "runInfo";
-  nextStopData.textContent = driverStruct['nextStop'];
-  
+
+  const nextStopData = [];
+
+  if(progressedRunStruct['nextStopTitle'] != "Time Completed"){
+
+    if(progressedRunStruct['nextStop']['address1'] != undefined){
+
+      const nextStopDataParagraph = document.createElement('p');
+      nextStopDataParagraph.classList = "runInfo";
+      nextStopDataParagraph.textContent = progressedRunStruct['nextStop']['address1'];
+      nextStopData.push(nextStopDataParagraph);
+
+    }
+
+    if(progressedRunStruct['nextStop']['address2'] != undefined){
+
+      const nextStopDataParagraph = document.createElement('p');
+      nextStopDataParagraph.classList = "runInfo";
+      nextStopDataParagraph.textContent = progressedRunStruct['nextStop']['address2'];
+      nextStopData.push(nextStopDataParagraph);
+
+    }
+
+    if(progressedRunStruct['nextStop']['address3'] != undefined){
+
+      const nextStopDataParagraph = document.createElement('p');
+      nextStopDataParagraph.classList = "runInfo";
+      nextStopDataParagraph.textContent = progressedRunStruct['nextStop']['address3'];
+      nextStopData.push(nextStopDataParagraph);
+
+    }
+
+
+  }else{
+
+    const nextStopDataParagraph = document.createElement('p');
+    nextStopDataParagraph.classList = "runInfo";
+    nextStopDataParagraph.textContent = progressedRunStruct['updatedAt'];
+    nextStopData.push(nextStopDataParagraph);
+
+  }
+
   columnRight.appendChild(nextStopTitle);
-  columnRight.appendChild(nextStopData);
+
+  for(let i = 0; i < nextStopData.length; i++){
+    columnRight.appendChild(nextStopData[i]);
+  }
 
 
   bottomRow.appendChild(columnLeft);
   bottomRow.appendChild(columnRight);
 
 
-  driverCard.appendChild(topRow);
-  driverCard.appendChild(runName);
-  driverCard.appendChild(bottomRow);
+  runCard.appendChild(topRow);
+  runCard.appendChild(runName);
+  runCard.appendChild(bottomRow);
 
   //add driver card struct so it can be accessed and mutated later
-  driverStruct.driverCard = driverCard;
+  progressedRunStruct.runCard = runCard;
 
-  addDriverCardEventListener(driverCard);
+  addRunCardEventListener(runCard);
 
 }
 
-function addDriverCardEventListener(driverCard){
+function addRunCardEventListener(runCard){
 
-  driverCard.addEventListener('click', () => {
+  runCard.addEventListener('click', () => {
         
     if(currentSelectDriver != null){
       currentSelectDriver.classList.remove('selectedDriverInfoCard');
     }
 
-    driverCard.classList.add('selectedDriverInfoCard');
-    currentSelectDriver = driverCard;
+    runCard.classList.add('selectedDriverInfoCard');
+    currentSelectDriver = runCard;
     
     fetchDriverRuns();
      

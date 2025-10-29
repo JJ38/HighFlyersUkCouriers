@@ -15,7 +15,7 @@ gmp-map{
     /* min-width: 0; */
 }
 
-.driverCard{
+.runCard{
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -41,6 +41,7 @@ gmp-map{
     padding: 30px;
     overflow-y: scroll;
     height: 100%;
+    font-size: 1rem;
 
 }
 
@@ -62,8 +63,8 @@ gmp-map{
     
 }
 
-.driverStatus, .runInfoTitle{
-    font-size: 1rem;
+.runInfoTitle{
+    /* font-size: 1rem; */
     font-weight: 300;
 }
 
@@ -73,7 +74,7 @@ gmp-map{
 }
 
 .runInfo{
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 500;
     text-wrap: wrap;
 }
@@ -120,8 +121,16 @@ gmp-map{
     gap: 0px !important;
 }
 
+.smallGap{
+    gap: 5px
+}
+
 .alignItemsCenter{
     align-items: center;
+}
+
+.alignItemsTop{
+    align-items: start;
 }
 
 h1{
