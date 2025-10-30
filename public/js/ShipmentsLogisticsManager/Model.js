@@ -118,20 +118,24 @@ export async function removeRunFromShipment(runIDToRemove, shipmentName){
 
 }
 
-async function deleteDocument(docRef){
+export async function isShipmentNameAvailable(shipmentNameToCheck){
 
   try{
+    
+    const q = query(collection(db, "Shipments"), where("shipmentName", "==", shipmentNameToCheck));
+    const shipmentDocs = await getDocuments(q);
 
-    await deleteDoc(docRef);
-  
-    return true;
+    if(shipmentDocs.docs.length > 0){
+      return false;
+    }
 
   }catch(e){
 
     console.log(e);
     return false;
-
   }
+
+  return true;
 
 }
 

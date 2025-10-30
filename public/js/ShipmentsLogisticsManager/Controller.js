@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createDriverSelectOptions, createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "./Components";
-import { getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -269,10 +269,16 @@ function addEventListeners(){
     saveCreateShipmentButton.addEventListener('click', async () => {
 
       if(shipmentNameInput.value == "default"){
-        alert('"default" is an invalid name for a shipment. Please choose a different name')
+        alert('"default" is an invalid name for a shipment. Please choose a different name');
         return;
       }
-      
+
+      const isAvailable = await isShipmentNameAvailable(shipmentNameInput.value);
+
+      if(!isAvailable){
+        showNotification("Error!", "Shipment name is already taken. Please choose another one");
+      }
+
       const generateShipmentResult = await generateShipment(shipmentNameInput.value, shipmentTypeInput.value, shipmentDeliveryWeekInput.value);
 
       console.log(generateShipmentResult);
@@ -287,6 +293,8 @@ function addEventListeners(){
       updateSelectShipment(shipmentNameInput.value);
       updateRunsList(shipmentNameInput.value);
       clearAndHideRunStopsUI();
+
+      currentSelectedShipmentName = shipmentNameInput.value;
 
       showNotification("Success!", "Successfully created shipment");
       hideSelectUI(createShipmentWidget);
