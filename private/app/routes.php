@@ -24,9 +24,11 @@ require "routes/AboutUs.php";
 require "routes/ViewOrder.php";
 require "routes/LiveLogisticsManager.php";
 require "routes/ShipmentsLogisticsManager.php";
+require "routes/RunLogisticsManager.php";
+require "routes/LogisticsSettings.php";
 require "routes/LoginLegacy.php";
 require "routes/CalculateRoute.php";
-require "routes/LogisticsSettings.php";
 require "routes/SystemSettings.php";
+
 
 

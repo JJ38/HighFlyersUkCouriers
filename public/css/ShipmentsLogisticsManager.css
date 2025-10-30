@@ -605,7 +605,6 @@ p{
     z-index: 3;
     position: absolute;
     border-spacing: 10px; 
-
 }
 
 .tableContainer{
@@ -615,7 +614,6 @@ p{
 }
 
 .headerRow{
-
     position: sticky;
     font-weight: 600;
     top:0;

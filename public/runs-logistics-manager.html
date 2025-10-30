@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="/css/Navbar.css" type="text/css">
+      <link rel="stylesheet" href="/css/MobileNavigationBar.css" type="text/css">    
+      <link rel="stylesheet" href="/css/ManageLogistics.css" type="text/css">  
+      <link rel="stylesheet" href="/css/RunsLogisticsManager.css" type="text/css">  
+      <link rel="stylesheet" href="/css/Notification.css" type="text/css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=warning" />
+      <script type="module" src="/js/RunsLogisticsManager.js"></script>
+      <script type="module" src="/js/MobileNavigationBar.js"></script>
+
+      <title>HighFlyersUkCouriers</title>
+
+  </head>
+  <body>
+      <header>
+          <div id="mobilenavmenu"  class="hideMobileMenu">
+            <div id="mobilenavwrapper">
+              <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+                <a class="logoutButton">Logout</a>
+                <a href="/manage-orders">Bookings</a>
+                <a href="/content-manager">Content Manager</a>
+                <a href="/manage-accounts">Accounts</a>
+                <a href="/system-settings">System Settings</a>
+                <a href="/live-logistics-manager">Live Logistics</a>
+                <a href="/shipments-logistics-manager">Shipments Logistics</a>
+                <a class="currentpage" href="/logistics-settings">Logistics Settings</a>
+
+            </div>
+          </div>
+          <nav id="menu">
+            <div id="mobilenavtoggle">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <a class="navLinks logoutButton">Logout</a>
+            <a class="navLinks" href="/manage-orders">Bookings</a>
+            <a class="navLinks" href="/content-manager">Content Manager</a>
+            <a class="navLinks" href="/manage-accounts">Accounts</a>
+            <a class="navLinks" href="/system-settings">System Settings</a>
+            <a class="navLinks" href="/live-logistics-manager">Logistics</a>
+          </nav>
+      </header>
+      
+      <Section id="navbarMainContentWrapper">
+        <nav class="logisticsVerticalNavbar">
+            <a class="verticalNavbarLink" href="/live-logistics-manager">
+                <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon">
+                    share_location
+                </span>
+            </a>
+            <a class="verticalNavbarLink" href="/shipments-logistics-manager">
+                <span id="shipmentLogisticsManagerButton" class="material-symbols-outlined navbarIcon" >
+                    package_2
+                </span>
+            </a>
+            <span id="runsLogisticsManagerButton" class="material-symbols-outlined navbarIcon selectedIconColour">
+              table_chart_view
+            </span>
+            <a class="verticalNavbarLink" href="/logistics-settings">
+              <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon">
+                  settings
+              </span>
+            </a>
+          </a>
+        </nav>
+        <div class="mainContent">
+
+          <h1 class="title">Progressed Runs</h1>
+
+          <section id="progressed_runs_table_wrapper" class="tableContainer">
+            
+            <div class="tableActionContainer">
+
+              <div class="orderFiltersContainer">
+
+                <input id="add_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
+
+                <select name="" id="add_order_search_filter" class="selectOption">
+
+                  <option value="shipmentName">Shipment Name</option>
+                  <option value="runName">Run Name</option>
+                  <option value="driverName">Driver Name</option>
+
+                </select>
+
+                <button id="search_button" class="selectAddButton filterButton">Search</button>
+
+              </div>
+
+              <div>
+
+                <button id="search_runs_button" class="searchRunsButton filterButton">Search run(s)</button>
+
+              </div>
+
+            </div>
+
+            
+            <table id="progressed_runs_table" class="orderTable">
+
+              <tbody class="tableHeaderContainer">
+
+                <tr class="headerRow">
+                                
+                  <th>Driver name</th>
+                  <th>Shipment name</th>
+                  <th>Run name</th>
+                  <th>Run status</th>
+                  <th>Total stops</th>
+                  <th>Stops skipped</th>
+                  <th>Total promised</th>
+                  <th>Total collected</th>
+                  <th>Deferred payments total</th>
+
+                  <th>Last Updated</th>
+                  <th></th>
+                  <th class="tableRowBackground"></th>
+                </tr>
+
+              </tbody>
+
+              <tbody id="progressed_runs_table_body" class="tableBody">
+
+                <tr></tr>
+                <tr></tr>
+                <tr></tr>
+
+              </tbody>
+            </table>
+
+          </section>
+
+        </div>
+      </Section>
+      
+  </body>
+</html>
