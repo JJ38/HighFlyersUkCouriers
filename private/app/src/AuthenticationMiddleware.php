@@ -48,7 +48,8 @@ class AuthenticationMiddleware
         $allowed_origins = [
             'https://www.highflyersukcouriers.com',
             'http://localhost:80',
-            'http://localhost:5173',
+            'http://localhost:5173/',
+            'http://localhost:5173/shipments-logistics-manager',
         ];
 
         $isAllowed = in_array($origin, $allowed_origins);

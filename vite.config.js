@@ -34,6 +34,7 @@ export default defineConfig({
           ManageAccounts: resolve(root, 'manage-accounts.html'),
           ManageOrders: resolve(root, 'manage-orders.html'),
           LogisticsSettings: resolve(root, 'logistics-settings.html'),
+          RunsLogisticsManager: resolve(root, 'runs-logistics-manager.html'),
           ShipmentsLogisticsManager: resolve(root, 'shipments-logistics-manager.html'),
           ViewOrder: resolve(root, 'view-order.html'),
           SystemSettings: resolve(root, 'system-settings.html'),

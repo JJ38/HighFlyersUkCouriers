@@ -1,5 +1,5 @@
 import { db, getDocuments } from "/js/Firebase.js";
-import { query, collection, orderBy } from "firebase/firestore";
+import { query, collection, orderBy, where } from "firebase/firestore";
 
 
 const progressedRunsTableBody = document.getElementById('progressed_runs_table_body');
@@ -11,7 +11,6 @@ init();
 function init(){
 
     getProgressedRuns();
-  
 
 }
 
@@ -19,46 +18,108 @@ function init(){
 async function getProgressedRuns(){
 
     const progressedRunsDocs = await getDocuments(query(collection(db, 'ProgressedRuns'), orderBy('runName', 'desc')));
-    
     const progressedRunsData = [];
 
     for(let i = 0; i < progressedRunsDocs.docs.length; i++){
         progressedRunsData.push(progressedRunsDocs.docs[i].data());
     }
 
-    console.log(progressedRunsData);
-    parseProgressedRuns(progressedRunsData)
+    await parseProgressedRuns(progressedRunsData, progressedRunsDocs.docs);
     createProgressedRunsTableBody(progressedRunsData);
 
 }
 
-function parseProgressedRuns(progressedRunsDocs){
-    console.log(progressedRunsDocs);
+async function parseProgressedRuns(progressedRunsData, progressedRunsDocs){
+
+    const deferredPaymentsPromises = new Map();
+    let deferredPaymentsPromisesList = [];
+
+    for(let i = 0; i < progressedRunsData.length; i++){
+
+        calculateStopMetaData(progressedRunsData[i]);
+
+        const deferredPaymentsQueries = getDeferredPaymentsQueries(progressedRunsData[i]['deferredPaymentPrimaryKeys']);
+
+        deferredPaymentsPromisesList = deferredPaymentsPromisesList.concat(deferredPaymentsQueries);
+        deferredPaymentsPromises.set(progressedRunsDocs[i].id, deferredPaymentsQueries);  
+
+    }
+
+    await Promise.all(deferredPaymentsPromisesList);
+    parseDeferredPayments(deferredPaymentsPromises, progressedRunsData, progressedRunsDocs);
+    
+}
+
+async function parseDeferredPayments(deferredPaymentsPromises, progressedRunsData, progressedRunsDocs){
 
     for(let i = 0; i < progressedRunsDocs.length; i++){
-        calculateRunFinances(progressedRunsDocs[i]);
+
+        const deferredPaymentsForRunPromises = deferredPaymentsPromises.get(progressedRunsDocs[i].id);
+        let deferredPayments = [];
+
+        for(let i = 0; i < deferredPaymentsForRunPromises.length; i++){
+
+            const deferredPaymentsForRun = await deferredPaymentsForRunPromises[i];
+            const deferredPaymentDocs = deferredPaymentsForRun.docs
+            deferredPayments = deferredPayments.concat(deferredPaymentDocs);
+
+        }
+
+        progressedRunsData[i]['deferredPayments'] = deferredPayments;
+
     }
 
 }
 
-function calculateRunFinances(progressedRunData){
+function getDeferredPaymentsQueries(deferredPaymentPrimaryKeys){
+
+    const queryLimit = 30;
+    const queries = [];
+
+    for(let i = 0; i < deferredPaymentPrimaryKeys.length; i++){
+
+        if(deferredPaymentPrimaryKeys.length <= queryLimit){
+
+            queries.push(getDocuments(query(collection(db, 'DeferredPayments'), where("stopID", "in", deferredPaymentPrimaryKeys))));
+            deferredPaymentPrimaryKeys.splice(0, deferredPaymentPrimaryKeys.length);
+
+        }else{
+
+            queries.push(getDocuments(query(collection(db, 'DeferredPayments'), where("stopID", "in", deferredPaymentPrimaryKeys.slice(0, queryLimit)))));
+            deferredPaymentPrimaryKeys.splice(0, queryLimit);
+
+        }
+
+    }
+
+    return queries;
+
+}
+
+
+function calculateStopMetaData(progressedRunData){
 
     let totalPromised = 0;
+    let totalSkippedStops = 0;
     let totalCollected = 0;
     let unknown = 0;
 
-    const stopPrimaryKeys = [];
+    const deferredPaymentPrimaryKeys = [];
+    const stops = progressedRunData['stops'];
 
+    for(let i = 0; i < stops.length; i++){
 
-    for(let i = 0; i < progressedRunData['stops'].length; i++){
+        if(stops[i]['stopStatus'] == "Skipped"){
+            totalSkippedStops += 1;
+        }
 
-        if(isNumber.test(progressedRunData['stops'][i]['orderData']['price'])){
+        if(isNumber.test(stops[i]['orderData']['price'])){
         
             //add up total promised
-            totalPromised += parseInt(progressedRunData['stops'][i]['orderData']['price']);
+            totalPromised += parseInt(stops[i]['orderData']['price']);
 
             //add up total taken
-            const amountCollectedResult = parseInt(amountCollectedAtStop(progressedRunData['stops'][i]));
+            const amountCollectedResult = parseInt(amountCollectedAtStop(stops[i]));
 
             if(amountCollectedResult == -1){
                 //TODO: track orders that are unknown
@@ -67,8 +128,10 @@ function calculateRunFinances(progressedRunData){
                 totalCollected += amountCollectedResult;
             }
             
-            const primaryKey = progressedRunData['stops']['orderID'] + "_" + progressedRunData['stops']['stopType'];
-            stopPrimaryKeys.push(primaryKey);
+            const deferredPaymentType = stops[i]['stopType'] == "collection" ? "delivery" : "chase";
+
+            const deferredPaymentPrimaryKey = stops[i]['orderID'] + "_" + deferredPaymentType;
+            deferredPaymentPrimaryKeys.push(deferredPaymentPrimaryKey);
 
         }else{
             unknown += 1;
@@ -76,15 +139,12 @@ function calculateRunFinances(progressedRunData){
     
     }
 
+    //create deferred payments query
+
+    progressedRunData['deferredPaymentPrimaryKeys'] = deferredPaymentPrimaryKeys;
+    progressedRunData['totalSkippedStops'] = totalSkippedStops;
     progressedRunData['totalPromised'] = totalPromised;
     progressedRunData['totalCollected'] = totalCollected;
-
-    console.log(progressedRunData);
-
-
-    //fetch and parse deferred orders
-    
-
 
 }
 
@@ -113,7 +173,7 @@ function amountCollectedAtStop(stop){
     if(stop['stopStatus'] == "Complete"){
 
         if(isEmpty(stop['formDetails'])){
-            return 0;
+            return -1;
         }
 
         if(stop['formDetails']['collectedPayment'] == true){
@@ -136,10 +196,10 @@ function isEmpty(value){
 
 }
 
-function createProgressedRunsTableBody(progressedRunsDocs){
+async function createProgressedRunsTableBody(progressedRunsData){
 
-    for(let i = 0; i < progressedRunsDocs.length; i++){
-        progressedRunsTableBody.appendChild(createTableOrderCard(progressedRunsDocs[i]));
+    for(let i = 0; i < progressedRunsData.length; i++){
+        progressedRunsTableBody.appendChild(await createTableOrderCard(progressedRunsData[i]));
     }
 
 }
@@ -183,46 +243,49 @@ function createTableAddress(addressLine1, addressLine2, addressLine3, addressPos
 
 
 
-function createTableOrderCard(progressedRunData){
+async function createTableOrderCard(progressedRunData){
 
-  const tableRow = document.createElement('tr');
-  tableRow.classList = "tableDataRow";
+    const tableRow = document.createElement('tr');
+    tableRow.classList = "tableDataRow";
+
+    console.log(progressedRunData);
+    console.log(progressedRunData['deferredPayments']);
 
 
-  tableRow.appendChild(tableData(progressedRunData['driverName']));
-  tableRow.appendChild(tableData(progressedRunData['shipmentName']));
-  tableRow.appendChild(tableData(progressedRunData['runName']));
-  tableRow.appendChild(tableData(progressedRunData['runStatus']));
-  tableRow.appendChild(tableData(progressedRunData['stops'].length));
-  tableRow.appendChild(tableData(""));
-  tableRow.appendChild(tableData("£" + progressedRunData['totalPromised']));
-  tableRow.appendChild(tableData("£" + progressedRunData['totalCollected']));
-  tableRow.appendChild(tableData(""));
-  tableRow.appendChild(tableData(progressedRunData['updatedAt'] != undefined ? progressedRunData['updatedAt'].toDate().toLocaleString() : "00:00:00"));
+    tableRow.appendChild(tableData(progressedRunData['driverName']));
+    tableRow.appendChild(tableData(progressedRunData['shipmentName']));
+    tableRow.appendChild(tableData(progressedRunData['runName']));
+    tableRow.appendChild(tableData(progressedRunData['runStatus']));
+    tableRow.appendChild(tableData(progressedRunData['stops'].length));
+    tableRow.appendChild(tableData(progressedRunData['totalSkippedStops']));
+    tableRow.appendChild(tableData("£" + progressedRunData['totalPromised']));
+    tableRow.appendChild(tableData("£" + progressedRunData['totalCollected']));
+    tableRow.appendChild(tableData(progressedRunData['deferredPayments'] == undefined ? "0" : progressedRunData['deferredPayments'].length));
+    tableRow.appendChild(tableData(progressedRunData['updatedAt'] != undefined ? progressedRunData['updatedAt'].toDate().toLocaleString() : "00:00:00"));
 
-//   tableRow.appendChild(
-//     createTableAddress(
-//       orderData['collectionAddress1'],
-//       orderData['collectionAddress2'],
-//       orderData['collectionAddress3'],
-//       orderData['collectionPostcode'],
-//     )
-//   );
-  
-//   tableRow.appendChild(
-//     createTableAddress(
-//       orderData['deliveryAddress1'],
-//       orderData['deliveryAddress2'],
-//       orderData['deliveryAddress3'],
-//       orderData['deliveryPostcode'],
-//     )
-//   );
+    //   tableRow.appendChild(
+    //     createTableAddress(
+    //       orderData['collectionAddress1'],
+    //       orderData['collectionAddress2'],
+    //       orderData['collectionAddress3'],
+    //       orderData['collectionPostcode'],
+    //     )
+    //   );
+    
+    //   tableRow.appendChild(
+    //     createTableAddress(
+    //       orderData['deliveryAddress1'],
+    //       orderData['deliveryAddress2'],
+    //       orderData['deliveryAddress3'],
+    //       orderData['deliveryPostcode'],
+    //     )
+    //   );
 
-  const rowBackground = tableData("");
-  rowBackground.classList = "tableRowBackground";
-  tableRow.appendChild(rowBackground);
+    const rowBackground = tableData("");
+    rowBackground.classList = "tableRowBackground";
+    tableRow.appendChild(rowBackground);
 
-  return tableRow;
+    return tableRow;
 
 }
 

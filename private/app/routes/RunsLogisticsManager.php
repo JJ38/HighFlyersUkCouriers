@@ -3,7 +3,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-$app->get('/runs-logistics-settings', function (Request $request, Response $response, $args) use ($app) : Response{
+$app->get('/runs-logistics-manager', function (Request $request, Response $response, $args) use ($app) : Response{
 
 
     $account_type = $request->getAttribute('accountType');
