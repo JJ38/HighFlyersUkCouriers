@@ -1,3 +1,4 @@
+import { defer } from "lodash";
 import { db, getDocuments } from "/js/Firebase.js";
 import { query, collection, orderBy, where } from "firebase/firestore";
 
@@ -46,7 +47,7 @@ async function parseProgressedRuns(progressedRunsData, progressedRunsDocs){
     }
 
     await Promise.all(deferredPaymentsPromisesList);
-    parseDeferredPayments(deferredPaymentsPromises, progressedRunsData, progressedRunsDocs);
+    await parseDeferredPayments(deferredPaymentsPromises, progressedRunsData, progressedRunsDocs);
     
 }
 
@@ -196,10 +197,11 @@ function isEmpty(value){
 
 }
 
-async function createProgressedRunsTableBody(progressedRunsData){
+function createProgressedRunsTableBody(progressedRunsData){
 
     for(let i = 0; i < progressedRunsData.length; i++){
-        progressedRunsTableBody.appendChild(await createTableOrderCard(progressedRunsData[i]));
+        console.log("progressedRunsData[" + i + "]")
+        progressedRunsTableBody.appendChild(createTableOrderCard(progressedRunsData[i]));
     }
 
 }
@@ -243,7 +245,7 @@ function createTableAddress(addressLine1, addressLine2, addressLine3, addressPos
 
 
 
-async function createTableOrderCard(progressedRunData){
+function createTableOrderCard(progressedRunData){
 
     const tableRow = document.createElement('tr');
     tableRow.classList = "tableDataRow";
