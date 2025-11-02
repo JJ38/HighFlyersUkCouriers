@@ -1,10 +1,23 @@
 import { defer } from "lodash";
 import { db, getDocuments } from "/js/Firebase.js";
 import { query, collection, orderBy, where } from "firebase/firestore";
+import { showNotification } from "/js/Notification.js";
 
 
 const progressedRunsTableBody = document.getElementById('progressed_runs_table_body');
+const progressedRunsTableWrapper = document.getElementById('progressed_runs_table_wrapper');
+const searchFilterInput = document.getElementById('runs_search_input');
+const searchFilterSelect = document.getElementById('search_filter_select');
+const searchRunsButton = document.getElementById('search_runs_button');
+const tableHeader = document.getElementById('table_header_container');
+const tableActionContainer = document.getElementById('table_action_container');
+
+
 const isNumber = new RegExp('^[0-9]*$');
+
+let searchFilterInputValue;
+let searchFilterSelectValue;
+let loadingSymbol;
 
 init();
 
@@ -12,11 +25,126 @@ init();
 function init(){
 
     getProgressedRuns();
+    addEventListeners();
+
+}
+
+function addEventListeners(){
+
+    if(searchFilterInput != null){
+
+        searchFilterInput.addEventListener('input', () => {
+
+            searchFilterInputValue = searchFilterInput.value;
+            console.log(searchFilterInputValue);
+
+        });
+
+    }
+
+    if(searchFilterSelect != null){
+        
+        searchFilterSelect.addEventListener('input', () => {
+
+            searchFilterSelectValue = searchFilterSelect.value;
+            console.log(searchFilterSelectValue);
+
+        });
+
+    }
+
+    if(searchRunsButton != null){
+
+        searchRunsButton.addEventListener('click', () => {
+
+            console.log("clicked search runs button");
+            const searchedRunsSuccessfully = searchRuns();
+
+            if(!searchedRunsSuccessfully){
+                showNotification("Error!", "")
+            }
+
+        });
+
+    }
+
+}
+
+
+function createLoadingSymbol(){
+
+    loadingSymbol = document.createElement('div');    
+    loadingSymbol.classList = "loadingSymbolWrapper";
+
+    const loader = document.createElement('div');    
+    loader.classList = "loader center";
+
+    loadingSymbol.appendChild(loader);
+
+    return loadingSymbol;
+}
+
+function showLoadingOrders(){
+
+    progressedRunsTableBody.innerHTML = "";
+    // progressedRunsTableBody.appendChild(createLoadingSymbol());
+    progressedRunsTableWrapper.after(createLoadingSymbol())
+
+}
+
+function hideLoadingOrders(){
+
+    if(loadingSymbol != null){
+
+        loadingSymbol.remove();
+
+    }
+
+}
+
+async function searchRuns(){
+
+    if(isEmpty(searchFilterInputValue)){
+        showNotification("Error!", "Please enter a value to fitler by");
+        return;
+    }
+
+    if(isEmpty(searchFilterSelectValue)){
+        showNotification("Error!", "Please select a field to filter by");
+        return;
+    }
+
+    showLoadingOrders();
+
+
+    //fetch documents
+    const progressedRunsDocs = await getDocuments(query(collection(db, 'ProgressedRuns'), where(searchFilterSelectValue, "==", searchFilterInputValue)));
+    console.log(progressedRunsDocs);
+
+    if(progressedRunsDocs == false){
+        showNotification("Error!", "Error fetching runs");
+        return;
+    }
+
+    //parse document
+
+    const progressedRunsData = [];
+
+    for(let i = 0; i < progressedRunsDocs.docs.length; i++){
+        progressedRunsData.push(progressedRunsDocs.docs[i].data());
+    }
+
+    await parseProgressedRuns(progressedRunsData, progressedRunsDocs.docs);
+    updateProgressedRunsTableBody(progressedRunsData);
+
+    //update table
 
 }
 
 
 async function getProgressedRuns(){
+
+    showLoadingOrders();
 
     const progressedRunsDocs = await getDocuments(query(collection(db, 'ProgressedRuns'), orderBy('runName', 'desc')));
     const progressedRunsData = [];
@@ -26,7 +154,7 @@ async function getProgressedRuns(){
     }
 
     await parseProgressedRuns(progressedRunsData, progressedRunsDocs.docs);
-    createProgressedRunsTableBody(progressedRunsData);
+    updateProgressedRunsTableBody(progressedRunsData);
 
 }
 
@@ -189,7 +317,7 @@ function amountCollectedAtStop(stop){
 
 function isEmpty(value){
 
-    if(value == null || value == undefined){
+    if(value == null || value == undefined || value == ""){
         return true;
     }
 
@@ -197,7 +325,9 @@ function isEmpty(value){
 
 }
 
-function createProgressedRunsTableBody(progressedRunsData){
+function updateProgressedRunsTableBody(progressedRunsData){
+
+    hideLoadingOrders();
 
     for(let i = 0; i < progressedRunsData.length; i++){
         console.log("progressedRunsData[" + i + "]")

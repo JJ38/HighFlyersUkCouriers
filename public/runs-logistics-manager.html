@@ -74,68 +74,73 @@
 
           <h1 class="title">Progressed Runs</h1>
 
-          <section id="progressed_runs_table_wrapper" class="tableContainer">
-            
-            <div class="tableActionContainer">
+          <div id="table_action_container" class="tableActionContainer">
 
-              <div class="orderFiltersContainer">
+            <div class="orderFiltersContainer">
 
-                <input id="add_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
+              <input id="runs_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
 
-                <select name="" id="add_order_search_filter" class="selectOption">
+              <select name="" id="search_filter_select" class="selectOption">
 
-                  <option value="shipmentName">Shipment Name</option>
-                  <option value="runName">Run Name</option>
-                  <option value="driverName">Driver Name</option>
+                <option value="">-- Select Field --</option>
+                <option value="shipmentName">Shipment Name</option>
+                <option value="runName">Run Name</option>
+                <option value="driverName">Driver Name</option>
 
-                </select>
+              </select>
 
-                <button id="search_button" class="selectAddButton filterButton">Search</button>
-
-              </div>
-
-              <div>
-
-                <button id="search_runs_button" class="searchRunsButton filterButton">Search run(s)</button>
-
-              </div>
+              <!-- <button id="search_button" class="selectAddButton filterButton">Search</button> -->
 
             </div>
 
-            
-            <table id="progressed_runs_table" class="orderTable">
+            <div>
 
-              <tbody class="tableHeaderContainer">
+              <button id="search_runs_button" class="searchRunsButton filterButton">Search run(s)</button>
 
-                <tr class="headerRow">
-                                
-                  <th>Driver name</th>
-                  <th>Shipment name</th>
-                  <th>Run name</th>
-                  <th>Run status</th>
-                  <th>Total stops</th>
-                  <th>Stops skipped</th>
-                  <th>Total promised</th>
-                  <th>Total collected</th>
-                  <th>Deferred payments total</th>
+            </div>
 
-                  <th>Last Updated</th>
-                  <th></th>
-                  <th class="tableRowBackground"></th>
-                </tr>
+          </div>
 
-              </tbody>
+          <div id="loading_symbol_table_wrapper" class="loadingSymbolTableWrapper">
 
-              <tbody id="progressed_runs_table_body" class="tableBody">
+            <section id="progressed_runs_table_wrapper" class="tableContainer">
+              
+              
+              <table id="progressed_runs_table" class="orderTable">
 
-                <tr></tr>
-                <tr></tr>
-                <tr></tr>
+                <tbody id="table_header_container" class="tableHeaderContainer">
 
-              </tbody>
-            </table>
+                  <tr class="headerRow">
+                                  
+                    <th>Driver name</th>
+                    <th>Shipment name</th>
+                    <th>Run name</th>
+                    <th>Run status</th>
+                    <th>Total stops</th>
+                    <th>Stops skipped</th>
+                    <th>Total promised</th>
+                    <th>Total collected</th>
+                    <th>Deferred payments total</th>
 
-          </section>
+                    <th>Last Updated</th>
+                    <th></th>
+                    <th class="tableRowBackground"></th>
+                  </tr>
+
+                </tbody>
+
+                <tbody id="progressed_runs_table_body" class="tableBody">
+
+                  <tr></tr>
+                  <tr></tr>
+                  <tr></tr>
+
+                </tbody>
+              </table>
+
+            </section>
+
+          </div>
 
         </div>
       </Section>

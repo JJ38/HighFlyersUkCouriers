@@ -160,3 +160,41 @@ th{
     background-color: #2881FF;
     color: white;
 }
+
+.loader {
+
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #2881FF; /* Blue */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s cubic-bezier(0.51, 0.24, 0.59, 0.8) infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.center {
+
+    margin: auto;
+
+}
+
+.loadingSymbolWrapper{
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+
+}
+
+.loadingSymbolTableWrapper{
+
+    display: flex;
+    flex: 1;
+    position: relative;
+
+}
