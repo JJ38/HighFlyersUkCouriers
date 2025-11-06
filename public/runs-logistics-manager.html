@@ -72,6 +72,50 @@
         </nav>
         <div class="mainContent">
 
+          <div id="progressed_run_details_container" class="progressedRunsDetailsContainer">
+            <span id="close_progressed_run_details_container_button" class="material-symbols-outlined closeButton">
+              close
+            </span>
+
+            <h1 class="title">Stop Details</h1>
+            
+            <div class="tableContainer">
+
+              <table id="progressed_run_details_table" class="orderTable">
+
+                <tbody id="progressed_run_details_table_header_container" class="tableHeaderContainer">
+
+                  <tr class="headerRow">
+                                  
+                    <th>Stop Number</th>
+                    <th>Stop Type</th>
+                    <th>Order ID</th>
+                    <th>Stop Status</th>
+                    <th>Address&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <th>Species&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <th>Quantity</th>
+                    <th>Collected Payment</th>
+                    <th>Driver message&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <!-- <th>Last Updated</th> -->
+                    <th></th>
+                    <th class="tableRowBackground"></th>
+                  </tr>
+
+                </tbody>
+
+                <tbody id="progressed_run_details_table_body" class="tableBody">
+
+                  <tr></tr>
+                  <tr></tr>
+                  <tr></tr>
+
+                </tbody>
+              </table>
+            
+            </div>
+
+          </div>
+
           <h1 class="title">Progressed Runs</h1>
 
           <div id="table_action_container" class="tableActionContainer">
@@ -101,48 +145,45 @@
 
           </div>
 
-          <div id="loading_symbol_table_wrapper" class="loadingSymbolTableWrapper">
+          <section id="progressed_runs_table_wrapper" class="tableContainer">
+            
+            <table id="progressed_runs_table" class="orderTable">
 
-            <section id="progressed_runs_table_wrapper" class="tableContainer">
-              
-              
-              <table id="progressed_runs_table" class="orderTable">
+              <tbody id="table_header_container" class="tableHeaderContainer">
 
-                <tbody id="table_header_container" class="tableHeaderContainer">
+                <tr class="headerRow">
+                                
+                  <th>Driver name</th>
+                  <th>Shipment name</th>
+                  <th>Run name</th>
+                  <th>Run status</th>
+                  <th>Total stops</th>
+                  <th>Stops skipped</th>
+                  <th>Total promised</th>
+                  <th>Total collected</th>
+                  <th>Deferred payments total</th>
 
-                  <tr class="headerRow">
-                                  
-                    <th>Driver name</th>
-                    <th>Shipment name</th>
-                    <th>Run name</th>
-                    <th>Run status</th>
-                    <th>Total stops</th>
-                    <th>Stops skipped</th>
-                    <th>Total promised</th>
-                    <th>Total collected</th>
-                    <th>Deferred payments total</th>
+                  <th>Last Updated</th>
+                  <th></th>
+                  <th class="tableRowBackground"></th>
+                </tr>
 
-                    <th>Last Updated</th>
-                    <th></th>
-                    <th class="tableRowBackground"></th>
-                  </tr>
+              </tbody>
 
-                </tbody>
+              <tbody id="progressed_runs_table_body" class="tableBody">
 
-                <tbody id="progressed_runs_table_body" class="tableBody">
+                <tr></tr>
+                <tr></tr>
+                <tr></tr>
 
-                  <tr></tr>
-                  <tr></tr>
-                  <tr></tr>
+              </tbody>
+            </table>
 
-                </tbody>
-              </table>
-
-            </section>
-
-          </div>
+          </section>
 
         </div>
+
+        
       </Section>
       
   </body>

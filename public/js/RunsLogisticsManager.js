@@ -11,7 +11,9 @@ const searchFilterSelect = document.getElementById('search_filter_select');
 const searchRunsButton = document.getElementById('search_runs_button');
 const tableHeader = document.getElementById('table_header_container');
 const tableActionContainer = document.getElementById('table_action_container');
-
+const progressedRunDetailsContainer = document.getElementById('progressed_run_details_container');
+const closeProgressedRunDetailsContainer = document.getElementById('close_progressed_run_details_container_button')
+const progressedRunsDetailsTableBody = document.getElementById('progressed_run_details_table_body');
 
 const isNumber = new RegExp('^[0-9]*$');
 
@@ -65,6 +67,23 @@ function addEventListeners(){
 
     }
 
+    if(closeProgressedRunDetailsContainer != null){
+        
+        closeProgressedRunDetailsContainer.addEventListener('click', () => {
+            progressedRunDetailsContainer.classList.remove('slideIn');
+
+        })
+
+    }
+
+}
+
+function showUI(element){
+    element.classList.remove('hidden');
+}
+
+function hideUI(element){
+    element.classList.add('hidden');
 }
 
 
@@ -115,7 +134,7 @@ async function searchRuns(){
 
 
     //fetch documents
-    const progressedRunsDocs = await getDocuments(query(collsection(db, 'ProgressedRuns'), where(searchFilterSelectValue, "==", searchFilterInputValue)));
+    const progressedRunsDocs = await getDocuments(query(collection(db, 'ProgressedRuns'), where(searchFilterSelectValue, "==", searchFilterInputValue)));
     console.log(progressedRunsDocs);
 
     if(progressedRunsDocs == false){
@@ -329,19 +348,34 @@ function updateProgressedRunsTableBody(progressedRunsData){
     for(let i = 0; i < progressedRunsData.length; i++){
         
         const tableRunCard = createTableRunCard(progressedRunsData[i]);
-        addTableRunCardListener(tableRunCard);
+        addTableRunCardListener(tableRunCard, progressedRunsData[i]);
         progressedRunsTableBody.appendChild(tableRunCard);
     }
 
 }
 
-function addTableRunCardListener(tableRunCard){
+function addTableRunCardListener(tableRunCard, progressedRunData){
 
     tableRunCard.addEventListener('click', () => {
 
-
+        console.log("table card clicked");
+        progressedRunDetailsContainer.classList.add('slideIn');
+        parseStopsData(progressedRunData['stops']);
 
     });
+
+}
+
+function parseStopsData(stops){
+
+    if(isEmpty(stops)){
+        console.log("stops is empty");
+        return;
+    }
+
+    for(let i = 0; i < stops.length; i++){
+        progressedRunsDetailsTableBody.appendChild(createTableStopCard(stops[i]));
+    }
 
 }
 
@@ -383,15 +417,77 @@ function createTableAddress(addressLine1, addressLine2, addressLine3, addressPos
 }
 
 
+function createTableStopCard(stopData){
+
+    const tableRow = document.createElement('tr');
+    tableRow.classList = "tableDataRow runCard";
+
+    console.log(stopData);
+
+
+    tableRow.appendChild(tableData(stopData['stopNumber']));
+    tableRow.appendChild(tableData(stopData['stopType'] == "collection" ? "Collection" : "Delivery"));
+    tableRow.appendChild(tableData(stopData['stopData']['ID']));
+    tableRow.appendChild(tableData(stopData['stopStatus']));
+
+
+    tableRow.appendChild(
+        createTableAddress(
+            stopData['stopData']['address1'],
+            stopData['stopData']['address2'],
+            stopData['stopData']['address3'],
+            stopData['stopData']['postcode'],
+        )
+    );
+
+    let formDetails = stopData['formDetails'];
+
+    if(formDetails == null){
+        formDetails = {};
+    }
+
+
+    tableRow.appendChild(tableData(isEmpty(formDetails['animalType']) ? "" : formDetails['animalType']));
+    tableRow.appendChild(tableData(isEmpty(formDetails['quantity']) ? "" : formDetails['quantity']));
+    tableRow.appendChild(tableData(isEmpty(formDetails['collectedPayment']) ? "No" : formDetails['collectedPayment'] ? "Yes" : "No"));
+    tableRow.appendChild(tableData(isEmpty(formDetails['notes']) ? "" : formDetails['notes']));
+    
+    
+    
+    //   tableRow.appendChild(
+    //     createTableAddress(
+    //       orderData['deliveryAddress1'],
+    //       orderData['deliveryAddress2'],
+    //       orderData['deliveryAddress3'],
+    //       orderData['deliveryPostcode'],
+    //     )
+    //   );
+
+    // const rowHoverDetector = tableData("");
+    // rowHoverDetector.classList = "rowHoverDetector";
+
+    const rowBackground = document.createElement('div');
+    rowBackground.classList = "tableRowBackground";
+
+    // rowHoverDetector.appendChild(rowBackground);
+
+    // tableRow.appendChild(rowHoverDetector);
+
+    // rowHoverDetector.appendChild(rowBackground);
+
+
+    tableRow.appendChild(rowBackground);
+
+
+    return tableRow;
+
+}
+
 
 function createTableRunCard(progressedRunData){
 
     const tableRow = document.createElement('tr');
     tableRow.classList = "tableDataRow runCard";
-
-
-   
-
 
     console.log(progressedRunData);
     console.log(progressedRunData['deferredPayments']);
