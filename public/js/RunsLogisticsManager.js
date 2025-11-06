@@ -36,7 +36,6 @@ function addEventListeners(){
         searchFilterInput.addEventListener('input', () => {
 
             searchFilterInputValue = searchFilterInput.value;
-            console.log(searchFilterInputValue);
 
         });
 
@@ -47,7 +46,6 @@ function addEventListeners(){
         searchFilterSelect.addEventListener('input', () => {
 
             searchFilterSelectValue = searchFilterSelect.value;
-            console.log(searchFilterSelectValue);
 
         });
 
@@ -57,7 +55,6 @@ function addEventListeners(){
 
         searchRunsButton.addEventListener('click', () => {
 
-            console.log("clicked search runs button");
             const searchedRunsSuccessfully = searchRuns();
 
             if(!searchedRunsSuccessfully){
@@ -118,7 +115,7 @@ async function searchRuns(){
 
 
     //fetch documents
-    const progressedRunsDocs = await getDocuments(query(collection(db, 'ProgressedRuns'), where(searchFilterSelectValue, "==", searchFilterInputValue)));
+    const progressedRunsDocs = await getDocuments(query(collsection(db, 'ProgressedRuns'), where(searchFilterSelectValue, "==", searchFilterInputValue)));
     console.log(progressedRunsDocs);
 
     if(progressedRunsDocs == false){
@@ -137,16 +134,16 @@ async function searchRuns(){
     await parseProgressedRuns(progressedRunsData, progressedRunsDocs.docs);
     updateProgressedRunsTableBody(progressedRunsData);
 
-    //update table
 
 }
+
 
 
 async function getProgressedRuns(){
 
     showLoadingOrders();
 
-    const progressedRunsDocs = await getDocuments(query(collection(db, 'ProgressedRuns'), orderBy('runName', 'desc')));
+    const progressedRunsDocs = await getDocuments(query(collection(db, 'ProgressedRuns'), orderBy('shipmentName', 'desc')));
     const progressedRunsData = [];
 
     for(let i = 0; i < progressedRunsDocs.docs.length; i++){
@@ -330,9 +327,21 @@ function updateProgressedRunsTableBody(progressedRunsData){
     hideLoadingOrders();
 
     for(let i = 0; i < progressedRunsData.length; i++){
-        console.log("progressedRunsData[" + i + "]")
-        progressedRunsTableBody.appendChild(createTableOrderCard(progressedRunsData[i]));
+        
+        const tableRunCard = createTableRunCard(progressedRunsData[i]);
+        addTableRunCardListener(tableRunCard);
+        progressedRunsTableBody.appendChild(tableRunCard);
     }
+
+}
+
+function addTableRunCardListener(tableRunCard){
+
+    tableRunCard.addEventListener('click', () => {
+
+
+
+    });
 
 }
 
@@ -375,10 +384,14 @@ function createTableAddress(addressLine1, addressLine2, addressLine3, addressPos
 
 
 
-function createTableOrderCard(progressedRunData){
+function createTableRunCard(progressedRunData){
 
     const tableRow = document.createElement('tr');
-    tableRow.classList = "tableDataRow";
+    tableRow.classList = "tableDataRow runCard";
+
+
+   
+
 
     console.log(progressedRunData);
     console.log(progressedRunData['deferredPayments']);
@@ -413,9 +426,21 @@ function createTableOrderCard(progressedRunData){
     //     )
     //   );
 
-    const rowBackground = tableData("");
+    const rowHoverDetector = tableData("");
+    rowHoverDetector.classList = "rowHoverDetector";
+
+    const rowBackground = document.createElement('div');
     rowBackground.classList = "tableRowBackground";
-    tableRow.appendChild(rowBackground);
+
+    rowHoverDetector.appendChild(rowBackground);
+
+    tableRow.appendChild(rowHoverDetector);
+
+    // rowHoverDetector.appendChild(rowBackground);
+
+
+    // tableRow.appendChild(rowHoverDetector);
+
 
     return tableRow;
 
