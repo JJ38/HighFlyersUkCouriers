@@ -452,30 +452,8 @@ function createTableStopCard(stopData){
     tableRow.appendChild(tableData(isEmpty(formDetails['collectedPayment']) ? "No" : formDetails['collectedPayment'] ? "Yes" : "No"));
     tableRow.appendChild(tableData(isEmpty(formDetails['notes']) ? "" : formDetails['notes']));
     
-    
-    
-    //   tableRow.appendChild(
-    //     createTableAddress(
-    //       orderData['deliveryAddress1'],
-    //       orderData['deliveryAddress2'],
-    //       orderData['deliveryAddress3'],
-    //       orderData['deliveryPostcode'],
-    //     )
-    //   );
-
-    // const rowHoverDetector = tableData("");
-    // rowHoverDetector.classList = "rowHoverDetector";
-
     const rowBackground = document.createElement('div');
     rowBackground.classList = "tableRowBackground";
-
-    // rowHoverDetector.appendChild(rowBackground);
-
-    // tableRow.appendChild(rowHoverDetector);
-
-    // rowHoverDetector.appendChild(rowBackground);
-
-
     tableRow.appendChild(rowBackground);
 
 

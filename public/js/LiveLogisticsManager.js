@@ -1,7 +1,16 @@
-import { db, getDocuments } from "/js/Firebase.js";
+import { isEmpty } from "lodash";
+import { db, getDocuments, getDocument } from "/js/Firebase.js";
 import { query, collection, doc, onSnapshot} from "firebase/firestore";
 
 const driverList = document.getElementById("runList");
+
+const drivers = new Map();
+
+let GoogleGeometry;
+let GoogleAdvancedMarkerElement;
+let GooglePinElement;
+let GoogleMap;
+
 
 let numberOfProgressedRuns;
 
@@ -13,52 +22,166 @@ let completedProgressedRunStructList = [];
 let offlineProgressedRunStructList = [];
 let progressedRunStructList = [];
 
-let subscriptionListeners = [];
 
-let initialQuery = false;
-
-//initMap();
+initMap();
 fetchProgressedRunsInfo();
+fetchDriverDocs();
+console.log(drivers);
 
 async function fetchProgressedRunsInfo(){
 
-  const progressedRunsData = await getDocuments(query(collection(db, "ProgressedRuns")));
-  numberOfProgressedRuns = progressedRunsData.docs.length;
+  const progressedRunsDocs = await getDocuments(query(collection(db, "ProgressedRuns")));
 
-  console.log(numberOfProgressedRuns);
+  if(isEmpty(progressedRunsDocs.docs)){
+    return;
+  }
+
+  numberOfProgressedRuns = progressedRunsDocs.docs.length;
 
   for(let i = 0; i < numberOfProgressedRuns; i++){
 
     //get document id
-    const documentID = progressedRunsData.docs[i].id
+    const documentID = progressedRunsDocs.docs[i].id
     //setup listener on document
-    addListenerToDocument(query(doc(db, 'ProgressedRuns', documentID)));
+    addListenerToProgressedRunDocument(query(doc(db, 'ProgressedRuns', documentID)));
+    // addListenerToDriverDocument(progressedRunsData.docs[i]);
 
   }
 
 }
 
+async function fetchDriverDocs(){
+
+  const driverDocs = await getDocuments(query(collection(db, "Drivers")));
+
+  if(isEmpty(driverDocs.docs)){
+    return;
+  }
+
+  for(let i = 0; i < driverDocs.docs.length; i++){
+
+    addListenerToDriverDocument(driverDocs.docs[i]);
+
+  }
+
+
+}
+
+
+async function addListenerToDriverDocument(driverDoc){
+
+  const driverDocRef = doc(db, 'Drivers', driverDoc.id);
+
+  onSnapshot(driverDocRef, (doc) => {
+
+    const driverData = doc.data();
+    
+    if(!isEmpty(drivers.get(doc.id))){
+      driverData.marker = drivers.get(doc.id).marker;
+    }
+
+    //updates driver doc
+    drivers.set(doc.id, driverData);
+
+    //update position of marker on map
+    updateDriverMarker(drivers.get(doc.id));
+
+  });
+
+  //link driver doc to run
+
+
+}
+
+
+async function updateDriverMarker(driverData){
+
+  console.log("updateDriverMarker");
+  console.log(driverData);
+
+  if(isEmpty(driverData.location) || isEmpty(map)){
+    return;
+  }
+
+  const location = {
+
+    "lat": driverData.location.latitude,
+    "lng": driverData.location.longitude,
+
+  }
+
+  //style
+  const pinTextGlyph = new GooglePinElement({
+    glyph: "x",
+    glyphColor: "white",
+    background: '#0000FF', // Red background
+    borderColor: '#0000FF'
+  });
+
+  console.log(driverData['marker']);
+
+  if(!isEmpty(driverData.marker)){
+    console.log("removing driver marker");
+    //remove current marker from map
+    driverData.marker.map = null;
+  }
+
+  const ratio = 361/455;
+
+  const width = 60;
+
+  const vanElement = document.createElement("img");
+  vanElement.src = "/images/van.png"; // can be PNG, JPG, WebP, etc.
+  vanElement.style.width = width + "px";
+  vanElement.style.height = (width * ratio) + "px";
+
+  // optional: allow CSS rotation
+  vanElement.style.transition = "transform 0.3s linear";
+
+
+  //add marker to map
+  const marker = new GoogleAdvancedMarkerElement({
+    map: map,
+    position: location,
+    content: vanElement,
+    collisionBehavior: google.maps.CollisionBehavior.REQUIRED,
+  });
+
+  driverData['marker'] = marker;
+  console.log(driverData['marker']);
+
+
+} 
+
+
 async function initMap() {
 
   const { Map } = await google.maps.importLibrary("maps");
+  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+
+  GoogleMap = Map;
+  GoogleAdvancedMarkerElement = AdvancedMarkerElement;
+  GooglePinElement = PinElement;
 
   map = new Map(document.getElementById("map"), {
-    center: { lat: -34.397, lng: 150.644 },
+    center: { lat: 51, lng: -1 },
     zoom: 8,
+    mapId: "298860eb89cd00b43e74dbd5",
   });
 
 }
 
 
-function addListenerToDocument(docRef){
+function addListenerToProgressedRunDocument(docRef){
   
-  console.log("addListenerToDocument");
+  console.log("addListenerToProgressedRunDocument");
   onSnapshot(docRef, (doc) => {
 
     console.log("update for " + doc.id);
 
     //parses driver data and add its to driverScructList
     const progressedRunStruct = parseRunInfo(doc.data(), doc.id);
+    console.log(progressedRunStruct);
     createProgressedRunCard(progressedRunStruct);      
     console.log(progressedRunStruct.runCard);
     //update UI
@@ -230,6 +353,7 @@ function parseRunInfo(runData, ID){
 
     runID: ID,
     driverName: runData['driverName'],
+    driverID: runData['driverID'],
     nextStop: getNextStop(runData['stops'], [(runData['currentStopNumber'] - 1)]), // to fix
     nextStopTitle: runData['nextStopTitle'],
     runName: runData['runName'],
@@ -392,13 +516,17 @@ function createProgressedRunCard(progressedRunStruct){
   //add driver card struct so it can be accessed and mutated later
   progressedRunStruct.runCard = runCard;
 
-  addRunCardEventListener(runCard);
+  addRunCardEventListener(progressedRunStruct);
 
 }
 
-function addRunCardEventListener(runCard){
+function addRunCardEventListener(progressedRunStruct){
+
+  const runCard = progressedRunStruct.runCard;
 
   runCard.addEventListener('click', () => {
+
+    console.log(progressedRunStruct);
         
     if(currentSelectDriver != null){
       currentSelectDriver.classList.remove('selectedDriverInfoCard');

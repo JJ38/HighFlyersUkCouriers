@@ -1924,7 +1924,7 @@ function removeMapMarkers(mapMarkers, clusters){
 
   }
 
-  //mapMarkers = [] cant be used as this would desctroy the reference and create a new array rather than alter the one passed in
+  //mapMarkers = [] cant be used as this would destroy the reference and create a new array rather than alter the one passed in
   mapMarkers.splice(0, mapMarkers.length);
 
   if(clusters != null){

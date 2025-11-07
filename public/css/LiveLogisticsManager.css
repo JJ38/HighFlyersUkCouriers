@@ -15,6 +15,10 @@ gmp-map{
     /* min-width: 0; */
 }
 
+#map{
+    flex: 1;
+}
+
 .runCard{
     display: flex;
     flex-direction: column;
@@ -46,6 +50,8 @@ gmp-map{
 }
 
 .mainContent{
+    display: flex;
+    flex: 1;
     height: 100%;
 }
 
