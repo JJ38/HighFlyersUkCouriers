@@ -9,7 +9,7 @@ const q = query(collection(db, "Orders"), where("ID", "==", ID));
 const saveButton = document.getElementById('save_button');
 const form = document.getElementById('edit_order_form');
 
-const validPaymentOptions = ['Account', 'Collection', 'Delivery'];
+const validPaymentOptions = ['Account', 'Collection', 'Delivery', 'Pickup'];
 const validAnimalTypes = ['Pigeons - Young Birds', 'Pigeons - Old Birds', 'Aviary & Cage Birds', 'Birds Of Prey', 'Reptiles', 'Small Mammals', 'Small Rodents', 'Poultry & Gamebirds'];
 
 

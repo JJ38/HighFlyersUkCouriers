@@ -9,12 +9,14 @@
 
       <title>HighFlyersUkCouriers</title>
 
-    <script type="module" crossorigin src="./assets/RunsLogisticsManager-DmkrvMps.js"></script>
+    <script type="module" crossorigin src="./assets/RunsLogisticsManager-DaiplmOj.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
+    <link rel="modulepreload" crossorigin href="./assets/lodash-CGlAjXKt.js">
     <link rel="modulepreload" crossorigin href="./assets/index-35c79a8a-CO_jqFWO.js">
-    <link rel="modulepreload" crossorigin href="./assets/Firebase-BIVISA5O.js">
+    <link rel="modulepreload" crossorigin href="./assets/Firebase-80iysw7i.js">
+    <link rel="modulepreload" crossorigin href="./assets/Notification-CxUWC9Hr.js">
     <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
-    <link rel="stylesheet" crossorigin href="./assets/RunsLogisticsManager-CKPQ8i7o.css">
+    <link rel="stylesheet" crossorigin href="./assets/RunsLogisticsManager-CxusrhBP.css">
     <link rel="stylesheet" crossorigin href="./assets/Navbar-ClBKpNFz.css">
     <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-DTOtsrKl.css">
     <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-Dem43p4b.css">
@@ -75,40 +77,84 @@
         </nav>
         <div class="mainContent">
 
+          <div id="progressed_run_details_container" class="progressedRunsDetailsContainer">
+            <span id="close_progressed_run_details_container_button" class="material-symbols-outlined closeButton">
+              close
+            </span>
+
+            <h1 class="title">Stop Details</h1>
+            
+            <div class="tableContainer">
+
+              <table id="progressed_run_details_table" class="orderTable">
+
+                <tbody id="progressed_run_details_table_header_container" class="tableHeaderContainer">
+
+                  <tr class="headerRow">
+                                  
+                    <th>Stop Number</th>
+                    <th>Stop Type</th>
+                    <th>Order ID</th>
+                    <th>Stop Status</th>
+                    <th>Address&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <th>Species&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <th>Quantity</th>
+                    <th>Collected Payment</th>
+                    <th>Driver message&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <!-- <th>Last Updated</th> -->
+                    <th></th>
+                    <th class="tableRowBackground"></th>
+                  </tr>
+
+                </tbody>
+
+                <tbody id="progressed_run_details_table_body" class="tableBody">
+
+                  <tr></tr>
+                  <tr></tr>
+                  <tr></tr>
+
+                </tbody>
+              </table>
+            
+            </div>
+
+          </div>
+
           <h1 class="title">Progressed Runs</h1>
 
-          <section id="progressed_runs_table_wrapper" class="tableContainer">
-            
-            <div class="tableActionContainer">
+          <div id="table_action_container" class="tableActionContainer">
 
-              <div class="orderFiltersContainer">
+            <div class="orderFiltersContainer">
 
-                <input id="add_order_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
+              <input id="runs_search_input" type="text" class="addOrderSearchInput" placeholder="Search value">
 
-                <select name="" id="add_order_search_filter" class="selectOption">
+              <select name="" id="search_filter_select" class="selectOption">
 
-                  <option value="shipmentName">Shipment Name</option>
-                  <option value="runName">Run Name</option>
-                  <option value="driverName">Driver Name</option>
+                <option value="">-- Select Field --</option>
+                <option value="shipmentName">Shipment Name</option>
+                <option value="runName">Run Name</option>
+                <option value="driverName">Driver Name</option>
 
-                </select>
+              </select>
 
-                <button id="search_button" class="selectAddButton filterButton">Search</button>
-
-              </div>
-
-              <div>
-
-                <button id="search_runs_button" class="searchRunsButton filterButton">Search run(s)</button>
-
-              </div>
+              <!-- <button id="search_button" class="selectAddButton filterButton">Search</button> -->
 
             </div>
 
+            <div>
+
+              <button id="search_runs_button" class="searchRunsButton filterButton">Search run(s)</button>
+
+            </div>
+
+          </div>
+
+          <section id="progressed_runs_table_wrapper" class="tableContainer">
             
             <table id="progressed_runs_table" class="orderTable">
 
-              <tbody class="tableHeaderContainer">
+              <tbody id="table_header_container" class="tableHeaderContainer">
 
                 <tr class="headerRow">
                                 
@@ -141,6 +187,8 @@
           </section>
 
         </div>
+
+        
       </Section>
       
   </body>

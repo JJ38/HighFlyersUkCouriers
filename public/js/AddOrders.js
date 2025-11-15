@@ -15,7 +15,7 @@ const boxes = document.getElementById('boxes');
 const quantity = document.getElementById('quantity');
 
 
-const validPaymentOptions = ['Account', 'Collection', 'Delivery'];
+const validPaymentOptions = ['Account', 'Collection', 'Delivery', 'Pickup'];
 const validAnimalTypes = ['Pigeons - Young Birds', 'Pigeons - Old Birds', 'Aviary & Cage Birds', 'Birds Of Prey', 'Reptiles', 'Small Mammals', 'Small Rodents', 'Poultry & Gamebirds'];
 
 

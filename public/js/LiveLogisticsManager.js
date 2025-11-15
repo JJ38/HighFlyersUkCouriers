@@ -1,4 +1,3 @@
-import { isEmpty } from "lodash";
 import { db, getDocuments, getDocument } from "/js/Firebase.js";
 import { query, collection, doc, onSnapshot} from "firebase/firestore";
 
@@ -13,6 +12,7 @@ let GoogleMap;
 
 
 let numberOfProgressedRuns;
+let currentSelectedRunDriverID;
 
 let map;
 
@@ -26,13 +26,12 @@ let progressedRunStructList = [];
 initMap();
 fetchProgressedRunsInfo();
 fetchDriverDocs();
-console.log(drivers);
 
 async function fetchProgressedRunsInfo(){
 
   const progressedRunsDocs = await getDocuments(query(collection(db, "ProgressedRuns")));
 
-  if(isEmpty(progressedRunsDocs.docs)){
+  if(progressedRunsDocs.docs.length == 0){
     return;
   }
 
@@ -54,7 +53,7 @@ async function fetchDriverDocs(){
 
   const driverDocs = await getDocuments(query(collection(db, "Drivers")));
 
-  if(isEmpty(driverDocs.docs)){
+  if(driverDocs.docs.length == 0){
     return;
   }
 
@@ -74,6 +73,8 @@ async function addListenerToDriverDocument(driverDoc){
 
   onSnapshot(driverDocRef, (doc) => {
 
+    console.log("update for " + doc.id);
+
     const driverData = doc.data();
     
     if(!isEmpty(drivers.get(doc.id))){
@@ -86,6 +87,10 @@ async function addListenerToDriverDocument(driverDoc){
     //update position of marker on map
     updateDriverMarker(drivers.get(doc.id));
 
+    if(currentSelectedRunDriverID == doc.id){
+      updateMapCamera(driverData.location.latitude, driverData.location.longitude);
+    }
+
   });
 
   //link driver doc to run
@@ -93,11 +98,7 @@ async function addListenerToDriverDocument(driverDoc){
 
 }
 
-
 async function updateDriverMarker(driverData){
-
-  console.log("updateDriverMarker");
-  console.log(driverData);
 
   if(isEmpty(driverData.location) || isEmpty(map)){
     return;
@@ -110,15 +111,6 @@ async function updateDriverMarker(driverData){
 
   }
 
-  //style
-  const pinTextGlyph = new GooglePinElement({
-    glyph: "x",
-    glyphColor: "white",
-    background: '#0000FF', // Red background
-    borderColor: '#0000FF'
-  });
-
-  console.log(driverData['marker']);
 
   if(!isEmpty(driverData.marker)){
     console.log("removing driver marker");
@@ -126,14 +118,35 @@ async function updateDriverMarker(driverData){
     driverData.marker.map = null;
   }
 
-  const ratio = 361/455;
 
+  const ratio = 160/384;
   const width = 60;
+
+  const heading = (driverData.location.heading + 90) % 360;
+
+  let anchorY;
+  let anchorX;
+
+
+  //the image needs translating to place the center of the image on the coordinates
+  // if(heading < 180){
+  //   anchorY = "translateY(50%)";
+  // }else{
+  //   anchorY = "translateY(-50%)";
+  // }
+
+  // if(heading < 270 && heading > 90){
+  //   anchorX = "translateX(50%)";
+  // }else{
+  //   anchorX = "translateX(-50%)";
+  // }
 
   const vanElement = document.createElement("img");
   vanElement.src = "/images/van.png"; // can be PNG, JPG, WebP, etc.
   vanElement.style.width = width + "px";
   vanElement.style.height = (width * ratio) + "px";
+  // vanElement.style.transform = "";
+  vanElement.style.transform = `rotate(${heading}deg) translateY(-50%) translateX(-50%)`; //+90 as the van picture is facing west
 
   // optional: allow CSS rotation
   vanElement.style.transition = "transform 0.3s linear";
@@ -148,8 +161,6 @@ async function updateDriverMarker(driverData){
   });
 
   driverData['marker'] = marker;
-  console.log(driverData['marker']);
-
 
 } 
 
@@ -215,12 +226,6 @@ function updateRunCard(oldprogressedRunStruct, newprogressedRunStruct){
 
 }
 
-async function fetchDriverRuns(){
-
-
-  return 0;
-
-}
 
 const sortAlphabetically = (a, b) => {
 
@@ -526,19 +531,57 @@ function addRunCardEventListener(progressedRunStruct){
 
   runCard.addEventListener('click', () => {
 
-    console.log(progressedRunStruct);
-        
     if(currentSelectDriver != null){
       currentSelectDriver.classList.remove('selectedDriverInfoCard');
     }
 
+    //if already selected
+    if(currentSelectDriver == progressedRunStruct.runCard){
+      console.log("already selected");
+      currentSelectedRunDriverID = null;
+      currentSelectDriver = null;
+      return;
+    }
+
+
     runCard.classList.add('selectedDriverInfoCard');
     currentSelectDriver = runCard;
     
-    fetchDriverRuns();
+    //find driver location
+    const driver = drivers.get(progressedRunStruct.driverID);
+    
+    currentSelectedRunDriverID = progressedRunStruct.driverID;
+
+    //update camera location of map
+    updateMapCamera(driver.location.latitude, driver.location.longitude);
      
   });
 
 }
 
+function updateMapCamera(latitude, longitude){
 
+  console.log(latitude);
+  console.log(longitude);
+
+
+  if(isEmpty(latitude) || isEmpty(longitude)){
+    console.log("invalid coordinates to update map camera");
+    return;
+  }
+
+  map.setCenter(new google.maps.LatLng(latitude, longitude));
+  map.setZoom(16);
+
+}
+
+
+function isEmpty(value){
+
+  if(value == null || value == undefined || value == ""){
+    return true;
+  }
+
+  return false;
+
+}
