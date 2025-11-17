@@ -121,7 +121,6 @@ function updateSnapshotQuery(){
 
     orderListenerSubscription = onSnapshot(snapshotQuery,  (querySnapshot) => {
         
-       
 
         addOrdersToTable(querySnapshot.docs, true);
         

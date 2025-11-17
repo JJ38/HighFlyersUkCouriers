@@ -1,6 +1,6 @@
 import { db, getDocuments } from "/js/Firebase.js";
 import { where, query, collection } from "firebase/firestore";
-import { fetchBirdSpecies, createAnimalTypeSelectOptions, createDescriptionTable } from "/js/FormModel.js";
+import { fetchBirdSpecies, createAnimalTypeSelectOptions, createDescriptionTable, initInternalOrderForm } from "/js/FormModel.js";
 
 
 const ID = parseInt(new URLSearchParams(document.location.search).get("id"));
@@ -19,7 +19,7 @@ const fieldsMap = {
     email: "Email:",
     quantity: "Quantity:",
     boxes: "Boxes:",
-    username: "Username:",
+    account: "Account:",
     deliveryWeek: "Delivery Week:",
     
     collectionName: "Collection Name:",
@@ -53,7 +53,11 @@ addEventListeners();
 
 async function init(){
 
-    const birdSpecies = await fetchBirdSpecies();
+    const formDataMap = await initInternalOrderForm();
+
+    const birdSpecies = formDataMap.get('Settings/birdSpecies');
+    const customerAccounts = formDataMap.get('Users');
+
 
     options = createAnimalTypeSelectOptions(birdSpecies);
     console.log(options);
@@ -223,7 +227,7 @@ function sortOrderData(orderFields){
         quantity: orderFields['quantity'],
         email: orderFields['email'],
         boxes: orderFields['boxes'],
-        username: orderFields['account'],
+        account: orderFields['account'],
         deliveryWeek: orderFields['deliveryWeek'],
         
         collectionName: orderFields['collectionName'],

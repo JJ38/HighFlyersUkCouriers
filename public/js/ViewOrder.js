@@ -2,8 +2,6 @@ import { db, getDocuments } from "/js/Firebase.js";
 import { where, query, collection } from "firebase/firestore";
 
 const ID = parseInt(new URLSearchParams(document.location.search).get("id"));
-
-console.log(ID);
 const q = query(collection(db, "Orders"), where("ID", "==", ID));
 
 
@@ -12,7 +10,7 @@ const fieldsMap = {
     animalType: "Animal Type:",
     email: "Email:",
     quantity: "Quantity:",
-    username: "Username:",
+    account: "Account:",
     deliveryWeek: "Delivery Week:",
     
     collectionName: "Collection Name:",

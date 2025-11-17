@@ -1,7 +1,61 @@
-import { db, getDocument } from '/js/firebase';
-import { query, doc } from 'firebase/firestore';
+import { db, getDocument, getDocuments } from '/js/firebase';
+import { query, doc, collection, where, orderBy } from 'firebase/firestore';
 import { showNotification } from '/js/Notification.js';
 
+
+export async function initInternalOrderForm(){
+
+    const promisesMap = new Map();
+    const promisesList = [];
+
+    const birdSpeciesPromise = fetchBirdSpecies();
+    promisesList.push(birdSpeciesPromise);
+    promisesMap.set('Settings/birdSpecies', birdSpeciesPromise);
+
+
+    const customerAccountsPromise = fetchCustomerAccounts();
+    promisesList.push(customerAccountsPromise);
+    promisesMap.set('Users', customerAccountsPromise);
+
+
+    await Promise.all(promisesList);
+
+    for(const key of promisesMap.keys()){
+
+        const data = await promisesMap.get(key);
+        promisesMap.set(key, data);
+
+    }
+    
+    return promisesMap;
+
+}
+
+export async function fetchCustomerAccounts(){
+
+    const customerAccountSnapshot = await getDocuments(query(collection(db, 'Users'), where('role', "==", 'customer'), orderBy('username', 'asc'),));
+
+    if(customerAccountSnapshot == false){
+        showNotification("Error!", "Error loading form. Please try again later");
+        return false;
+    }
+
+    const customerAccountDocuments = customerAccountSnapshot.docs;
+    
+    if(customerAccountDocuments == null){
+        showNotification("Error!", "Error fetching accounts");
+        return false;
+    }
+
+    return customerAccountDocuments;
+
+}
+
+export async function fetchCustomerAccount(id){
+
+    const customerAccountDocuments = await getDocument(query(doc(db, 'Users', id)));
+
+}
 
 export async function fetchBirdSpecies(){
 
@@ -10,14 +64,14 @@ export async function fetchBirdSpecies(){
     if(birdSpeciesDocument == false){
         console.log("waddawd");
         showNotification("Error!", "Error loading form. Please try again later");
-        return;
+        return false;
     }
 
     const birdSpecies = birdSpeciesDocument.data();
     
     if(birdSpecies == null){
         showNotification("Error!", "Error fetching bird species");
-        return;
+        return false;
     }
 
     return birdSpecies;
@@ -205,11 +259,6 @@ export function createAnimalTypeSelectOptions(birdSpecies){
 
     const options = [];
 
-    console.log(birdSpecies);
-    console.log(typeof(birdSpecies));
-    console.log(birdSpecies.species);
-
-
     for(let i = 0; i < birdSpecies.species.length; i++){
 
         const option = document.createElement('option');
@@ -223,6 +272,31 @@ export function createAnimalTypeSelectOptions(birdSpecies){
     return options;
 
 }
+
+export function createAccountSelectOptions(accounts){
+
+    const options = [];
+
+    const defaultOption = document.createElement('option');
+    defaultOption.value = "";
+    defaultOption.text = "-- select account --"
+
+    options.push(defaultOption);
+
+    for(let i = 0; i < accounts.length; i++){
+        
+        const option = document.createElement('option');
+        option.value = accounts[i].id;
+        option.text = accounts[i].data().username.replaceAll('@placeholder.com', '');
+
+        options.push(option);
+
+    }
+    
+    return options;
+
+}
+
 
 export function createDescriptionTable(birdSpecies){
 

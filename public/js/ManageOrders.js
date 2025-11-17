@@ -1,6 +1,9 @@
 import { markOrdersAsPrinted, getInitialData, loadAdditionalOrders, sortOrderData, getFilterOrders } from "/js/FirebaseManageOrders.js";
 import { auth, filterSearch } from "/js/Firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
+import { showNotification } from "/js/Notification.js";
+import { fetchCustomerAccounts } from "/js/FormModel.js";
+
 
 const massActionButtons = document.getElementById('massActionButtons');
 
@@ -19,6 +22,7 @@ const orderTable = document.getElementById('tableBody');
 const loadingSymbol = document.getElementById('loadingsymbol');
 const loaderWrapper = document.getElementById('loaderWrapper');
 
+const customerAccounts = new Map();
 
 let orderDataWrapperHeight;
 
@@ -40,7 +44,16 @@ onAuthStateChanged(auth, (user) => {
     auth.currentUser.getIdTokenResult().then(async (getIdTokenResult) => {
       console.log(getIdTokenResult.claims.role);   
       role = getIdTokenResult.claims.role;
-    
+
+      if(role != "admin" && role != "staff"){
+        showNotification("Error!", "Invalid permissions");
+        return;
+      }
+      
+      //fetch customer accounts to convert account ids into readable account names
+      await getCustomerAccounts();
+      
+
       loadOrders();
       loadingSymbol.classList.add('hidden');
       loaderWrapper.classList.remove('hidden');
@@ -51,9 +64,27 @@ onAuthStateChanged(auth, (user) => {
 
   } else {
 
+    showNotification("Error!", "Unauthenticated");
+
   }
   
 });
+
+async function getCustomerAccounts(){
+
+  const customerAccountDocuments = await fetchCustomerAccounts(); //returns list of docs
+
+  if(customerAccountDocuments == false){
+    return;
+  }
+
+  for(let i = 0; i < customerAccountDocuments.length; i++){
+
+    customerAccounts.set(customerAccountDocuments[i].id, customerAccountDocuments[i].data());
+
+  }
+
+}
 
 orderDataWrapper.addEventListener('scroll', (event) => {
   
@@ -66,7 +97,6 @@ orderDataWrapper.addEventListener('scroll', (event) => {
   }
 
 });
-
 
 
 searchButton.addEventListener('click', async () => {
@@ -301,17 +331,26 @@ export function addOrdersToTable(orderArray, prepend){
       const sortedOrderData = sortOrderData(orderFields);
 
     
-
       for(var field in sortedOrderData){
 
           const tableData = document.createElement('td');
 
           if(field == "price"){
+
             tableData.innerHTML = sortedOrderData[field] == undefined || sortedOrderData[field] == "" || sortedOrderData[field] == null || sortedOrderData[field] == "N/A" ? "N/A" : "£" + sortedOrderData[field]; 
+          
           }else if(field == "boxes"){
+
             tableData.innerHTML = sortedOrderData[field] == undefined || sortedOrderData[field] == "" || sortedOrderData[field] == null || sortedOrderData[field] == "N/A" ? "N/A" : sortedOrderData[field];
+          
+          }else if(field == "account"){
+
+            tableData.innerHTML = getAccountName(sortedOrderData[field]);
+
           }else{
+
             tableData.innerHTML = sortedOrderData[field];
+
           }
 
           tableData.classList.add(field);
@@ -340,6 +379,7 @@ export function addOrdersToTable(orderArray, prepend){
       tableData.appendChild(orderCheckBox);
 
       tableRow.prepend(tableData);
+
       if(prepend){
           orderTable.prepend(tableRow);
       }else{
@@ -349,7 +389,6 @@ export function addOrdersToTable(orderArray, prepend){
       const orderButtons = getOrderButtons(orderFields);
 
       tableRow.appendChild(orderButtons);
-      console.log("added delete buttons");
 
       //add print button to orderFields so listener can be added to it
       orderFields['printButton'] = orderButtons.children[0].firstChild;
@@ -360,6 +399,27 @@ export function addOrdersToTable(orderArray, prepend){
 
   roleBasedAccess();
 
+}
+
+//account value could be an id to the user document or a legacy value that is just a string input of the account name
+function getAccountName(accountValue){
+
+  let accountName = accountValue;
+
+  const customerData = customerAccounts.get(accountValue);
+
+  if(customerData != undefined && customerData != null){
+
+    const name = customerData.username;
+
+    //username field doesnt exist
+    if(name != undefined){
+      accountName = name.replaceAll('@placeholder.com', '');
+    }
+
+  }
+
+  return accountName;
 }
 
 function getOrderButtons(orderData){

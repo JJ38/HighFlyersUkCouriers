@@ -1,4 +1,5 @@
-import { fetchBirdSpecies, createAnimalTypeSelectOptions } from "/js/FormModel.js";
+import { createAccountSelectOptions } from "./FormModel";
+import { createAnimalTypeSelectOptions, initInternalOrderForm } from "/js/FormModel.js";
 
 
 const email = document.getElementById('email');
@@ -9,6 +10,7 @@ const deliveryPhoneNumber = document.getElementById('deliveryPhoneNumber');
 const collectionPhoneNumber = document.getElementById('collectionPhoneNumber');
 
 const animalTypeSelect = document.getElementById('animal_type');
+const accountSelect = document.getElementById('username');
 const payment = document.getElementById('payment');
 
 const boxes = document.getElementById('boxes');
@@ -23,12 +25,29 @@ init();
 
 async function init(){
 
-    const birdSpecies = await fetchBirdSpecies();
+    const formDataMap = await initInternalOrderForm();
 
-    const options = createAnimalTypeSelectOptions(birdSpecies);
+    const birdSpecies = formDataMap.get('Settings/birdSpecies');
+    const customerAccounts = formDataMap.get('Users'); 
 
-    for(let i =0; i < options.length; i++){
-        animalTypeSelect.appendChild(options[i]);
+    if(birdSpecies == false){
+        return;
+    }
+
+    if(customerAccounts == false){
+        return;
+    }
+
+    const animalTypeOptions = createAnimalTypeSelectOptions(birdSpecies);
+
+    for(let i = 0; i < animalTypeOptions.length; i++){
+        animalTypeSelect.appendChild(animalTypeOptions[i]);
+    }
+
+    const accountOptions = createAccountSelectOptions(customerAccounts);
+
+    for(let i =0; i < accountOptions.length; i++){
+        accountSelect.appendChild(accountOptions[i]);
     }
 
     addEventListeners();
