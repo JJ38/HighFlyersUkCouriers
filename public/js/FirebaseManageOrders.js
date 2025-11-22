@@ -81,7 +81,12 @@ export function sortOrderData(orderFields){
 
 async function getOrderData(q){
 
+    console.log("getOrderData");
+
     const documentSnapshots = await getDocs(q);
+
+    console.log("fesfesf");
+
 
     if(documentSnapshots.empty){
         console.log("no results");

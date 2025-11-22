@@ -1,5 +1,6 @@
 import { db, getDocuments } from "/js/Firebase.js";
 import { where, query, collection } from "firebase/firestore";
+import { getCustomerAccountName } from "/js/formModel.js"
 
 const ID = parseInt(new URLSearchParams(document.location.search).get("id"));
 const form = document.getElementById("form");
@@ -7,7 +8,7 @@ const form = document.getElementById("form");
 console.log(ID);
 const q = query(collection(db, "Orders"), where("ID", "==", ID));
 
-getDocuments(q).then((documentSnapshots) => {
+getDocuments(q).then(async (documentSnapshots) => {
 
     if(documentSnapshots.docs.length == 0){
         alert("Error fetching order");
@@ -16,6 +17,9 @@ getDocuments(q).then((documentSnapshots) => {
 
     const table = document.getElementById("orderdata");
     const orderData = documentSnapshots.docs[0].data();
+
+    orderData['account'] = await getCustomerAccountName(orderData['account']);
+
 
     const sortedOrderData = sortOrderData(orderData);
 

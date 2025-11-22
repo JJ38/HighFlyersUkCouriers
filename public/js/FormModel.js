@@ -31,6 +31,39 @@ export async function initInternalOrderForm(){
 
 }
 
+//accountValue can be account id or name of account from legacy orders
+export async function getCustomerAccountName(accountValue){
+
+    if(accountValue == "" || accountValue == null || accountValue == undefined){
+        return accountValue;
+    }
+
+    const customerAccountDocument = await getDocument(query(doc(db, 'Users', accountValue)));
+
+    const customerAccountData = customerAccountDocument.data();
+
+    if(customerAccountData == undefined || customerAccountData == null){
+        return accountValue;
+    }
+
+    const username =  customerAccountData['username'];
+
+    if(username == null || username == undefined){
+        return accountValue;
+    }
+
+    const accountName = customerAccountData['username'].replaceAll('@placeholder.com', '');
+
+    return accountName;
+
+}
+
+export async function getCustomerAccountID(accountName){
+
+    
+
+}
+
 export async function fetchCustomerAccounts(){
 
     const customerAccountSnapshot = await getDocuments(query(collection(db, 'Users'), where('role', "==", 'customer'), orderBy('username', 'asc'),));
@@ -48,12 +81,6 @@ export async function fetchCustomerAccounts(){
     }
 
     return customerAccountDocuments;
-
-}
-
-export async function fetchCustomerAccount(id){
-
-    const customerAccountDocuments = await getDocument(query(doc(db, 'Users', id)));
 
 }
 
@@ -273,7 +300,7 @@ export function createAnimalTypeSelectOptions(birdSpecies){
 
 }
 
-export function createAccountSelectOptions(accounts){
+export function createAccountSelectOptions(accounts, accountValue){
 
     const options = [];
 
@@ -288,6 +315,7 @@ export function createAccountSelectOptions(accounts){
         const option = document.createElement('option');
         option.value = accounts[i].id;
         option.text = accounts[i].data().username.replaceAll('@placeholder.com', '');
+
 
         options.push(option);
 

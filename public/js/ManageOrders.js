@@ -110,8 +110,7 @@ searchButton.addEventListener('click', async () => {
 
   }
 
-  const query = filterSearch(searchOptionInput, searchValueInput);
-  console.log(query);
+  const query = await filterSearch(searchOptionInput, searchValueInput);
 
   const orderData = await getFilterOrders(query);
 
@@ -121,8 +120,14 @@ searchButton.addEventListener('click', async () => {
   const tableBody = document.getElementById('tableBody');
   tableBody.innerHTML = "";
 
+  console.log("3");
+
+
   //append order data to table
   addOrdersToTable(orderData, false);
+
+  console.log("4");
+
 
 });
 
@@ -313,8 +318,6 @@ function getAnimalTypeColour(animalType){
 }
 
 export function addOrdersToTable(orderArray, prepend){
-
-  console.log(orderArray);
 
   for(let i = 0; i < orderArray.length; i++){
 

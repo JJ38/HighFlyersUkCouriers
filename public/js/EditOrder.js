@@ -1,6 +1,6 @@
 import { db, getDocuments } from "/js/Firebase.js";
 import { where, query, collection } from "firebase/firestore";
-import { fetchBirdSpecies, createAnimalTypeSelectOptions, createDescriptionTable, initInternalOrderForm } from "/js/FormModel.js";
+import { fetchBirdSpecies, createAnimalTypeSelectOptions, createAccountSelectOptions, createDescriptionTable, initInternalOrderForm } from "/js/FormModel.js";
 
 
 const ID = parseInt(new URLSearchParams(document.location.search).get("id"));
@@ -9,7 +9,7 @@ const q = query(collection(db, "Orders"), where("ID", "==", ID));
 const saveButton = document.getElementById('save_button');
 const form = document.getElementById('edit_order_form');
 
-const validPaymentOptions = ['Account', 'Collection', 'Delivery', 'Pickup'];
+const validPaymentTypeOptions = ['Account', 'Collection', 'Delivery', 'Pickup'];
 const validAnimalTypes = ['Pigeons - Young Birds', 'Pigeons - Old Birds', 'Aviary & Cage Birds', 'Birds Of Prey', 'Reptiles', 'Small Mammals', 'Small Rodents', 'Poultry & Gamebirds'];
 
 
@@ -45,7 +45,8 @@ const fieldsMap = {
     timestamp: "Timestamp:",
 }
 
-let options;
+let animalTypeOptions;
+let accountNameOptions;
 
 init();
 addEventListeners();
@@ -58,9 +59,14 @@ async function init(){
     const birdSpecies = formDataMap.get('Settings/birdSpecies');
     const customerAccounts = formDataMap.get('Users');
 
+    console.log(customerAccounts);
 
-    options = createAnimalTypeSelectOptions(birdSpecies);
-    console.log(options);
+
+    animalTypeOptions = createAnimalTypeSelectOptions(birdSpecies);
+    accountNameOptions = createAccountSelectOptions(customerAccounts);
+    console.log(animalTypeOptions);
+    console.log(accountNameOptions);
+
 
     getDocuments(q).then((documentSnapshots) => {
 
@@ -130,14 +136,14 @@ async function init(){
                     
                     let setSelected = false;
 
-                    for(let i = 0; i < options.length; i++){
+                    for(let i = 0; i < animalTypeOptions.length; i++){
 
-                        if(options[i].value == sortedOrderData[fields]){
-                            options[i].selected = true;
+                        if(animalTypeOptions[i].value == sortedOrderData[fields]){
+                            animalTypeOptions[i].selected = true;
                             setSelected = true;
                         }
 
-                        select.appendChild(options[i]);
+                        select.appendChild(animalTypeOptions[i]);
 
                     }
 
@@ -151,6 +157,29 @@ async function init(){
 
                     }
 
+                    data.appendChild(select);
+                    break;
+
+                }
+                case "account": 
+                {
+                    const select = document.createElement('select');
+                    select.id = "username";
+                    select.name = "username";
+                    
+                    let setSelected = false;
+
+                    for(let i = 0; i < accountNameOptions.length; i++){
+
+                        if(accountNameOptions[i].value == sortedOrderData[fields]){
+                            accountNameOptions[i].selected = true;
+                            setSelected = true;
+                        }
+
+                        select.appendChild(accountNameOptions[i]);
+
+                    }
+                    
                     data.appendChild(select);
                     break;
 
@@ -292,7 +321,7 @@ function validateForm(){
         return "Email is not valid";
     }
 
-    if(!validPaymentOptions.includes(payment.value)){
+    if(!validPaymentTypeOptions.includes(payment.value)){
         return "Please select a valid payment option";
     }
 

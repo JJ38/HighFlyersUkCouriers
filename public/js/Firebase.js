@@ -85,7 +85,7 @@ export async function bulkReadTransaction(docIDs, collectionPath){
 
 
 
-export function filterSearch(searchOption, searchValue){
+export async function filterSearch(searchOption, searchValue){
 
     let q;
     console.log(searchOption);
@@ -126,11 +126,42 @@ export function filterSearch(searchOption, searchValue){
 
             break;
 
+        case "account":
+            
+            const searchValueSet = new Set();
+            searchValueSet.add(searchValue);
+            //fetch user document
+            const accountID = await getCustomerAccountID(searchValue);
+
+            if(accountID != null){
+                searchValueSet.add(accountID)
+            }
+
+            q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "in", Array.from(searchValueSet)));
+
+            break;
+
         default:
             q = query(collection(db, "Orders"), orderBy('ID', 'desc'), where(searchOption, "==", searchValue));
             break;
     }
 
     return q;
+
+}
+
+//account value may be id of user doc or string literal of account name
+async function getCustomerAccountID(accountValue){
+
+    //fetch doc assuming its id of user doc
+    const userDoc = await getDocuments(query(collection(db, "Users"), where("username", "==", accountValue + "@placeholder.com")));
+    console.log(userDoc);
+
+    if(userDoc == false || userDoc.docs.length == 0){
+        return null;
+    }
+
+    console.log(userDoc.docs[0].id);
+    return userDoc.docs[0].id;
 
 }
