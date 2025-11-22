@@ -79,18 +79,17 @@ $app->post('/customer-order', function (Request $request, Response $response) us
 
     if($account_type == "customer"){
 
-
         $allPostVars = $request->getParsedBody();
 
         $container = $app->getContainer();
 
         $manage_order_model = $container->get('manageOrderModel');
-
         $session_wrapper = $container->get('sessionWrapper');
-        $account_name = $session_wrapper->getSessionVar('user');
 
-        $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $account_name);
+        $user_ID = $session_wrapper->getSessionVar('userID');
+        $account_name = $session_wrapper->getSessionVar('user');
         
+        $cleaned_orders = $manage_order_model->cleanMultipleOrders($allPostVars, $app, $user_ID);
        
         if(empty($cleaned_orders)){
             return $response->withRedirect('/customer-order?error=true', 302);
@@ -169,7 +168,7 @@ $app->post('/customer-order', function (Request $request, Response $response) us
 
         $mailer->setMailData($confirmed_orders);
         $mailer->sendMultipleOrderEmail($cleaned_email);
-        $mailer->sendMultipleOrderEmailInternal();
+        $mailer->sendMultipleOrderEmailInternal($account_name);
         
         if($store_result){
 

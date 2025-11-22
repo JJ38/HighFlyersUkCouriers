@@ -26,10 +26,6 @@ $app->get('/loginpage', function (Request $request, Response $response) use ($ap
 $app->post('/loginpage', function (Request $request, Response $response) use ($app) : Response
 {
 
-  // Retrieve user credentials in POST body
-  $tainted_parameters = $request->getParsedBody();
-  $cleaned_parameters = cleanLoginData($app, $tainted_parameters);
-
   // Get models + Wrappers
   $container = $app->getContainer();
   $login_model = $container->get('loginModel');

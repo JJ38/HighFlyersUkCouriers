@@ -211,6 +211,7 @@ class LoginModel
 
             $username = str_replace('@placeholder.com', '', $email);
 
+            $this->session_wrapper->setSessionVar('userID', $uid);
             $this->session_wrapper->setSessionVar('verified_ID_Token', $this->ID_token);
             $this->session_wrapper->setSessionVar('accountType', $account_type);
             $this->session_wrapper->setSessionVar('user',  $username);

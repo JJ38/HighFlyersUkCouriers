@@ -271,7 +271,7 @@ class ManageOrderModel
   }
 
   
-  public function cleanMultipleOrders($tainted_parameters, $app, $account_name){
+  public function cleanMultipleOrders($tainted_parameters, $app, $userID){
 
     //assemble order
 
@@ -306,7 +306,7 @@ class ManageOrderModel
       $tainted_order['message'] = $tainted_parameters['extra'][$i][4];
 
 
-      $tainted_order['username'] = $account_name;
+      $tainted_order['username'] = $userID;
 
       $tainted_order['printed'] = "Not Printed";
   

@@ -222,12 +222,12 @@ class Mailer{
     $this->sendMail($email, $subject, $message, false);
   }
 
-  public function sendMultipleOrderEmailInternal(){
+  public function sendMultipleOrderEmailInternal($account_name){
     $email =  $this->mailer_settings['username'];
-    $subject = "Order from {$this->mailer_data[1]['username']}";
+    $subject = "Order from {$account_name}";
 
     $attachment = $this->getMultipleOrderAttachment();
-    $message = "Order from {$this->mailer_data[1]['username']}";
+    $message = "Order from {$account_name}";
 
     $this->sendMail($email, $subject, $message, $attachment);
   }
