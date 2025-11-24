@@ -2,14 +2,26 @@ body{
     padding: 10px;
 }
 
+
 p{
-    font-size: larger;
+    font-size: x-large;
+    break-inside: avoid;
+    margin: 0;
+    padding: 5px;
 }
 
 .postcodesWrapper{
 
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    column-count: 3;
+    column-gap: 10px;
+    row-gap: 20px;
+    
+}
 
+@media print{
+     * {
+    page-break-inside: avoid;
+  }
 }

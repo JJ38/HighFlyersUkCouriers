@@ -2392,9 +2392,8 @@ export function convertStopNumberToLetter(stopNumber){
 
 export function getPostcodesToPrint(run){
 
-  const uniquePostcodes = getUniquePostcodes(run.stops);
-
-  console.log(uniquePostcodes);
+  const postcodes = getPostcodes(run.stops);
+  console.log(postcodes);
 
   let html;
 
@@ -2408,7 +2407,7 @@ export function getPostcodesToPrint(run){
         ''+
       '</head>'+
         '<body>'+
-          '<h1>' + run.runName + '</h1>'+
+          '<h1>' + run.runName + '</h1><br>'+
           '<div class="postcodesWrapper">';
          
         
@@ -2419,9 +2418,8 @@ export function getPostcodesToPrint(run){
   
   html = boilerplateTop;
 
-  for(const postcode of uniquePostcodes){
+  for(const postcode of postcodes){
 
-    console.log(postcode);
     html += '<p>' + postcode + '</p>';
 
   }
@@ -2435,9 +2433,9 @@ export function getPostcodesToPrint(run){
 }  
 
 
-function getUniquePostcodes(stops){
+function getPostcodes(stops){
 
-  const uniquePostcodesSet = new Set();
+  const postcodes = [];
 
   for(let i = 0; i < stops.length; i++){
 
@@ -2445,21 +2443,47 @@ function getUniquePostcodes(stops){
 
     if(stopType == "collection"){
 
-      uniquePostcodesSet.add(getOutwardPostcode(stops[i].stopData.collectionPostcode));
+      postcodes.push(getFullPostcode(stops[i].stopData.collectionPostcode));
 
     }else{
 
-      uniquePostcodesSet.add(getOutwardPostcode(stops[i].stopData.deliveryPostcode));
+      postcodes.push(getFullPostcode(stops[i].stopData.deliveryPostcode));
 
     }
 
   }
 
-  const uniquePostcodesArray = Array.from(uniquePostcodesSet);
+  postcodes.sort();
 
-  uniquePostcodesArray.sort();
+  return postcodes;
 
-  return uniquePostcodesArray;
+}
+
+function getFullPostcode(postcode){
+
+  console.log(postcode);
+
+  const trimmedPostcode = postcode.replaceAll(" ", "");
+
+  if(trimmedPostcode.length == 5){
+
+    return trimmedPostcode.substring(0,2) + " " + trimmedPostcode.substring(2);
+
+  }
+
+  
+  if(trimmedPostcode.length == 6){
+
+    return trimmedPostcode.substring(0,3) + " " + trimmedPostcode.substring(3);
+
+  }
+
+  
+  if(trimmedPostcode.length == 7){
+
+    return trimmedPostcode.substring(0,4) + " " + trimmedPostcode.substring(4);
+
+  }
 
 }
 
