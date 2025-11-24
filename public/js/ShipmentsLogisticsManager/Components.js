@@ -555,7 +555,7 @@ export function createUnassignedOrdersTableCard(stopData, clickableElement){
 }
 
 
-export function createTableOrderCard(doc){
+export function createTableOrderCard(doc, customerAccounts){
 
   const orderData = doc.data();
 
@@ -575,7 +575,22 @@ export function createTableOrderCard(doc){
   tableRow.appendChild(tableData(orderData['ID']));
   tableRow.appendChild(tableData(orderData['animalType']));
   tableRow.appendChild(tableData(orderData['quantity']));
-  tableRow.appendChild(tableData(orderData['account']));
+
+  if(customerAccounts != false){
+
+    let accountName = customerAccounts.get(orderData['account']);
+
+    //if value of account is literally account name rather than account id
+    if(accountName == undefined){
+      accountName = orderData['account'];
+    }
+
+    tableRow.appendChild(tableData(accountName));
+
+  }else{
+    tableRow.appendChild(tableData(orderData['account']));
+  }
+
   tableRow.appendChild(tableData(orderData['deliveryWeek']));
   tableRow.appendChild(tableData(orderData['collectionName']));
 

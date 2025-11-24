@@ -3,6 +3,7 @@ import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, fil
 import { GeocodingAPIKey, calculateRouteEndpoint } from '/js/Settings.js';
 
 let GoogleAutocomplete;
+let customerAccounts;
 
 export const sortAlphabetically = (a, b) => {
 
@@ -2685,5 +2686,39 @@ export function getCurrentAssignedDriverName(drivers, runID){
   }
 
   return "unassigned";
+
+}
+
+export async function getCustomerAccounts(){
+
+  if(customerAccounts != null){
+    return customerAccounts;
+  }
+
+  const documents = await getDocuments(query(collection(db, 'Users'), where("role", "==", "customer")));
+
+  if(documents == false){
+
+    return false;
+
+  }
+
+  //parse customer account docs in map of ids and names
+
+  const customerAccountMap = new Map();
+
+  for(let i = 0; i < documents.docs.length; i++){
+
+    const username = documents.docs[i].data()['username'];
+
+    if(username != undefined){
+      customerAccountMap.set(documents.docs[i].id, documents.docs[i].data()['username'].replaceAll("@placeholder.com", ""));
+    }else{
+      customerAccountMap.set(documents.docs[i].id, "unknown account");
+    }
+
+  }
+
+  customerAccounts = customerAccountMap;
 
 }
