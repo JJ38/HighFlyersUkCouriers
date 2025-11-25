@@ -2,7 +2,7 @@ import { db, getDocuments, filterSearch, auth } from "/js/Firebase.js";
 import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
-import { createDriverSelectOptions, createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "/js/ShipmentsLogisticsManager/Components";
+import { createStaffSelectOptions, createDriverSelectOptions, createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "/js/ShipmentsLogisticsManager/Components";
 import { getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
@@ -83,6 +83,10 @@ const selectAssignDriver = document.getElementById('select_assign_driver');
 const selectAssignDriverWrapper = document.getElementById('select_assign_driver_wrapper');
 const assignedDriverText = document.getElementById('assigned_driver_text');
 const assignedDriverTextWrapper = document.getElementById('assigned_driver_text_wrapper');
+const selectAssignStaff = document.getElementById('select_assign_staff');
+const selectAssignStaffWrapper = document.getElementById('select_assign_staff_wrapper');
+const assignedStaffText = document.getElementById('assigned_staff_text');
+const assignedStaffTextWrapper = document.getElementById('assigned_staff_text_wrapper');
 
 
 
@@ -739,6 +743,7 @@ function addEventListeners(){
       updateStopList(currentSelectedRun);
       updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
       updateSelectAssignDriver();
+      updateSelectAssignStaffMember();
 
     });
 
@@ -1243,6 +1248,7 @@ function selectTab(tabName){
     hideUI(runStopsContainer);
     showUI(runOptionsContainer);
     updateSelectAssignDriver();
+    updateSelectAssignStaffMember();
     optionTabButton.classList.add('selectedTabButton');
     manageTabButton.classList.remove('selectedTabButton');
 
@@ -1381,6 +1387,55 @@ function showUnoptimisedRunState(){
   updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
   updateMapMarkers(currentSelectedRun);
   updateStopList(currentSelectedRun);
+
+}
+
+async function updateSelectAssignStaffMember(){
+
+  // const driverDocuments = await fetchStaffMembers();
+
+  // if(driverDocuments == false){
+  //   showNotification("Error!", "Error fetching driver documents. You cant currently assign this run to a driver")
+  //   return;
+  // }
+
+  //is route optimised
+  if(currentSelectedRun.isOptimised){
+
+    //create options for select dropdown
+    const options = createStaffSelectOptions();
+
+    updateOptionsToSelectStaff(options);
+
+    showUI(selectAssignStaffWrapper);
+    hideUI(assignedStaffTextWrapper);
+    return;
+
+  }else{
+
+    //find assigned driver
+    //const assignedDriver = getCurrentAssignedDriverName(drivers, currentSelectedRun.documentId);
+
+    //set 
+    hideUI(selectAssignStaffWrapper);
+    showUI(assignedStaffTextWrapper);
+
+    assignedStaffText.innerText = "staff member assigned";
+
+  }
+
+}
+
+
+function updateOptionsToSelectStaff(options){
+
+  selectAssignStaff.innerHTML = "";
+
+  selectAssignStaff.appendChild(createOption("-- assign staff member --", ""));
+
+  for(let i = 0; i < options.length; i++){
+    selectAssignStaff.appendChild(options[i]);
+  }
 
 }
 

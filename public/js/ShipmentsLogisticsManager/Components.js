@@ -860,6 +860,19 @@ export function createShipmentOptions(shipmentName, shipments){
 
 }
 
+export function createStaffSelectOptions(){
+
+  const staff = [{staffName: "testStaff1", staffID: "oieawjdoipawiod"},{staffName: "testStaff1", staffID: "awojdoipawnf"}];
+  const options = [];
+
+  for(let i = 0; i < staff.length; i++){
+    options.push(createOption(staff[i].staffName, staff[i].staffID));
+  }
+
+  return options;
+
+}
+
 
 export function createDriverSelectOptions(drivers, shipmentRunIDs, runID){
 

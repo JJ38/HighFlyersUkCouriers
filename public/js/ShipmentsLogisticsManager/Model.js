@@ -2461,8 +2461,6 @@ function getPostcodes(stops){
 
 function getFullPostcode(postcode){
 
-  console.log(postcode);
-
   const trimmedPostcode = postcode.replaceAll(" ", "");
 
   if(trimmedPostcode.length == 5){
@@ -2535,6 +2533,24 @@ export function convertSecondsToHoursAndMinutes(secondsString){
 
   return hours + ":" + remainingMinutes;
 }
+
+
+export async function fetchStaffMembers(){
+  
+  try{
+
+    const q = query(collection(db, 'Drivers'));
+    const driverDocuments = await getDocuments(q);
+
+    return driverDocuments;
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+  }
+}
+
 
 export async function fetchDrivers(){
   
