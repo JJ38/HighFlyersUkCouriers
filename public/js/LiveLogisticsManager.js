@@ -129,18 +129,6 @@ async function updateDriverMarker(driverData){
 
 
   //the image needs translating to place the center of the image on the coordinates
-  // if(heading < 180){
-  //   anchorY = "translateY(50%)";
-  // }else{
-  //   anchorY = "translateY(-50%)";
-  // }
-
-  // if(heading < 270 && heading > 90){
-  //   anchorX = "translateX(50%)";
-  // }else{
-  //   anchorX = "translateX(-50%)";
-  // }
-
   const vanElement = document.createElement("img");
   vanElement.src = "/images/van.png"; // can be PNG, JPG, WebP, etc.
   vanElement.style.width = width + "px";

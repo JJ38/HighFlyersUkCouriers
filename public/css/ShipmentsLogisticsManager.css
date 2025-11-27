@@ -156,6 +156,7 @@ p{
     position: relative;
     padding: 25px 45px 5px 30px;
     box-sizing: border-box;
+    max-width: 300px;
 }
 
 .runName{

@@ -2539,7 +2539,7 @@ export async function fetchStaffMembers(){
   
   try{
 
-    const q = query(collection(db, 'Drivers'));
+    const q = query(collection(db, 'Staff'));
     const driverDocuments = await getDocuments(q);
 
     return driverDocuments;
@@ -2566,6 +2566,171 @@ export async function fetchDrivers(){
     console.log(e);
     return false;
   }
+}
+
+
+export function parseStaffDocuments(staffDocuments){
+
+  const docs = staffDocuments.docs;
+
+  if(docs.length == 0){
+    return false;
+  }
+
+  const staffMembers = [];
+
+ 
+
+  for(let i = 0; i < docs.length; i++){
+
+    const doc = docs[i].data();
+    const assignedRuns = [];
+
+    for(let j = 0; j < doc.assignedRuns.length; j++){
+      
+      assignedRuns.push(doc.assignedRuns[j].runID);
+
+    }
+
+    const staff = {
+      staffID: docs[i].id,
+      staffName: doc.staffName,
+      assignedRuns: assignedRuns
+    }
+
+    staffMembers.push(staff);
+
+  }
+
+  return staffMembers;
+
+}
+
+export async function unassignStaffMember(staffMemberID, runID){
+
+  try{
+
+    const staffDocRef = doc(db, 'Staff', staffMemberID);
+    const staffDocument = await getDocument(staffDocRef);
+
+    const staffData = staffDocument.data();
+
+    if(staffData == null){
+      return false;
+    }
+
+    const assignedRuns = staffData.assignedRuns;
+
+    for(let i = 0; i < assignedRuns.length; i++){
+
+      if(assignedRuns[i].runID == runID){
+        console.log(i);
+        assignedRuns.splice(i, 1);
+        break;
+      }
+
+    }
+
+    console.log(assignedRuns);
+
+    const updatedSuccessfully = await updateDocument(staffDocRef, {"assignedRuns": assignedRuns});
+
+    if(updatedSuccessfully == false){
+      return false;
+    }
+
+    return true;
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+  
+
+}
+
+export async function assignStaffMember(staffID, runID, shipmentName){
+
+  try{
+    const staffDocRef = doc(db, 'Staff', staffID);
+    const runDocRef = doc(db, 'Runs', runID);
+
+    const staffDocument = await getDocument(staffDocRef);
+    const runDocument = await getDocument(runDocRef);
+
+    const runData = runDocument.data();
+
+    if(runData == null){
+      return false;
+    }
+
+    const staffData = staffDocument.data();
+
+    if(staffData == null){
+      return false;
+    }
+
+    const assignedRuns = staffData.assignedRuns;
+
+    const staffRun = {
+      runID: runDocument.id,
+      shipmentName: shipmentName
+    }
+
+    assignedRuns.push(staffRun);
+
+    const updatedSuccessfully = await updateDocument(staffDocRef, {"assignedRuns": assignedRuns});
+
+    if(updatedSuccessfully == false){
+      return false;
+    }
+
+    return true;
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+
+
+}
+
+export function getCurrentAssignedStaffMember(staffMembers, runID){
+
+  const currentAssignStaffID = getCurrentAssignedStaffMemberID(staffMembers, runID);
+
+  if(currentAssignStaffID == false){
+    return "unassigned";
+  }
+
+  for(let i = 0; i < staffMembers.length; i++){
+
+    if(staffMembers[i].staffID == currentAssignStaffID){
+      return currentAssignStaffID[i].staffName;
+    }
+
+  }
+
+  return "unassigned";
+  
+
+}
+
+export function getCurrentAssignedStaffMemberID(staffMembers, runID){
+
+  for(let i = 0; i < staffMembers.length; i++){
+    if(staffMembers[i].assignedRuns.includes(runID)){
+      return staffMembers[i].staffID;
+    }
+  }
+
+  return false;
+
 }
 
 

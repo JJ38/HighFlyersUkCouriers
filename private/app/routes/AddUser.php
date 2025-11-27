@@ -80,7 +80,6 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
 
         //if one of the parameters does not meet requirements
         if(empty($cleaned_parameters)){
-        
             return $response->withRedirect('/manage-accounts?error=true', 302);
         }
 
@@ -121,6 +120,10 @@ $app->post('/add-user', function (Request $request, Response $response) use ($ap
         }else if($cleaned_parameters['accountType'] == "driver"){
 
             $manageAccountsModel->createFirestoreDriverDocument();
+
+        }else if($cleaned_parameters['accountType'] == "staff"){
+
+            $manageAccountsModel->createFirestoreStaffDocument();
 
         }
 

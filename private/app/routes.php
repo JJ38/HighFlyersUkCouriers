@@ -29,6 +29,7 @@ require "routes/LogisticsSettings.php";
 require "routes/LoginLegacy.php";
 require "routes/CalculateRoute.php";
 require "routes/SystemSettings.php";
+require "routes/LabelRuns.php";
 
 
 

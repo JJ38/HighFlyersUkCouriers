@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createStaffSelectOptions, createDriverSelectOptions, createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "/js/ShipmentsLogisticsManager/Components";
-import { getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { unassignStaffMember, getCurrentAssignedStaffMemberID, getCurrentAssignedStaffMember, assignStaffMember, parseStaffDocuments, fetchStaffMembers, getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -148,6 +148,7 @@ let currentSelectedShipmentName = null;
 let currentSelectedShipment = null;
 
 let drivers = null;
+let staffMembers = null;
 
 let currentStopMetaData = null;
 let currentStopButtonWrapper = null;
@@ -1042,6 +1043,71 @@ function addEventListeners(){
 
   }
 
+  if(selectAssignStaff != null){
+
+      selectAssignStaff.addEventListener('change', async (e) => {
+
+        const selectedStaffID = e.target.value;
+
+        const currentAssignedStaffMemberID = getCurrentAssignedStaffMemberID(staffMembers, currentSelectedRun.documentId);
+
+        if(selectedStaffID == ""){
+
+          const unassignedStaffMemberSuccessfully = await unassignStaffMember(currentAssignedStaffMemberID, currentSelectedRun.documentId);
+
+          if(!unassignedStaffMemberSuccessfully){
+
+            updateSelectAssignStaffMember();
+            showNotification("Error!", "Error unassigning staff member from run. The staff member is still assigned to this run");
+            return;
+
+          }else{
+
+            showNotification("Success!", "Successfully unassigned staff member from run");
+            updateSelectAssignStaffMember();
+            return;
+
+          }
+
+        }
+
+        //must unassign a staff member before assigning
+        if(currentAssignedStaffMemberID != false){
+
+          const unassignedStaffMemberSuccessfully = await unassignStaffMember(currentAssignedStaffMemberID, currentSelectedRun.documentId);
+
+          if(!unassignedStaffMemberSuccessfully){
+
+            updateSelectAssignDriver();
+            showNotification("Error!", "Error unassigning staff member from run. The staff member is still assigned to this run");
+            return;
+
+          }
+
+        }
+
+        //assign run to staff member
+        const assignRunSuccessfully = await assignStaffMember(selectedStaffID, currentSelectedRun.documentId, currentSelectedShipmentName);
+
+        if(!assignRunSuccessfully){
+
+          showNotification("Error!", "Error assigning staff member to run. No staff member is currently assigned to this run");        
+          updateSelectAssignStaffMember();
+          return;
+
+        }else{
+          
+          showNotification("Success!", "Successfully assigned staff member to run");
+          updateSelectAssignStaffMember();
+          return;
+
+        }
+
+      });
+
+
+  }
+
 }
 
 function print(form){
@@ -1392,18 +1458,23 @@ function showUnoptimisedRunState(){
 
 async function updateSelectAssignStaffMember(){
 
-  // const driverDocuments = await fetchStaffMembers();
+  const staffDocuments = await fetchStaffMembers();
 
-  // if(driverDocuments == false){
-  //   showNotification("Error!", "Error fetching driver documents. You cant currently assign this run to a driver")
-  //   return;
-  // }
+  if(staffDocuments == false){
+    showNotification("Error!", "Error fetching staff documents. You cant currently assign this run to a staff member")
+    return;
+  }
+
+  staffMembers = parseStaffDocuments(staffDocuments);
+
+  const assignedStaffMember = getCurrentAssignedStaffMemberID(staffMembers, currentSelectedRun.documentId);
+
 
   //is route optimised
   if(currentSelectedRun.isOptimised){
 
     //create options for select dropdown
-    const options = createStaffSelectOptions();
+    const options = createStaffSelectOptions(staffMembers, assignedStaffMember);
 
     updateOptionsToSelectStaff(options);
 
@@ -1414,13 +1485,13 @@ async function updateSelectAssignStaffMember(){
   }else{
 
     //find assigned driver
-    //const assignedDriver = getCurrentAssignedDriverName(drivers, currentSelectedRun.documentId);
+    const assignedStaffMember = getCurrentAssignedStaffMember(staffMembers, currentSelectedRun.documentId);
 
     //set 
     hideUI(selectAssignStaffWrapper);
     showUI(assignedStaffTextWrapper);
 
-    assignedStaffText.innerText = "staff member assigned";
+    assignedStaffText.innerText = assignedStaffMember.replaceAll("@placeholder.com", "");
 
   }
 
@@ -1461,14 +1532,11 @@ async function updateSelectAssignDriver(){
     return;
   }
   
-
   drivers = parseDriverDocuments(driverDocuments);
-  console.log(drivers);
 
   if(drivers == false){
     showNotification("Error!", "No drivers found to assign this run to");
   }
-
 
   //is route optimised
   if(currentSelectedRun.isOptimised){

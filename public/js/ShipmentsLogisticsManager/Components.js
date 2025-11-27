@@ -860,15 +860,22 @@ export function createShipmentOptions(shipmentName, shipments){
 
 }
 
-export function createStaffSelectOptions(){
+export function createStaffSelectOptions(staffMembers, assignedStaffMemberID){
 
-  const staff = [{staffName: "testStaff1", staffID: "oieawjdoipawiod"},{staffName: "testStaff1", staffID: "awojdoipawnf"}];
   const options = [];
 
-  for(let i = 0; i < staff.length; i++){
-    options.push(createOption(staff[i].staffName, staff[i].staffID));
-  }
+  for(let i = 0; i < staffMembers.length; i++){
 
+    const option = createOption(staffMembers[i].staffName, staffMembers[i].staffID);
+
+    if(staffMembers[i].staffID == assignedStaffMemberID){
+      option.selected = true;
+    }
+
+    options.push(option);
+
+  }
+  
   return options;
 
 }
