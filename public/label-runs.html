@@ -23,7 +23,7 @@
         <title>HighFlyersUkCouriers</title>
     </head>
     <body>
-        <header>
+      <header>
         <div id="mobilenavmenu" class="hideMobileMenu">
           <div id="mobilenavwrapper">
             <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
@@ -55,5 +55,90 @@
         </nav>
     
       </header>
+      <div class="mainContent">
+
+        <div id="assigned_run_details_container" class="assignedRunsDetailsContainer">
+          <span id="close_assigned_run_details_container_button" class="material-symbols-outlined closeButton">
+            close
+          </span>
+
+          <h1 class="title">Stop Details</h1>
+          
+          <div class="assignedRunDetailsTableContainer">
+
+            <table id="assigned_run_details_table" class="orderTable">
+
+              <tbody id="assigned_run_details_table_header_container" class="tableHeaderContainer">
+
+                <tr class="headerRow">
+                              
+                  <th>ID</th>
+                  <th>Animal</th>
+                  <th>Quantity</th>
+                  <!-- <th>Account</th> -->
+                  <th>Week</th>
+                  <th>Collection Name</th>
+                  <th>Collection Address</th>
+                  <th>Collection Phone Number</th>
+                  <th>Delivery Name</th>
+                  <th>Delivery Address</th>
+                  <th>Delivery Phone Number</th>
+                  <th>Payment</th>
+                  <th>Message</th>
+                  <th>Code</th>
+                  <th id="topright"></th>
+                  <th class="tableRowBackground"></th>
+                  
+                </tr>
+
+              </tbody>
+
+              <tbody id="assigned_run_details_table_body" class="assignedRunDetailsTableBody">
+
+                <tr></tr>
+                <tr></tr>
+                <tr></tr>
+
+              </tbody>
+            </table>
+          
+          </div>
+
+        </div>
+
+        <h1> Assigned Runs</h1>
+
+        <section id="assigned_runs_table_wrapper" class="tableContainer">
+          <table id="assigned_runs_table" class="orderTable">
+
+            <tbody id="table_header_container" class="tableHeaderContainer">
+
+              <tr class="headerRow">
+                              
+                <th>Shipment name</th>
+                <th>Run name</th>
+                <th>Run Week</th>
+                <th>Total stops</th>
+
+                <th></th>
+                <th class="tableHeaderBackground"></th>
+              </tr>
+
+            </tbody>
+
+            <tbody id="assigned_runs_table_body" class="tableBody hidden">
+
+              <tr></tr>
+              <tr></tr>
+              <tr></tr>
+
+            </tbody>
+
+          </table>
+
+        </section>
+
+      </div>
+      
     </body>
 </html>

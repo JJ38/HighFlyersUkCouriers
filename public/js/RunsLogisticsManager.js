@@ -358,7 +358,6 @@ function addTableRunCardListener(tableRunCard, progressedRunData){
 
     tableRunCard.addEventListener('click', () => {
 
-        console.log("table card clicked");
         progressedRunDetailsContainer.classList.add('slideIn');
         parseStopsData(progressedRunData['stops']);
 
@@ -482,23 +481,6 @@ function createTableRunCard(progressedRunData){
     tableRow.appendChild(tableData(progressedRunData['deferredPayments'] == undefined ? "0" : progressedRunData['deferredPayments'].length));
     tableRow.appendChild(tableData(progressedRunData['updatedAt'] != undefined ? progressedRunData['updatedAt'].toDate().toLocaleString() : "00:00:00"));
 
-    //   tableRow.appendChild(
-    //     createTableAddress(
-    //       orderData['collectionAddress1'],
-    //       orderData['collectionAddress2'],
-    //       orderData['collectionAddress3'],
-    //       orderData['collectionPostcode'],
-    //     )
-    //   );
-    
-    //   tableRow.appendChild(
-    //     createTableAddress(
-    //       orderData['deliveryAddress1'],
-    //       orderData['deliveryAddress2'],
-    //       orderData['deliveryAddress3'],
-    //       orderData['deliveryPostcode'],
-    //     )
-    //   );
 
     const rowHoverDetector = tableData("");
     rowHoverDetector.classList = "rowHoverDetector";

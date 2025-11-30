@@ -160,7 +160,7 @@ export async function generateShipment(shipmentName, shipmentType, shipmentDeliv
     const orderDataQuery = await getDocuments(q);
 
     //create run documents
-    const runDocuments = generateRunDocs(runDefinitions.data(), runDefaults.data(), deliveryWeek, shipmentType);
+    const runDocuments = generateRunDocs(runDefinitions.data(), runDefaults.data(), deliveryWeek, shipmentType, shipmentName);
 
     //create a list of stops from orders
     await generateStopsFromOrders(orderDataQuery.docs, shipmentType, runDocuments, runDefinitions.data());
@@ -197,7 +197,7 @@ function addStopNumbersToStops(runDocuments){
 }
 
 
-function generateRunDocs(runDefinitions, runDefaultSettings, shipmentDeliveryWeekInput, shipmentType){
+function generateRunDocs(runDefinitions, runDefaultSettings, shipmentDeliveryWeekInput, shipmentType, shipmentName){
   
   const runSet = new Set();
 
@@ -229,7 +229,7 @@ function generateRunDocs(runDefinitions, runDefaultSettings, shipmentDeliveryWee
 
     }
 
-    runDocumentList.push(generateRunDoc(runName, runProperties, shipmentDeliveryWeekInput));
+    runDocumentList.push(generateRunDoc(runName, runProperties, shipmentDeliveryWeekInput, shipmentName));
 
   });
   
@@ -427,7 +427,7 @@ async function storeShipment(runDocuments, shipmentName, deliveryWeek){
 
 }
 
-function generateRunDoc(runName, runDefaultProperties, deliveryWeek){
+function generateRunDoc(runName, runDefaultProperties, deliveryWeek, shipmentName){
 
   if(deliveryWeek == null){
     deliveryWeek = -1;
@@ -436,6 +436,7 @@ function generateRunDoc(runName, runDefaultProperties, deliveryWeek){
   const run = {
 
     settings: runDefaultProperties,
+    shipmentName: shipmentName,
     assignedDriver: "",
     runName: runName,
     runWeek: deliveryWeek,
@@ -2239,19 +2240,6 @@ function getRequest(incompleteAddress, token) {
     return request;
 }
 
-
-export function generateSessionToken(){
-
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0,
-            v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-  
-}
-
-
-
 export async function updateStopAddress(address, run, stopToUpdate){
 
   //fetch run
@@ -2393,7 +2381,6 @@ export function convertStopNumberToLetter(stopNumber){
 export function getPostcodesToPrint(run){
 
   const postcodes = getPostcodes(run.stops);
-  console.log(postcodes);
 
   let html;
 
@@ -2425,8 +2412,6 @@ export function getPostcodesToPrint(run){
   }
 
   html = html + boilerplateBottom;
-
-  console.log(html);
 
   return html;
   
