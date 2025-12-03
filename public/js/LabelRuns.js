@@ -8,6 +8,27 @@ const assignedRunDetailsContainer = document.getElementById('assigned_run_detail
 const assignedRunsTableBody = document.getElementById('assigned_runs_table_body');
 const assignedRunsDetailsTableBody = document.getElementById('assigned_run_details_table_body');
 const closeAssignedRunsDetailsButton = document.getElementById('close_assigned_run_details_container_button');
+const stopDetailsWidget = document.getElementById('stop_details_widget_form');
+const closeStopDetailsWidgetButton = document.getElementById('close_stop_details_widget_button');
+const blurLayer = document.getElementById('blur_layer');
+
+const orderID = document.getElementById('order_id');
+const stopType = document.getElementById('stop_type');
+const animalType = document.getElementById('animal_type');
+const quantity = document.getElementById('quantity');
+const numberOfBoxes = document.getElementById('number_of_boxes');
+
+const collectionInfoWrapper = document.getElementById('collection_info_wrapper');
+const collectionName = document.getElementById('collection_name');
+const collectionPhoneNumber = document.getElementById('collection_phone_number');
+const collectionAddressWrapper = document.getElementById('collection_address_wrapper');
+
+const deliveryInfoWrapper = document.getElementById('delivery_info_wrapper');
+const deliveryName = document.getElementById('delivery_name');
+const deliveryPhoneNumber = document.getElementById('delivery_phone_number');
+const deliveryAddressWrapper = document.getElementById('delivery_address_wrapper');
+
+
 
 let role;
 let userID;
@@ -18,7 +39,15 @@ function addEventListeners(){
 
   closeAssignedRunsDetailsButton.addEventListener('click', () => {
 
-      assignedRunDetailsContainer.classList.remove('slideIn');  
+    assignedRunDetailsContainer.classList.remove('slideIn');  
+
+  });
+
+  closeStopDetailsWidgetButton.addEventListener('click', () => {
+
+    stopDetailsWidget.classList.remove('stopDetailsWidgetSlideIn');
+    blurLayer.classList.add('z-index-minusone');
+    blurLayer.classList.remove('z-index-fifteen');
 
   });
 
@@ -50,7 +79,7 @@ function roleBasedAccess(){
 
     if(role == "admin"){
 
-        if(adminLinks != null){
+      if(adminLinks != null){
 
         for(const link of adminLinks){
             
@@ -58,7 +87,7 @@ function roleBasedAccess(){
 
         }
 
-        }
+      }
 
     }
 
@@ -115,11 +144,71 @@ function addRunCardEventListener(runCard, assignedRunData){
       }
 
       for(let i = 0; i < assignedRunData['stops'].length; i++){
-        assignedRunsDetailsTableBody.appendChild(createTableStopCard(assignedRunData['stops'][i]));
+        const tableStopCard = createTableStopCard(assignedRunData['stops'][i]);
+        addTableStopCardListener(tableStopCard, assignedRunData['stops'][i]);
+        assignedRunsDetailsTableBody.appendChild(tableStopCard);
       }
 
       assignedRunDetailsContainer.classList.add('slideIn');
 
+
+  });
+
+}
+
+
+function addTableStopCardListener(tableStopCard, stopData){
+
+  tableStopCard.addEventListener('click', () => { 
+ 
+    stopDetailsWidget.classList.add('stopDetailsWidgetSlideIn');
+    blurLayer.classList.remove('z-index-minusone');
+    blurLayer.classList.add('z-index-fifteen');
+
+    console.log(stopData);
+
+    const orderData = stopData['orderData'];
+
+    //set orderData
+    orderID.innerText = orderData['ID'];
+    stopType.innerText = stopData['stopType'];
+    animalType.innerText = orderData['animalType'];
+    quantity.innerText = orderData['quantity'];
+    numberOfBoxes.innerText = orderData['boxes'] == undefined ? "N/A" : orderData['boxes'];
+
+    collectionName.innerText = orderData['collectionName'];
+    collectionPhoneNumber.innerText = orderData['collectionPhoneNumber'];
+    collectionAddressWrapper.innerHTML = "";
+    collectionAddressWrapper.appendChild(
+      createTableAddress(
+        orderData['collectionAddress1'],
+        orderData['collectionAddress2'],
+        orderData['collectionAddress3'],
+        orderData['collectionPostcode'],
+      )
+    );
+
+    deliveryName.innerText = orderData['deliveryName'];
+    deliveryPhoneNumber.innerText = orderData['deliveryPhoneNumber'];
+    deliveryAddressWrapper.innerHTML = "";
+    deliveryAddressWrapper.appendChild(
+      createTableAddress(
+        orderData['deliveryAddress1'],
+        orderData['deliveryAddress2'],
+        orderData['deliveryAddress3'],
+        orderData['deliveryPostcode'],
+      )
+    );
+
+    if(stopData['stopType'] == "collection"){
+      collectionInfoWrapper.classList.add('lightgrayBackground');
+      deliveryInfoWrapper.classList.remove('lightgrayBackground');
+    }
+
+    if(stopData['stopType'] == "delivery"){
+      deliveryInfoWrapper.classList.add('lightgrayBackground');
+      collectionInfoWrapper.classList.remove('lightgrayBackground');
+    }
 
   });
 
@@ -160,34 +249,12 @@ function createTableStopCard(stopData){
     return tableRow;
   }
 
-  // const x = document.createElement('td');
-  // const checkBox = document.createElement("input");
-  // checkBox.setAttribute("type", "checkbox");
-  // checkBox.value = doc.id;
-  // checkBox.classList = "addStopCheckbox";
-
-  // x.appendChild(checkBox);
-
-  // tableRow.appendChild(x);
 
   tableRow.appendChild(tableData(orderData['ID']));
   tableRow.appendChild(tableData(orderData['animalType']));
   tableRow.appendChild(tableData(orderData['quantity']));
+  tableRow.appendChild(tableData(stopData['stopType']));
 
-  // if(customerAccounts != false){
-
-  //   let accountName = customerAccounts.get(orderData['account']);
-
-  //   //if value of account is literally account name rather than account id
-  //   if(accountName == undefined){
-  //     accountName = orderData['account'];
-  //   }
-
-  //   tableRow.appendChild(tableData(accountName));
-
-  // }else{
-  //   tableRow.appendChild(tableData(orderData['account']));
-  // }
 
   tableRow.appendChild(tableData(orderData['deliveryWeek']));
   tableRow.appendChild(tableData(orderData['collectionName']));
@@ -221,6 +288,8 @@ function createTableStopCard(stopData){
   const td = document.createElement('td');
   const div = document.createElement('div');
   div.innerText = orderData['message'];
+  div.classList = "orderMessage";
+
   td.appendChild(div);
   tableRow.appendChild(td);
 

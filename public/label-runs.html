@@ -57,86 +57,188 @@
       </header>
       <div class="mainContent">
 
-        <div id="assigned_run_details_container" class="assignedRunsDetailsContainer">
-          <span id="close_assigned_run_details_container_button" class="material-symbols-outlined closeButton">
-            close
-          </span>
 
-          <h1 class="title">Stop Details</h1>
-          
-          <div class="assignedRunDetailsTableContainer">
+        <div id="assigned_runs_wrapper" class="assignedRunsWrapper">
 
-            <table id="assigned_run_details_table" class="orderTable">
+          <div id="assigned_run_details_container" class="assignedRunsDetailsContainer">
+            <span id="close_assigned_run_details_container_button" class="material-symbols-outlined closeButton">
+              close
+            </span>
 
-              <tbody id="assigned_run_details_table_header_container" class="tableHeaderContainer">
+            <h1 class="title">Stop Details</h1>
+            
+            <div class="assignedRunDetailsTableContainer">
+
+              <table id="assigned_run_details_table" class="orderTable">
+
+                <tbody id="assigned_run_details_table_header_container" class="tableHeaderContainer">
+
+                  <tr class="headerRow">
+                                
+                    <th>ID</th>
+                    <th>Animal</th>
+                    <th>Quantity</th>
+                    <th>Stop Type</th>
+                    <th>Week</th>
+                    <th>Collection Name</th>
+                    <th>Collection Address</th>
+                    <th>Collection Phone Number</th>
+                    <th>Delivery Name</th>
+                    <th>Delivery Address</th>
+                    <th>Delivery Phone Number</th>
+                    <th>Payment</th>
+                    <th class="orderMessage">Message</th>
+                    <th >Code</th>
+                    <th id="topright"></th>
+                    <th class="tableRowBackground"></th>
+                    
+                  </tr>
+
+                </tbody>
+
+                <tbody id="assigned_run_details_table_body" class="assignedRunDetailsTableBody">
+
+                  <tr></tr>
+                  <tr></tr>
+                  <tr></tr>
+
+                </tbody>
+              </table>
+            
+            </div>
+
+          </div>
+
+          <h1> Assigned Runs</h1>
+
+          <section id="assigned_runs_table_wrapper" class="tableContainer">
+            <table id="assigned_runs_table" class="orderTable">
+
+              <tbody id="table_header_container" class="tableHeaderContainer">
 
                 <tr class="headerRow">
-                              
-                  <th>ID</th>
-                  <th>Animal</th>
-                  <th>Quantity</th>
-                  <!-- <th>Account</th> -->
-                  <th>Week</th>
-                  <th>Collection Name</th>
-                  <th>Collection Address</th>
-                  <th>Collection Phone Number</th>
-                  <th>Delivery Name</th>
-                  <th>Delivery Address</th>
-                  <th>Delivery Phone Number</th>
-                  <th>Payment</th>
-                  <th>Message</th>
-                  <th>Code</th>
-                  <th id="topright"></th>
-                  <th class="tableRowBackground"></th>
-                  
+                                
+                  <th>Shipment name</th>
+                  <th>Run name</th>
+                  <th>Run Week</th>
+                  <th>Total stops</th>
+
+                  <th></th>
+                  <th class="tableHeaderBackground"></th>
                 </tr>
 
               </tbody>
 
-              <tbody id="assigned_run_details_table_body" class="assignedRunDetailsTableBody">
+              <tbody id="assigned_runs_table_body" class="tableBody hidden">
 
                 <tr></tr>
                 <tr></tr>
                 <tr></tr>
 
               </tbody>
+
             </table>
-          
-          </div>
+
+          </section>
 
         </div>
 
-        <h1> Assigned Runs</h1>
+        <div id="stop_details_widget_form" class="stopDetailsWidgetForm">
 
-        <section id="assigned_runs_table_wrapper" class="tableContainer">
-          <table id="assigned_runs_table" class="orderTable">
+          <span id="close_stop_details_widget_button" class="material-symbols-outlined closeButton">
+            close
+          </span>
 
-            <tbody id="table_header_container" class="tableHeaderContainer">
+          <div>
 
-              <tr class="headerRow">
-                              
-                <th>Shipment name</th>
-                <th>Run name</th>
-                <th>Run Week</th>
-                <th>Total stops</th>
+            <div id="" class="stopMetaDataWrapper">
+              <p id="order_id"></p>
+              <p id="stop_type"></p>
+            </div>
 
-                <th></th>
-                <th class="tableHeaderBackground"></th>
-              </tr>
+            <div class="orderContentsWrapper">
+              <p id="animal_type"></p>
+              <p id="quantity"></p>
+              <p id="number_of_boxes"></p>
+            </div>
+            
+            <div id="collection_info_wrapper" class="stopInfoWrapper">
+              <div class="stopPersonalInfoWrapper">
+                <p id="collection_name"></p>
+                <p id="collection_phone_number"></p>
+              </div>
+              <div id="collection_address_wrapper"></div>
+            </div>
 
-            </tbody>
+             <div id="delviery_info_wrapper"  class="stopInfoWrapper">
+              <div class="stopPersonalInfoWrapper">
+                <p id="delivery_name"></p>
+                <p id="delivery_phone_number"></p>
+              </div>
+              <div id="delivery_address_wrapper"></div>
+            </div>
 
-            <tbody id="assigned_runs_table_body" class="tableBody hidden">
+          </div>
 
-              <tr></tr>
-              <tr></tr>
-              <tr></tr>
+          <div>
+            
+            <label for="radio_method_of_contact">Method of contact: </label>
+            <div class="radio-wrapper-19">
+              <fieldset id="radio_method_of_contact" class="radio-inputs">
 
-            </tbody>
+                <label for="told">
+                  <input type="radio" id="told" name="contact_method" value="told" />
+                  <span class="name">Told</span>
+                </label>
 
-          </table>
+                <label for="text">
+                  <input type="radio" id="text" name="contact_method" value="text" />
+                  <span class="name">Text</span>
+                </label>
 
-        </section>
+                <label for="voicemail">
+                  <input type="radio" id="voicemail" name="contact_method" value="voicemail" />
+                  <span class="name">Voicemail</span>
+                </label>
+
+              </fieldset>
+            </div>
+
+            <label for="radio_method_of_contact">Call before arrival: </label>
+            <div class="radio-wrapper-19">
+              <fieldset id="notice" class="radio-inputs" name="radio_method_of_contact">
+
+                <label for="yes">
+                  <input type="radio" id="yes" name="notice" value="yes" />
+                  <span class="name">Yes</span>
+                </label>
+
+                <label for="no">
+                  <input type="radio" id="no" name="notice" value="no" />
+                  <span class="name">No</span>
+                </label>
+
+              </fieldset>
+            </div>
+
+            <div class="column">
+              <label for="notice" class="">Notice:</label>
+              <input type="number" class="" placeholder="notice" name="notice" id='notice' required />
+            </div>
+
+            <div class="column">
+              <label for="message">Message:</label>
+              <textarea id="message" name="message" rows="4"></textarea>
+            </div>
+
+            <button class="button" role="button">Save</button>
+
+          </div>
+
+        </div>
+          
+        <div id="blur_layer" class="blurLayer z-index-minusone"></div>
+  
 
       </div>
       
