@@ -1,6 +1,6 @@
-import { auth, db, getDocument, bulkReadTransaction } from "/js/Firebase.js";
+import { auth, db, getDocument } from "/js/Firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc } from "firebase/firestore";
+import { doc, runTransaction } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 
 const adminLinks = document.querySelectorAll(".adminLink");
@@ -28,28 +28,135 @@ const deliveryName = document.getElementById('delivery_name');
 const deliveryPhoneNumber = document.getElementById('delivery_phone_number');
 const deliveryAddressWrapper = document.getElementById('delivery_address_wrapper');
 
+const methodOfContactRadio = document.getElementById('radio_method_of_contact');
+const methodOfContactTold = document.getElementById('radio_method_of_contact_told');
+const methodOfContactText = document.getElementById('radio_method_of_contact_text');
+const methodOfContactVoicemail = document.getElementById('radio_method_of_contact_voicemail');
 
+
+const giveNoticeRadio = document.getElementById('radio_notice');
+const giveNoticeYes = document.getElementById('radio_notice_yes');
+const giveNoticeNo = document.getElementById('radio_notice_no');
+
+
+const noticeInput = document.getElementById('notice_input');
+const messageInput = document.getElementById('message');
+
+const arrivalNoticeWrapper = document.getElementById('arrival_notice_wrapper');
+
+const saveLabelButton = document.getElementById('save_label_button');
 
 let role;
 let userID;
+
+let methodOfContactRadioValue;
+let arrivalNoticeRadioValue;
+let noticeInputValue;
+let messageInputValue;
+
+let validationErrorMessage;
+let selectedRunID;
+let selectedRunData;
+let selectedStopData;
+
 let assignedRuns = [];
+let assignedRunsDocs = [];
 
 
 function addEventListeners(){
 
-  closeAssignedRunsDetailsButton.addEventListener('click', () => {
+  if(closeAssignedRunsDetailsButton != null){
 
-    assignedRunDetailsContainer.classList.remove('slideIn');  
+    closeAssignedRunsDetailsButton.addEventListener('click', () => {
 
-  });
+      assignedRunDetailsContainer.classList.remove('slideIn');  
 
-  closeStopDetailsWidgetButton.addEventListener('click', () => {
+    });
 
-    stopDetailsWidget.classList.remove('stopDetailsWidgetSlideIn');
-    blurLayer.classList.add('z-index-minusone');
-    blurLayer.classList.remove('z-index-fifteen');
+  }
 
-  });
+  if(closeStopDetailsWidgetButton != null){
+
+    closeStopDetailsWidgetButton.addEventListener('click', () => {
+
+      closeForm();
+
+    });
+
+  } 
+
+  if(methodOfContactRadio != null){
+
+    methodOfContactRadio.addEventListener('change', (e) => {
+
+      methodOfContactRadioValue = e.target.value;
+
+    });
+
+  }
+
+  if(giveNoticeRadio != null){
+
+    giveNoticeRadio.addEventListener('change', (e) => {
+
+      arrivalNoticeRadioValue = e.target.value
+
+      if(arrivalNoticeRadioValue == "yes"){
+        arrivalNoticeWrapper.classList.remove('hidden');
+      }else{
+        arrivalNoticeWrapper.classList.add('hidden');
+      }    
+
+    });
+
+  }
+
+  if(noticeInput != null){
+
+    noticeInput.addEventListener('input', (e) => {
+
+      noticeInputValue = e.target.value;
+
+    });
+
+  }
+
+  if(messageInput != null){
+
+    messageInput.addEventListener('input', (e) => {
+
+      messageInputValue = e.target.value;
+
+    });
+
+  }
+
+  if(saveLabelButton != null){
+
+    saveLabelButton.addEventListener('click', async () => {
+
+      const successfullyValidated = validateForm();
+
+      if(!successfullyValidated){
+        showNotification("Error!", validationErrorMessage);
+        return;
+      }
+
+      const storedLabelSuccessfully = await storeLabel();
+
+      if(!storedLabelSuccessfully){
+        showNotification("Error!", "Error saving label");
+        return;
+      }
+
+      showNotification("Success!", "Successfully saved label");
+
+      //update stops table to mark as stop having a label
+      closeForm();
+
+    });
+
+  }
 
 }
 
@@ -74,6 +181,44 @@ onAuthStateChanged(auth, (user) => {
   };
       
 });
+
+function closeForm(){
+
+  stopDetailsWidget.classList.remove('stopDetailsWidgetSlideIn');
+  blurLayer.classList.add('z-index-minusone');
+  blurLayer.classList.remove('z-index-fifteen');
+
+}
+
+function validateForm(){
+
+  if(methodOfContactRadioValue == undefined){
+    validationErrorMessage = "Please select a method of contact";
+    return false;
+  }
+
+  if(arrivalNoticeRadioValue == undefined){
+    validationErrorMessage = "Please select if arrival notice is required";
+    return false;
+  }
+
+  if(arrivalNoticeRadioValue == "yes"){
+
+    if(noticeInputValue == undefined){
+      validationErrorMessage = "Please input a notice period";
+      return false;
+    }
+
+    if(noticeInputValue < 0){
+      validationErrorMessage = "Notice period must be greater than 0 minutes"
+      return false;
+    }
+
+  }
+
+  return true;
+
+}
 
 function roleBasedAccess(){
 
@@ -103,18 +248,22 @@ async function initLabelRuns(){
     return;
   }
 
-  const successfullyFetchedAssignedRunsDocuments = await fetchAssignedRunsDocuments(staffData);  
+  const successfullyFetchedRuns = await fetchAssignedRunsDocuments(staffData);  
 
-  if(!successfullyFetchedAssignedRunsDocuments){
+  if(!successfullyFetchedRuns){
     showNotification("Error!", "Error fetching runs documents. Document doesnt exist");
     return;
   }
 
-  for(let i = 0; i < assignedRuns.length; i++){
-    
-    const runData = assignedRuns[i].data();
+  assignedRuns = [];
+
+  for(let i = 0; i < assignedRunsDocs.length; i++){
+
+    const runData = assignedRunsDocs[i].data();
+    assignedRuns.push(runData);
+
     const runCard = createAssignRunCard(runData);
-    addRunCardEventListener(runCard, runData);
+    addRunCardEventListener(runCard, runData, assignedRunsDocs[i].id);
     assignedRunsTableBody.appendChild(runCard);
 
   }
@@ -125,41 +274,50 @@ async function initLabelRuns(){
 
 
 
-function addRunCardEventListener(runCard, assignedRunData){
+function addRunCardEventListener(runCard, runData, runID){
+
 
   runCard.addEventListener('click', async () =>{
-      console.log(assignedRunData);
-      const stopOrders = await fetchStopOrders(assignedRunData['stops']);
 
-      if(stopOrders == false){
-        showNotification("Error!", "Error fetching stops for run");
-        return; 
-      }
+    selectedRunID = runID; 
+    selectedRunData = runData;
 
-      const parseDataResult = await parseStopsData(assignedRunData['stops']);
+    const stopOrders = await fetchStopOrders(runData['stops']);
 
-      if(parseDataResult == false){
-        showNotification("Error!", "Error parsing stops for run");
-        return; 
-      }
+    if(stopOrders == false){
+      showNotification("Error!", "Error fetching stops for run");
+      return; 
+    }
 
-      for(let i = 0; i < assignedRunData['stops'].length; i++){
-        const tableStopCard = createTableStopCard(assignedRunData['stops'][i]);
-        addTableStopCardListener(tableStopCard, assignedRunData['stops'][i]);
-        assignedRunsDetailsTableBody.appendChild(tableStopCard);
-      }
+    const parseDataResult = await parseStopsData(runData['stops']);
+ 
+    if(parseDataResult == false){
+      showNotification("Error!", "Error parsing stops for run");
+      return; 
+    }
 
-      assignedRunDetailsContainer.classList.add('slideIn');
+    for(let i = 0; i < runData['stops'].length; i++){
 
+      const tableStopCard = createTableStopCard(runData['stops'][i]);
+      addTableStopCardListener(tableStopCard, i);
+      assignedRunsDetailsTableBody.appendChild(tableStopCard);
+
+    }
+
+    assignedRunDetailsContainer.classList.add('slideIn');
 
   });
 
 }
 
 
-function addTableStopCardListener(tableStopCard, stopData){
+function addTableStopCardListener(tableStopCard, indexOfStopInRun){
 
   tableStopCard.addEventListener('click', () => { 
+
+    const stopData = selectedRunData['stops'][indexOfStopInRun];
+
+    selectedStopData = stopData;
  
     stopDetailsWidget.classList.add('stopDetailsWidgetSlideIn');
     blurLayer.classList.remove('z-index-minusone');
@@ -167,11 +325,11 @@ function addTableStopCardListener(tableStopCard, stopData){
 
     console.log(stopData);
 
-    const orderData = stopData['orderData'];
+    const orderData = selectedStopData['orderData'];
 
     //set orderData
     orderID.innerText = orderData['ID'];
-    stopType.innerText = stopData['stopType'];
+    stopType.innerText = selectedStopData['stopType'];
     animalType.innerText = orderData['animalType'];
     quantity.innerText = orderData['quantity'];
     numberOfBoxes.innerText = orderData['boxes'] == undefined ? "N/A" : orderData['boxes'];
@@ -200,17 +358,112 @@ function addTableStopCardListener(tableStopCard, stopData){
       )
     );
 
-    if(stopData['stopType'] == "collection"){
+    if(selectedStopData['stopType'] == "collection"){
       collectionInfoWrapper.classList.add('lightgrayBackground');
       deliveryInfoWrapper.classList.remove('lightgrayBackground');
     }
 
-    if(stopData['stopType'] == "delivery"){
+    if(selectedStopData['stopType'] == "delivery"){
       deliveryInfoWrapper.classList.add('lightgrayBackground');
       collectionInfoWrapper.classList.remove('lightgrayBackground');
     }
 
+    updateForm(selectedStopData['label']);
+
   });
+
+}
+
+function updateForm(stopLabel){
+
+  console.log(stopLabel);
+
+  resetForm();
+
+  if(stopLabel == undefined){
+    return;
+  }
+
+  if(stopLabel['methodOfContact'] != undefined){
+    
+    methodOfContactRadioValue = stopLabel['methodOfContact'];
+
+    switch (methodOfContactRadioValue){
+
+      case "told":
+        methodOfContactTold.checked = true;
+        break;
+
+      case "text":
+        methodOfContactText.checked = true;
+        break;
+
+      case "voicemail":
+        methodOfContactVoicemail.checked = true;
+        break;
+    }
+
+  }
+
+  if(stopLabel['arrivalNotice'] != undefined){
+
+    arrivalNoticeRadioValue = stopLabel['arrivalNotice'];
+
+    switch (arrivalNoticeRadioValue){
+
+      case "yes":
+        giveNoticeYes.checked = true;
+        break;
+
+      case "no":
+        giveNoticeNo.checked = true;
+        break;
+      
+    }
+
+  }
+
+  if(stopLabel['noticePeriod'] != undefined){
+
+    noticeInputValue = stopLabel['noticePeriod'];
+
+    if(parseInt(stopLabel['noticePeriod']) > 0){
+      
+      noticeInput.value = stopLabel['noticePeriod'];
+      arrivalNoticeWrapper.classList.remove('hidden');
+
+    }
+
+  }
+
+  if(stopLabel['message'] != undefined){
+
+    messageInputValue = stopLabel['message'];
+    messageInput.value = stopLabel['message'];
+
+  }
+
+}
+
+function resetForm(){
+
+  methodOfContactRadioValue = undefined;
+  arrivalNoticeRadioValue = undefined;
+  noticeInputValue = undefined;
+  messageInputValue = undefined;
+
+  clearRadios(methodOfContactRadio);
+  clearRadios(giveNoticeRadio);
+  arrivalNoticeWrapper.classList.add('hidden');
+  noticeInput.value = "";
+  messageInput.value = "";
+
+}
+
+function clearRadios(element) {
+
+  const radios = element.querySelectorAll('input[type="radio"]');
+  radios.forEach(radio => radio.checked = false);
 
 }
 
@@ -373,19 +626,19 @@ async function fetchAssignedRunsDocuments(staffData){
 
     await Promise.all(promises);
 
-    assignedRuns = [];
+    assignedRunsDocs = [];
 
     for(let i = 0; i < promises.length; i++){
       const run = await promises[i];
-      assignedRuns.push(run);
+      assignedRunsDocs.push(run);
     }
+
+    return true;
 
   }catch(err){
     console.log(err);
     return false
   }
-
-  return true;
 
 }
 
@@ -418,6 +671,77 @@ function tableData(value){
   tableData.innerHTML = value;
 
   return tableData;
+
+}
+
+async function storeLabel(){
+
+  const label = {
+    "methodOfContact": methodOfContactRadioValue,
+    "arrivalNotice": arrivalNoticeRadioValue,
+    "message": messageInputValue == undefined ? "" : messageInputValue
+  };
+
+  if(arrivalNoticeRadioValue == "yes"){
+    label['noticePeriod'] = noticeInputValue;
+  }
+
+  const runDocRef = doc(db, "Runs", selectedRunID);
+  
+  let newStops;
+
+  try {
+
+    await runTransaction(db, async (transaction) => {
+
+      const runDoc = await transaction.get(runDocRef);
+
+      if (!runDoc.exists()) {
+        throw new Error("Document does not exist!");
+      }
+
+      //the stops to update client with - contain orderData
+      const stops = structuredClone(selectedRunData['stops']);
+
+      //stops to store in database - will have orderData removed
+      const databaseStops = structuredClone(selectedRunData['stops']);
+
+      const currentStopPrimaryKey = selectedStopData['orderID'] + '_' + selectedStopData['stopType'];  
+
+      let foundStop = false;
+
+      for(let i = 0; i < databaseStops.length; i++){
+        
+        const stopPrimaryKey = databaseStops[i]['orderID'] + '_' + databaseStops[i]['stopType'];
+
+        if(currentStopPrimaryKey == stopPrimaryKey){
+          stops[i]['label'] = label;
+          databaseStops[i]['label'] = label;
+          foundStop = true;
+        }
+
+        delete databaseStops[i]['orderData'];
+
+      }
+
+      if(!foundStop){
+        throw new Error("No stop to update");
+      }
+
+      transaction.update(runDocRef, {stops: databaseStops});
+
+      newStops = stops;
+
+    });
+
+    //update client
+    selectedRunData['stops'] = newStops;
+    return true;
+
+  } catch (err) {
+    console.error("Transaction failed:", err);
+    return false;
+  }
 
 }
 

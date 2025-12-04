@@ -64,11 +64,15 @@ body {
 
 
 .hidden{
-  display: none;
+  display: none !important;
 }
 
 h1{
   font-size: 32px;
+}
+
+h4{
+  font-weight: 400;
 }
 
 nav > a{

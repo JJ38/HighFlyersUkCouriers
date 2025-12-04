@@ -170,7 +170,7 @@
               <div id="collection_address_wrapper"></div>
             </div>
 
-             <div id="delviery_info_wrapper"  class="stopInfoWrapper">
+             <div id="delivery_info_wrapper"  class="stopInfoWrapper">
               <div class="stopPersonalInfoWrapper">
                 <p id="delivery_name"></p>
                 <p id="delivery_phone_number"></p>
@@ -182,48 +182,48 @@
 
           <div>
             
-            <label for="radio_method_of_contact">Method of contact: </label>
-            <div class="radio-wrapper-19">
+            <h4>Method of contact: </h4>
+            <div class="">
               <fieldset id="radio_method_of_contact" class="radio-inputs">
 
-                <label for="told">
-                  <input type="radio" id="told" name="contact_method" value="told" />
+                <label for="radio_method_of_contact_told">
+                  <input type="radio" id="radio_method_of_contact_told" name="contact_method" value="told" />
                   <span class="name">Told</span>
                 </label>
 
-                <label for="text">
-                  <input type="radio" id="text" name="contact_method" value="text" />
+                <label for="radio_method_of_contact_text">
+                  <input type="radio" id="radio_method_of_contact_text" name="contact_method" value="text" />
                   <span class="name">Text</span>
                 </label>
 
-                <label for="voicemail">
-                  <input type="radio" id="voicemail" name="contact_method" value="voicemail" />
+                <label for="radio_method_of_contact_voicemail">
+                  <input type="radio" id="radio_method_of_contact_voicemail" name="contact_method" value="voicemail" />
                   <span class="name">Voicemail</span>
                 </label>
 
               </fieldset>
             </div>
 
-            <label for="radio_method_of_contact">Call before arrival: </label>
-            <div class="radio-wrapper-19">
-              <fieldset id="notice" class="radio-inputs" name="radio_method_of_contact">
+            <h4 for="radio_notice">Call before arrival: </h4>
+            <div class="">
+              <fieldset id="radio_notice" class="radio-inputs" name="radio_call_before_arrival">
 
-                <label for="yes">
-                  <input type="radio" id="yes" name="notice" value="yes" />
+                <label for="radio_notice_yes">
+                  <input type="radio" id="radio_notice_yes" name="notice" value="yes" />
                   <span class="name">Yes</span>
                 </label>
 
-                <label for="no">
-                  <input type="radio" id="no" name="notice" value="no" />
+                <label for="radio_notice_no">
+                  <input type="radio" id="radio_notice_no" name="notice" value="no" />
                   <span class="name">No</span>
                 </label>
 
               </fieldset>
             </div>
 
-            <div class="column">
-              <label for="notice" class="">Notice:</label>
-              <input type="number" class="" placeholder="notice" name="notice" id='notice' required />
+            <div id="arrival_notice_wrapper" class="column hidden">
+              <label for="notice_input" class="">Notice:</label>
+              <input type="number" class="" placeholder="minutes" name="notice" id='notice_input' min="0" required />
             </div>
 
             <div class="column">
@@ -231,7 +231,7 @@
               <textarea id="message" name="message" rows="4"></textarea>
             </div>
 
-            <button class="button" role="button">Save</button>
+            <button id="save_label_button" class="button" role="button">Save</button>
 
           </div>
 
