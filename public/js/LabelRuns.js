@@ -45,6 +45,8 @@ const messageInput = document.getElementById('message');
 const arrivalNoticeWrapper = document.getElementById('arrival_notice_wrapper');
 
 const saveLabelButton = document.getElementById('save_label_button');
+const savelLabelButtonLoader = document.getElementById('save_label_button_loader');
+const assignedRunsLoader = document.getElementById('assigned_runs_loader');
 
 let role;
 let userID;
@@ -135,18 +137,27 @@ function addEventListeners(){
 
     saveLabelButton.addEventListener('click', async () => {
 
+      showSaveLabelButtonLoader();
+
       const successfullyValidated = validateForm();
 
       if(!successfullyValidated){
+
+        hideSaveLabelButtonLoader();
         showNotification("Error!", validationErrorMessage);
         return;
+
       }
 
       const storedLabelSuccessfully = await storeLabel();
 
+      hideSaveLabelButtonLoader();
+
       if(!storedLabelSuccessfully){
+
         showNotification("Error!", "Error saving label");
         return;
+
       }
 
       showNotification("Success!", "Successfully saved label");
@@ -159,6 +170,21 @@ function addEventListeners(){
   }
 
 }
+
+function showSaveLabelButtonLoader(){
+
+  savelLabelButtonLoader.classList.remove('hidden');
+  saveLabelButton.classList.add('hidden');
+
+}
+
+function hideSaveLabelButtonLoader(){
+
+  savelLabelButtonLoader.classList.add('hidden');
+  saveLabelButton.classList.remove('hidden');
+
+}
+
 
 onAuthStateChanged(auth, (user) => {
 
@@ -240,10 +266,13 @@ function roleBasedAccess(){
 
 async function initLabelRuns(){
 
+  assignedRunsLoader.classList.remove('hidden');
+
   addEventListeners();
   const staffData = await fetchStaffDocument();
 
   if(!staffData){
+    assignedRunsLoader.classList.add('hidden');
     showNotification("Error!", "Error fetching staff document. Document doesnt exist");
     return;
   }
@@ -251,6 +280,7 @@ async function initLabelRuns(){
   const successfullyFetchedRuns = await fetchAssignedRunsDocuments(staffData);  
 
   if(!successfullyFetchedRuns){
+    assignedRunsLoader.classList.add('hidden');
     showNotification("Error!", "Error fetching runs documents. Document doesnt exist");
     return;
   }
@@ -268,6 +298,7 @@ async function initLabelRuns(){
 
   }
 
+  assignedRunsLoader.classList.add('hidden');
   assignedRunsTableBody.classList.remove('hidden');
 
 }

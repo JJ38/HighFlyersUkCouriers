@@ -384,6 +384,9 @@ th{
   flex-direction: column;
 }
 
+.center{
+  margin: auto;
+}
 
 .loader {
 
@@ -393,6 +396,14 @@ th{
   width: 50px;
   height: 50px;
   animation: spin 1s cubic-bezier(0.51, 0.24, 0.59, 0.8) infinite;
+
+}
+
+.tableLoaderWrapper{
+
+  position: absolute;
+  right: 50%;
+  transform: translateX(50%);
 
 }
 

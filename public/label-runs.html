@@ -111,6 +111,7 @@
 
           <h1> Assigned Runs</h1>
 
+
           <section id="assigned_runs_table_wrapper" class="tableContainer">
             <table id="assigned_runs_table" class="orderTable">
 
@@ -127,14 +128,20 @@
                   <th class="tableHeaderBackground"></th>
                 </tr>
 
+                <tr class="tableLoaderWrapper ">
+                  <td id="assigned_runs_loader" class="loader hidden"></div>
+                </tr>
+
               </tbody>
 
+              <tbody>
+              </tbody>
+
+
               <tbody id="assigned_runs_table_body" class="tableBody hidden">
-
+                
                 <tr></tr>
-                <tr></tr>
-                <tr></tr>
-
+               
               </tbody>
 
             </table>
@@ -231,7 +238,10 @@
               <textarea id="message" name="message" rows="4"></textarea>
             </div>
 
-            <button id="save_label_button" class="button" role="button">Save</button>
+            <div>
+              <button id="save_label_button" class="button" role="button">Save</button>
+              <div id="save_label_button_loader" class="loader center hidden"></div>
+            </div>
 
           </div>
 
