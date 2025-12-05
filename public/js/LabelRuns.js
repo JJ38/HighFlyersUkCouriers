@@ -163,6 +163,7 @@ function addEventListeners(){
       showNotification("Success!", "Successfully saved label");
 
       //update stops table to mark as stop having a label
+      updateTableStops();
       closeForm();
 
     });
@@ -327,13 +328,8 @@ function addRunCardEventListener(runCard, runData, runID){
       return; 
     }
 
-    for(let i = 0; i < runData['stops'].length; i++){
-
-      const tableStopCard = createTableStopCard(runData['stops'][i]);
-      addTableStopCardListener(tableStopCard, i);
-      assignedRunsDetailsTableBody.appendChild(tableStopCard);
-
-    }
+    updateTableStops();
+    selectedRunData = runData;
 
     assignedRunDetailsContainer.classList.add('slideIn');
 
@@ -341,6 +337,20 @@ function addRunCardEventListener(runCard, runData, runID){
 
 }
 
+function updateTableStops(){
+
+  console.log(selectedRunData);
+  assignedRunsDetailsTableBody.innerHTML = "";
+
+  for(let i = 0; i < selectedRunData['stops'].length; i++){
+
+    const tableStopCard = createTableStopCard(selectedRunData['stops'][i]);
+    addTableStopCardListener(tableStopCard, i);
+    assignedRunsDetailsTableBody.appendChild(tableStopCard);
+
+  }
+
+}
 
 function addTableStopCardListener(tableStopCard, indexOfStopInRun){
 
@@ -581,6 +591,11 @@ function createTableStopCard(stopData){
 
   const rowBackground = tableData("");
   rowBackground.classList = "tableRowBackground";
+
+  if(stopData['label'] != undefined){
+    rowBackground.classList.add('labelledStop');
+  }
+
   tableRow.appendChild(rowBackground);
 
   return tableRow;
@@ -689,6 +704,7 @@ function createAssignRunCard(runData){
 
     const rowBackground = document.createElement('td');
     rowBackground.classList = "tableRowBackground";
+    
     tableRow.appendChild(rowBackground);
 
 

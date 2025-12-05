@@ -371,6 +371,10 @@ th{
   background-color: rgb(234, 234, 234);
 }
 
+.labelledStop{
+  background-color: rgb(154, 255, 133);
+}
+
 .z-index-minusone{
   z-index: -1;
 }
