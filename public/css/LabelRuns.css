@@ -211,17 +211,26 @@ th{
 
 }
 
-.stopDetailsWidgetForm{
-
+.widget{
+  
   position: absolute;
   border-radius: 10px;
-  left: 100%;
-  margin: auto 20px;
-  z-index: 20;
-  width: 500px;
   height: 95%;
   transform: translateY(2.5%); /* must be half the difference of 100 - height percentage */
   background-color: white;
+  padding: 20px;
+  border: 1px solid rgba(195, 195, 195, 62%);
+  box-shadow: 0px 0px 17px 2px rgb(215, 215, 215);
+  overflow-y: scroll;
+
+}
+
+.stopDetailsWidgetForm{
+
+  left: 100%;
+  width: 500px;
+  margin: auto 20px;
+  z-index: 20;
   padding: 20px;
   border: 1px solid rgba(195, 195, 195, 62%);
   box-shadow: 0px 0px 17px 2px rgb(215, 215, 215);
@@ -340,6 +349,12 @@ th{
 
 }
 
+.updateOrderButton{
+  margin-bottom: 20px;
+  margin-top: 0px !important;
+
+}
+
 .button:disabled {
   pointer-events: none;
 }
@@ -357,6 +372,39 @@ th{
   transform: translateY(0);
 }
 
+.updateOrderDetailsWidget{
+
+  z-index: 22;
+  right: 50%;
+  transform: translateX(50%) translateY(2.5%);
+  height: 95%;
+
+}
+
+.updateOrderDetailsTable{
+  border-spacing: 20px 0px;
+}
+
+.updateOrderDetailsTable td{
+  padding: 0px !important;
+}
+
+
+.updateOrderDetailsTable select{
+  width: 100%;
+}
+
+.updateOrderDetailsTable input{
+  width: 100%;
+}
+
+.updateOrderDetailsTable textarea{
+  width: 100%;
+}
+
+.updateOrderDetailsTable tr{
+
+}
 
 .blurLayer{
 
@@ -365,6 +413,15 @@ th{
   height: 100%;
   backdrop-filter: blur(2px);
 
+}
+
+.blueBorder{
+  border: solid 2px blue;
+}
+
+.redBorder{
+  border: solid 2px red;
+  
 }
 
 .lightgrayBackground{
@@ -383,9 +440,19 @@ th{
   z-index: 15;
 }
 
+.z-index-twentyone{
+  z-index: 21;
+}
+
+
 .column{
   display: flex;
   flex-direction: column;
+}
+
+.row{
+  display: flex;
+  flex-direction: row;
 }
 
 .center{

@@ -2,6 +2,7 @@ import { auth, db, getDocument } from "/js/Firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, runTransaction } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
+import { initInternalOrderForm, createAccountSelectOptions, createAnimalTypeSelectOptions } from "/js/FormModel.js";
 
 const adminLinks = document.querySelectorAll(".adminLink");
 const assignedRunDetailsContainer = document.getElementById('assigned_run_details_container')
@@ -17,6 +18,7 @@ const stopType = document.getElementById('stop_type');
 const animalType = document.getElementById('animal_type');
 const quantity = document.getElementById('quantity');
 const numberOfBoxes = document.getElementById('number_of_boxes');
+const estimatedArrivalTime = document.getElementById('estimated_arrival_time');
 
 const collectionInfoWrapper = document.getElementById('collection_info_wrapper');
 const collectionName = document.getElementById('collection_name');
@@ -33,11 +35,9 @@ const methodOfContactTold = document.getElementById('radio_method_of_contact_tol
 const methodOfContactText = document.getElementById('radio_method_of_contact_text');
 const methodOfContactVoicemail = document.getElementById('radio_method_of_contact_voicemail');
 
-
 const giveNoticeRadio = document.getElementById('radio_notice');
 const giveNoticeYes = document.getElementById('radio_notice_yes');
 const giveNoticeNo = document.getElementById('radio_notice_no');
-
 
 const noticeInput = document.getElementById('notice_input');
 const messageInput = document.getElementById('message');
@@ -47,6 +47,42 @@ const arrivalNoticeWrapper = document.getElementById('arrival_notice_wrapper');
 const saveLabelButton = document.getElementById('save_label_button');
 const savelLabelButtonLoader = document.getElementById('save_label_button_loader');
 const assignedRunsLoader = document.getElementById('assigned_runs_loader');
+
+const updateOrderButton = document.getElementById('update_order_button');
+const updateOrderWidget = document.getElementById('update_order_details_widget');
+const closeUpdateOrderWidgetButton = document.getElementById('close_update_order_details_widget_button');
+const blurLayerUpdateOrder = document.getElementById('blur_layer_update_order');
+
+const saveOrderButton = document.getElementById('save_order_button');
+
+const updateAnimalTypeSelect = document.getElementById('update_animal_type_select');
+const updateAccountSelect = document.getElementById('update_account_select');
+const updateOrderDetailsTable = document.getElementById('update_order_details_table');
+
+const updateOrderID = document.getElementById('update_order_id');
+const updateQuantity = document.getElementById('update_quantity');
+const updateEmail = document.getElementById('update_email');
+const updateBoxes = document.getElementById('update_boxes');
+const updateDeliveryWeek = document.getElementById('update_delivery_week');
+const updateCollectionName = document.getElementById('update_collection_name');
+const updateCollectionAddress1 = document.getElementById('update_collection_address_1');
+const updateCollectionAddress2 = document.getElementById('update_collection_address_2');
+const updateCollectionAddress3 = document.getElementById('update_collection_address_3');
+const updateCollectionPostcode = document.getElementById('update_collection_postcode');
+const updateCollectionPhoneNumber = document.getElementById('update_collection_phone_number');
+
+const updateDeliveryName = document.getElementById('update_delivery_name');
+const updateDeliveryAddress1 = document.getElementById('update_delivery_address_1');
+const updateDeliveryAddress2 = document.getElementById('update_delivery_address_2');
+const updateDeliveryAddress3 = document.getElementById('update_delivery_address_3');
+const updateDeliveryPostcode = document.getElementById('update_delivery_postcode');
+const updateDeliveryPhoneNumber = document.getElementById('update_delivery_phone_number');
+
+const updatePayment = document.getElementById('update_payment');
+const updatePrice = document.getElementById('update_price');
+const updateMessage = document.getElementById('update_message');
+const updateCode = document.getElementById('update_code');
+
 
 let role;
 let userID;
@@ -63,6 +99,11 @@ let selectedStopData;
 
 let assignedRuns = [];
 let assignedRunsDocs = [];
+
+let animalTypeSelectOptions = [];
+let accountSelectOptions = [];
+
+const validPaymentTypes = ["delivery", "pickup", "collection", "account"];
 
 
 function addEventListeners(){
@@ -170,6 +211,53 @@ function addEventListeners(){
 
   }
 
+  if(updateOrderButton != null){
+
+    updateOrderButton.addEventListener('click', () => {
+
+      initUpdateOrderForm();
+      showUpdateOrderWidget();
+
+    });
+
+  }
+
+  if(closeUpdateOrderWidgetButton != null){
+
+    closeUpdateOrderWidgetButton.addEventListener('click', () => {
+
+      hideUpdateOrderWidget();
+
+    });
+
+  } 
+
+  if(saveOrderButton != null){
+
+    saveOrderButton.addEventListener('click', () => {
+
+      updateOrder();
+
+    });
+
+  }
+
+}
+
+function showUpdateOrderWidget(){
+
+  updateOrderWidget.classList.remove('hidden');
+  blurLayerUpdateOrder.classList.add('z-index-twentyone');
+  blurLayerUpdateOrder.classList.remove('z-index-minusone');
+
+}
+
+function hideUpdateOrderWidget(){
+
+  updateOrderWidget.classList.add('hidden');
+  blurLayerUpdateOrder.classList.remove('z-index-twentyone');
+  blurLayerUpdateOrder.classList.add('z-index-minusone');
+
 }
 
 function showSaveLabelButtonLoader(){
@@ -183,6 +271,14 @@ function hideSaveLabelButtonLoader(){
 
   savelLabelButtonLoader.classList.add('hidden');
   saveLabelButton.classList.remove('hidden');
+
+}
+
+function closeForm(){
+
+  stopDetailsWidget.classList.remove('stopDetailsWidgetSlideIn');
+  blurLayer.classList.add('z-index-minusone');
+  blurLayer.classList.remove('z-index-fifteen');
 
 }
 
@@ -202,20 +298,39 @@ onAuthStateChanged(auth, (user) => {
       }
 
       roleBasedAccess();
-      initLabelRuns();
+      init();
 
     });
   };
       
 });
 
-function closeForm(){
+async function init(){
 
-  stopDetailsWidget.classList.remove('stopDetailsWidgetSlideIn');
-  blurLayer.classList.add('z-index-minusone');
-  blurLayer.classList.remove('z-index-fifteen');
+  initLabelRuns();
+  const formDataMap = await initInternalOrderForm();
+  console.log(formDataMap.get('Settings/birdSpecies'));
+
+  animalTypeSelectOptions = createAnimalTypeSelectOptions(formDataMap.get('Settings/birdSpecies'));
+  accountSelectOptions = createAccountSelectOptions(formDataMap.get('Users'));
+
+  console.log(animalTypeSelectOptions);
+
+  for(let i = 0; i < animalTypeSelectOptions.length; i++){
+    updateAnimalTypeSelect.appendChild(animalTypeSelectOptions[i]);
+  }
+
+  for(let i = 0; i < accountSelectOptions.length; i++){
+    updateAccountSelect.appendChild(accountSelectOptions[i]);
+  }
+
+  console.log(animalTypeSelectOptions);
+  console.log(accountSelectOptions);
+
 
 }
+
+
 
 function validateForm(){
 
@@ -370,7 +485,8 @@ function addTableStopCardListener(tableStopCard, indexOfStopInRun){
 
     //set orderData
     orderID.innerText = orderData['ID'];
-    stopType.innerText = selectedStopData['stopType'];
+    stopType.innerText =  selectedStopData['stopType'];
+    estimatedArrivalTime.innerText =  selectedStopData['stopTime'];
     animalType.innerText = orderData['animalType'];
     quantity.innerText = orderData['quantity'];
     numberOfBoxes.innerText = orderData['boxes'] == undefined ? "N/A" : orderData['boxes'];
@@ -400,18 +516,87 @@ function addTableStopCardListener(tableStopCard, indexOfStopInRun){
     );
 
     if(selectedStopData['stopType'] == "collection"){
-      collectionInfoWrapper.classList.add('lightgrayBackground');
-      deliveryInfoWrapper.classList.remove('lightgrayBackground');
+      collectionInfoWrapper.classList.add('redBorder');
+      deliveryInfoWrapper.classList.remove('blueBorder');
     }
 
     if(selectedStopData['stopType'] == "delivery"){
-      deliveryInfoWrapper.classList.add('lightgrayBackground');
-      collectionInfoWrapper.classList.remove('lightgrayBackground');
+      deliveryInfoWrapper.classList.add('blueBorder');
+      collectionInfoWrapper.classList.remove('redBorder');
     }
 
     updateForm(selectedStopData['label']);
 
   });
+
+}
+
+function initUpdateOrderForm(){
+
+  console.log(selectedStopData);
+  const orderData = selectedStopData['orderData'];
+
+  if(orderData == undefined){
+    return;
+  }
+
+  updateOrderID.value = orderData['ID'];
+  setSelectedOption(orderData['animalType'], animalTypeSelectOptions, updateAnimalTypeSelect);
+  updateQuantity.value = orderData['quantity'];
+  updateEmail.value = orderData['email'];
+  updateBoxes.value = orderData['boxes'];
+  setSelectedOption(orderData['account'], accountSelectOptions, updateAccountSelect);
+  updateDeliveryWeek.value = orderData['deliveryWeek'];
+  
+  updateCollectionName.value = orderData['collectionName'];
+  updateCollectionAddress1.value = orderData['collectionAddress1'];
+  updateCollectionAddress2.value = orderData['collectionAddress2'];
+  updateCollectionAddress3.value = orderData['collectionAddress3'];
+  updateCollectionPostcode.value = orderData['collectionPostcode'];
+  updateCollectionPhoneNumber.value = orderData['collectionPhoneNumber'];
+  
+  updateDeliveryName.value = orderData['deliveryName'];
+  updateDeliveryAddress1.value = orderData['deliveryAddress1'];
+  updateDeliveryAddress2.value = orderData['deliveryAddress2'];
+  updateDeliveryAddress3.value = orderData['deliveryAddress3'];
+  updateDeliveryPostcode.value = orderData['deliveryPostcode'];
+  updateDeliveryPhoneNumber.value = orderData['deliveryPhoneNumber'];
+
+  updatePayment.value = orderData['payment'];
+  updatePrice.value = orderData['price'];
+  updateMessage.value = orderData['message'];
+  updateCode.value = orderData['code'];
+
+}
+
+function setSelectedOption(selectedOrderValue, options, selectElement){
+
+  let foundAnimalType = false;
+
+  //reset all option to unselected
+  for(let i = 0; i < options.length; i++){
+
+    console.log(options[i].value);
+
+    if(options[i].value == selectedOrderValue){
+
+      options[i].selected = true;
+      foundAnimalType = true;
+
+    }else{
+
+      options[i].selected = false;
+
+    } 
+  
+  }
+
+  if(!foundAnimalType){
+    const option = createOption(selectedOrderValue, selectedOrderValue);
+    option.selected = true;
+    selectElement.appendChild(option);
+  }
+
 
 }
 
@@ -712,6 +897,16 @@ function createAssignRunCard(runData){
 
 }
 
+function createOption(text, value){
+
+  const option = document.createElement('option');
+  option.innerText = text;
+  option.value = value;
+
+  return option;
+
+}
+
 function tableData(value){
 
   const tableData = document.createElement('td');
@@ -792,4 +987,110 @@ async function storeLabel(){
 
 }
 
+async function updateOrder(){
 
+  const order = {
+
+    ID: selectedStopData['orderData']['ID'],
+    animalType: updateAnimalTypeSelect.value,
+    email: updateEmail.value,
+    quantity: updateQuantity.value,
+    boxes: updateBoxes.value,
+    account: updateAccountSelect.value,
+    deliveryWeek: updateDeliveryWeek.value,
+    collectionName: updateCollectionName.value,
+    collectionAddress1: updateCollectionAddress1.value,
+    collectionAddress2: updateCollectionAddress2.value,
+    collectionAddress3: updateCollectionAddress3.value,
+    collectionPostcode: updateCollectionPostcode.value,
+    collectionPhoneNumber: updateCollectionPhoneNumber.value,
+    deliveryName: updateDeliveryName.value,
+    deliveryAddress1: updateDeliveryAddress1.value,
+    deliveryAddress2: updateDeliveryAddress2.value,
+    deliveryAddress3: updateDeliveryAddress3.value,
+    deliveryPostcode: updateDeliveryPostcode.value,
+    deliveryPhoneNumber: updateDeliveryPhoneNumber.value,
+    payment: updatePayment.value,
+    price: updatePrice.value,
+    message: updateMessage.value,
+    code: updateCode.value,
+
+  }
+
+  const validitionResult = validateOrder(order);
+
+  if(validitionResult != null){
+    showNotification("Error!", validitionResult);
+    return;
+  }
+
+  console.log(order);
+
+}
+
+
+function validateOrder(order){ 
+
+    const isNumber = new RegExp('^[0-9]*$');
+    const isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    //validate phone numbers
+    if(!isNumber.test(order.deliveryPhoneNumber) || order.deliveryPhoneNumber.length != 11){
+        return "Delivery Telephone is not a valid phone number. Please enter an 11 digit phone number";
+    }
+
+    if(!isNumber.test(order.collectionTelephoneNumber) || order.collectionTelephoneNumber.length != 11){
+        return "Collection Telephone is not a valid phone number. Please enter an 11 digit phone number";
+    }
+
+    //validate email
+    if(!(order.email).value.match(isEmail)){
+        return "Email is not valid";
+    }
+
+    if(!validPaymentTypes.includes(order.payment)){
+        return "Please select a valid payment option";
+    }
+
+    if(isEmpty(order.animalType)){
+        return "Please select a valid animal type";
+    }
+
+    if(isEmpty(order.collectionAddress1)){
+      return "Please enter a collection address";
+    }
+
+    if(isEmpty(order.collectionPostcode)){
+      return "Please enter a collection postcode";
+    }
+    
+    if(isEmpty(order.deliveryAddress1)){
+      return "Please enter a Delivery address";
+    }
+
+    if(isEmpty(order.deliveryPostcode)){
+      return "Please enter a delivery postcode";
+    }
+
+    if(!isNumber.test(order.quantity) || parseInt(order.quantity) < 1 || order.quantity == ""){
+        return "Quantity is not a valid number. Please enter a number greater than 0";
+    }
+
+    if(!isNumber.test(order.boxes) || parseInt(order.boxes) < 1 || order.boxes == ""){
+        return "Boxes is not a valid number. Please enter a number greater than 0";
+    }
+
+    return null;
+
+}
+
+
+function isEmpty(value){
+
+  if(value != null || value != undefined || value != ""){
+    return true;
+  }
+
+  return false;
+
+}
