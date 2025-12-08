@@ -406,6 +406,32 @@ th{
 
 }
 
+.confirmOrderChangeDialog{
+  position: absolute;
+  border-radius: 10px;
+  background-color: white;
+  padding: 20px;
+  border: 1px solid rgba(195, 195, 195, 62%);
+  box-shadow: 0px 0px 17px 2px rgb(215, 215, 215);
+  /* overflow-y: scroll; */
+  max-width: 400px;
+  z-index: 22;
+  margin: auto;
+  right: 50%;
+  top: 50%;
+  transform: translateX(50%) translateY(-50%);
+}
+
+.confirmOrderChangeDialogButtonsWrapper{
+
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  line-height: 1.5em !important;
+
+}
+
 .blurLayer{
 
   position: absolute;
@@ -443,7 +469,6 @@ th{
 .z-index-twentyone{
   z-index: 21;
 }
-
 
 .column{
   display: flex;

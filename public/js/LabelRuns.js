@@ -1,8 +1,9 @@
-import { auth, db, getDocument } from "/js/Firebase.js";
+import { auth, db, getDocument, getDocuments } from "/js/Firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, runTransaction } from "firebase/firestore";
+import { doc, runTransaction, query, collection, where } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { initInternalOrderForm, createAccountSelectOptions, createAnimalTypeSelectOptions } from "/js/FormModel.js";
+
 
 const adminLinks = document.querySelectorAll(".adminLink");
 const assignedRunDetailsContainer = document.getElementById('assigned_run_details_container')
@@ -83,6 +84,10 @@ const updatePrice = document.getElementById('update_price');
 const updateMessage = document.getElementById('update_message');
 const updateCode = document.getElementById('update_code');
 
+const confirmOrderChangeDialog = document.getElementById('confirm_order_change_dialog');
+const confirmUpdateOrderDialogButton = document.getElementById('confirm_update_order_dialog_button');
+const cancelUpdateOrderDialogButton = document.getElementById('cancel_update_order_dialog_button');
+
 
 let role;
 let userID;
@@ -103,7 +108,7 @@ let assignedRunsDocs = [];
 let animalTypeSelectOptions = [];
 let accountSelectOptions = [];
 
-const validPaymentTypes = ["delivery", "pickup", "collection", "account"];
+const validPaymentTypes = ["Delivery", "Pickup", "Collection", "Account"];
 
 
 function addEventListeners(){
@@ -205,7 +210,6 @@ function addEventListeners(){
 
       //update stops table to mark as stop having a label
       updateTableStops();
-      closeForm();
 
     });
 
@@ -234,13 +238,85 @@ function addEventListeners(){
 
   if(saveOrderButton != null){
 
-    saveOrderButton.addEventListener('click', () => {
+    saveOrderButton.addEventListener('click', async () => {
 
-      updateOrder();
+      console.log(selectedStopData);
+      const order = getOrder();
+      const needToRemoveStopFromRun = hasVitalOrderDetailsChanged(order);
+
+      if(needToRemoveStopFromRun){
+        showConfirmOrderChangeDialog();
+        return;
+      }
+      
+      await saveOrderController();
+      
+    });
+
+  }
+
+  if(cancelUpdateOrderDialogButton != null){
+
+    cancelUpdateOrderDialogButton.addEventListener('click', () => {
+      console.log("cancelUpdateOrderDialogButton");
+      hideConfirmOrderChangeDialog();
 
     });
 
   }
+
+  if(confirmUpdateOrderDialogButton != null){
+
+    confirmUpdateOrderDialogButton.addEventListener('click', async() => {
+      await saveOrderController();
+      hideConfirmOrderChangeDialog();
+    });
+
+  }
+  
+}
+
+async function saveOrderController(){
+
+  if(selectedStopData['label'] == undefined){
+    showNotification("Error!", "You must label the stop before updating the order");
+    return;
+  }
+
+  const order = getOrder();
+
+  const validitionResult = validateOrder(order);
+
+  if(validitionResult != null){
+    showNotification("Error!", validitionResult);
+    return false;
+  }
+
+  const needToRemoveStopFromRun = hasVitalOrderDetailsChanged(order);
+
+  const updatedOrderSuccessfully = await updateOrder(order, needToRemoveStopFromRun);
+
+  if(!updatedOrderSuccessfully){
+    showNotification("Error!", "Error updating order");
+    return false;
+  }
+
+  updateLabelForm();
+  updateTableStops();
+  showNotification("Success!", "Successfully updated order details");
+  hideUpdateOrderWidget();    
+
+}
+
+function showConfirmOrderChangeDialog(){
+
+  confirmOrderChangeDialog.classList.remove('hidden');
+
+}
+
+function hideConfirmOrderChangeDialog(){
+
+  confirmOrderChangeDialog.classList.add('hidden');
 
 }
 
@@ -387,6 +463,8 @@ async function initLabelRuns(){
   addEventListeners();
   const staffData = await fetchStaffDocument();
 
+  console.log(staffData);
+
   if(!staffData){
     assignedRunsLoader.classList.add('hidden');
     showNotification("Error!", "Error fetching staff document. Document doesnt exist");
@@ -472,62 +550,66 @@ function addTableStopCardListener(tableStopCard, indexOfStopInRun){
   tableStopCard.addEventListener('click', () => { 
 
     const stopData = selectedRunData['stops'][indexOfStopInRun];
-
     selectedStopData = stopData;
- 
-    stopDetailsWidget.classList.add('stopDetailsWidgetSlideIn');
-    blurLayer.classList.remove('z-index-minusone');
-    blurLayer.classList.add('z-index-fifteen');
 
-    console.log(stopData);
-
-    const orderData = selectedStopData['orderData'];
-
-    //set orderData
-    orderID.innerText = orderData['ID'];
-    stopType.innerText =  selectedStopData['stopType'];
-    estimatedArrivalTime.innerText =  selectedStopData['stopTime'];
-    animalType.innerText = orderData['animalType'];
-    quantity.innerText = orderData['quantity'];
-    numberOfBoxes.innerText = orderData['boxes'] == undefined ? "N/A" : orderData['boxes'];
-
-    collectionName.innerText = orderData['collectionName'];
-    collectionPhoneNumber.innerText = orderData['collectionPhoneNumber'];
-    collectionAddressWrapper.innerHTML = "";
-    collectionAddressWrapper.appendChild(
-      createTableAddress(
-        orderData['collectionAddress1'],
-        orderData['collectionAddress2'],
-        orderData['collectionAddress3'],
-        orderData['collectionPostcode'],
-      )
-    );
-
-    deliveryName.innerText = orderData['deliveryName'];
-    deliveryPhoneNumber.innerText = orderData['deliveryPhoneNumber'];
-    deliveryAddressWrapper.innerHTML = "";
-    deliveryAddressWrapper.appendChild(
-      createTableAddress(
-        orderData['deliveryAddress1'],
-        orderData['deliveryAddress2'],
-        orderData['deliveryAddress3'],
-        orderData['deliveryPostcode'],
-      )
-    );
-
-    if(selectedStopData['stopType'] == "collection"){
-      collectionInfoWrapper.classList.add('redBorder');
-      deliveryInfoWrapper.classList.remove('blueBorder');
-    }
-
-    if(selectedStopData['stopType'] == "delivery"){
-      deliveryInfoWrapper.classList.add('blueBorder');
-      collectionInfoWrapper.classList.remove('redBorder');
-    }
-
-    updateForm(selectedStopData['label']);
+    updateLabelForm(stopData);
+    updateLabelFormSelections(selectedStopData['label']);
 
   });
+
+}
+
+function updateLabelForm(stopData){
+
+  stopDetailsWidget.classList.add('stopDetailsWidgetSlideIn');
+  blurLayer.classList.remove('z-index-minusone');
+  blurLayer.classList.add('z-index-fifteen');
+
+  console.log(stopData);
+
+  const orderData = selectedStopData['orderData'];
+
+  //set orderData
+  orderID.innerText = orderData['ID'];
+  stopType.innerText =  selectedStopData['stopType'];
+  estimatedArrivalTime.innerText =  selectedStopData['stopTime'];
+  animalType.innerText = orderData['animalType'];
+  quantity.innerText = orderData['quantity'];
+  numberOfBoxes.innerText = orderData['boxes'] == undefined ? "N/A" : orderData['boxes'];
+
+  collectionName.innerText = orderData['collectionName'];
+  collectionPhoneNumber.innerText = orderData['collectionPhoneNumber'];
+  collectionAddressWrapper.innerHTML = "";
+  collectionAddressWrapper.appendChild(
+    createTableAddress(
+      orderData['collectionAddress1'],
+      orderData['collectionAddress2'],
+      orderData['collectionAddress3'],
+      orderData['collectionPostcode'],
+    )
+  );
+
+  deliveryName.innerText = orderData['deliveryName'];
+  deliveryPhoneNumber.innerText = orderData['deliveryPhoneNumber'];
+  deliveryAddressWrapper.innerHTML = "";
+  deliveryAddressWrapper.appendChild(
+    createTableAddress(
+      orderData['deliveryAddress1'],
+      orderData['deliveryAddress2'],
+      orderData['deliveryAddress3'],
+      orderData['deliveryPostcode'],
+    )
+  );
+
+  if(selectedStopData['stopType'] == "collection"){
+    collectionInfoWrapper.classList.add('redBorder');
+    deliveryInfoWrapper.classList.remove('blueBorder');
+  }
+
+  if(selectedStopData['stopType'] == "delivery"){
+    deliveryInfoWrapper.classList.add('blueBorder');
+    collectionInfoWrapper.classList.remove('redBorder');
+  }
 
 }
 
@@ -600,7 +682,7 @@ function setSelectedOption(selectedOrderValue, options, selectElement){
 
 }
 
-function updateForm(stopLabel){
+function updateLabelFormSelections(stopLabel){
 
   console.log(stopLabel);
 
@@ -713,6 +795,18 @@ async function parseStopsData(stops){
     const doc = await stops[i]['orderData'];
     stops[i]['orderData']= doc.data();
   }
+
+  stops.sort(orderByID);
+
+}
+
+function orderByID(a, b){
+
+  if(a.orderData.ID > b.orderData.ID){
+    return -1; //sort a before b
+  }
+
+  return 1;
 
 }
 
@@ -987,17 +1081,18 @@ async function storeLabel(){
 
 }
 
-async function updateOrder(){
+function getOrder(){
 
   const order = {
 
     ID: selectedStopData['orderData']['ID'],
+    addedBy: selectedStopData['orderData']['addedBy'],
     animalType: updateAnimalTypeSelect.value,
     email: updateEmail.value,
-    quantity: updateQuantity.value,
-    boxes: updateBoxes.value,
+    quantity: parseInt(updateQuantity.value),
+    boxes: parseInt(updateBoxes.value),
     account: updateAccountSelect.value,
-    deliveryWeek: updateDeliveryWeek.value,
+    deliveryWeek: parseInt(updateDeliveryWeek.value),
     collectionName: updateCollectionName.value,
     collectionAddress1: updateCollectionAddress1.value,
     collectionAddress2: updateCollectionAddress2.value,
@@ -1014,17 +1109,221 @@ async function updateOrder(){
     price: updatePrice.value,
     message: updateMessage.value,
     code: updateCode.value,
+    timestamp: selectedStopData['orderData']['timestamp']
 
   }
 
-  const validitionResult = validateOrder(order);
+  return order;
 
-  if(validitionResult != null){
-    showNotification("Error!", validitionResult);
-    return;
+}
+
+async function updateOrder(order, needToRemoveStopFromRun){
+
+  const selectedRunShipmentName = selectedRunData['shipmentName'];
+
+  console.log(selectedRunShipmentName);
+  console.log(selectedRunID);
+  
+  if(isEmpty(selectedRunShipmentName)){
+    return false;
   }
 
-  console.log(order);
+  const orderDocRef = doc(db, "Orders", selectedStopData['orderID']);
+  const runDocRef = doc(db, "Runs", selectedRunID);
+  const unassignedStopsDocQuery = query(collection(db, "Runs"), where("runName", "==", null), where("shipmentName", "==", selectedRunShipmentName));
+
+  //fetched as query as null as a where value isnt allowed in transaction for some reason even tho
+  const unassignedStopsDoc = await getDocuments(unassignedStopsDocQuery);
+
+  if(unassignedStopsDoc == false){
+    return false;
+  }
+
+  //get doc id so it can be refetched inside transaction
+  const unassignedStopsDocID = unassignedStopsDoc.docs[0].id;
+  const unassignedStopsDocRef = doc(db, "Runs", unassignedStopsDocID);
+
+  try{
+
+    await runTransaction(db, async (transaction) => {
+      
+      const orderDoc = await transaction.get(orderDocRef);
+      const unassignedStopsDoc = await transaction.get(unassignedStopsDocRef);
+      const runDoc = await transaction.get(runDocRef);
+
+      //update order  SwAVxvJkWvVYkKYHZgyc
+      transaction.update(orderDocRef, {
+
+        animalType: order.animalType,
+        email: order.email,
+        quantity: order.quantity,
+        boxes: order.boxes,
+        account: order.account,
+        deliveryWeek: order.deliveryWeek,
+        collectionName: order.collectionName,
+        collectionAddress1: order.collectionAddress1,
+        collectionAddress2: order.collectionAddress2,
+        collectionAddress3: order.collectionAddress3,
+        collectionPostcode: order.collectionPostcode,
+        collectionPhoneNumber: order.collectionPhoneNumber,
+        deliveryName: order.deliveryName,
+        deliveryAddress1: order.deliveryAddress1, 
+        deliveryAddress2: order.deliveryAddress2,
+        deliveryAddress3: order.deliveryAddress3,
+        deliveryPostcode: order.deliveryPostcode,
+        deliveryPhoneNumber: order.deliveryPhoneNumber,
+        payment: order.payment,
+        price: order.price,
+        message: order.message,
+        code: order.code
+        
+      });
+
+      if(!needToRemoveStopFromRun){
+        return;
+      }
+
+      if (!orderDoc.exists()) {
+        throw new Error("Document does not exist!");
+      }
+
+      if (!unassignedStopsDoc.exists()) {
+        throw new Error("Document does not exist!");
+      }
+      
+      const unassignedStopsDocData = unassignedStopsDoc.data();
+      const runDocData = runDoc.data();
+      
+      //add stop to unassigned stops run - remove coordinates, orderData and stopTime
+      console.log(unassignedStopsDocData);
+      console.log(selectedStopData);
+      
+      const stop = {
+
+        isLocked: false,
+        orderID: selectedStopData['orderID'],
+        stopType: selectedStopData['stopType'],
+        label: selectedStopData['label'] //cant be undefined
+
+      } 
+
+      const newUnassignedStops = unassignedStopsDocData['stops'];
+
+      newUnassignedStops.push(stop);
+
+      transaction.update(unassignedStopsDocRef, {
+        stops: newUnassignedStops
+      })
+
+      //remove stop from assigned run
+      const runStops = runDocData['stops'];
+
+      const selectedStopPrimaryKey = selectedStopData['orderID'] + '_' + selectedStopData['stopType'];
+
+      let foundStop = false;
+
+      for(let i = 0; i < runStops.length; i++){
+
+        const primaryKey = runStops[i]['orderID'] + '_' + runStops[i]['stopType']
+
+        if(primaryKey == selectedStopPrimaryKey){
+          console.log(primaryKey);
+          runStops.splice(i, 1);
+          foundStop = true;
+          break;
+        }
+
+      }
+
+      transaction.update(runDocRef, {
+        stops: runStops
+      })
+
+      console.log(newUnassignedStops);
+      console.log(runStops);
+
+      if(!foundStop){
+        throw new Error('Unable to find stop to remove');
+      }
+    
+    });
+
+    //update client side data to match order detail changes
+
+    //find stop to update
+    const selectedStopPrimaryKey = selectedStopData['orderID'] + '_' + selectedStopData['stopType'];
+    let updatedClient = false;
+
+    for(let i = 0; i < selectedRunData['stops'].length; i++){
+
+      const primarykey =  selectedRunData['stops'][i]['orderID'] + '_' + selectedRunData['stops'][i]['stopType'];
+      if(selectedStopPrimaryKey == primarykey){
+        selectedRunData['stops'][i]['orderData'] = order; //to update data shown in table
+        selectedStopData['orderData'] = order; //to update label form
+        updatedClient = true;
+      } 
+
+    }
+
+    console.log(selectedRunData['stops']);
+
+    if(!updatedClient){
+      showNotification("Error!", "Error updating client. Order details have been updated");
+      return;
+    }
+
+  }catch(e){  
+    console.log(e);
+    return false;
+  }
+
+  return true;
+
+}
+
+
+function hasVitalOrderDetailsChanged(order){
+
+  const selectedStopOrderData = selectedStopData['orderData'];
+
+  if(selectedStopOrderData.deliveryWeek != order.deliveryWeek){
+    return true;
+  }
+
+  if(selectedStopOrderData.collectionAddress1 != order.collectionAddress1){
+    return true;
+  }
+
+  if(selectedStopOrderData.collectionAddress2 != order.collectionAddress2){
+    return true;
+  }
+
+  if(selectedStopOrderData.collectionAddress3 != order.collectionAddress3){
+    return true;
+  }
+
+  if(selectedStopOrderData.collectionPostcode != order.collectionPostcode){
+    return true;
+  }
+
+
+  if(selectedStopOrderData.deliveryAddress1 != order.deliveryAddress1){
+    return true;
+  }
+
+  if(selectedStopOrderData.deliveryAddress2 != order.deliveryAddress2){
+    return true;
+  }
+
+  if(selectedStopOrderData.deliveryAddress3 != order.deliveryAddress3){
+    return true;
+  }
+
+  if(selectedStopOrderData.deliveryPostcode != order.deliveryPostcode){
+    return true;
+  }
+
+  return false;
 
 }
 
@@ -1033,18 +1332,18 @@ function validateOrder(order){
 
     const isNumber = new RegExp('^[0-9]*$');
     const isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
+    
     //validate phone numbers
     if(!isNumber.test(order.deliveryPhoneNumber) || order.deliveryPhoneNumber.length != 11){
         return "Delivery Telephone is not a valid phone number. Please enter an 11 digit phone number";
     }
 
-    if(!isNumber.test(order.collectionTelephoneNumber) || order.collectionTelephoneNumber.length != 11){
+    if(!isNumber.test(order.collectionPhoneNumber) || order.collectionPhoneNumber.length != 11){
         return "Collection Telephone is not a valid phone number. Please enter an 11 digit phone number";
     }
 
     //validate email
-    if(!(order.email).value.match(isEmail)){
+    if(!(order.email).match(isEmail)){
         return "Email is not valid";
     }
 
@@ -1087,7 +1386,7 @@ function validateOrder(order){
 
 function isEmpty(value){
 
-  if(value != null || value != undefined || value != ""){
+  if(value == null || value == undefined || value == ""){
     return true;
   }
 
