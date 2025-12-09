@@ -301,7 +301,12 @@ async function saveOrderController(){
     return false;
   }
 
-  updateLabelForm();
+  if(needToRemoveStopFromRun){
+    closeForm();
+  }else{
+    updateLabelForm();
+  }
+
   updateTableStops();
   showNotification("Success!", "Successfully updated order details");
   hideUpdateOrderWidget();    
@@ -1071,7 +1076,8 @@ async function storeLabel(){
     });
 
     //update client
-    selectedRunData['stops'] = newStops;
+    selectedRunData['stops'] = newStops; //to update table
+    selectedStopData['label'] = label;
     return true;
 
   } catch (err) {
@@ -1258,9 +1264,20 @@ async function updateOrder(order, needToRemoveStopFromRun){
 
       const primarykey =  selectedRunData['stops'][i]['orderID'] + '_' + selectedRunData['stops'][i]['stopType'];
       if(selectedStopPrimaryKey == primarykey){
-        selectedRunData['stops'][i]['orderData'] = order; //to update data shown in table
-        selectedStopData['orderData'] = order; //to update label form
-        updatedClient = true;
+
+        //if the stop has been removed from the run then remove from clientside to stop duplicate stops being created later on
+        if(needToRemoveStopFromRun){
+          selectedRunData['stops'].splice(i, 1);
+          selectedStopData = null;
+          updatedClient = true;
+        }else{
+            
+          selectedRunData['stops'][i]['orderData'] = order; //to update data shown in table
+          selectedStopData['orderData'] = order; //to update label form
+          updatedClient = true;
+
+        }
+
       } 
 
     }
