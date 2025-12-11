@@ -70,8 +70,6 @@ async function init(){
         animalTypeSelect.appendChild(options[i]);
     }
 
-    // requiredFields.push(animalTypeSelect);
-
     const animalDescriptionTableAnchor = document.createElement('div');
     animalDescriptionTableAnchor.classList = "animalDescriptionTableAnchor";
     animalTypeWrapper.appendChild(animalDescriptionTableAnchor);
