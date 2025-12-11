@@ -29,6 +29,7 @@ export default defineConfig({
           DeleteUser: resolve(root, 'delete-user.html'),
           EditOrders: resolve(root, 'edit-order.html'),
           FAQ: resolve(root, 'f-a-q.html'),
+          LabelRuns: resolve(root, 'label-runs.html'),
           LiveLogisticsManager: resolve(root, 'live-logistics-manager.html'),
           LoginPage: resolve(root, 'loginpage.html'),
           ManageAccounts: resolve(root, 'manage-accounts.html'),

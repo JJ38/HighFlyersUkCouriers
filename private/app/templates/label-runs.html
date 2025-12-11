@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>     
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+        
+        <title>HighFlyersUkCouriers</title>
+      <script type="module" crossorigin src="./assets/LabelRuns-8E4b-k_H.js"></script>
+      <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
+      <link rel="modulepreload" crossorigin href="./assets/index-35c79a8a-uh53AB8t.js">
+      <link rel="modulepreload" crossorigin href="./assets/Firebase-CCEIZed7.js">
+      <link rel="modulepreload" crossorigin href="./assets/Logout-DGqcOxbm.js">
+      <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
+      <link rel="modulepreload" crossorigin href="./assets/Notification-CxUWC9Hr.js">
+      <link rel="modulepreload" crossorigin href="./assets/FormModel-Deu9IU--.js">
+      <link rel="stylesheet" crossorigin href="./assets/LabelRuns-ByuyYtBw.css">
+      <link rel="stylesheet" crossorigin href="./assets/Navbar-ClBKpNFz.css">
+      <link rel="stylesheet" crossorigin href="./assets/Footer-Co0a3HEz.css">
+      <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-DTOtsrKl.css">
+      <link rel="stylesheet" crossorigin href="./assets/Notification-DKseFP09.css">
+    </head>
+    <body>
+      <header>
+        <div id="mobilenavmenu" class="hideMobileMenu">
+          <div id="mobilenavwrapper">
+            <div id="closemobilenavmenu"><p id="closenavtext">close</p><p>X</p></div>
+                <a class="logoutButton">Logout</a>
+                <a href="/manage-orders">Bookings</a>
+                <a class="adminLink hidden" href="/content-manager">Content Manager</a>
+                <a class="adminLink hidden" href="/manage-accounts">Accounts</a>
+                <a class="adminLink hidden" href="/system-settings">System Settings</a>
+                <a class="adminLink hidden" href="/live-logistics-manager">Live Logistics</a>
+                <a class="adminLink hidden" href="/shipments-logistics-manager">Shipments Logistics</a>
+                <a class="adminLink hidden" href="/logistics-settings">Logistics Settings</a>
+                <a class="currentpage" href="/label-runs">Label Runs</a>
+
+          </div>
+        </div>
+        <nav id="menu">
+          <div id="mobilenavtoggle">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <a class="navLinks logoutButton">Logout</a>
+          <a class="navLinks" href="/manage-orders">Bookings</a>
+          <a class="navLinks adminLink hidden" href="/content-manager">Content Manager</a>
+          <a class="navLinks adminLink hidden" href="/manage-accounts">Accounts</a>
+          <a class="navLinks adminLink hidden" href="/system-settings">System Settings</a>
+          <a class="navLinks adminLink hidden" href="/live-logistics-manager">Logistics</a>
+          <a class="navLinks" href="/label-runs">Label Runs</a>
+        </nav>
+    
+      </header>
+      <div class="mainContent">
+
+
+        <div id="assigned_runs_wrapper" class="assignedRunsWrapper">
+
+          <div id="assigned_run_details_container" class="assignedRunsDetailsContainer">
+            <span id="close_assigned_run_details_container_button" class="material-symbols-outlined closeButton">
+              close
+            </span>
+
+            <h1 class="title">Stop Details</h1>
+            
+            <div class="assignedRunDetailsTableContainer">
+
+              <table id="assigned_run_details_table" class="orderTable">
+
+                <tbody id="assigned_run_details_table_header_container" class="tableHeaderContainer">
+
+                  <tr class="headerRow">
+                                
+                    <th>ID</th>
+                    <th>Animal</th>
+                    <th>Quantity</th>
+                    <th>Stop Type</th>
+                    <th>Week</th>
+                    <th>Collection Name</th>
+                    <th>Collection Address</th>
+                    <th>Collection Phone Number</th>
+                    <th>Delivery Name</th>
+                    <th>Delivery Address</th>
+                    <th>Delivery Phone Number</th>
+                    <th>Payment</th>
+                    <th class="orderMessage">Message</th>
+                    <th >Code</th>
+                    <th id="topright"></th>
+                    <th class="tableRowBackground"></th>
+                    
+                  </tr>
+
+                </tbody>
+
+                <tbody id="assigned_run_details_table_body" class="assignedRunDetailsTableBody">
+
+                  <tr></tr>
+                  <tr></tr>
+                  <tr></tr>
+
+                </tbody>
+              </table>
+            
+            </div>
+
+          </div>
+
+          <h1> Assigned Runs</h1>
+
+          <section id="assigned_runs_table_wrapper" class="tableContainer">
+            <table id="assigned_runs_table" class="orderTable">
+
+              <tbody id="table_header_container" class="tableHeaderContainer">
+
+                <tr class="headerRow">
+                                
+                  <th>Shipment name</th>
+                  <th>Run name</th>
+                  <th>Run Week</th>
+                  <th>Total stops</th>
+
+                  <th></th>
+                  <th class="tableHeaderBackground"></th>
+
+                </tr>
+
+                <tr class="tableLoaderWrapper ">
+                  <td id="assigned_runs_loader" class="loader hidden"></div>
+                </tr>
+
+              </tbody>
+
+              <tbody>
+              </tbody>
+
+              <tbody id="assigned_runs_table_body" class="tableBody hidden">
+                
+                <tr></tr>
+               
+              </tbody>
+
+            </table>
+
+          </section>
+
+        </div>
+
+        <div id="stop_details_widget_form" class="stopDetailsWidgetForm widget">
+
+          <span id="close_stop_details_widget_button" class="material-symbols-outlined closeButton">
+            close
+          </span>
+
+          <div>
+
+            <div id="" class="stopMetaDataWrapper">
+              <p id="order_id"></p>
+              <p id="stop_type"></p>
+            </div>
+
+            <div class="orderContentsWrapper">
+              <div class="row">
+                <p id="quantity"></p>
+                <p>x &nbsp;</p>
+                <p id="animal_type"></p>
+              </div>
+              <div class="row">
+                <p id="number_of_boxes"></p>
+                <p>x boxes</p>
+              </div>
+            </div>
+
+            <div class="stopMetaDataWrapper">
+              <p>Estimated Arrival Time: </p>
+              <p id="estimated_arrival_time"></p>
+            </div>
+            
+            <div id="collection_info_wrapper" class="stopInfoWrapper">
+              <div class="stopPersonalInfoWrapper">
+                <p id="collection_name"></p>
+                <p id="collection_phone_number"></p>
+              </div>
+              <div id="collection_address_wrapper"></div>
+            </div>
+
+             <div id="delivery_info_wrapper"  class="stopInfoWrapper">
+              <div class="stopPersonalInfoWrapper">
+                <p id="delivery_name"></p>
+                <p id="delivery_phone_number"></p>
+              </div>
+              <div id="delivery_address_wrapper"></div>
+            </div>
+
+          </div>
+
+          <div>
+
+            <div>
+              <button id="update_order_button" class="button updateOrderButton" role="button">Update Order</button>
+              <div id="update_order_button_loader" class="loader center hidden"></div>
+            </div>
+            
+            <h4>Method of contact: </h4>
+            <div class="">
+              <fieldset id="radio_method_of_contact" class="radio-inputs">
+
+                <label for="radio_method_of_contact_told">
+                  <input type="radio" id="radio_method_of_contact_told" name="contact_method" value="told" />
+                  <span class="name">Told</span>
+                </label>
+
+                <label for="radio_method_of_contact_text">
+                  <input type="radio" id="radio_method_of_contact_text" name="contact_method" value="text" />
+                  <span class="name">Text</span>
+                </label>
+
+                <label for="radio_method_of_contact_voicemail">
+                  <input type="radio" id="radio_method_of_contact_voicemail" name="contact_method" value="voicemail" />
+                  <span class="name">Voicemail</span>
+                </label>
+
+              </fieldset>
+            </div>
+
+            <h4 for="radio_notice">Call before arrival: </h4>
+            <div class="">
+              <fieldset id="radio_notice" class="radio-inputs" name="radio_call_before_arrival">
+
+                <label for="radio_notice_yes">
+                  <input type="radio" id="radio_notice_yes" name="notice" value="yes" />
+                  <span class="name">Yes</span>
+                </label>
+
+                <label for="radio_notice_no">
+                  <input type="radio" id="radio_notice_no" name="notice" value="no" />
+                  <span class="name">No</span>
+                </label>
+
+              </fieldset>
+            </div>
+
+            <div id="arrival_notice_wrapper" class="column hidden">
+              <label for="notice_input" class="">Notice:</label>
+              <input type="number" class="" placeholder="minutes" name="notice" id='notice_input' min="0" required />
+            </div>
+
+            <div class="column">
+              <label for="message">Message:</label>
+              <textarea id="message" name="message" rows="4"></textarea>
+            </div>
+
+            <div>
+              <button id="save_label_button" class="button" role="button">Save</button>
+              <div id="save_label_button_loader" class="loader center hidden"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div id="update_order_details_widget" class="updateOrderDetailsWidget widget hidden">
+
+          <span id="close_update_order_details_widget_button" class="material-symbols-outlined closeButton">
+            close
+          </span>
+
+          <table id="update_order_details_table" class="updateOrderDetailsTable">
+
+              <tr>
+                <td>
+                  <label for="update_order_id">ID: </label>
+                </td>
+                <td>
+                  <p id="update_order_id"></p>
+                </td>
+              </tr> 
+              
+              <tr>
+                <td>
+
+                  <section id="animal_type_wrapper" class="bookingInput">
+                    <div id="animal_type_hint" class="labelHintWrapper">
+                      <label for="update_animal_type">Bird/Animal type</label>
+                                      
+                    </div>
+                  
+                  </section>
+  
+                </td>
+                <td>
+
+                  <select name="update_animal_type" id="update_animal_type_select" required>
+                  </select>
+
+                </td>
+
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_quantity">Quantity: </label>
+                </td>
+                <td>
+                  <input id="update_quantity" name="update_quantity" type="number" min="1" required>
+                </td>
+              </tr>          
+
+              <tr>
+                <td>
+                  <label for="update_email">Email Address: </label>
+                </td>
+                <td>
+                  <input id="update_email" name="update_email" type="email" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_boxes">Number Of Boxes: </label>
+                </td>
+                <td>
+                  <input id="update_boxes" name="update_boxes" type="number" min="1" required>
+                </td>
+              </tr>      
+
+              <tr>
+                <td>
+                  <label for="update_account">Account: </label>
+                </td>
+                <td>
+                    <!-- <input id="username" name="username" type="text"> -->
+                    <select name="update_account" id="update_account_select">
+                      
+                    </select>
+                
+                </td>
+              </tr>
+
+              <tr>
+                <td>                 
+                  <label for="update_delivery_week">Delivery Week: </label>  
+                </td>
+                <td>
+                  <input id="update_delivery_week" name="update_delivery_week" type="number" min="1" max="53">
+                </td>
+              </tr>
+
+              
+              <tr>
+                <td>
+                  <label for="update_collection_name">Collection Name: </label>
+                </td>
+                <td>
+                  <input id="update_collection_name" name="update_collection_name" type="text" required>
+                </td>
+              </tr>
+          
+              <tr>
+                <td>
+                  <label for="update_collection_address_1">Collection Address 1: </label>
+                </td>
+                <td>
+                  <input id="update_collection_address_1" name="update_collection_address_1" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_collection_address_2">Collection Address 2: </label>
+                </td>
+                <td>
+                  <input id="update_collection_address_2" name="update_collection_address_2" type="text">
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_collection_address_3">Collection Address 3: </label>
+                </td>
+                <td>
+                  <input id="update_collection_address_3" name="update_collection_address_3" type="text">
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_collection_postcode">Collection Postcode: </label>
+                </td>
+                <td>
+                  <input id="update_collection_postcode" name="update_collection_postcode" type="text" required>
+                </td>
+              </tr>
+
+               <tr>
+                <td>
+                  <label for="update_collection_phone_number">Collection Telephone number: </label>
+                </td>
+                <td>
+                  <input id="update_collection_phone_number" name="update_collection_phone_number" type="text" minlength="11" maxlength="11" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_delivery_name">Delivery Name: </label>
+                </td>
+                <td>
+                  <input id="update_delivery_name" name="update_delivery_name" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_delivery_address_1">Delivery Address 1: </label>
+                </td>
+                <td>
+                  <input id="update_delivery_address_1" name="update_delivery_address_1" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_delivery_address_2">Delivery Address 2: </label>
+                </td>
+                <td>
+                  <input id="update_delivery_address_2" name="update_delivery_address_2" type="text">
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_delivery_address_3">Delivery Address 3: </label>
+                </td>
+                <td>
+                  <input id="update_delivery_address_3" name="update_delivery_address_3" type="text">
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_delivery_postcode">Delivery Postcode: </label>
+                </td>
+                <td>
+                  <input id="update_delivery_postcode" name="update_delivery_postcode" type="text" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_delivery_phone_number">Delivery Telephone Number: </label>
+                </td>
+                <td>
+                  <input id="update_delivery_phone_number" name="update_delivery_phone_number" type="text" minlength="11" maxlength="11" required>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_payment">Payment: </label>
+                </td>
+                <td>
+                  <select name="update_payment" id="update_payment" required>
+                    <option value=""> -- select an option -- </option>
+                    <option value="Pickup">Pickup</option>
+                    <option value="Delivery">Delivery</option>
+                    <option value="Account">Account</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label for="update_price">Price: </label>
+                </td>
+                <td>
+                  <input id="update_price" name="update_price" type="number">
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_message">Message: </label>
+                </td>
+                <td>
+                  <textarea id="update_message" name="update_message" rows="8" wrap="soft"></textarea>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="update_code">Code: </label>
+                </td>
+                <td>
+                  <input id="update_code" name="update_code" type="text">
+                </td>
+              </tr>
+          </table>
+
+          <div>
+            <button id="save_order_button" class="button saveOrderButton" role="button">Update Order</button>
+            <div id="save_order_button_loader" class="loader center hidden"></div>
+          </div>
+
+        </div>
+
+        <div id="confirm_order_change_dialog" class="confirmOrderChangeDialog hidden">
+
+          <p>By updating the address or delivery week you will now longer be able to access this stop after saving. Are these changes definitely correct?</p>
+          
+          <div class="confirmOrderChangeDialogButtonsWrapper">
+            <button id="confirm_update_order_dialog_button">Confirm</button>
+            <button id="cancel_update_order_dialog_button">Cancel</button>
+          </div>
+
+        </div>
+          
+        <div id="blur_layer" class="blurLayer z-index-minusone"></div>
+        <div id="blur_layer_update_order" class="blurLayer z-index-minusone"></div>
+
+      </div>
+      
+    </body>
+</html>
