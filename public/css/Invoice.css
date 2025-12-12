@@ -1,0 +1,115 @@
+/* Browser should be 673px * 953px to reflect how it would look on an a4 invoice */
+
+.invoice{
+
+    font-family: 'inter', sans-serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 1em;
+    padding: 1px !important;
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    scrollbar-width: 0px;
+    
+}
+
+p, td{
+    color: #525252;
+    font-weight: 300;
+    word-wrap: break-word;
+}
+
+td:first-child{
+    font-weight: 400;
+    color: black;
+}
+
+.row{
+    display: flex;
+}
+
+.submittedOnWrapper, .total{
+    color: #ef459c;
+}
+
+.creationDate{
+    padding-left: 5px;
+}
+
+.alignItemsCenter{
+    align-items: center;
+}
+
+.spaceBetween{
+    justify-content: space-between;
+}
+
+.headerrow{
+    text-align: left;
+    padding: 5px;
+}
+
+.invoiceDetailsTable{
+    border-spacing: 0px;
+    border-collapse: separate;
+    width: 100%;
+}
+
+tbody{
+    padding: 0px;
+    margin: 0px;
+}
+
+.invoiceDetailsWrapper{
+    width: fit-content;
+}
+
+.total{
+    margin-right: 0;
+}
+
+th{
+    margin-right: 10px;
+    font-weight: 600;
+    font-size: 1.1em;
+    text-align: left;
+}
+
+h1, h2, th, .orderLabel{
+    color: #3333a1;
+}
+
+h4{
+    color: black;
+}
+
+td, th{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+tr{
+    margin-top: 5px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.dataRow:nth-child(even){
+    background-color: #eeeeee;
+}
+
+hr{
+    background-color: #8f8f8f;
+    border-style: none;
+    height: 1px;
+}
+
+.bold{
+    font-weight: 600;
+    
+}
+
+.margin-bottom-20px{
+    margin-bottom: 20px;
+}

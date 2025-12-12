@@ -83,5 +83,8 @@ export default defineConfig({
         usePolling: true,
       }
     },
+    optimizeDeps: {
+      include: ["jspdf"]
+    }
     
   })
