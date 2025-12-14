@@ -10,6 +10,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
         <link rel="stylesheet" href="/css/Invoice.css" type="text/css">      
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=delete,add" />
+        <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=add" /> -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
         <script type="module" src="/js/MobileNavigationBar.js" ></script>
         <script type="module" src="/js/Logout.js"></script>
@@ -58,204 +60,370 @@
         </header>
         <div class="mainContent">
 
-            <h1>Finance</h1>
+            <div id="floating_options_menu" class="floatingOptionsMenu">
+                <div id="delete_options_menu_button" class="menuItem">
+                    <!-- <p>Delete</p> -->
+                    <span class="material-symbols-outlined">delete</span>
+                </div>
+                <div id="add_options_menu_button" class="menuItem">
+                    <!-- <p>Delete</p> -->
+                    <span class="material-symbols-outlined">add</span>
+                </div>
+            </div>
+
+            <h1 class="pageTitle">Finance</h1>
 
             <div>
                 <button id="generate_invoice_button">Generate Invoice</button>
             </div>
 
-            <div id="" class="invoice_generator_wrapper">
+            <div id="" class="invoiceGeneratorWrapper">
 
-                <div id="invoice_form" class="invoiceForm">
+                <!-- <div id="invoice_form" class="invoiceForm">
 
-                </div>
+                    <div class="addOrderToInvoice">
 
-                <div id="invoice_preview" class="invoice">
-
-                    <div class="margin-bottom-20px">
-                        <h2>Highflyers U.K. Couriers</h2>
-                        <p>Unit 2, Thomas Street</p>
-                        <p>Congleton, CW12 1QU</p>
-                        <p>07887781089</p>
-                    </div>
-                    
-                    <h1>Invoice</h1>
-
-                    <div class="row margin-bottom-20px submittedOnWrapper">
-                        <h3>Submitted on &nbsp;</h3>
-                        <h3 id="submitted_on_date">20.11.2025</h3>
-                    </div>
-
-                    <div class="row spaceBetween margin-bottom-20px">
-
-                        <div id="invoice_for_wrapper">
-                            <h4>Invoice for</h4>
-                            <p id="name">Lee Chapman</p>
-                            <p id="address_line_1">90 Wiggs Farm Road</p>
-                            <p id="address_line_2">Ouston</p>
-                            <p id="address_line_3">Nothampton</p>
-                            <p id="postcode">NN56HZ</p>
-                            <p id="phonenumber">07123456789</p>
-                            <p id="email">lee@itsabirdthing.co.uk</p>
+                        <div class="inputLabelWrapper">
+                            <label for="reference_input">Reference</label>
+                            <input id="reference_input" type="text">
                         </div>
 
-                        <div id="payable_to_wrapper">
-                            <h4>Payable to</h4>
-                            <p>Kevin Brough</p>
-                            <p>Highflyers U.K. Couriers</p>
+                        <div class="inputLabelWrapper">
+                            <label for="reference_input">Name</label>
+                            <input id="reference_input" type="text">
                         </div>
 
-                        <div id="invoice_metadata_wrapper">
-                            <h4>Invoice #</h4>
-                            <p id="reference">HF0051 - 84 Week 46 &nbsp;</p>
-                            <div class="row alignItemsCenter">
-                                <h4>Date</h4>
-                                <p id="creation_date" class="creationDate">11/11/2025</p>
+                        <div class="inputLabelWrapper">
+                            <label for="reference_input">Address Line 1</label>
+                            <input id="reference_input" type="text">
+                        </div>
+
+                        <div class="inputLabelWrapper">
+                            <label for="reference_input">Address Line 2</label>
+                            <input id="reference_input" type="text">
+                        </div>
+
+                        <div class="inputLabelWrapper">
+                            <label for="reference_input">Address Line 3</label>
+                            <input id="reference_input" type="text">
+                        </div>
+
+                        <div class="inputLabelWrapper">
+                            <label for="reference_input">Postcode</label>
+                            <input id="reference_input" type="text">
+                        </div>
+
+
+                        <table>
+
+                            <tr class="headerRow"> 
+
+                                <th>Description</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+
+                            </tr>
+
+                            <tr>
+                                <td><input type="text"></td>
+                                <td><input type="number"></td>
+                                <td><input type="number"></td>
+                                <td><p class=""></p></td>
+                            </tr>
+
+                        </table>
+
+                   
+
+                    </div>
+
+                </div> -->
+
+                <div class="invoicePreviewWrapper">
+
+                    <div id="invoice_preview" class="invoicePreview">
+
+                        <div class="margin-bottom-20px">
+                            <h2>Highflyers U.K. Couriers</h2>
+                            <p>Unit 2, Thomas Street</p>
+                            <p>Congleton, CW12 1QU</p>
+                            <p>07887781089</p>
+                        </div>
+                        
+                        <h1>Invoice</h1>
+
+                        <div class="row margin-bottom-20px submittedOnWrapper">
+                            <h3>Submitted on &nbsp;</h3>
+                            <h3 id="submitted_on_date" contenteditable data-placeholder="Submission date...">20.11.2025</h3>
+                        </div>
+
+                        <div class="row spaceBetween margin-bottom-20px">
+
+                            <div class="metadataGroup" id="invoice_for_wrapper">
+                                <h4 class="metadataTitle">Invoice for</h4>
+                                <p id="name" contenteditable data-placeholder="Name...">Lee Chapman</p>
+                                <p id="address_line_1" contenteditable data-placeholder="Address Line 1...">90 Wiggs Farm Road</p>
+                                <p id="address_line_2" contenteditable data-placeholder="Address Line 2...">Ouston</p>
+                                <p id="address_line_3" contenteditable data-placeholder="Address Line 3...">Nothampton</p>
+                                <p id="postcode" contenteditable data-placeholder="Postcode...">NN56HZ</p>
+                                <p id="phonenumber" contenteditable data-placeholder="Phonenumber...">07123456789</p>
+                                <p id="email" contenteditable data-placeholder="Email...">lee@itsabirdthing.co.uk</p>
                             </div>
+
+                            <div class="metadataGroup" id="payable_to_wrapper">
+                                <h4 class="metadataTitle">Payable to</h4>
+                                <p contenteditable data-placeholder="Name...">Kevin Brough</p>
+                                <p contenteditable data-placeholder="Company...">Highflyers U.K. Couriers</p>
+                            </div>
+
+                            <div>
+
+                                <div class="metadataGroup" id="invoice_metadata_wrapper">
+                                    <h4 class="metadataTitle">Invoice #</h4>
+                                    <p id="reference" contenteditable data-placeholder="Reference...">HF0051 - 84 Week 46 &nbsp;</p>                     
+                                </div>
+
+                                <div class="metadataGroup">
+                                    <h4 class="metadataTitle">Date</h4>
+                                    <p id="creation_date" class="" contenteditable data-placeholder="Creation date...">11/11/2025</p>
+                                </div>
+
+                            </div>
+
                         </div>
+
+                        <hr>
+
+                        <table class="invoiceDetailsTable">
+
+                            <tr class="headerRow"> 
+
+                                <th>Description</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+
+                            </tr>
+
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+                            
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+                           
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+                          
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+                            
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+                           
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+                           
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+                          
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+                          
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+                          
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+                          
+                            <tr class="dataRow">
+
+                                <td>12x Pigeons - Young birds</td>
+                                <td>1</td>
+                                <td>£60</td>
+                                <td>£60</td>
+                                
+                            </tr>
+
+                            <tr>
+                                <td><hr></td>
+                                <td><hr></td>
+                                <td><hr></td>
+                                <td><hr></td>
+                            </tr>
+
+                            <tr>
+
+                                <td>
+                                    <div>
+                                        <p>Notes:</p>
+                                        <p id="invoice_notes"></p>
+                                    </div>
+                                </td>   
+                                <td></td>
+                                <td>
+                                    <p class="orderLabel">Subtotal</p>
+                                </td>
+                                <td>
+                                    <h4 id="subtotal">£240</h4>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <p class="orderLabel">Adjustments</p>
+                                </td>
+                                <td >
+                                    <h4 id="adjustments" class="">£0</h4>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <h3 id="total" class="total">
+                                        £240
+                                    </h3>
+                                </td>
+
+                            </tr>
+
+                        </table>
 
                     </div>
 
-                    <hr>
-
-                    <table class="invoiceDetailsTable">
-
-                        <tr class="headerRow"> 
-
-                            <th>Description</th>
-                            <th>Qty</th>
-                            <th>Unit Price</th>
-                            <th>Total Price</th>
-
-                        </tr>
-
-                        <tr class="dataRow">
-
-                            <td>12x Pigeons - Young birds</td>
-                            <td>1</td>
-                            <td>£60</td>
-                            <td>£60</td>
-                            
-                        </tr>
-
-                        <tr class="dataRow">
-
-                            <td>12x Pigeons - Young birds</td>
-                            <td>1</td>
-                            <td>£60</td>
-                            <td>£60</td>
-                            
-                        </tr>
-
-                        <tr class="dataRow">
-
-                            <td>12x Pigeons - Young birds</td>
-                            <td>1</td>
-                            <td>£60</td>
-                            <td>£60</td>
-                            
-                        </tr>
-
-                        <tr class="dataRow">
-
-                            <td>12x Pigeons - Young birds</td>
-                            <td>1</td>
-                            <td>£60</td>
-                            <td>£60</td>
-                            
-                        </tr>
-
-                        <tr class="dataRow">
-
-                            <td>12x Pigeons - Young birds</td>
-                            <td>1</td>
-                            <td>£60</td>
-                            <td>£60</td>
-                            
-                        </tr>
-
-                        <tr class="dataRow">
-
-                            <td>12x Pigeons - Young birds</td>
-                            <td>1</td>
-                            <td>£60</td>
-                            <td>£60</td>
-                            
-                        </tr>
-
-                        <tr class="dataRow">
-
-                            <td>12x Pigeons - Young birds</td>
-                            <td>1</td>
-                            <td>£60</td>
-                            <td>£60</td>
-                            
-                        </tr>
-
-                        <tr class="dataRow">
-
-                            <td>12x Pigeons - Young birds</td>
-                            <td>1</td>
-                            <td>£60</td>
-                            <td>£60</td>
-                            
-                        </tr>
-
-                        <tr>
-                            <td><hr></td>
-                            <td><hr></td>
-                            <td><hr></td>
-                            <td><hr></td>
-                        </tr>
-
-                        <tr>
-
-                            <td>
-                                <div>
-                                    <p>Notes:</p>
-                                    <p id="invoice_notes"></p>
-                                </div>
-                            </td>   
-                            <td></td>
-                            <td>
-                                <p class="orderLabel">Subtotal</p>
-                            </td>
-                            <td>
-                                <h4 id="subtotal">£240</h4>
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <p class="orderLabel">Adjustments</p>
-                            </td>
-                            <td >
-                                <h4 id="adjustments" class="">£0</h4>
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <h3 id="total" class="total">
-                                    £240
-                                </h3>
-                            </td>
-
-                        </tr>
-
-                    </table>
-
                 </div>
-
             </div>
 
         </div>

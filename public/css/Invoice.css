@@ -10,8 +10,8 @@
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
-    scrollbar-width: 0px;
-    
+    /* scrollbar-width: 0px; */
+
 }
 
 p, td{
