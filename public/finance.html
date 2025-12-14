@@ -197,6 +197,13 @@
 
                         <table class="invoiceDetailsTable">
 
+                            <colgroup>
+                                <col class="descriptionCol">
+                                <col class="qtyCol">
+                                <col class="unitPriceCol">
+                                <col class="totalPriceCol">
+                            </colgroup>
+
                             <tr class="headerRow"> 
 
                                 <th>Description</th>
@@ -206,166 +213,34 @@
 
                             </tr>
 
-                            <tr class="dataRow">
+                            <tbody id="invoice_orders_table">
 
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
+                                <tr class="dataRow inputRow">
 
-                            <tr class="dataRow">
+                                    <td><input type="text"></td>
+                                    <td><input type="number"></td>
+                                    <td><div class="inputLabelWrapper"><p>£</p><input type="number"></div></td>
+                                    <td></td>
+                                    
+                                </tr>
 
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-                            
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-                           
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
+                            </tbody>
                           
-                            <tr class="dataRow">
+                            <!-- <tr class="dataRow">
 
                                 <td>12x Pigeons - Young birds</td>
                                 <td>1</td>
                                 <td>£60</td>
                                 <td>£60</td>
                                 
-                            </tr>
-                            
-                            <tr class="dataRow">
+                            </tr> -->
 
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-                           
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-                           
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-                          
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-                          
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-                          
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr>
-                          
-                            <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
+                            <tr id="add_order_button_row" class="buttonRow">
+                                <td class="addOrderButtonTableData">
+                                    <div id="add_invoice_order_button" class="addInvoiceOrderButton">
+                                        <span class="material-symbols-outlined addOrderIcon">add</span>
+                                    </div>
+                                </td>
                             </tr>
 
                             <tr>
