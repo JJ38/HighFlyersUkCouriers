@@ -1012,7 +1012,7 @@ export async function addRunToShipment(runName, runDefaultProperties, shipmentNa
 
     console.log(runRef.id);
 
-    const runDoc = generateRunDoc(runName, runDefaultProperties, deliveryWeek);
+    const runDoc = generateRunDoc(runName, runDefaultProperties, deliveryWeek, shipmentName);
 
     batch.set(runRef, runDoc);
 
@@ -1043,7 +1043,7 @@ export async function splitRun(runToBeSplit, ratioToBeSplitTo, shipmentName){
 
   let shipmentRunIDs = shipmentDoc.data().runs;
 
-  const runDocs = getSplitRunDocuments(runToBeSplit, ratioToBeSplitTo);
+  const runDocs = getSplitRunDocuments(runToBeSplit, ratioToBeSplitTo, shipmentName);
 
   const batch = writeBatch(db);
   const runIDs = [];
@@ -1080,7 +1080,7 @@ export async function splitRun(runToBeSplit, ratioToBeSplitTo, shipmentName){
 
 }
 
-function getSplitRunDocuments(runToBeSplit, ratioToBeSplitTo){
+function getSplitRunDocuments(runToBeSplit, ratioToBeSplitTo, shipmentName){
 
   const runs = [];
 
@@ -1092,7 +1092,7 @@ function getSplitRunDocuments(runToBeSplit, ratioToBeSplitTo){
       runName += " (" + i + ")";
     }
 
-    runs.push(generateRunDoc(runName, runToBeSplit.settings, runToBeSplit.runWeek));
+    runs.push(generateRunDoc(runName, runToBeSplit.settings, runToBeSplit.runWeek, shipmentName));
 
   }
 
@@ -2325,17 +2325,17 @@ function updateOrderDocumentAddress(addressType, address, orderDocument){
 
   if(addressType == "collection"){
 
-    orderDocument['collectionAddress1'] = address.streetAddress;
-    orderDocument['collectionAddress2'] = address.city;
-    orderDocument['collectionAddress3'] = address.county;
-    orderDocument['collectionPostcode'] = address.postcode;
+    orderDocument['collectionAddress1'] = address.streetAddress == undefined ? "" : address.streetAddress;
+    orderDocument['collectionAddress2'] = address.city == undefined ? "" : address.city;
+    orderDocument['collectionAddress3'] = address.county == undefined ? "" : address.county;
+    orderDocument['collectionPostcode'] = address.postcode == undefined ? "" : address.postcode;
 
   }else if(addressType == "delivery"){
 
-    orderDocument['deliveryAddress1'] = address.streetAddress;
-    orderDocument['deliveryAddress2'] = address.city;
-    orderDocument['deliveryAddress3'] = address.county;
-    orderDocument['deliveryPostcode'] = address.postcode;
+    orderDocument['deliveryAddress1'] = address.streetAddress == undefined ? "" : address.streetAddress
+    orderDocument['deliveryAddress2'] = address.city == undefined ? "" : address.city
+    orderDocument['deliveryAddress3'] = address.county == undefined ? "" : address.county
+    orderDocument['deliveryPostcode'] = address.postcode == undefined ? "" : address.postcode;
 
   }else{
 

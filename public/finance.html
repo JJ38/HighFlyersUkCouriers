@@ -58,15 +58,14 @@
 
             </nav>
         </header>
+<!-- 
         <div class="mainContent">
 
             <div id="floating_options_menu" class="floatingOptionsMenu">
                 <div id="delete_options_menu_button" class="menuItem">
-                    <!-- <p>Delete</p> -->
                     <span class="material-symbols-outlined">delete</span>
                 </div>
                 <div id="add_options_menu_button" class="menuItem">
-                    <!-- <p>Delete</p> -->
                     <span class="material-symbols-outlined">add</span>
                 </div>
             </div>
@@ -79,71 +78,10 @@
 
             <div id="" class="invoiceGeneratorWrapper">
 
-                <!-- <div id="invoice_form" class="invoiceForm">
+                <div id="invoice_form_wrapper" class="invoiceWrapper invoiceFormWrapper">
 
-                    <div class="addOrderToInvoice">
-
-                        <div class="inputLabelWrapper">
-                            <label for="reference_input">Reference</label>
-                            <input id="reference_input" type="text">
-                        </div>
-
-                        <div class="inputLabelWrapper">
-                            <label for="reference_input">Name</label>
-                            <input id="reference_input" type="text">
-                        </div>
-
-                        <div class="inputLabelWrapper">
-                            <label for="reference_input">Address Line 1</label>
-                            <input id="reference_input" type="text">
-                        </div>
-
-                        <div class="inputLabelWrapper">
-                            <label for="reference_input">Address Line 2</label>
-                            <input id="reference_input" type="text">
-                        </div>
-
-                        <div class="inputLabelWrapper">
-                            <label for="reference_input">Address Line 3</label>
-                            <input id="reference_input" type="text">
-                        </div>
-
-                        <div class="inputLabelWrapper">
-                            <label for="reference_input">Postcode</label>
-                            <input id="reference_input" type="text">
-                        </div>
-
-
-                        <table>
-
-                            <tr class="headerRow"> 
-
-                                <th>Description</th>
-                                <th>Qty</th>
-                                <th>Unit Price</th>
-                                <th>Total Price</th>
-
-                            </tr>
-
-                            <tr>
-                                <td><input type="text"></td>
-                                <td><input type="number"></td>
-                                <td><input type="number"></td>
-                                <td><p class=""></p></td>
-                            </tr>
-
-                        </table>
-
-                   
-
-                    </div>
-
-                </div> -->
-
-                <div class="invoicePreviewWrapper">
-
-                    <div id="invoice_preview" class="invoicePreview">
-
+                    <div id="invoice_form" class="invoice">
+                        
                         <div class="margin-bottom-20px">
                             <h2>Highflyers U.K. Couriers</h2>
                             <p>Unit 2, Thomas Street</p>
@@ -162,13 +100,13 @@
 
                             <div class="metadataGroup" id="invoice_for_wrapper">
                                 <h4 class="metadataTitle">Invoice for</h4>
-                                <p id="name" contenteditable data-placeholder="Name...">Lee Chapman</p>
-                                <p id="address_line_1" contenteditable data-placeholder="Address Line 1...">90 Wiggs Farm Road</p>
-                                <p id="address_line_2" contenteditable data-placeholder="Address Line 2...">Ouston</p>
-                                <p id="address_line_3" contenteditable data-placeholder="Address Line 3...">Nothampton</p>
-                                <p id="postcode" contenteditable data-placeholder="Postcode...">NN56HZ</p>
-                                <p id="phonenumber" contenteditable data-placeholder="Phonenumber...">07123456789</p>
-                                <p id="email" contenteditable data-placeholder="Email...">lee@itsabirdthing.co.uk</p>
+                                <p id="name" contenteditable data-placeholder="Name..."></p>
+                                <p id="address_line_1" contenteditable data-placeholder="Address Line 1..."></p>
+                                <p id="address_line_2" contenteditable data-placeholder="Address Line 2..."></p>
+                                <p id="address_line_3" contenteditable data-placeholder="Address Line 3..."></p>
+                                <p id="postcode" contenteditable data-placeholder="Postcode..."></p>
+                                <p id="phonenumber" contenteditable data-placeholder="Phonenumber..."></p>
+                                <p id="email" contenteditable data-placeholder="Email..."></p>
                             </div>
 
                             <div class="metadataGroup" id="payable_to_wrapper">
@@ -214,94 +152,101 @@
                             </tr>
 
                             <tbody id="invoice_orders_table">
+                            </tbody>
+                        
+                        </table>
+    
 
-                                <tr class="dataRow inputRow">
+                    
+                        <div id="add_invoice_order_button" class="addInvoiceOrderButton">
+                            <span class="material-symbols-outlined addOrderIcon">add</span>
+                        </div>
+                            
 
-                                    <td><input type="text"></td>
-                                    <td><input type="number"></td>
-                                    <td><div class="inputLabelWrapper"><p>£</p><input type="number"></div></td>
+                        <table class="invoiceMetaDataTable">
+
+                            <colgroup>
+                                <col class="descriptionCol">
+                                <col class="qtyCol">
+                                <col class="unitPriceCol">
+                                <col class="totalPriceCol">
+                            </colgroup>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>
+                                        <div>
+                                            <p>Notes:</p>
+                                            <p id="invoice_notes"></p>
+                                        </div>
+                                    </td>   
                                     <td></td>
-                                    
+                                    <td>
+                                        <p class="orderLabel">Subtotal</p>
+                                    </td>
+                                    <td>   
+                                        <div class="metadataLabel">
+                                            <h4 class="poundSymbol">£</h4>
+                                            <h4 id="subtotal">0</h4>                                          
+                                        </div>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <p class="orderLabel">Adjustments</p>
+                                    </td>
+                                    <td >
+                                        <div class="metadataLabel">
+                                            <h4 class="poundSymbol">£</h4>
+                                            <h4 id="adjustments">0</h4>    
+                                        </div>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <div class="metadataLabel">
+                                            <h3 class="total">£</h3>
+                                            <h3 id="total" class="total">
+                                                240
+                                            </h3>
+                                        </div>
+                                      
+                                    </td>
+
                                 </tr>
 
                             </tbody>
-                          
-                            <!-- <tr class="dataRow">
-
-                                <td>12x Pigeons - Young birds</td>
-                                <td>1</td>
-                                <td>£60</td>
-                                <td>£60</td>
-                                
-                            </tr> -->
-
-                            <tr id="add_order_button_row" class="buttonRow">
-                                <td class="addOrderButtonTableData">
-                                    <div id="add_invoice_order_button" class="addInvoiceOrderButton">
-                                        <span class="material-symbols-outlined addOrderIcon">add</span>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td><hr></td>
-                                <td><hr></td>
-                                <td><hr></td>
-                                <td><hr></td>
-                            </tr>
-
-                            <tr>
-
-                                <td>
-                                    <div>
-                                        <p>Notes:</p>
-                                        <p id="invoice_notes"></p>
-                                    </div>
-                                </td>   
-                                <td></td>
-                                <td>
-                                    <p class="orderLabel">Subtotal</p>
-                                </td>
-                                <td>
-                                    <h4 id="subtotal">£240</h4>
-                                </td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <p class="orderLabel">Adjustments</p>
-                                </td>
-                                <td >
-                                    <h4 id="adjustments" class="">£0</h4>
-                                </td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <h3 id="total" class="total">
-                                        £240
-                                    </h3>
-                                </td>
-
-                            </tr>
 
                         </table>
 
                     </div>
 
+                   
+
                 </div>
+
+                <div id="invoice_preview_wrapper" class="invoiceWrapper invoicePreviewWrapper">
+                    <div id="invoice_preview" class="invoice">
+
+                    </div>
+                </div>
+
             </div>
 
-        </div>
+        </div> -->
 
     </body>
 </html>

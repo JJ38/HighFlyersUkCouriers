@@ -9,6 +9,7 @@ html,
 body {
 
   display: flex;
+  position: relative;
   flex-direction: column;
   height: 100%;
   margin: 0;
@@ -32,7 +33,7 @@ body {
 
 .invoiceDetailsTable {
   width: 100%;
-  table-layout: fixed;
+  table-layout: collapse;
 }
 
 .invoiceGeneratorWrapper{
@@ -42,27 +43,26 @@ body {
   gap: 50px;
 }
 
-.invoicePreviewWrapper{
+.invoiceWrapper{
   padding: 15mm; /* apply padding here in css so padding doesnt get rendered in pdf. html2canvas will add 15mm padding*/
   box-sizing: border-box;
   height: 100%;
   background: white;
+}
+
+.invoicePreviewWrapper{
   box-shadow: 0 0 10px rgba(0,0,0,0.15);
-  zoom: 0.8;
 }
 
-.invoicePreview {
+.invoiceFormWrapper{
+  border: solid 1px gray;
+  border-radius: 10px;
+}
+
+.invoice{
+  display: block;
   width: 180mm; /* 210mm - (15mm * 2) */
-  min-height: 297mm;
   background: white;
-}
-
-.invoiceForm{
-
-  flex: 1;
-  border: solid 1px gainsboro;
-  border-radius: 5px;
-
 }
 
 
@@ -73,6 +73,16 @@ body {
 [contenteditable]:hover {
   cursor: pointer;
   box-shadow: 0 0 0 2px #2881FF;
+}
+
+
+[contenteditable="false"]:hover {
+  cursor: auto;
+  box-shadow: 0 0 0 2px #ffffff00;
+}
+
+[contenteditable="false"]{
+  content: "";
 }
 
 [contenteditable][data-placeholder]:not(:focus):empty::before {
@@ -137,13 +147,17 @@ body {
 
 input{
   border: none;
-  box-shadow: 0 0 0 2px black;
   border-radius: 3px;
   font-family: 'inter', sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 1.1em;
+  background-color: #2881FF00;
+}
 
+.activeInput{
+  box-shadow: 0 0 0 2px black;
+  background-color: white;
 }
 
 .descriptionCol { width: 47%; }
@@ -153,11 +167,11 @@ input{
 
 .invoiceDetailsTable input {
   width: 100%;
-  flex: 1;
 }
 
-.inputRow{
-  position: relative;
+tr{
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 .inputRow > td{
@@ -202,22 +216,25 @@ td:first-child{
 
 .addInvoiceOrderButton{
   display: flex;
-  position: absolute;
   width: 100%;
   background-color: #2881FF;
   left: 0;
   top: 15px;
   padding-top: 5px 5px;
+  margin-top: 10px;
   color: white;
 }
 
 .addOrderIcon{
-  /* padding: 0px 10px; */
   margin: 17px auto;
-  /* color: white; */
 }
 
-.deleteInvoiceOrderButtonTableData{
+.invoiceMetaDataTable{
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.deleteInvoiceOrderButton{
   display: flex;
   position: absolute;
   align-items: center;
@@ -230,7 +247,7 @@ td:first-child{
   color: white;
 }
 
-.deleteInvoiceOrderButtonTableData:hover{
+.deleteInvoiceOrderButton:hover{
   background-color: white;
   color: red;
   cursor: pointer;
@@ -241,6 +258,13 @@ td:first-child{
   padding: 3px;
 }
 
+.metadataLabel{
+
+  display: flex;
+  
+
+}
+
 .hidden{
   display: none;
 }
@@ -248,5 +272,4 @@ td:first-child{
 .relative{
   position: relative;
 }
-
 

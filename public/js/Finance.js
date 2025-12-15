@@ -11,8 +11,18 @@ const selectableElementGroups = document.querySelectorAll('.metadataGroup');
 const selectableElements = [...document.querySelectorAll('[contenteditable]')];
 const invoiceOrdersTable = document.getElementById('invoice_orders_table')
 const addInvoiceOrderButton = document.getElementById('add_invoice_order_button');
+const invoiceForm = document.getElementById('invoice_form');
+const invoicePreview = document.getElementById('invoice_preview');
+
+
 
 console.log(selectableElements);
+
+const PAGE_HEIGHT_MM = 297;
+const MARGIN = 15;
+
+const CONTENT_HEIGHT_MM = PAGE_HEIGHT_MM - (MARGIN * 2); //(MARGIN * 2) for both top and bottom margin
+
 
 let selectedElement;
 let isItemSelected;
@@ -22,6 +32,7 @@ let isItemSelected;
 
 addEventListeners();
 
+updateInvoicePreview();
 
 
 function addEventListeners(){
@@ -42,6 +53,7 @@ function addEventListeners(){
             if(selectedElement != null && isItemSelected){
                 selectedElement.remove();
                 hideOptionsMenu();
+                updateInvoicePreview(); 
             }
 
         });
@@ -61,8 +73,9 @@ function addEventListeners(){
                 selectedElement.appendChild(element);
 
                 selectEditableElement(element);
-
                 hideOptionsMenu();
+                updateInvoicePreview();
+
             }
 
         });
@@ -75,6 +88,7 @@ function addEventListeners(){
 
             const tableRow = createInputDataRow();
             invoiceOrdersTable.appendChild(tableRow);
+            updateInvoicePreview();
 
         });
 
@@ -111,6 +125,7 @@ function addEventListeners(){
         if (el.textContent.trim() === '') {
             el.innerHTML = '';
         }
+        updateInvoicePreview();
     });
 
     selectableElementGroups.forEach((element) => {
@@ -199,66 +214,88 @@ function selectEditableElement(element){
 
 }
 
-function getInvoiceHTMLString(){
+function updateInvoicePreview(){
 
-    const htmlString = invoiceBoilerPlateTop + invoiceOrdersHTML + invoiceBoilerPlateBottom;
-
-    return htmlString;
+    const invoice = removeControlUI(invoiceForm);
+    invoicePreview.innerHTML = invoice.innerHTML;
 
 }
 
-function downloadPDF() {
-    
-    const element = document.getElementById('invoice_preview');
 
+async function downloadPDF() {
+    
     const opt = {
-        margin:       15,
+        margin:       MARGIN,
         filename:     'invoice.pdf',
         image:        { type: 'jpeg', quality: 1 },
-        html2canvas:  { scale: 5, dpi: 300 },   // Higher = better quality
+        html2canvas:  { scale: 2 },   // Higher = better quality
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: {
-            mode: ['css', 'legacy']
+            mode: ['css', 'legacy'],
+            avoid: ['tr']
         },
     };
 
-    html2pdf().set(opt).from(element).save();
+    //paginateInvoiceRows(invoice);
+
+    invoice.id = "invoice_clone";
+    // invoice.style.zIndex = "2";
+    // invoice.style.position = "absolute";
+    // invoice.style.top = "15mm";
+    // invoice.style.left = "15mm";
+
+    // invoice.classList.add('pdf-render-target');
+
+    const invoiceFormWrapper = document.getElementById('invoice_preview_wrapper');
+
+
+    invoiceFormWrapper.appendChild(invoice);
+
+    await document.fonts.ready;
+    await new Promise(r => requestAnimationFrame(r));
+    await new Promise(r => requestAnimationFrame(r));
+    // await new Promise(resolve => setTimeout(resolve, 1000));
+
+    await html2pdf().set(opt).from(invoice).save();
+
+    // invoice.remove();
 }
 
 
+function removeControlUI(invoicePreview){
 
-async function generatePdfFromHtmlString(htmlString) {
+    const invoice = invoicePreview.cloneNode(true);
 
+    const deleteInvoiceOrderButtons = invoice.querySelectorAll('.deleteInvoiceOrderButton');
 
-
-    // 1. Build container
-    const container = document.createElement("div");
-    container.style.position = "absolute";
-    container.style.left = "0";
-    container.style.top = "0";
-    container.style.background = "white";
-    container.style.color = "black";
-    container.innerHTML = htmlString;
-
-
-    // 2. Force layout & wait for fonts
-    await document.fonts.ready;
-    await new Promise((r) => requestAnimationFrame(r));
-
-    const doc = new jsPDF("p", "px", "a4");
-
-    await doc.html(container, {
-        x: 0,
-        y: 0,
-        // width: 210, // mm a4 width
-        html2canvas: { 
-            scale: 9/16, //to compensate for the pdf being portrait
-            useCORS: true,
-            backgroundColor: null
-        }
+    deleteInvoiceOrderButtons.forEach((button) => {
+        button.remove();
     });
 
-    doc.save("invoice.pdf");
+    const addInvoiceOrderButtonRow = invoice.querySelector('#add_invoice_order_button');
+    addInvoiceOrderButtonRow.remove();
+
+    const addInvoiceOrderInputs = invoice.querySelectorAll('.activeInput');
+
+    addInvoiceOrderInputs.forEach((input) => {
+        input.classList.remove('activeInput');
+    });
+
+    const selectableElements = invoice.querySelectorAll('[contenteditable]');
+
+    selectableElements.forEach((element) => {
+        element.contentEditable = "false";
+        element.removeAttribute('data-placeholder');
+    });
+
+
+    const metadataGroups = invoice.querySelectorAll('.metadataGroup');
+
+    metadataGroups.forEach((element) => {
+        element.classList.remove('metadataGroup');
+    });
+
+    return invoice;
 
 }
 
@@ -269,10 +306,12 @@ function createInputDataRow(){
 
     const descriptionInput = document.createElement('input');
     descriptionInput.type = "text";
+    descriptionInput.classList = "activeInput";
 
     
     const quantityInput = document.createElement('input');
     quantityInput.type = "number";
+    quantityInput.classList = "activeInput";
 
 
 
@@ -281,6 +320,7 @@ function createInputDataRow(){
 
     const priceInput = document.createElement('input');
     priceInput.type = "number";
+    priceInput.classList = "activeInput";
 
     const poundSymbol = document.createElement('p');
     poundSymbol.textContent = "£";
@@ -306,10 +346,7 @@ function createInputDataRow(){
 
     tableRow.appendChild(totalPriceTableData);
 
-
-
-    // const deleteInvoiceOrderButtonTableData = createTableData(deleteInvoiceOrderButton);
-    deleteInvoiceOrderButton.classList = "deleteInvoiceOrderButtonTableData";
+    deleteInvoiceOrderButton.classList = "deleteInvoiceOrderButton";
 
     // tableRow.appendChild(deleteInvoiceOrderButton);
 
