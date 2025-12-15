@@ -364,7 +364,7 @@ function addEventListeners(){
 
   if(searchButton != null){
 
-    searchButton.addEventListener('click', () => {
+    searchButton.addEventListener('click', async () => {
     
       if(addOrderSearchInput.value == ""){
 
@@ -378,8 +378,9 @@ function addEventListeners(){
 
       }
 
-      getOrders(filterSearch(addOrderSearchFilter.value, addOrderSearchInput.value));
+      const query = await filterSearch(addOrderSearchFilter.value, addOrderSearchInput.value)
 
+      getOrders(query);
 
     });
 

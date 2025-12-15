@@ -557,13 +557,23 @@ function stopSettingsContoller(){
 
 function updateStopSettingsButtonController(){
 
-    if(stopDurationSecondsInput < 0){
-        alert("Error - stop duration must be greater than -1");
+    if(stopDurationSecondsInput < 0 || stopDurationSecondsInput == ""){
+        showNotification("Error" ,"stop duration must be a number greater than -1");
         return;
     }
 
-    if(additionalStopDurationSecondsInput < 0){
-        alert("Error - additional stop duration must be greater than -1");
+    if(additionalStopDurationSecondsInput < 0 || additionalStopDurationSecondsInput == ""){
+        showNotification("Error", "additional stop duration must be a number greater than -1");
+        return
+    }
+    
+    if(stopDurationSecondsInput % 1 !== 0){
+        showNotification("Error!", "stop duration must be a whole number");
+        return;
+    }
+
+    if(additionalStopDurationSecondsInput % 1 !== 0){
+        showNotification("Error!", "additional stop duration must be a whole number");
         return;
     }  
 
@@ -575,12 +585,12 @@ function updateFuelSettingsButtonController(){
 
 
     if(fuelUserInput <= 0){
-        alert("Error - fuel cost must be greater than 0");
+        showNotification("Error", "fuel cost must be greater than 0");
         return;
     }
 
     if(fuelUserInput % 1 !== 0){
-        alert("Error - fuel cost must rounded to the nearest whole penny");
+        showNotification("Error!", "fuel cost must rounded to the nearest whole penny");
         return;
     }  
 

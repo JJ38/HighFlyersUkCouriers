@@ -145,7 +145,7 @@ body {
   border-radius: 3px;
 }
 
-input{
+input, textarea{
   border: none;
   border-radius: 3px;
   font-family: 'inter', sans-serif;
@@ -159,6 +159,11 @@ input{
   box-shadow: 0 0 0 2px black;
   background-color: white;
 }
+
+.activeTextAreaInput{
+  width: 100%;
+}
+
 
 .descriptionCol { width: 47%; }
 .qtyCol { width: 10%; }
@@ -232,6 +237,7 @@ td:first-child{
 .invoiceMetaDataTable{
   page-break-inside: avoid;
   break-inside: avoid;
+  width: 100%;
 }
 
 .deleteInvoiceOrderButton{
@@ -262,7 +268,6 @@ td:first-child{
 
   display: flex;
   
-
 }
 
 .hidden{
@@ -271,5 +276,9 @@ td:first-child{
 
 .relative{
   position: relative;
+}
+
+.leftPaddingExempt{
+  padding-left: 0px !important;
 }
 

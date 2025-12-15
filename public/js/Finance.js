@@ -13,20 +13,17 @@ const invoiceOrdersTable = document.getElementById('invoice_orders_table')
 const addInvoiceOrderButton = document.getElementById('add_invoice_order_button');
 const invoiceForm = document.getElementById('invoice_form');
 const invoicePreview = document.getElementById('invoice_preview');
-
+const invoiceTotal = document.getElementById('total');
 
 
 console.log(selectableElements);
 
 const PAGE_HEIGHT_MM = 297;
 const MARGIN = 15;
-
-const CONTENT_HEIGHT_MM = PAGE_HEIGHT_MM - (MARGIN * 2); //(MARGIN * 2) for both top and bottom margin
-
+const invoiceOrders = [];
 
 let selectedElement;
 let isItemSelected;
-
 
 // Default export is a4 paper, portrait, using millimeters for units
 
@@ -87,6 +84,7 @@ function addEventListeners(){
         addInvoiceOrderButton.addEventListener('click', () => {
 
             const tableRow = createInputDataRow();
+        
             invoiceOrdersTable.appendChild(tableRow);
             updateInvoicePreview();
 
@@ -119,8 +117,15 @@ function addEventListeners(){
     });
 
     document.addEventListener('input', e => {
+
         const el = e.target;
-        if (!el.isContentEditable) return;
+        console.log(el.classList.contains("activeInput"));
+
+
+        if (!el.isContentEditable && !el.classList.contains("activeInput")){
+            console.log('!el.isContentEditable');
+            return;
+        }
 
         if (el.textContent.trim() === '') {
             el.innerHTML = '';
@@ -216,6 +221,7 @@ function selectEditableElement(element){
 
 function updateInvoicePreview(){
 
+    console.log('updateInvoicePreview');
     const invoice = removeControlUI(invoiceForm);
     invoicePreview.innerHTML = invoice.innerHTML;
 
@@ -236,27 +242,13 @@ async function downloadPDF() {
         },
     };
 
-    //paginateInvoiceRows(invoice);
-
-    invoice.id = "invoice_clone";
-    // invoice.style.zIndex = "2";
-    // invoice.style.position = "absolute";
-    // invoice.style.top = "15mm";
-    // invoice.style.left = "15mm";
-
-    // invoice.classList.add('pdf-render-target');
-
-    const invoiceFormWrapper = document.getElementById('invoice_preview_wrapper');
-
-
-    invoiceFormWrapper.appendChild(invoice);
 
     await document.fonts.ready;
     await new Promise(r => requestAnimationFrame(r));
     await new Promise(r => requestAnimationFrame(r));
     // await new Promise(resolve => setTimeout(resolve, 1000));
 
-    await html2pdf().set(opt).from(invoice).save();
+    await html2pdf().set(opt).from(invoicePreview).save();
 
     // invoice.remove();
 }
@@ -267,22 +259,22 @@ function removeControlUI(invoicePreview){
     const invoice = invoicePreview.cloneNode(true);
 
     const deleteInvoiceOrderButtons = invoice.querySelectorAll('.deleteInvoiceOrderButton');
-
     deleteInvoiceOrderButtons.forEach((button) => {
         button.remove();
     });
 
+
     const addInvoiceOrderButtonRow = invoice.querySelector('#add_invoice_order_button');
     addInvoiceOrderButtonRow.remove();
 
-    const addInvoiceOrderInputs = invoice.querySelectorAll('.activeInput');
 
+    const addInvoiceOrderInputs = invoice.querySelectorAll('.activeInput');
     addInvoiceOrderInputs.forEach((input) => {
         input.classList.remove('activeInput');
     });
 
-    const selectableElements = invoice.querySelectorAll('[contenteditable]');
 
+    const selectableElements = invoice.querySelectorAll('[contenteditable]');
     selectableElements.forEach((element) => {
         element.contentEditable = "false";
         element.removeAttribute('data-placeholder');
@@ -290,10 +282,29 @@ function removeControlUI(invoicePreview){
 
 
     const metadataGroups = invoice.querySelectorAll('.metadataGroup');
-
     metadataGroups.forEach((element) => {
         element.classList.remove('metadataGroup');
     });
+
+
+    const inputs = invoice.querySelectorAll('input');
+    inputs.forEach((input) => {
+        const p = document.createElement('p');
+        p.innerText = input.value
+        input.parentNode.appendChild(p);
+
+        input.remove();
+    });
+
+    const textareas = invoice.querySelectorAll('textarea');
+    textareas.forEach((textarea) => {
+        const p = document.createElement('p');
+        p.innerText = textarea.value
+        textarea.parentNode.appendChild(p);
+
+        textarea.remove();
+    });
+
 
     return invoice;
 
@@ -312,6 +323,7 @@ function createInputDataRow(){
     const quantityInput = document.createElement('input');
     quantityInput.type = "number";
     quantityInput.classList = "activeInput";
+    quantityInput.value = 1;
 
 
 
@@ -336,11 +348,22 @@ function createInputDataRow(){
     tableRow.appendChild(createTableData(quantityInput));
     tableRow.appendChild(createTableData(priceContainer));
 
+    const order = {
+        quantity: 0,
+        unitPrice: 0
+    }
+
+    invoiceOrders.push(order);
+    console.log(invoiceOrders);
+
+    addPriceCalculationListeners(quantityInput, priceInput, totalPrice, order);
+
+
     const totalPriceTableData = createTableData(totalPrice);
     totalPriceTableData.classList = "relative";
 
     const deleteInvoiceOrderButton = createDeleteInvoiceOrderButton();
-    addEventListenerToDeleteInvoiceOrderButton(deleteInvoiceOrderButton);
+    addEventListenerToDeleteInvoiceOrderButton(deleteInvoiceOrderButton, order);
 
     totalPriceTableData.appendChild(deleteInvoiceOrderButton);
 
@@ -379,16 +402,93 @@ function createDeleteInvoiceOrderButton(){
 }
 
 
-function addEventListenerToDeleteInvoiceOrderButton(deleteInvoiceOrderButton){
+function addEventListenerToDeleteInvoiceOrderButton(deleteInvoiceOrderButton, order){
 
     if(deleteInvoiceOrderButton != null){
 
         deleteInvoiceOrderButton.addEventListener('click', () => {
 
             deleteInvoiceOrderButton.parentNode.parentNode.remove();
+
+            const index = invoiceOrders.indexOf(order);
+            if (index !== -1) {
+                invoiceOrders.splice(index, 1);
+            }
+            console.log(invoiceOrders);
+            updateInvoiceTotal();
+            updateInvoicePreview();
         });
 
     }
+
+}
+
+function addPriceCalculationListeners(quantityInput, priceInput, totalPriceElement, order){
+
+    const events = ['change', 'input'];
+
+    events.forEach((eventName) => {
+
+        quantityInput.addEventListener(eventName, () => {
+
+            updateInvoicePricing(quantityInput, priceInput, totalPriceElement, order);
+            updateInvoicePreview();
+
+        });
+
+    });
+
+    events.forEach((eventName) => {
+
+        priceInput.addEventListener(eventName, () => {
+
+            updateInvoicePricing(quantityInput, priceInput, totalPriceElement, order);
+            updateInvoicePreview();
+
+        });
+        
+    });
+    
+
+}
+
+
+function updateInvoicePricing(quantityInput, priceInput, totalPriceElement, order){
+    
+    const quantity = parseInt(quantityInput.value);
+    const unitPrice = parseInt(priceInput.value);
+
+    order.quantity = quantity;
+    order.unitPrice = unitPrice;
+
+    updateInvoiceTotal();
+
+
+    if(Number.isNaN(quantity) || Number.isNaN(unitPrice)){
+        totalPriceElement.innerText = "N/A";
+        return;
+    }
+
+    totalPriceElement.innerText = "£" + (quantity * unitPrice);
+
+}
+
+function updateInvoiceTotal(){
+
+    let total = 0;
+
+    for(let i = 0; i < invoiceOrders.length; i++){
+
+        const orderTotal = invoiceOrders[i].quantity * invoiceOrders[i].unitPrice;
+
+        if(!Number.isNaN(orderTotal)){
+            total += orderTotal;
+        }
+
+    }
+
+    invoiceTotal.innerText = total;
+    console.log("set invoice total to: " + total);
 
 }
 

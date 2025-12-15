@@ -2453,20 +2453,20 @@ function getFullPostcode(postcode){
     return trimmedPostcode.substring(0,2) + " " + trimmedPostcode.substring(2);
 
   }
-
   
   if(trimmedPostcode.length == 6){
 
     return trimmedPostcode.substring(0,3) + " " + trimmedPostcode.substring(3);
 
   }
-
   
   if(trimmedPostcode.length == 7){
 
     return trimmedPostcode.substring(0,4) + " " + trimmedPostcode.substring(4);
 
   }
+
+  return trimmedPostcode;
 
 }
 
