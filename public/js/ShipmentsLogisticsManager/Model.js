@@ -276,15 +276,17 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
 
   let runName = null;
 
+  stopPostcode = stopPostcode.replaceAll(" ", "");
+
   if(stopPostcode != null){
 
     //Ireland postcodes
-    if(stopPostcode.replaceAll(" ", "").substring(0,2) == "BT"){
+    if(stopPostcode.substring(0,2) == "BT"){
       runName = "Ireland";
     }
 
     //outward code is 4 characters e.g DE56 1TP
-    if(stopPostcode.replaceAll(" ", "").length == 7){
+    if(stopPostcode.length == 7){
 
       if(runDefinitions[stopPostcode.substring(0,4)] != null){
 
@@ -295,7 +297,7 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
     }
 
     //outward code is 3 characters e.g DE5 3GY
-    if(stopPostcode.replaceAll(" ", "").length == 6){
+    if(stopPostcode.length == 6){
 
       if(runDefinitions[stopPostcode.substring(0,3)] != null){
 
@@ -306,7 +308,7 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
     }
 
     //outward code is 2 characters e.g E2 0AA
-    if(stopPostcode.replaceAll(" ", "").length == 5){
+    if(stopPostcode.length == 5){
 
       if(runDefinitions[stopPostcode.substring(0,2)] != null){
 
@@ -316,6 +318,17 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
 
     }
 
+    if(stopPostcode.length <= 4 && stopPostcode.length >= 2){
+
+      if(runDefinitions[stopPostcode] != null){
+        
+        runName = runDefinitions[stopPostcode];
+      
+      }
+
+    }
+
+
   }
 
  
@@ -324,7 +337,7 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
     runName = null;
   }
 
-   //if the postcode is invalid set the coordinates to null so it can be flagged later for the address to be validated
+  //if the postcode is invalid set the coordinates to null so it can be flagged later for the address to be validated
   if(runName == null){
     stop.coordinates = null;
   }
@@ -334,6 +347,8 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
     return run.runName === runName;
   })
 
+  console.log(run);
+
   run.stops.push(stop);
 
 }
@@ -341,15 +356,26 @@ function assignStop(stop, stopPostcode, runDocuments, runDefinitions){
 
 async function generateStop(orderDocument, shipmentType){
 
+  const stopPostcode = getStopPostcode(orderDocument.data(), shipmentType);
   const addressString = getStopAddressString(orderDocument.data(), shipmentType);
+
+  let coordinates = null;
+
+  console.log(stopPostcode);
+
   const json = await fetchStopCoordinates(addressString);
   
-  const coordinates = getCoordinates(json);
+  coordinates = getCoordinates(json);
 
-  if(coordinates == null){
-    console.log("coordinates === false on: " + addressString + " status: " + json['status']);
+  //check that the coordinates given have the same postcode as the postcode given by the customer
+  const validCoordinates = validateCoordinatesForShipmentGeneration(json, stopPostcode, addressString);
 
+  if(!validCoordinates){
+    coordinates = null;
+    console.log("!validCoordinates " + addressString + " status: " + json['status']);
   }
+
+  
 
   const stop = {
 
@@ -361,6 +387,46 @@ async function generateStop(orderDocument, shipmentType){
   }
 
   return stop;
+
+}
+
+
+function validateCoordinatesForShipmentGeneration(json, stopPostcode, addressString){
+
+  const outwardPostcode = getOutwardPostcode(stopPostcode);
+
+  if(json['status'] != "OK"){
+    console.log("!validCoordinates " + addressString + " status: " + json['status']);
+    return false;
+  }
+
+  // if(json['results'].length > 1){
+  //   return false
+  // }
+
+  if(json['results'].length == 0){
+    console.log("!validCoordinates " + addressString + " status: " + json['status'] + " - No result");
+    return false;
+  }
+
+  const addressComponents = json['results'][0]['address_components']
+
+  for(let i = 0; i < addressComponents.length; i++){
+
+    if(addressComponents[i]['types'].includes('postal_code')){
+
+      if(addressComponents[i]['long_name'].trim().replaceAll(" ", "").startsWith(outwardPostcode)){
+        return true;
+      }else{
+        console.log("!validCoordinates " + addressString + " status: " + json['status'] + " - " + outwardPostcode + " !.startWith " + addressComponents[i]['long_name'].trim().replaceAll(" ", ""));
+        return false;
+      }
+
+    }
+  
+  }
+
+  return false;
 
 }
 
@@ -633,6 +699,8 @@ async function addCoordinatesToStop(stop){
 
 function getCoordinates(json){
 
+  console.log(json)
+
   //https://developers.google.com/maps/documentation/geocoding/requests-geocoding#StatusCodes
   if(json['status'] != "OK"){
     
@@ -651,6 +719,16 @@ function getCoordinates(json){
   }
 
   return coordinates;
+
+}
+
+function getStopPostcode(orderData, stopType){
+
+  if(stopType == "collection"){
+    return orderData['collectionPostcode'];
+  }else if(stopType = "delivery"){
+    return orderData['deliveryPostcode'];
+  }
 
 }
 
@@ -2566,6 +2644,8 @@ function getOutwardPostcode(postcode){
     return trimmedPostcode.substring(0,4);
 
   }
+
+  return postcode;
 
 }
 

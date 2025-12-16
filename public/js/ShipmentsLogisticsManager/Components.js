@@ -57,8 +57,6 @@ function createTableAddress(addressLine1, addressLine2, addressLine3, addressPos
 
 export function createAddressSuggestionCard(addressObject, addressNumber){
 
-  console.log(addressObject);
-
   const card = document.createElement('div');
   card.classList = "addressSuggestionCard";
 

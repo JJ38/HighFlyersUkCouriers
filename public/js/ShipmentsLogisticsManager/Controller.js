@@ -831,7 +831,10 @@ function addEventListeners(){
       //create address string
       const addressString = validateAddressLine1.value + "," + validateAddressLine2.value + "," +validateAddressLine3.value + "," + validateAddressPostcode.value;
       const coordinates = await fetchStopCoordinates(addressString);
+      
+      // console.log(coordinates);
 
+      // return;
 
       if(coordinates === false){
         showNotification("Error!", "Error fetching coordinates for address");
