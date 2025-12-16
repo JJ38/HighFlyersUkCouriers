@@ -400,9 +400,9 @@ function validateCoordinatesForShipmentGeneration(json, stopPostcode, addressStr
     return false;
   }
 
-  // if(json['results'].length > 1){
-  //   return false
-  // }
+  if(json['results'].length > 1){
+    return false
+  }
 
   if(json['results'].length == 0){
     console.log("!validCoordinates " + addressString + " status: " + json['status'] + " - No result");
@@ -418,7 +418,7 @@ function validateCoordinatesForShipmentGeneration(json, stopPostcode, addressStr
       if(addressComponents[i]['long_name'].trim().replaceAll(" ", "").startsWith(outwardPostcode)){
         return true;
       }else{
-        console.log("!validCoordinates " + addressString + " status: " + json['status'] + " - " + outwardPostcode + " !.startWith " + addressComponents[i]['long_name'].trim().replaceAll(" ", ""));
+        console.log("!validCoordinates " + addressString + " status: " + json['status'] + " - " + addressComponents[i]['long_name'].trim().replaceAll(" ", "") + outwardPostcode + " !.startWith ");
         return false;
       }
 
