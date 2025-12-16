@@ -2391,10 +2391,28 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops
 
     showUI(validateAddressWidget);
 
-    validateAddressLine1.value = stop['stopData']['address1'];
-    validateAddressLine2.value = stop['stopData']['address2'];
-    validateAddressLine3.value = stop['stopData']['address3'];
-    validateAddressPostcode.value = stop['stopData']['postcode'];
+    console.log(stop);
+
+    const stopType = stop['stopType'];
+
+    if(stopType == "collection"){
+      
+      validateAddressLine1.value = stop['stopData']['collectionAddress1'] == undefined ? "" : stop['stopData']['collectionAddress1'];
+      validateAddressLine2.value = stop['stopData']['collectionAddress2'] == undefined ? "" : stop['stopData']['collectionAddress2'];
+      validateAddressLine3.value = stop['stopData']['collectionAddress3'] == undefined ? "" : stop['stopData']['collectionAddress3'];
+      validateAddressPostcode.value = stop['stopData']['collectionPostcode'] == undefined ? "" : stop['stopData']['collectionPostcode'];
+
+    }
+
+    if(stopType == "delivery"){
+
+      validateAddressLine1.value = stop['stopData']['deliveryAddress1'] == undefined ? "" : stop['stopData']['deliveryAddress1'];
+      validateAddressLine2.value = stop['stopData']['deliveryAddress2'] == undefined ? "" : stop['stopData']['deliveryAddress2'];
+      validateAddressLine3.value = stop['stopData']['deliveryAddress3'] == undefined ? "" : stop['stopData']['deliveryAddress3'];
+      validateAddressPostcode.value = stop['stopData']['deliveryPostcode'] == undefined ? "" : stop['stopData']['deliveryPostcode'];
+
+    }
+
 
   });
 

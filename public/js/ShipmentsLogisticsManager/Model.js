@@ -1550,38 +1550,44 @@ export function getPositionOfElement(element){
 
 export function mergeStopsWithOrderData(stops, orders){
 
+  console.log(stops);
+  console.log(orders);
+
+
   for(let i = 0; i < stops.length; i++){
 
     for(let j = 0; j < orders.length; j++){
 
       if(stops[i].orderID == orders[j].id){
 
+        console.log(j);
+        console.log(orders[j]);
+
         //to include in every stop type
         const stopData = {};
         const orderData = orders[j].data();
 
-        stopData['message'] = orderData['message'];
-        stopData['email'] = orderData['email'];
-        stopData['animalType'] = orderData['animalType'];
-        stopData['ID'] = orderData['ID'];
-        stopData['quantity'] = orderData['quantity'];
-        stopData['payment'] = orderData['payment'];
-        stopData['code'] = orderData['code'];
+        console.log(orderData);
 
-        stopData['collectionAddress1'] = orderData['collectionAddress1'];
-        stopData['collectionAddress2'] = orderData['collectionAddress2'];
-        stopData['collectionAddress3'] = orderData['collectionAddress3'];
-        stopData['collectionName'] = orderData['collectionName'];
-        stopData['collectionPostcode'] = orderData['collectionPostcode'];
-        stopData['collectionPhoneNumber'] = orderData['collectionPhoneNumber'];
-
-        stopData['deliveryAddress1'] = orderData['deliveryAddress1'];
-        stopData['deliveryAddress2'] = orderData['deliveryAddress2'];
-        stopData['deliveryAddress3'] = orderData['deliveryAddress3'];
-        stopData['deliveryName'] = orderData['deliveryName'];
-        stopData['deliveryPostcode'] = orderData['deliveryPostcode'];
-        stopData['deliveryPhoneNumber'] = orderData['deliveryPhoneNumber'];
-
+        stopData['message'] = orderData['message'] == undefined ? "" : orderData['message'];
+        stopData['email'] = orderData['email'] == undefined ? "" : orderData['email'];
+        stopData['animalType'] = orderData['animalType'] == undefined ? "" : orderData['animalType'];
+        stopData['ID'] = orderData['ID'] == undefined ? "" : orderData['ID'];
+        stopData['quantity'] = orderData['quantity'] == undefined ? "" : orderData['quantity'];
+        stopData['payment'] = orderData['payment'] == undefined ? "" : orderData['payment'];
+        stopData['code'] = orderData['code'] == undefined ? "" : orderData['code'];
+        stopData['collectionAddress1'] = orderData['collectionAddress1'] == undefined ? "" : orderData['collectionAddress1'];
+        stopData['collectionAddress2'] = orderData['collectionAddress2'] == undefined ? "" : orderData['collectionAddress2'];
+        stopData['collectionAddress3'] = orderData['collectionAddress3'] == undefined ? "" : orderData['collectionAddress3'];
+        stopData['collectionName'] = orderData['collectionName'] == undefined ? "" : orderData['collectionName'];
+        stopData['collectionPostcode'] = orderData['collectionPostcode'] == undefined ? "" : orderData['collectionPostcode'];
+        stopData['collectionPhoneNumber'] = orderData['collectionPhoneNumber'] == undefined ? "" : orderData['collectionPhoneNumber'];
+        stopData['deliveryAddress1'] = orderData['deliveryAddress1'] == undefined ? "" : orderData['deliveryAddress1'];
+        stopData['deliveryAddress2'] = orderData['deliveryAddress2'] == undefined ? "" : orderData['deliveryAddress2'];
+        stopData['deliveryAddress3'] = orderData['deliveryAddress3'] == undefined ? "" : orderData['deliveryAddress3'];
+        stopData['deliveryName'] = orderData['deliveryName'] == undefined ? "" : orderData['deliveryName'];
+        stopData['deliveryPostcode'] = orderData['deliveryPostcode'] == undefined ? "" : orderData['deliveryPostcode'];
+        stopData['deliveryPhoneNumber'] = orderData['deliveryPhoneNumber'] == undefined ? "" : orderData['deliveryPhoneNumber'];
         stops[i]['stopData'] = stopData;
     
       }
