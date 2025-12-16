@@ -468,9 +468,14 @@ export async function selectRun(documentID){
   const runDocument = await fetchRun(documentID);
   const fuelSettings = await fetchFuelSettings();
 
-  const runObject = parseRunInfo(runDocument, fuelSettings);
+  let runObject = parseRunInfo(runDocument, fuelSettings);
 
-  const orders = await getRunStopsOrderData(runObject.stops);
+  const orders = await getRunStopsOrderData(runObject);
+
+  if(orders === false){
+    return false;
+  }
+
   mergeStopsWithOrderData(runObject.stops, orders);
 
   return runObject;
@@ -1121,25 +1126,92 @@ function getSplitRunDocuments(runToBeSplit, ratioToBeSplitTo, shipmentName){
 }
 
 
-export async function getRunStopsOrderData(stops){
+async function getRunStopsOrderData(runObject){
 
+  const stops = runObject.stops;
   const orderIDs = [];
 
   for(let i = 0; i < stops.length; i++){
-
     orderIDs.push(stops[i]['orderID']);
-
   }
 
   const orders = await bulkReadTransaction(orderIDs, 'Orders');
 
-  if(orders === false){
-
+  if(orders === false){  
     alert("error fetching stops for that run")
     return;
   }
 
+  const ordersToCleanUp = [];
+
+  //check if any of the document data is null. If its null the order was deleted and should be cleaned up
+  for(let i = 0; i < orders.length; i++){
+
+    if(orders[i].data() == null){
+      console.log('Deleted order to cleanup');
+      ordersToCleanUp.push(orders[i].id);
+      orders.splice(i, 1);
+    }
+
+  } 
+
+  if(ordersToCleanUp.length > 0){
+
+    //TODO: If a stop i remove from the run after the shipment is loaded it will then show the incorrect number of stops in the run on the run card.
+
+    const removedStopsFromRunSuccessfully = await removeStopsFromRun(ordersToCleanUp, runObject);
+
+    if(!removedStopsFromRunSuccessfully){
+      alert("error fetching stops for that run - error removing stop from run that has had an order deleted");
+      return false;
+    }
+  
+  }
+
   return orders;
+
+}
+
+
+async function removeStopsFromRun(stopsToRemove, runObject){
+
+  try{
+
+    const currentStops = structuredClone(runObject['stops']);
+    const newStops = []
+
+    let numberOfStopsRemoved = 0;
+
+    for(let i = 0; i < currentStops.length; i++){
+
+      if(!stopsToRemove.includes(currentStops[i]['orderID'])){
+
+        currentStops[i]['stopNumber'] -= numberOfStopsRemoved;
+        newStops.push(currentStops[i]);
+
+      }else{
+        numberOfStopsRemoved += 1;
+      }
+
+    }
+
+    const updatedRunSuccessfully = await updateRun(runObject.documentId, {stops: newStops, isOptimised: false});
+
+    if(!updatedRunSuccessfully){
+      return false;
+    }
+
+    //update client
+    runObject.stops = newStops;
+
+    return true;
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
 
 }
 
@@ -1560,14 +1632,9 @@ export function mergeStopsWithOrderData(stops, orders){
 
       if(stops[i].orderID == orders[j].id){
 
-        console.log(j);
-        console.log(orders[j]);
-
         //to include in every stop type
         const stopData = {};
         const orderData = orders[j].data();
-
-        console.log(orderData);
 
         stopData['message'] = orderData['message'] == undefined ? "" : orderData['message'];
         stopData['email'] = orderData['email'] == undefined ? "" : orderData['email'];

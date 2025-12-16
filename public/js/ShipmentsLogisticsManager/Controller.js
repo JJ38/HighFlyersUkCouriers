@@ -1598,8 +1598,14 @@ function updateSelectRunAssignStops(runData, fuelSettings){
 function getRunCardEventListener(runStruct, runCard){
 
   const runCardEventListener = async () => {
-
+    
+    console.log("runCardEventListener");
     const run = await selectRun(runStruct.documentId);
+
+    if(run === false){
+      return;
+    }
+
     updateStopList(run);
     updateOptionsTab(run);
     showRuns();

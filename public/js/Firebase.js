@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, getDocs, getDoc, updateDoc, doc, query, orderBy, where, collection, runTransaction, or } from "firebase/firestore";
+import { getFirestore, getDocs, getDoc, updateDoc, doc, query, orderBy, where, collection, runTransaction, or, documentId } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { firebaseConfig, databaseName } from "/js/FirebaseSettings.js";
 
@@ -63,14 +63,15 @@ export async function bulkReadTransaction(docIDs, collectionPath){
 
                 const docRef = doc(db, collectionPath, docIDs[i]);
 
-                const document = transaction.get(docRef); // transaction.get ensures strong consistency
+                const document = transaction.get(docRef); 
+
                 docs.push(document);
                 
             }
 
             const resolvedDocs = await Promise.all(docs);
 
-            return resolvedDocs; // return value from transaction
+            return resolvedDocs;
         });
 
         return result;
