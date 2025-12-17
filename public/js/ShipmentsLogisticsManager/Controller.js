@@ -1691,12 +1691,14 @@ async function updateUnassignedOrdersTable(runObject){
 
   unassignedOrderTableBody.innerHTML = "";
 
+  const generatedRunWeek = runObject.runWeek; //the week selected when creating the shipment;
+
   for(let i = 0; i < runObject.stops.length; i++){
 
     //clickable Element is either a checkbox or button
 
     const clickableElement = createUnassignedStopCardClickableElement(runObject.stops[i]);
-    unassignedOrderTableBody.appendChild(createUnassignedOrdersTableCard(runObject.stops[i], clickableElement));
+    unassignedOrderTableBody.appendChild(createUnassignedOrdersTableCard(runObject.stops[i], generatedRunWeek, clickableElement));
 
     if(runObject.stops[i]['coordinates'] == null){
 

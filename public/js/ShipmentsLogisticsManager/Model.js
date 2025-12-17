@@ -396,7 +396,7 @@ function validateCoordinatesForShipmentGeneration(json, stopPostcode, addressStr
   const outwardPostcode = getOutwardPostcode(stopPostcode);
 
   if(json['status'] != "OK"){
-    console.log("!validCoordinates " + addressString + " status: " + json['status']);
+    // console.log("!validCoordinates " + addressString + " status: " + json['status']);
     return false;
   }
 
@@ -405,7 +405,7 @@ function validateCoordinatesForShipmentGeneration(json, stopPostcode, addressStr
   }
 
   if(json['results'].length == 0){
-    console.log("!validCoordinates " + addressString + " status: " + json['status'] + " - No result");
+    // console.log("!validCoordinates " + addressString + " status: " + json['status'] + " - No result");
     return false;
   }
 
@@ -418,7 +418,7 @@ function validateCoordinatesForShipmentGeneration(json, stopPostcode, addressStr
       if(addressComponents[i]['long_name'].trim().replaceAll(" ", "").startsWith(outwardPostcode)){
         return true;
       }else{
-        console.log("!validCoordinates " + addressString + " status: " + json['status'] + " - " + addressComponents[i]['long_name'].trim().replaceAll(" ", "") + outwardPostcode + " !.startWith ");
+        // console.log("!validCoordinates " + addressString + " status: " + json['status'] + " - " + addressComponents[i]['long_name'].trim().replaceAll(" ", "") + outwardPostcode + " !.startWith ");
         return false;
       }
 
@@ -543,7 +543,7 @@ export async function selectRun(documentID){
   }
 
   mergeStopsWithOrderData(runObject.stops, orders);
-
+  console.log(runObject);
   return runObject;
 
 }
@@ -1734,6 +1734,7 @@ export function mergeStopsWithOrderData(stops, orders){
         stopData['deliveryPostcode'] = orderData['deliveryPostcode'] == undefined ? "" : orderData['deliveryPostcode'];
         stopData['deliveryPhoneNumber'] = orderData['deliveryPhoneNumber'] == undefined ? "" : orderData['deliveryPhoneNumber'];
         stops[i]['stopData'] = stopData;
+        stops[i]['orderData'] = orderData;
     
       }
 

@@ -484,7 +484,7 @@ export function createUnassignedStopCardClickableElement(stopData){
 }
 
 
-export function createUnassignedOrdersTableCard(stopData, clickableElement){
+export function createUnassignedOrdersTableCard(stopData, generatedRunWeek, clickableElement){
 
   //clickableElement is either a checkbox or button
 
@@ -496,7 +496,18 @@ export function createUnassignedOrdersTableCard(stopData, clickableElement){
   tableRow.appendChild(tableData(stopData['stopData']['ID']));
   tableRow.appendChild(tableData(stopData['stopData']['animalType']));
   tableRow.appendChild(tableData(stopData['stopData']['quantity']));
-  tableRow.appendChild(tableData(stopData['stopType']));
+  tableRow.appendChild(tableData(stopData['stopType']));  
+
+  const deliveryWeekTableData = tableData(stopData['orderData']['deliveryWeek']);
+
+  if(generatedRunWeek != stopData['orderData']['deliveryWeek']){
+    deliveryWeekTableData.style.backgroundColor = "red";
+  }
+
+  tableRow.appendChild(deliveryWeekTableData);
+
+
+  console.log(stopData);
 
 
   let stopAddress;
