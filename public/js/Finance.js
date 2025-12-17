@@ -1,5 +1,7 @@
-// import jsPDF from "jspdf";
-// import html2canvas from "html2canvas";
+import { where, query, orderBy, collection} from "firebase/firestore";
+import { fetchCustomerAccounts } from "/js/FormModel.js";
+import { showNotification } from "/js/Notification.js";
+import { getDocuments, db } from "/js/Firebase.js";
 import { jsPDF } from "jspdf";
 
 const generateInvoiceButton = document.getElementById('generate_invoice_button');
@@ -14,23 +16,44 @@ const addInvoiceOrderButton = document.getElementById('add_invoice_order_button'
 const invoiceForm = document.getElementById('invoice_form');
 const invoicePreview = document.getElementById('invoice_preview');
 const invoiceTotal = document.getElementById('total');
+const invoiceNotesInput = document.getElementById('invoice_notes_input');
+const invoicePayableToName = document.getElementById('invoice_payable_to_name');
+const invoicePayableToCompany = document.getElementById('invoice_payable_to_company');
+
+
+const accountSelect = document.getElementById('account_select');
+const deliveryWeekInput = document.getElementById('delivery_week_input');
+const fileNameInput = document.getElementById('file_name_input');
+
+const autoFillInvoiceButton = document.getElementById('autofill_invoice_button');
+const clearInvoiceButton = document.getElementById('clear_invoice_button');
 
 
 console.log(selectableElements);
 
 const PAGE_HEIGHT_MM = 297;
 const MARGIN = 15;
-const invoiceOrders = [];
+let invoiceOrders = [];
+const customerAccounts = new Map();
 
 let selectedElement;
 let isItemSelected;
+let deliveryWeekValue;
+let fileNameValue;
+let accountSelectValue;
+
 
 // Default export is a4 paper, portrait, using millimeters for units
 
+init()
 addEventListeners();
-
 updateInvoicePreview();
 
+async function init(){
+
+    await getCustomerAccounts();
+    console.log(customerAccounts);
+}
 
 function addEventListeners(){
 
@@ -83,7 +106,7 @@ function addEventListeners(){
 
         addInvoiceOrderButton.addEventListener('click', () => {
 
-            const tableRow = createInputDataRow();
+            const tableRow = createInputDataRow("", 0);
         
             invoiceOrdersTable.appendChild(tableRow);
             updateInvoicePreview();
@@ -119,17 +142,15 @@ function addEventListeners(){
     document.addEventListener('input', e => {
 
         const el = e.target;
-        console.log(el.classList.contains("activeInput"));
-
 
         if (!el.isContentEditable && !el.classList.contains("activeInput")){
-            console.log('!el.isContentEditable');
             return;
         }
 
         if (el.textContent.trim() === '') {
             el.innerHTML = '';
         }
+
         updateInvoicePreview();
     });
 
@@ -152,6 +173,81 @@ function addEventListeners(){
         addStopPropagationListener(element);
 
     });
+
+    if(deliveryWeekInput != null){
+
+        deliveryWeekInput.addEventListener('input', (e) => {
+            deliveryWeekValue = e.target.value;
+            console.log(deliveryWeekValue);
+        });
+
+    }
+
+    if(fileNameInput != null){
+
+        fileNameInput.addEventListener('input', (e) => {
+            fileNameValue = e.target.value;
+            console.log(fileNameValue)
+        });
+
+    }
+
+    if(accountSelect != null){
+
+        accountSelect.addEventListener('change', (e) => {
+            accountSelectValue = e.target.value;
+            console.log(e.target.value)
+
+        });
+
+    }
+
+    if(autoFillInvoiceButton != null){
+
+        autoFillInvoiceButton.addEventListener('click', async () => {
+
+            console.log("click");
+            validateAutofillInputs();
+            const orders = await fetchOrdersByAccountAndDeliveryWeek();
+
+            if(orders === false){
+                showNotification("Error!", "Error fetching orders");
+                return;
+            }
+
+            addInvoiceOrders(orders);
+
+        });
+
+    }
+
+    if(clearInvoiceButton != null){
+
+        clearInvoiceButton.addEventListener('click', () => {
+
+            const orderInputs = [...document.querySelectorAll('.inputRow')];
+
+            invoiceOrders = [];
+
+            selectableElements.forEach((element) => {
+                element.innerText = "";
+            });
+
+            orderInputs.forEach((element) => {
+                element.innerText = "";
+            });
+
+            invoiceNotesInput.value = "";
+
+            invoicePayableToName.innerText = "Kevin Brough";
+            invoicePayableToCompany.innerText = "Highflyers U.K. Couriers";
+
+            updateInvoiceTotal();
+            updateInvoicePreview();
+
+        });
+
+    }
 
 }
 
@@ -187,6 +283,55 @@ function showOptionsMenu(){
     menu.style.zIndex = '1000';
 }
 
+function validateAutofillInputs(){
+
+    if(accountSelectValue == "" || accountSelectValue == null || accountSelectValue == undefined){
+        showNotification("Error!", "Please select an account");
+        return;
+    }
+
+    if(Number.isNaN(deliveryWeekValue)) {
+        showNotification("Error!", "Delivery week is not a number");
+        return;
+    }
+
+    if(deliveryWeekValue < 1 || deliveryWeekValue > 54){
+        showNotification("Error!", "Delivery week must be greater than 0 and less than 54");
+        return;
+    }
+
+    if(deliveryWeekValue == "" || deliveryWeekValue == null || deliveryWeekValue == undefined){
+        showNotification("Error!", "Please enter a delivery week");
+        return;
+    }
+
+    
+}
+
+async function fetchOrdersByAccountAndDeliveryWeek(){
+
+    let username = customerAccounts.get(accountSelectValue)['username'];
+
+    username = username.replaceAll('@placeholder.com', "");
+
+    const q = query(
+        collection(db, "Orders"), 
+        orderBy('ID', 'desc'), 
+        where("account", "in", [accountSelectValue, username]), 
+        where("deliveryWeek", "==", parseInt(deliveryWeekValue)), 
+        where("payment", "==", "Account")
+    );
+
+    const documents = await getDocuments(q);
+
+    if(documents === false){
+        return false;
+    }
+
+    return documents.docs;
+
+}
+
 function selectEditableElement(element){
 
     console.log(element);
@@ -210,8 +355,6 @@ function selectEditableElement(element){
     const menuHeight = menuDimensions.height;
     const menuWidth = menuDimensions.width;
 
-    console.log(menuHeight);
-
     menu.style.top = `${window.scrollY + rect.top - menuHeight - 5}px`;
     menu.style.left = `${window.scrollX + rect.right - menuWidth}px`;
 
@@ -221,7 +364,6 @@ function selectEditableElement(element){
 
 function updateInvoicePreview(){
 
-    console.log('updateInvoicePreview');
     const invoice = removeControlUI(invoiceForm);
     invoicePreview.innerHTML = invoice.innerHTML;
 
@@ -229,15 +371,24 @@ function updateInvoicePreview(){
 
 
 async function downloadPDF() {
+
+    let filename = "invoice";
+
+    if(fileNameValue != "" && fileNameValue != undefined && fileNameValue != null){
+        filename = fileNameValue.replaceAll(".pdf", "");
+    }
+
+
+
     
     const opt = {
         margin:       MARGIN,
-        filename:     'invoice.pdf',
+        filename:     filename + '.pdf',
         image:        { type: 'jpeg', quality: 1 },
         html2canvas:  { scale: 2 },   // Higher = better quality
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: {
-            mode: ['css', 'legacy'],
+            mode: ['css'],
             avoid: ['tr']
         },
     };
@@ -310,7 +461,7 @@ function removeControlUI(invoicePreview){
 
 }
 
-function createInputDataRow(){
+function createInputDataRow(description, unitPrice){
 
     const tableRow = document.createElement('tr');
     tableRow.classList = "dataRow inputRow";
@@ -318,6 +469,7 @@ function createInputDataRow(){
     const descriptionInput = document.createElement('input');
     descriptionInput.type = "text";
     descriptionInput.classList = "activeInput";
+    descriptionInput.value = description;
 
     
     const quantityInput = document.createElement('input');
@@ -333,6 +485,7 @@ function createInputDataRow(){
     const priceInput = document.createElement('input');
     priceInput.type = "number";
     priceInput.classList = "activeInput";
+    priceInput.value = unitPrice;
 
     const poundSymbol = document.createElement('p');
     poundSymbol.textContent = "£";
@@ -349,12 +502,11 @@ function createInputDataRow(){
     tableRow.appendChild(createTableData(priceContainer));
 
     const order = {
-        quantity: 0,
-        unitPrice: 0
+        quantity: 1,
+        unitPrice: unitPrice
     }
 
     invoiceOrders.push(order);
-    console.log(invoiceOrders);
 
     addPriceCalculationListeners(quantityInput, priceInput, totalPrice, order);
 
@@ -372,6 +524,8 @@ function createInputDataRow(){
     deleteInvoiceOrderButton.classList = "deleteInvoiceOrderButton";
 
     // tableRow.appendChild(deleteInvoiceOrderButton);
+
+    updateInvoicePricing(quantityInput, priceInput, totalPrice, order);
 
     return tableRow;
 
@@ -488,7 +642,62 @@ function updateInvoiceTotal(){
     }
 
     invoiceTotal.innerText = total;
-    console.log("set invoice total to: " + total);
+
+}
+
+async function getCustomerAccounts(){
+
+  const customerAccountDocuments = await fetchCustomerAccounts(); //returns list of docs
+
+  if(customerAccountDocuments == false){
+    return;
+  }
+
+  for(let i = 0; i < customerAccountDocuments.length; i++){
+
+    const customerDocData = customerAccountDocuments[i].data();
+    console.log(customerDocData);
+
+    let customerUsername = customerDocData['username'] == undefined ? "" : customerDocData['username'];
+
+    if(customerUsername != ""){
+        customerUsername = customerUsername.replaceAll("@placeholder.com", "");
+    }
+
+    customerAccounts.set(customerAccountDocuments[i].id, customerDocData);
+    accountSelect.appendChild(createOption(customerAccountDocuments[i].id, customerUsername));
+
+  }
+
+
+}
+
+function createOption(value, text){
+
+    const option = document.createElement('option');
+    option.value = value;
+    option.innerText = text;
+
+    return option;
+
+}
+
+function addInvoiceOrders(orders){
+   
+    for(let i = 0; i < orders.length; i++){
+
+        const orderData = orders[i].data();
+        console.log(orderData);
+        const description = orderData['quantity'] + "x " + orderData['animalType'];
+        const quantity = 1;
+        const unitPrice = parseInt(orderData['price']);
+
+        invoiceOrdersTable.appendChild(createInputDataRow(description, unitPrice));
+    }
+
+    updateInvoiceTotal();
+    updateInvoicePreview();
+
 
 }
 

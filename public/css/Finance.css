@@ -22,7 +22,22 @@ body {
 }
 
 .mainContent{
-  padding: 50px;
+  padding: 50px 50px;
+}
+
+.actionBar{
+
+  display: flex;
+  align-items: center;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  padding: 20px;
+  border-radius: 5px;
+  gap: 10px;
+}
+
+.actionBar > * {
+  height: 30px;
 }
 
 .pageTitle{
@@ -41,6 +56,7 @@ body {
   justify-content: center;
   padding: 30px;
   gap: 50px;
+  zoom: 0.9;
 }
 
 .invoiceWrapper{
@@ -83,6 +99,7 @@ body {
 
 [contenteditable="false"]{
   content: "";
+  box-shadow: none !important; 
 }
 
 [contenteditable][data-placeholder]:not(:focus):empty::before {
@@ -97,6 +114,59 @@ body {
 .selectedElement{
   box-shadow: 0 0 0 2px black;
   border-radius: 3px;
+
+}
+
+.deliveryWeekInput, .accountSelect, .fileNameInput{
+  box-shadow: 0 0 0 1px black;
+  border: none;
+  border-radius: 3px;
+}
+
+.deliveryWeekInput, .fileNameInput{
+ font-size: medium;
+}
+
+.actionBarButton{
+  padding: 0px 5px;
+  border: solid 1px black;
+  border-radius: 3px;
+  height: 30px;
+}
+
+.generateInvoiceButton{
+  margin-left: auto;
+  background-color: #2881FF;
+  color: white;
+  border: solid 1px #2881FF !important;
+}
+
+.generateInvoiceButton:hover{
+  background-color: white;
+  color: #2881FF;
+}
+
+.actionBarButton:hover{
+  cursor: pointer;
+}
+
+.clearInvoiceButton{
+  background-color: black;
+  color: white;
+}
+
+.clearInvoiceButton:hover{
+  background-color: white;
+  color: black;
+}
+
+.autoFillInvoiceButton{
+  background-color: white;
+}
+
+.autoFillInvoiceButton:hover{
+  background-color: black;
+  color: white;
 }
 
 .metadataGroup:has(.metadataTitle:hover){
@@ -282,3 +352,6 @@ td:first-child{
   padding-left: 0px !important;
 }
 
+.flex{
+  display: flex;
+}

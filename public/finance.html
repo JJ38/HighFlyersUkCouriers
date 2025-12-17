@@ -73,7 +73,19 @@
             <h1 class="pageTitle">Finance</h1>
 
             <div>
-                <button id="generate_invoice_button">Generate Invoice</button>
+            </div>
+
+            <div class="actionBar">
+
+                <select name="" id="account_select" class="accountSelect">
+                    <option value="">--- select account ---</option>
+                </select>
+                <input id="delivery_week_input" type="number" class="deliveryWeekInput" placeholder="Delivery Week" min="1" max="54">
+                <input id="file_name_input" type="text" class="fileNameInput" placeholder="File Name">
+                <button class="actionBarButton autoFillInvoiceButton" id="autofill_invoice_button">Autofill Invoice</button>
+                <button class="actionBarButton clearInvoiceButton" id="clear_invoice_button">Clear Invoice</button>
+                <button class="actionBarButton generateInvoiceButton" id="generate_invoice_button">Generate Invoice</button>
+
             </div>
 
             <div id="" class="invoiceGeneratorWrapper">
@@ -93,7 +105,7 @@
 
                         <div class="row margin-bottom-20px submittedOnWrapper">
                             <h3>Submitted on &nbsp;</h3>
-                            <h3 id="submitted_on_date" contenteditable data-placeholder="Submission date...">20.11.2025</h3>
+                            <h3 id="submitted_on_date" contenteditable data-placeholder="Submission date..."></h3>
                         </div>
 
                         <div class="row spaceBetween margin-bottom-20px">
@@ -111,20 +123,23 @@
 
                             <div class="metadataGroup" id="payable_to_wrapper">
                                 <h4 class="metadataTitle">Payable to</h4>
-                                <p contenteditable data-placeholder="Name...">Kevin Brough</p>
-                                <p contenteditable data-placeholder="Company...">Highflyers U.K. Couriers</p>
+                                <p id="invoice_payable_to_name" contenteditable data-placeholder="Name...">Kevin Brough</p>
+                                <p id="invoice_payable_to_company" contenteditable data-placeholder="Company...">Highflyers U.K. Couriers</p>
                             </div>
 
                             <div>
 
                                 <div class="metadataGroup" id="invoice_metadata_wrapper">
-                                    <h4 class="metadataTitle">Invoice #</h4>
-                                    <p id="reference" contenteditable data-placeholder="Reference...">HF0051 - 84 Week 46 &nbsp;</p>                     
+                                    <h4 class="metadataTitle">Invoice # &nbsp;</h4>
+                                    <div class="flex">
+                                        <p id="reference" contenteditable data-placeholder="Reference..."></p>                     
+                                        <p>&nbsp;</p>
+                                    </div>
                                 </div>
 
                                 <div class="metadataGroup">
                                     <h4 class="metadataTitle">Date</h4>
-                                    <p id="creation_date" class="" contenteditable data-placeholder="Creation date...">11/11/2025</p>
+                                    <p id="creation_date" class="" contenteditable data-placeholder="Creation date..."></p>
                                 </div>
 
                             </div>
@@ -246,7 +261,7 @@
 
                         </table>
 
-                        <textarea name="" id="" class="activeInput activeTextAreaInput"></textarea>
+                        <textarea name="" id="invoice_notes_input" class="activeInput activeTextAreaInput"></textarea>
 
                     </div>
 
