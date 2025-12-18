@@ -19,6 +19,7 @@ const invoiceTotal = document.getElementById('total');
 const invoiceNotesInput = document.getElementById('invoice_notes_input');
 const invoicePayableToName = document.getElementById('invoice_payable_to_name');
 const invoicePayableToCompany = document.getElementById('invoice_payable_to_company');
+const invoiceHeading = document.getElementById('invoice_heading');
 
 
 const accountSelect = document.getElementById('account_select');
@@ -31,9 +32,11 @@ const clearInvoiceButton = document.getElementById('clear_invoice_button');
 
 console.log(selectableElements);
 
-const PAGE_HEIGHT_MM = 297;
-const MARGIN = 15;
+const PAGE_HEIGHT_PX = 1009; // 276mm * 3.78 (px per mm)
+
+
 let invoiceOrders = [];
+let pageBreaks = [];
 const customerAccounts = new Map();
 
 let selectedElement;
@@ -60,8 +63,6 @@ function addEventListeners(){
     if(generateInvoiceButton != null){
         
         generateInvoiceButton.addEventListener('click', () => {
-            // const invoiceHTMLString = getInvoiceHTMLString();
-            // generatePdfFromHtmlString(invoiceHTMLString);
             downloadPDF();
         });
     }
@@ -150,7 +151,7 @@ function addEventListeners(){
         if (el.textContent.trim() === '') {
             el.innerHTML = '';
         }
-
+        console.log("rjoiufppijipfoes");
         updateInvoicePreview();
     });
 
@@ -234,7 +235,7 @@ function addEventListeners(){
             });
 
             orderInputs.forEach((element) => {
-                element.innerText = "";
+                element.remove();
             });
 
             invoiceNotesInput.value = "";
@@ -379,16 +380,31 @@ async function downloadPDF() {
     }
 
 
+    
+    const renderRoot = document.createElement('div');
+
+    renderRoot.style.position = 'fixed';
+    renderRoot.style.left = '0';
+    renderRoot.style.top = '0';
+    renderRoot.style.width = '210mm';
+    renderRoot.style.visibility = 'hidden';
+    renderRoot.style.background = 'white';
+
+    document.body.appendChild(renderRoot);
 
     
     const opt = {
-        margin:       MARGIN,
+        margin:       15,
         filename:     filename + '.pdf',
         image:        { type: 'jpeg', quality: 1 },
-        html2canvas:  { scale: 2 },   // Higher = better quality
+        html2canvas:  {  
+            scale: 2,
+            scrollX: 0,
+            scrollY: 0,
+        },   // Higher = better quality
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: {
-            mode: ['css'],
+            mode: ['css', 'legacy'],
             avoid: ['tr']
         },
     };
@@ -397,9 +413,26 @@ async function downloadPDF() {
     await document.fonts.ready;
     await new Promise(r => requestAnimationFrame(r));
     await new Promise(r => requestAnimationFrame(r));
-    // await new Promise(resolve => setTimeout(resolve, 1000));
 
-    await html2pdf().set(opt).from(invoicePreview).save();
+
+
+    const invoicePreviewClone = invoicePreview.cloneNode(true);
+
+    renderRoot.appendChild(invoicePreviewClone);
+
+    // Force layout
+    renderRoot.offsetHeight;
+
+    // Insert page breaks AFTER layout
+    insertInvoicePageBreaks(invoicePreviewClone);
+
+    // Render
+    html2pdf().set(opt).from(invoicePreviewClone).save();
+
+    // Cleanup
+    document.body.removeChild(renderRoot);
+
+    // await html2pdf().set(opt).from(invoicePreview).save();
 
     // invoice.remove();
 }
@@ -438,23 +471,40 @@ function removeControlUI(invoicePreview){
     });
 
 
-    const inputs = invoice.querySelectorAll('input');
-    inputs.forEach((input) => {
-        const p = document.createElement('p');
-        p.innerText = input.value
-        input.parentNode.appendChild(p);
+    // const inputs = invoice.querySelectorAll('input');
+    // inputs.forEach((input) => {
+    //     const p = document.createElement('p');
+    //     p.innerText = input.value || '\u00A0';
+    //     input.parentNode.appendChild(p);
+    //     input.remove();
+    // });
 
-        input.remove();
+    // const textareas = invoice.querySelectorAll('textarea');
+    // textareas.forEach((textarea) => {
+    //     const p = document.createElement('p');
+    //     p.innerText = textarea.value || '\u00A0';
+    //     textarea.parentNode.appendChild(p);
+
+    //     textarea.remove();
+    // });
+
+    invoice.querySelectorAll('input, textarea').forEach(el => {
+        const p = document.createElement('p');
+        const style = window.getComputedStyle(el);
+
+        p.innerText = el.value || '\u00A0';
+        p.style.font = style.font;
+        p.style.lineHeight = style.lineHeight;
+        p.style.whiteSpace = 'pre-wrap';
+
+        el.parentNode.insertBefore(p, el);
+        el.remove();
     });
 
-    const textareas = invoice.querySelectorAll('textarea');
-    textareas.forEach((textarea) => {
-        const p = document.createElement('p');
-        p.innerText = textarea.value
-        textarea.parentNode.appendChild(p);
-
-        textarea.remove();
+    invoice.querySelectorAll('.tableRow').forEach(row => {
+        row.style.height = `${row.offsetHeight}px`;
     });
+
 
 
     return invoice;
@@ -463,8 +513,8 @@ function removeControlUI(invoicePreview){
 
 function createInputDataRow(description, unitPrice){
 
-    const tableRow = document.createElement('tr');
-    tableRow.classList = "dataRow inputRow";
+    const tableRow = document.createElement('div');
+    tableRow.classList = "tableRow inputRow";
 
     const descriptionInput = document.createElement('input');
     descriptionInput.type = "text";
@@ -496,10 +546,15 @@ function createInputDataRow(description, unitPrice){
     
     const totalPrice = document.createElement('p');
     totalPrice.textContent = "£";
+    totalPrice.classList = "relative"
 
-    tableRow.appendChild(createTableData(descriptionInput));
-    tableRow.appendChild(createTableData(quantityInput));
-    tableRow.appendChild(createTableData(priceContainer));
+    tableRow.appendChild(createWrapper(descriptionInput));
+    tableRow.appendChild(createWrapper(quantityInput));
+    tableRow.appendChild(priceContainer);
+
+    // tableRow.appendChild(descriptionInput);
+    // tableRow.appendChild(quantityInput);
+    // tableRow.appendChild(priceContainer);
 
     const order = {
         quantity: 1,
@@ -511,15 +566,15 @@ function createInputDataRow(description, unitPrice){
     addPriceCalculationListeners(quantityInput, priceInput, totalPrice, order);
 
 
-    const totalPriceTableData = createTableData(totalPrice);
-    totalPriceTableData.classList = "relative";
+    const totalPriceWrapper= createWrapper(totalPrice);
+    totalPriceWrapper.classList = "relative";
 
     const deleteInvoiceOrderButton = createDeleteInvoiceOrderButton();
     addEventListenerToDeleteInvoiceOrderButton(deleteInvoiceOrderButton, order);
 
-    totalPriceTableData.appendChild(deleteInvoiceOrderButton);
+    totalPriceWrapper.appendChild(deleteInvoiceOrderButton);
 
-    tableRow.appendChild(totalPriceTableData);
+    tableRow.appendChild(totalPriceWrapper);
 
     deleteInvoiceOrderButton.classList = "deleteInvoiceOrderButton";
 
@@ -530,6 +585,15 @@ function createInputDataRow(description, unitPrice){
     return tableRow;
 
 }   
+
+function createWrapper(element){
+
+    const wrapper = document.createElement('div');
+    wrapper.appendChild(element);
+
+    return wrapper;
+
+}
 
 function createTableData(data){
 
@@ -688,7 +752,7 @@ function addInvoiceOrders(orders){
 
         const orderData = orders[i].data();
         console.log(orderData);
-        const description = orderData['quantity'] + "x " + orderData['animalType'];
+        const description = "#" + orderData['ID'] + " - " + orderData['quantity'] + "x " + orderData['animalType'];
         const quantity = 1;
         const unitPrice = parseInt(orderData['price']);
 
@@ -698,6 +762,65 @@ function addInvoiceOrders(orders){
     updateInvoiceTotal();
     updateInvoicePreview();
 
+}
+
+function insertInvoicePageBreaks(){
+
+    const invoiceHeading = invoicePreview.querySelector('#invoice_heading');
+    const tableHeader = invoicePreview.querySelector('#table_header');
+
+    const invoiceOrders = [...invoicePreview.querySelectorAll('.inputRow')];
+
+    let currentPageHeight = 0;
+
+    currentPageHeight = invoiceHeading.offsetHeight + 1;
+    currentPageHeight += tableHeader.offsetHeight;
+
+    console.log(invoiceHeading.offsetHeight);
+    console.log(tableHeader.offsetHeight);
+
+    console.log(currentPageHeight);
+
+    console.log(invoiceOrders);
+    console.log(invoiceOrders.length);
+
+
+    for(let i = 0; i < invoiceOrders.length; i++){
+
+        const orderHeight = invoiceOrders[i].offsetHeight;
+
+        console.log(orderHeight);
+        console.log(invoiceOrders[i]);
+        console.log(currentPageHeight);
+
+        if((currentPageHeight + orderHeight) < PAGE_HEIGHT_PX){
+
+            currentPageHeight += orderHeight;
+
+        }else{
+
+            const pageBreak = document.createElement('div');
+            pageBreak.classList = "pageBreak";
+            currentPageHeight = orderHeight;
+            
+            invoiceOrders[i].parentNode.insertBefore(
+                pageBreak,
+                invoiceOrders[i]
+            );
+            console.log("inserted page break");
+            pageBreaks.push(pageBreak);
+        }
+
+    }
 
 }
 
+function removePageBreaks(){
+
+    pageBreaks.forEach(element => {
+        element.remove();
+    });
+
+    pageBreaks = [];
+
+}

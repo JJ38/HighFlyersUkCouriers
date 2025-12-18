@@ -56,13 +56,13 @@ body {
   justify-content: center;
   padding: 30px;
   gap: 50px;
-  zoom: 0.9;
+  zoom: 1;
 }
 
 .invoiceWrapper{
   padding: 15mm; /* apply padding here in css so padding doesnt get rendered in pdf. html2canvas will add 15mm padding*/
   box-sizing: border-box;
-  height: 100%;
+  /* height: 100%; */
   background: white;
 }
 
@@ -234,29 +234,6 @@ input, textarea{
   width: 100%;
 }
 
-
-.descriptionCol { width: 47%; }
-.qtyCol { width: 10%; }
-.unitPriceCol { width: 18%; }
-.totalPriceCol { width: 20%; }
-
-.invoiceDetailsTable input {
-  width: 100%;
-}
-
-tr{
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-
-.inputRow > td{
-  padding-right: 20px;
-}
-
-td:first-child{
-  padding-left: 10px;
-}
-
 .inputLabelWrapper{
   display: flex;
   gap: 5px;
@@ -304,10 +281,23 @@ td:first-child{
   margin: 17px auto;
 }
 
-.invoiceMetaDataTable{
+.invoiceMetaDataWrapper{
+  display: flex;
   page-break-inside: avoid;
   break-inside: avoid;
   width: 100%;
+}
+
+.metaDataTitleWrapper{
+  display: flex;
+  flex: 5;
+  justify-content: space-between;
+  margin-right: 10px;
+}
+
+.totalWrapper{
+  display: flex;
+  flex: 1;
 }
 
 .deleteInvoiceOrderButton{
@@ -335,9 +325,7 @@ td:first-child{
 }
 
 .metadataLabel{
-
   display: flex;
-  
 }
 
 .hidden{
@@ -354,4 +342,56 @@ td:first-child{
 
 .flex{
   display: flex;
+}
+
+.pageBreak {
+  page-break-before: always;
+  break-before: page;
+}
+
+.tableRow{
+  display: flex;
+  align-items: center;
+  padding: 12px 0px;
+  min-height: 56px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.tableRow:nth-child(even){
+  background-color: lightgray;
+}
+
+.tableRow > :nth-child(1){
+  flex: 3;
+  margin-right: 12px;
+}
+
+.tableRow > :nth-child(2){
+  flex: 1;
+  width: 100%;
+  margin-right: 12px;
+}
+
+.tableRow > :nth-child(3){
+  flex: 1;
+  width: 100%;
+  margin-right: 12px;
+}
+
+.tableRow > :nth-child(4){
+  flex: 1;
+  width: 100%;
+}
+
+.activeInput{
+  width: 100%;
+}
+
+body {
+  line-height: normal;
+}
+
+.invoice {
+  line-height: 2;
 }
