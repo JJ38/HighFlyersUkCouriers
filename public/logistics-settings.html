@@ -120,7 +120,7 @@
 
                 <label class="inputlable" for="stop_duration_input">Stop Duration </label>
                 <div class="fuelcostinputwrapper">
-                  <input id="stop_duration_input" class="fuelCostInput numberInput" name="stop_duration_input" type="number">
+                  <input id="stop_duration_input" class="fuelCostInput numberInput" name="stop_duration_input" type="number" min="0">
                   <p class="pence">s</p>
                 </div>
 
@@ -131,8 +131,18 @@
 
                 <label class="inputlable" for="additional_stop_duration_input">Additonal Stop Duration </label>
                 <div class="fuelcostinputwrapper">
-                  <input id="additional_stop_duration_input" class="fuelCostInput numberInput" name="additional_stop_duration_input" type="number">
+                  <input id="additional_stop_duration_input" class="fuelCostInput numberInput" name="additional_stop_duration_input" type="number" min="0">
                   <p class="pence">s</p>
+                </div>
+
+              </div>
+
+              <div class="titledinputwrapper">
+
+                <label class="inputlable" for="eta_multiplier">ETA Multiplier</label>
+                <div class="fuelcostinputwrapper">
+                  <input id="eta_multiplier_input" class="fuelCostInput numberInput" name="eta_multiplier" type="number" min="0">
+                  <p class="pence">%</p>
                 </div>
 
               </div>

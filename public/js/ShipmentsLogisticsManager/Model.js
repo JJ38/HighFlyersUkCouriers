@@ -2329,8 +2329,8 @@ function getRouteOptimisationRequestBody(origin, destination, stops, precedenceR
   const request = 
   {
     "model": {
-        "globalStartTime": "1970-01-01T" + startTime.hour + ":" + startTime.minute + ":00Z",
-        "globalEndTime": "1971-01-01T00:00:00Z",
+        "globalStartTime": "2025-01-01T" + startTime.hour + ":" + startTime.minute + ":00Z",
+        "globalEndTime": "2026-01-01T00:00:00Z",
         "shipments": stops,
         "vehicles": [
             {

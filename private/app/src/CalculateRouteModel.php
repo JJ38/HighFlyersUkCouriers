@@ -23,10 +23,6 @@ class CalculateRouteModel
         $requestBody = $model;
 
         try {
-            // $response = $client->post($endpoint, $request);
-
-            // Get the raw response body as a string
-            // return $response->getBody()->getContents();
 
             $jsonPayload = json_encode($requestBody, JSON_PRETTY_PRINT);
 
@@ -42,10 +38,6 @@ class CalculateRouteModel
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $accessToken
             ));
-            
-            // Optional: Enable verbose cURL output for debugging (to see headers sent/received)
-            // curl_setopt($ch, CURLOPT_VERBOSE, true); 
-            // curl_setopt($ch, CURLOPT_STDERR, fopen('php://stderr', 'w'));
 
             // Execute the request
             $response = curl_exec($ch);

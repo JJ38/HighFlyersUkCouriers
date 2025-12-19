@@ -12,7 +12,9 @@ const runDefinitionsWrapper = document.getElementById('run_definitions_wrapper')
 const postcodeExceptionsWrapper = document.getElementById('postcode_exceptions_wrapper');
 const stopDurationInput = document.getElementById('stop_duration_input');
 const additionalStopDurationInput = document.getElementById('additional_stop_duration_input');
+const ETAMultiplierInput = document.getElementById('eta_multiplier_input');
 const updateStopSettingsButton = document.getElementById('update_stop_duration_button');
+
 
 
 
@@ -22,8 +24,11 @@ let fuelUserInput;
 let milesPerGallonUserInput;
 let stopDurationSeconds;
 let additionalStopDurationSeconds;
+let ETAMultiplierPercentage;
 let stopDurationSecondsInput;
 let additionalStopDurationSecondsInput;
+let ETAMultiplierPercentageInput;
+
 
 
 addEventListeners();
@@ -144,6 +149,17 @@ function addEventListeners(){
 
     }
 
+    if(ETAMultiplierInput != null){
+
+        ETAMultiplierInput.addEventListener('input', () => {
+
+            ETAMultiplierPercentageInput = ETAMultiplierInput.value;
+            stopSettingsContoller();
+
+        });
+
+    }
+
 }
 
 async function fetchRunTimings(){
@@ -160,6 +176,12 @@ async function fetchRunTimings(){
     if(additionalStopDurationInput != null){
         additionalStopDurationInput.value = additionalStopDurationSeconds;
         additionalStopDurationSecondsInput = additionalStopDurationSeconds;
+    }
+
+    ETAMultiplierPercentage = runTimingsDocument.data()['ETAMultiplierPercentage'];
+    if(ETAMultiplierInput != null){
+        ETAMultiplierInput.value = ETAMultiplierPercentage;
+        ETAMultiplierPercentageInput = ETAMultiplierPercentage;
     }
 }
 
@@ -551,6 +573,11 @@ function stopSettingsContoller(){
         return;
     }
 
+    if(ETAMultiplierPercentageInput != ETAMultiplierPercentage){
+        updateStopSettingsButton.classList.remove('hidden');
+        return;
+    }
+
     updateStopSettingsButton.classList.add('hidden');
 
 }
@@ -566,6 +593,11 @@ function updateStopSettingsButtonController(){
         showNotification("Error", "additional stop duration must be a number greater than -1");
         return
     }
+
+    if(ETAMultiplierPercentageInput < 0 || ETAMultiplierPercentageInput == ""){
+        showNotification("Error", "ETA multiplier must be a number greater than -1");
+        return
+    }
     
     if(stopDurationSecondsInput % 1 !== 0){
         showNotification("Error!", "stop duration must be a whole number");
@@ -576,6 +608,13 @@ function updateStopSettingsButtonController(){
         showNotification("Error!", "additional stop duration must be a whole number");
         return;
     }  
+
+    if(ETAMultiplierPercentageInput % 1 !== 0){
+        showNotification("Error!", "ETA multiplier must be a whole number");
+        return;
+    }  
+
+
 
     updateStopSettings();
 
@@ -626,13 +665,15 @@ function updateStopSettings(){
     updateDocument(doc(db, 'Settings', 'runTimings'), 
         {
             stopDurationSeconds: parseInt(stopDurationSecondsInput),
-            additionalStopDurationSeconds: parseInt(additionalStopDurationSecondsInput)
+            additionalStopDurationSeconds: parseInt(additionalStopDurationSecondsInput),
+            ETAMultiplierPercentage: parseInt(ETAMultiplierPercentageInput),
         }
     ).then(() => {
 
         showNotification("Success!", "Stop settings have been updated");
         stopDurationSeconds = stopDurationSecondsInput;
         additionalStopDurationSeconds = additionalStopDurationSecondsInput;
+        ETAMultiplierPercentage = ETAMultiplierPercentageInput;
 
         updateStopSettingsButton.classList.add('hidden');
 
