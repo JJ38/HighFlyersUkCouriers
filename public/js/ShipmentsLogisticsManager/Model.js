@@ -1759,12 +1759,15 @@ export async function calculateRoute(run, JWT){
     return false;
 
   }
-  
+
+  const runTimingsData = runTimingsDocument.data();
+  const ETAMultiplier = parseFloat("1." + runTimingsData.ETAMultiplierPercentage.toString());
+
   const groupedStops = getDuplicationStopLocations(stops);
   
   const lockedStops = getLockedStops(stops);
 
-  const stopJSONs = getStopRequestJSON(runTimingsDocument.data(), groupedStops, lockedStops);
+  const stopJSONs = getStopRequestJSON(runTimingsData, groupedStops, lockedStops);
 
   if(lockedStops === false){
     return false;
@@ -1780,7 +1783,7 @@ export async function calculateRoute(run, JWT){
     return false;
   }
 
-  const updatedStops = updateStopOrder(optimisedRouteJSON, groupedStops);
+  const updatedStops = updateStopOrder(optimisedRouteJSON, groupedStops, ETAMultiplier);
 
   if(updatedStops === false){
 
@@ -1826,7 +1829,7 @@ export async function calculateRoute(run, JWT){
 }
 
 
-function updateStopOrder(optimisedRouteJSON, groupedStops){ 
+function updateStopOrder(optimisedRouteJSON, groupedStops, ETAMultiplier){ 
 
 
   const nonDuplicateStops = groupedStops.nonDuplicateStops;
@@ -1838,6 +1841,8 @@ function updateStopOrder(optimisedRouteJSON, groupedStops){
   const newStops = [];
 
   let stopFound = false;
+
+  let startTimeOffset = 0;
 
   //find shipment label in nonduplicateStops
   for(let i = 0; i < optimisedStops.length; i++){
@@ -1852,8 +1857,13 @@ function updateStopOrder(optimisedRouteJSON, groupedStops){
 
       if(shipmentLabel == primaryKey){ 
 
+        const additionalDriveTime = getAdditionalDriveTime(optimisedTransitions[i].travelDuration, ETAMultiplier)
+
         nonDuplicateStops[j].stopNumber = newStops.length + 1;
-        nonDuplicateStops[j].stopTime = getStopArrivalTime(optimisedTransitions[i]);
+        nonDuplicateStops[j].stopTime = getStopArrivalTime(optimisedTransitions[i], startTimeOffset, additionalDriveTime);
+
+        startTimeOffset += additionalDriveTime;
+        
         newStops.push(nonDuplicateStops[j]);
 
         stopFound = true;
@@ -1868,15 +1878,19 @@ function updateStopOrder(optimisedRouteJSON, groupedStops){
       if(duplicateStops.has(shipmentLabel)){
 
         const multiStops = duplicateStops.get(shipmentLabel);
+        const additionalDriveTime = getAdditionalDriveTime(optimisedTransitions[i].travelDuration, ETAMultiplier);
 
         for(let j = 0; j < multiStops.length; j++){
 
           multiStops[j].stopNumber = newStops.length + 1;
-          multiStops[j].stopTime = getStopArrivalTime(optimisedTransitions[i]);
+          multiStops[j].stopTime = getStopArrivalTime(optimisedTransitions[i], startTimeOffset, additionalDriveTime);
 
           newStops.push(multiStops[j]);
 
         }
+
+        startTimeOffset += additionalDriveTime;
+
 
       }else{
         //error key should always be in duplicateStops
@@ -1891,8 +1905,17 @@ function updateStopOrder(optimisedRouteJSON, groupedStops){
 
 }
 
-function getStopArrivalTime(optimisedStop){
-  
+function getAdditionalDriveTime(travelDuration, ETAMultiplier){
+
+  const travelDurationInt = parseInt(travelDuration);
+
+  return (travelDurationInt * ETAMultiplier) - travelDurationInt;
+
+
+}
+
+function getStopArrivalTime(optimisedStop, startTimeOffset, additionalDriveTime){
+
   const startTimeDate = optimisedStop.startTime;
   const durationSecondsString = optimisedStop.travelDuration;
 
@@ -1902,10 +1925,10 @@ function getStopArrivalTime(optimisedStop){
   
   const startTimeComponentsStrings = startTimeString.split(":");
 
-  const startTimeSecondsInt = (parseInt(startTimeComponentsStrings[0]) * 60 * 60) + (parseInt(startTimeComponentsStrings[1]) * 60) + parseInt(startTimeComponentsStrings[2]);
+  const startTimeSecondsInt = (parseInt(startTimeComponentsStrings[0]) * 60 * 60) + (parseInt(startTimeComponentsStrings[1]) * 60) + parseInt(startTimeComponentsStrings[2]) + startTimeOffset;
 
   //%86400 to handle case where time passes midnight
-  const arrivalTimeSeconds = (startTimeSecondsInt + durationSecondsInt) % 86400;
+  const arrivalTimeSeconds = ((startTimeSecondsInt + durationSecondsInt) % 86400) + additionalDriveTime;
 
   const arrivalTimeHour = Math.floor(arrivalTimeSeconds / 3600);
   const arrivalTimeMinute = Math.floor(arrivalTimeSeconds / 60) % 60;

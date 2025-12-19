@@ -165,7 +165,7 @@ function addEventListeners(){
 async function fetchRunTimings(){
 
     const runTimingsDocument = await getDocument(query(doc(db, 'Settings', 'runTimings')));
-    console.log(runTimingsDocument);
+
     stopDurationSeconds = runTimingsDocument.data()['stopDurationSeconds'];
     if(stopDurationInput != null){
         stopDurationInput.value = stopDurationSeconds;
@@ -274,8 +274,6 @@ async function fetchRunDefinitions(){
     for(let i = 0; i < runs.length; i++){
         runs[i].postcodes.sort();
     }
-
-    console.log(runs);
 
     runs.sort(sortAlphabetically);
 
