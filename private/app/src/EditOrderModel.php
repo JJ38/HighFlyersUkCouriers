@@ -2,8 +2,6 @@
 
 namespace HighFlyersUkCouriers;
 
-use Ramsey\Uuid\Type\Integer;
-
 class EditOrderModel
 {
     private $firebase_firestore_result;

@@ -59,7 +59,6 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
       //if one of the parameters does not meet requirements
 
       var_dump($cleaned_parameters);
-      
 
       if(empty($cleaned_parameters)){
 
@@ -79,6 +78,12 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
       
       //store in database
       $logger = $container->get('logger');
+
+      
+      if($logger != null){
+        $logger->error('EDIT_ORDER_POST', array($tainted_parameters));
+      }
+
 
       $authentication_model->setLogger($logger);
       $authentication_model->fetchOAuth2Token();

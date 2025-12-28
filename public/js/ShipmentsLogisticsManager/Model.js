@@ -1798,7 +1798,15 @@ export async function calculateRoute(run, JWT){
 
   try{
 
-    runTime = optimisedRouteJSON['metrics']['aggregatedRouteMetrics']['totalDuration'];
+    runTime = parseInt(optimisedRouteJSON['metrics']['aggregatedRouteMetrics']['totalDuration'].replace("s", ""));
+
+    console.log(runTime);
+    
+
+    runTime = runTime * ETAMultiplier
+    console.log(ETAMultiplier);
+    console.log(runTime);
+
 
   }catch(e){
     
@@ -1967,8 +1975,6 @@ async function storeOptimisedRoute(runID, optimisedRoute, stops, runTime){
 async function fetchOptimisedRoute(requestBody, JWT){
 
   const url = calculateRouteEndpoint;
-
-
 
   try {
 
@@ -2675,11 +2681,17 @@ function getOutwardPostcode(postcode){
 
 export function convertSecondsToHoursAndMinutes(secondsString){
 
-  if(secondsString == null){
+  console.log(isNaN(secondsString));
+
+  if(secondsString == null || secondsString == undefined || isNaN(secondsString)){
     return "0:0";
   }
 
-  const seconds = parseInt(secondsString.replace("s", ""));
+  let seconds = secondsString;
+
+  if(isNaN(secondsString)){
+    seconds = parseInt(secondsString.replace("s", ""));
+  }
 
   const totalMinutes = Math.floor(seconds / 60);
 

@@ -9,13 +9,13 @@
 
     <title>HighFlyersUkCouriers</title>
 
-  <script type="module" crossorigin src="./assets/LogisticsSettings-rDUctCUC.js"></script>
+  <script type="module" crossorigin src="./assets/LogisticsSettings-B_lCuWPJ.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="./assets/index-35c79a8a-uh53AB8t.js">
   <link rel="modulepreload" crossorigin href="./assets/Firebase-CCEIZed7.js">
   <link rel="modulepreload" crossorigin href="./assets/Notification-CxUWC9Hr.js">
   <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
-  <link rel="stylesheet" crossorigin href="./assets/LogisticsSettings-FSW5sSU2.css">
+  <link rel="stylesheet" crossorigin href="./assets/LogisticsSettings-Dhjt2gk2.css">
   <link rel="stylesheet" crossorigin href="./assets/Navbar-CThckUIN.css">
   <link rel="stylesheet" crossorigin href="./assets/MobileNavigationBar-CBkRRVDQ.css">
   <link rel="stylesheet" crossorigin href="./assets/ManageLogistics-Dem43p4b.css">
@@ -124,7 +124,7 @@
 
                 <label class="inputlable" for="stop_duration_input">Stop Duration </label>
                 <div class="fuelcostinputwrapper">
-                  <input id="stop_duration_input" class="fuelCostInput numberInput" name="stop_duration_input" type="number">
+                  <input id="stop_duration_input" class="fuelCostInput numberInput" name="stop_duration_input" type="number" min="0">
                   <p class="pence">s</p>
                 </div>
 
@@ -135,8 +135,18 @@
 
                 <label class="inputlable" for="additional_stop_duration_input">Additonal Stop Duration </label>
                 <div class="fuelcostinputwrapper">
-                  <input id="additional_stop_duration_input" class="fuelCostInput numberInput" name="additional_stop_duration_input" type="number">
+                  <input id="additional_stop_duration_input" class="fuelCostInput numberInput" name="additional_stop_duration_input" type="number" min="0">
                   <p class="pence">s</p>
+                </div>
+
+              </div>
+
+              <div class="titledinputwrapper">
+
+                <label class="inputlable" for="eta_multiplier">ETA Multiplier</label>
+                <div class="fuelcostinputwrapper">
+                  <input id="eta_multiplier_input" class="fuelCostInput numberInput" name="eta_multiplier" type="number" min="0">
+                  <p class="pence">%</p>
                 </div>
 
               </div>
