@@ -1755,9 +1755,7 @@ export async function calculateRoute(run, JWT){
   const runTimingsDocument = await getDocument(query(doc(db, 'Settings', 'runTimings')));
 
   if(runTimingsDocument === false){
-
     return false;
-
   }
 
   const runTimingsData = runTimingsDocument.data();
@@ -1776,8 +1774,13 @@ export async function calculateRoute(run, JWT){
   const precedenceRules = getPrecedenceRules(lockedStops, stopJSONs.length);
 
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, run.settings.start.time);
+  console.log(requestBody);
+  console.log(JSON.stringify(requestBody));
 
   const optimisedRouteJSON = await fetchOptimisedRoute(requestBody, JWT);
+  console.log(optimisedRouteJSON);
+  console.log(JSON.stringify(optimisedRouteJSON));
+
 
   if(optimisedRouteJSON === false){
     return false;
@@ -1786,9 +1789,7 @@ export async function calculateRoute(run, JWT){
   const updatedStops = updateStopOrder(optimisedRouteJSON, groupedStops, ETAMultiplier);
 
   if(updatedStops === false){
-
     return false;
-
   }
 
   const databaseStops = removeStopDataFromStop(updatedStops);
@@ -1839,7 +1840,6 @@ export async function calculateRoute(run, JWT){
 
 function updateStopOrder(optimisedRouteJSON, groupedStops, ETAMultiplier){ 
 
-
   const nonDuplicateStops = groupedStops.nonDuplicateStops;
   const duplicateStops = groupedStops.duplicateStops;
 
@@ -1885,8 +1885,15 @@ function updateStopOrder(optimisedRouteJSON, groupedStops, ETAMultiplier){
 
       if(duplicateStops.has(shipmentLabel)){
 
+        console.log(optimisedTransitions[i]);
+        console.log(optimisedTransitions);
+        console.log(optimisedStops);
+
         const multiStops = duplicateStops.get(shipmentLabel);
         const additionalDriveTime = getAdditionalDriveTime(optimisedTransitions[i].travelDuration, ETAMultiplier);
+
+        console.log(multiStops);
+        console.log(additionalDriveTime);
 
         for(let j = 0; j < multiStops.length; j++){
 
@@ -2037,23 +2044,6 @@ function getLockedStops(stops){
 
         }
 
-      //   console.log(stopPrimaryKey);
-
-      //   const stopIndex = findStopLabelIndex(stopJSONs, stopPrimaryKey);
-        
-      //   if(stopIndex === false){
-      //     return false;
-      //   }
-
-      //   start = {
-
-      //     isLocked: true,
-      //     primaryKey: stopPrimaryKey,
-      //     index: stopIndex,
-      //     
-
-      //   }
-
       }
 
     }
@@ -2076,25 +2066,6 @@ function getLockedStops(stops){
           } 
         }
 
-        // const stopIndex = findStopLabelIndex(stopJSONs, stopPrimaryKey);
-
-        // if(stopIndex === false){
-        //   return false;
-        // }
-
-        // end = {
-
-        //   isLocked: true,
-        //   primaryKey: stopPrimaryKey,
-        //   index: stopIndex,
-        //   coordinates: {
-
-        //     lat: stops[i].coordinates.lat,
-        //     lng: stops[i].coordinates.lng,
-
-        //   }
-
-        // }
       }
 
     }
@@ -2102,24 +2073,6 @@ function getLockedStops(stops){
   }
 
   return {start: start, end: end}
-
-}
-
-
-function findStopLabelIndex(stopJSONs, labelToFind){
-
-  for(let i = 0; i < stopJSONs.length; i++){
-
-    if(stopJSONs[i].label.startsWith(labelToFind)){  
-      console.log(i);
-      console.log(labelToFind);
-
-      return i;
-    }
-
-  }
-
-  return false;
 
 }
 
@@ -2163,17 +2116,21 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops){
     
   }
 
-  const duplicateStops = groupedStops.duplicateStops;
 
   let duplicateStopIndex = 0;
 
-  duplicateStops.forEach((duplicateStops, key, map) => {
+  const duplicateStops = groupedStops.duplicateStops;
+
+
+  duplicateStops.forEach((duplicateStops, key) => {
 
     const deliveries = [];
 
-    for(let j = 0; j < duplicateStops.length; j++){
+    //Orders in the request are grouped. It unpredictable as to which stop will be used to affect departure time. Therefore to counter this every stop at a location must have the combined
+    //standard stop time and the additional stop time.
+    const totalStopDuration = runTimings.stopDurationSeconds + ((duplicateStops.length - 1) * runTimings.additionalStopDurationSeconds);
 
-      const duration = j == 0 ? runTimings.stopDurationSeconds : runTimings.additionalStopDurationSeconds;
+    for(let j = 0; j < duplicateStops.length; j++){
 
       const deliveryObject = 
       {
@@ -2181,7 +2138,7 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops){
           "latitude": duplicateStops[j].coordinates.lat,
           "longitude": duplicateStops[j].coordinates.lng
         },
-        "duration": duration + "s"
+        "duration": totalStopDuration + "s"
       }
 
       deliveries.push(deliveryObject);
