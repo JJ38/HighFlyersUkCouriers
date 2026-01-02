@@ -183,6 +183,11 @@ async function fetchRunTimings(){
         ETAMultiplierInput.value = ETAMultiplierPercentage;
         ETAMultiplierPercentageInput = ETAMultiplierPercentage;
     }
+
+    console.log(stopDurationSecondsInput);
+    console.log(additionalStopDurationSecondsInput);
+    console.log(ETAMultiplierPercentageInput);
+
 }
 
 async function fetchFuelSettings(){
@@ -582,17 +587,17 @@ function stopSettingsContoller(){
 
 function updateStopSettingsButtonController(){
 
-    if(stopDurationSecondsInput < 0 || stopDurationSecondsInput == ""){
+    if(stopDurationSecondsInput < 0 || isNaN(stopDurationSecondsInput)){
         showNotification("Error" ,"stop duration must be a number greater than -1");
         return;
     }
 
-    if(additionalStopDurationSecondsInput < 0 || additionalStopDurationSecondsInput == ""){
+    if(additionalStopDurationSecondsInput < 0 || isNaN(additionalStopDurationSecondsInput)){
         showNotification("Error", "additional stop duration must be a number greater than -1");
         return
     }
 
-    if(ETAMultiplierPercentageInput < 0 || ETAMultiplierPercentageInput == ""){
+    if(ETAMultiplierPercentageInput < 0 || isNaN(ETAMultiplierPercentageInput)){
         showNotification("Error", "ETA multiplier must be a number greater than -1");
         return
     }

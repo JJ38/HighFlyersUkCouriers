@@ -2121,7 +2121,6 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops){
 
   const duplicateStops = groupedStops.duplicateStops;
 
-
   duplicateStops.forEach((duplicateStops, key) => {
 
     const deliveries = [];
