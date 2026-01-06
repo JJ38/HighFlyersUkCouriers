@@ -460,6 +460,26 @@ function createTableStopCard(stopData){
 
 }
 
+function createDeleteProgressedRunButton(){
+
+    const tableData = document.createElement('td');
+    tableData.style.padding = "0px";
+    tableData.style.verticalAlign = "middle";
+    tableData.style.position = "relative";
+
+    const button = document.createElement('div');
+    button.classList = "deleteButtonWrapper";
+
+    const icon = document.createElement('span');
+    icon.innerHTML = "delete";
+    icon.classList = "material-symbols-outlined";
+
+    button.appendChild(icon);
+    tableData.appendChild(button);
+
+    return tableData;
+}
+
 
 function createTableRunCard(progressedRunData){
 
@@ -468,6 +488,9 @@ function createTableRunCard(progressedRunData){
 
     console.log(progressedRunData);
     console.log(progressedRunData['deferredPayments']);
+
+    const deleteProgressedRunButton = createDeleteProgressedRunButton();
+    addEventListenerToDeleteProgressedRunButton(deleteProgressedRunButton);
 
 
     tableRow.appendChild(tableData(progressedRunData['driverName']));
@@ -480,7 +503,7 @@ function createTableRunCard(progressedRunData){
     tableRow.appendChild(tableData("£" + progressedRunData['totalCollected']));
     tableRow.appendChild(tableData(progressedRunData['deferredPayments'] == undefined ? "0" : progressedRunData['deferredPayments'].length));
     tableRow.appendChild(tableData(progressedRunData['updatedAt'] != undefined ? progressedRunData['updatedAt'].toDate().toLocaleString() : "00:00:00"));
-
+    tableRow.appendChild(deleteProgressedRunButton);
 
     const rowHoverDetector = tableData("");
     rowHoverDetector.classList = "rowHoverDetector";
@@ -492,13 +515,18 @@ function createTableRunCard(progressedRunData){
 
     tableRow.appendChild(rowHoverDetector);
 
-    // rowHoverDetector.appendChild(rowBackground);
-
-
-    // tableRow.appendChild(rowHoverDetector);
-
 
     return tableRow;
+
+}
+
+function addEventListenerToDeleteProgressedRunButton(deleteProgressedRunButton){
+
+    deleteProgressedRunButton.addEventListener('click', (e) => {
+
+        e.stopPropagation();
+
+    });
 
 }
 
