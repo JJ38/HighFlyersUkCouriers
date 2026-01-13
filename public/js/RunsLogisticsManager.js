@@ -244,6 +244,8 @@ function getDeferredPaymentsQueries(deferredPaymentPrimaryKeys){
 
 function calculateStopMetaData(progressedRunData){
 
+    console.log(progressedRunData);
+
     let totalPromised = 0;
     let totalSkippedStops = 0;
     let totalCollected = 0;
@@ -258,10 +260,12 @@ function calculateStopMetaData(progressedRunData){
             totalSkippedStops += 1;
         }
 
+       
+        
         if(isNumber.test(stops[i]['orderData']['price'])){
         
             //add up total promised
-            totalPromised += parseInt(stops[i]['orderData']['price']);
+            totalPromised += getTotalPromiseFromStop(stops[i]);
 
             //add up total taken
             const amountCollectedResult = parseInt(amountCollectedAtStop(stops[i]));
@@ -291,6 +295,18 @@ function calculateStopMetaData(progressedRunData){
     progressedRunData['totalPromised'] = totalPromised;
     progressedRunData['totalCollected'] = totalCollected;
 
+}
+
+function getTotalPromiseFromStop(stop){
+
+    const stopType = stop['stopType'];
+    const payment = stop['orderData']['payment'];
+
+    if(stopType.toLowerCase() == payment.toLowerCase()){
+        parseInt(stop['orderData']['price']);
+    }
+
+    return 0;
 }
 
 function amountCollectedAtStop(stop){
@@ -366,6 +382,8 @@ function addTableRunCardListener(tableRunCard, progressedRunData){
 }
 
 function parseStopsData(stops){
+
+    progressedRunsDetailsTableBody.innerHTML = "";
 
     if(isEmpty(stops)){
         console.log("stops is empty");
@@ -485,9 +503,6 @@ function createTableRunCard(progressedRunData){
 
     const tableRow = document.createElement('tr');
     tableRow.classList = "tableDataRow runCard";
-
-    console.log(progressedRunData);
-    console.log(progressedRunData['deferredPayments']);
 
     const deleteProgressedRunButton = createDeleteProgressedRunButton();
     addEventListenerToDeleteProgressedRunButton(deleteProgressedRunButton);

@@ -1061,7 +1061,7 @@ async function storeLabel(){
           foundStop = true;
         }
 
-        delete databaseStops[i]['orderData'];
+        // delete databaseStops[i]['orderData'];
 
       }
 
