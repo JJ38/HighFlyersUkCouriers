@@ -1,11 +1,12 @@
 import { db, getDocuments, getDocument } from "/js/Firebase.js";
 import { query, collection, doc, onSnapshot} from "firebase/firestore";
+import { showNotification } from "./Notification";
+import { bulkReadTransaction } from "./Firebase.js";
 
 const driverList = document.getElementById("runList");
 
 const drivers = new Map();
 
-let GoogleGeometry;
 let GoogleAdvancedMarkerElement;
 let GooglePinElement;
 let GoogleMap;
@@ -25,7 +26,7 @@ let progressedRunStructList = [];
 
 initMap();
 fetchProgressedRunsInfo();
-fetchDriverDocs();
+// fetchDriverDocs();
 
 async function fetchProgressedRunsInfo(){
 
@@ -37,43 +38,50 @@ async function fetchProgressedRunsInfo(){
 
   numberOfProgressedRuns = progressedRunsDocs.docs.length;
 
+  const driverIDs = [];
+
   for(let i = 0; i < numberOfProgressedRuns; i++){
 
     //get document id
     const documentID = progressedRunsDocs.docs[i].id
+    const progressedRunData = progressedRunsDocs.docs[i].data();
+
+    driverIDs.push(progressedRunData['driverID']);
+
     //setup listener on document
     addListenerToProgressedRunDocument(query(doc(db, 'ProgressedRuns', documentID)));
-    // addListenerToDriverDocument(progressedRunsData.docs[i]);
+    addListenerToDriverDocument(progressedRunData['driverID']);
 
   }
+
+  // fetchDriverDocs(driverIDs);
 
 }
 
-async function fetchDriverDocs(){
+// async function fetchDriverDocs(driverIDs){
 
-  const driverDocs = await getDocuments(query(collection(db, "Drivers")));
+//   const driverDocs = await bulkReadTransaction(driverIDs, "/Drivers");
 
-  if(driverDocs.docs.length == 0){
-    return;
-  }
+//   if(driverDocs == false){
+//     showNotification("Error!", "Error fetching driver documents. Driver locations wont show on the map");
+//     return;
+//   }
 
-  for(let i = 0; i < driverDocs.docs.length; i++){
+//   for(let i = 0; i < driverDocs.docs.length; i++){
 
-    addListenerToDriverDocument(driverDocs.docs[i]);
+//     addListenerToDriverDocument(driverDocs[i].id);
 
-  }
-
-
-}
+//   }
 
 
-async function addListenerToDriverDocument(driverDoc){
+// }
 
-  const driverDocRef = doc(db, 'Drivers', driverDoc.id);
+
+async function addListenerToDriverDocument(driverDocID){
+
+  const driverDocRef = doc(db, 'Drivers', driverDocID);
 
   onSnapshot(driverDocRef, (doc) => {
-
-    console.log("update for " + doc.id);
 
     const driverData = doc.data();
     
@@ -83,6 +91,8 @@ async function addListenerToDriverDocument(driverDoc){
 
     //updates driver doc
     drivers.set(doc.id, driverData);
+
+    console.log(drivers);
 
     //update position of marker on map
     updateDriverMarker(drivers.get(doc.id));
@@ -113,7 +123,7 @@ async function updateDriverMarker(driverData){
 
 
   if(!isEmpty(driverData.marker)){
-    console.log("removing driver marker");
+    // console.log("removing driver marker");
     //remove current marker from map
     driverData.marker.map = null;
   }
@@ -173,17 +183,11 @@ async function initMap() {
 
 function addListenerToProgressedRunDocument(docRef){
   
-  console.log("addListenerToProgressedRunDocument");
   onSnapshot(docRef, (doc) => {
-
-    console.log("update for " + doc.id);
 
     //parses driver data and add its to driverScructList
     const progressedRunStruct = parseRunInfo(doc.data(), doc.id);
-    console.log(progressedRunStruct);
     createProgressedRunCard(progressedRunStruct);      
-    console.log(progressedRunStruct.runCard);
-    //update UI
     updateProgressedRunsUIList(progressedRunStruct);
 
   });
@@ -519,6 +523,16 @@ function addRunCardEventListener(progressedRunStruct){
 
   runCard.addEventListener('click', () => {
 
+    //find driver location
+    const driver = drivers.get(progressedRunStruct.driverID);
+
+    console.log(drivers);
+
+    if(drivers.location == undefined || driver.location == null){
+      showNotification("Error!", "Driver " + driver['driverName']  + " does not have location tracking turned on");
+      return;
+    }
+
     if(currentSelectDriver != null){
       currentSelectDriver.classList.remove('selectedDriverInfoCard');
     }
@@ -535,8 +549,7 @@ function addRunCardEventListener(progressedRunStruct){
     runCard.classList.add('selectedDriverInfoCard');
     currentSelectDriver = runCard;
     
-    //find driver location
-    const driver = drivers.get(progressedRunStruct.driverID);
+    
     
     currentSelectedRunDriverID = progressedRunStruct.driverID;
 
@@ -548,10 +561,6 @@ function addRunCardEventListener(progressedRunStruct){
 }
 
 function updateMapCamera(latitude, longitude){
-
-  console.log(latitude);
-  console.log(longitude);
-
 
   if(isEmpty(latitude) || isEmpty(longitude)){
     console.log("invalid coordinates to update map camera");
