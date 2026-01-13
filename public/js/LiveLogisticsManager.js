@@ -526,9 +526,7 @@ function addRunCardEventListener(progressedRunStruct){
     //find driver location
     const driver = drivers.get(progressedRunStruct.driverID);
 
-    console.log(drivers);
-
-    if(drivers.location == undefined || driver.location == null){
+    if(driver.location == undefined || driver.location == null){
       showNotification("Error!", "Driver " + driver['driverName']  + " does not have location tracking turned on");
       return;
     }
@@ -548,9 +546,7 @@ function addRunCardEventListener(progressedRunStruct){
 
     runCard.classList.add('selectedDriverInfoCard');
     currentSelectDriver = runCard;
-    
-    
-    
+  
     currentSelectedRunDriverID = progressedRunStruct.driverID;
 
     //update camera location of map
