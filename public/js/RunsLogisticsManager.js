@@ -300,10 +300,14 @@ function calculateStopMetaData(progressedRunData){
 function getTotalPromiseFromStop(stop){
 
     const stopType = stop['stopType'];
-    const payment = stop['orderData']['payment'];
+    let payment = stop['orderData']['payment'];
+
+    if(payment.toLowerCase() == "pickup"){
+        payment = "collection";
+    }
 
     if(stopType.toLowerCase() == payment.toLowerCase()){
-        parseInt(stop['orderData']['price']);
+        return parseInt(stop['orderData']['price']);
     }
 
     return 0;
