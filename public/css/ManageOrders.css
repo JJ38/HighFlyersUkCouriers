@@ -106,6 +106,12 @@ div.searchbar{
 
 }
 
+input[type="checkbox"]{
+    width: 20px;
+    height: 20px;
+}
+
+
 @media (hover: hover) {
   button:hover{
     cursor: pointer;

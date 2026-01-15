@@ -1,5 +1,5 @@
 import { db, getDocuments, getDocument } from "/js/Firebase.js";
-import { query, collection, doc, onSnapshot} from "firebase/firestore";
+import { query, collection, doc, onSnapshot, Timestamp, where} from "firebase/firestore";
 import { showNotification } from "./Notification";
 import { bulkReadTransaction } from "./Firebase.js";
 
@@ -30,7 +30,21 @@ fetchProgressedRunsInfo();
 
 async function fetchProgressedRunsInfo(){
 
-  const progressedRunsDocs = await getDocuments(query(collection(db, "ProgressedRuns")));
+  const now = new Date();
+
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
+
+  const startOfTomorrow = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1
+  );
+
+  const progressedRunsDocs = await getDocuments(query(collection(db, "ProgressedRuns"), where("updatedAt", ">=", Timestamp.fromDate(startOfToday)), where("updatedAt", "<", Timestamp.fromDate(startOfTomorrow)))); 
 
   if(progressedRunsDocs.docs.length == 0){
     return;
