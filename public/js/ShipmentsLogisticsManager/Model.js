@@ -2557,6 +2557,8 @@ export function getPostcodesToPrint(run){
 
 function getPostcodes(stops){
 
+  //currently doesnt resort stops. Im assuming stops are stored in run order
+
   const postcodes = [];
 
   for(let i = 0; i < stops.length; i++){
@@ -2574,8 +2576,6 @@ function getPostcodes(stops){
     }
 
   }
-
-  postcodes.sort();
 
   return postcodes;
 
