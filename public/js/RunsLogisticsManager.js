@@ -184,6 +184,9 @@ async function parseProgressedRuns(progressedRunsData, progressedRunsDocs){
         calculateStopMetaData(progressedRunsData[i]);
 
         const deferredPaymentsQueries = getDeferredPaymentsQueries(progressedRunsData[i]['deferredPaymentPrimaryKeys']);
+        
+        // console.log(progressedRunsData);
+        // console.log(deferredPaymentsQueries);
 
         deferredPaymentsPromisesList = deferredPaymentsPromisesList.concat(deferredPaymentsQueries);
         deferredPaymentsPromises.set(progressedRunsDocs[i].id, deferredPaymentsQueries);  
@@ -211,6 +214,8 @@ async function parseDeferredPayments(deferredPaymentsPromises, progressedRunsDat
         }
 
         progressedRunsData[i]['deferredPayments'] = deferredPayments;
+
+        console.log(progressedRunsData);
 
     }
 
@@ -244,7 +249,7 @@ function getDeferredPaymentsQueries(deferredPaymentPrimaryKeys){
 
 function calculateStopMetaData(progressedRunData){
 
-    console.log(progressedRunData);
+    // console.log(progressedRunData);
 
     let totalPromised = 0;
     let totalSkippedStops = 0;

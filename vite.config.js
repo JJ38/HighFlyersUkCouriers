@@ -40,6 +40,7 @@ export default defineConfig({
           ViewOrder: resolve(root, 'view-order.html'),
           SystemSettings: resolve(root, 'system-settings.html'),
           Finance: resolve(root, 'finance.html'),
+          DriverRuns: resolve(root, 'driver-runs.html'),
         },
         output: {
           // assetFileNames: "assets/[name][extname]",

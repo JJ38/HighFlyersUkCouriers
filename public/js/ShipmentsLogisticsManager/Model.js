@@ -2527,9 +2527,12 @@ export function getPostcodesToPrint(run){
         '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'+
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
         '<script src="https://kit.fontawesome.com/dce6efa4ea.js" crossorigin="anonymous"></script>'+
-        '<link rel="stylesheet" href="css/PostcodesForm.css" type="text/css">'+
+        // '<link rel="stylesheet" href="css/PostcodesForm.css" type="text/css">'+
         ''+
       '</head>'+
+        '<style>'+
+        'p{font-size: x-large;}'+
+        '</style>'+
         '<body>'+
           '<h1>' + run.runName + '</h1><br>'+
           '<div class="postcodesWrapper">';

@@ -64,6 +64,10 @@ $app->post('/loginpage', function (Request $request, Response $response) use ($a
       return $response->withRedirect('/manage-orders', 302);
     }
 
+    if($account_type == "driver"){
+      return $response->withRedirect('/driver-runs', 302);
+    }
+
     return $response->withRedirect('/customer-order', 302);
   } 
 
