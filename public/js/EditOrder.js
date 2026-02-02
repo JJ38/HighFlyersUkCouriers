@@ -1,6 +1,6 @@
 import { db, getDocuments } from "/js/Firebase.js";
 import { where, query, collection } from "firebase/firestore";
-import { fetchBirdSpecies, createAnimalTypeSelectOptions, createAccountSelectOptions, createDescriptionTable, initInternalOrderForm } from "/js/FormModel.js";
+import { createPaymentSelectOptions, fetchBirdSpecies, createAnimalTypeSelectOptions, createAccountSelectOptions, createDescriptionTable, initInternalOrderForm } from "/js/FormModel.js";
 
 
 const ID = parseInt(new URLSearchParams(document.location.search).get("id"));
@@ -10,6 +10,7 @@ const saveButton = document.getElementById('save_button');
 const form = document.getElementById('edit_order_form');
 
 const validPaymentTypeOptions = ['Account', 'Collection', 'Delivery', 'Pickup'];
+const selectablePaymentOptions = ['Account', 'Delivery', 'Pickup'];
 const validAnimalTypes = ['Pigeons - Young Birds', 'Pigeons - Old Birds', 'Aviary & Cage Birds', 'Birds Of Prey', 'Reptiles', 'Small Mammals', 'Small Rodents', 'Poultry & Gamebirds'];
 
 
@@ -47,6 +48,7 @@ const fieldsMap = {
 
 let animalTypeOptions;
 let accountNameOptions;
+let paymentOptions;
 
 init();
 addEventListeners();
@@ -59,14 +61,9 @@ async function init(){
     const birdSpecies = formDataMap.get('Settings/birdSpecies');
     const customerAccounts = formDataMap.get('Users');
 
-    console.log(customerAccounts);
-
-
     animalTypeOptions = createAnimalTypeSelectOptions(birdSpecies);
     accountNameOptions = createAccountSelectOptions(customerAccounts);
-    console.log(animalTypeOptions);
-    console.log(accountNameOptions);
-
+    paymentOptions = createPaymentSelectOptions(selectablePaymentOptions);
 
     getDocuments(q).then((documentSnapshots) => {
 
@@ -177,6 +174,39 @@ async function init(){
                         }
 
                         select.appendChild(accountNameOptions[i]);
+
+                    }
+                    
+                    data.appendChild(select);
+                    break;
+
+                }
+                case "payment": 
+                {
+                    const select = document.createElement('select');
+                    select.id = "payment";
+                    select.name = "payment";
+                    
+                    let setSelected = false;
+
+                    for(let i = 0; i < selectablePaymentOptions.length; i++){
+
+                        if(paymentOptions[i].value == sortedOrderData[fields]){
+                            paymentOptions[i].selected = true;
+                            setSelected = true;
+                        }
+
+                        select.appendChild(paymentOptions[i]);
+
+                    }
+
+                    if(!setSelected){
+
+                        const option = document.createElement('option');
+                        option.value = sortedOrderData[fields];
+                        option.text = sortedOrderData[fields];
+                        option.selected = true;
+                        select.appendChild(option);
 
                     }
                     

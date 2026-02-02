@@ -300,6 +300,25 @@ export function createAnimalTypeSelectOptions(birdSpecies){
 
 }
 
+
+export function createPaymentSelectOptions(paymentOptions){
+
+    const options = [];
+
+    for(let i = 0; i < paymentOptions.length; i++){
+
+        const option = document.createElement('option');
+        option.value = paymentOptions[i];
+        option.text = paymentOptions[i];
+
+        options.push(option);
+
+    }
+    
+    return options;
+
+}
+
 export function createAccountSelectOptions(accounts, accountValue){
 
     const options = [];
