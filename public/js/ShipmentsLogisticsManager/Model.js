@@ -26,83 +26,96 @@ export async function deleteShipmentDocument(id){
   let shipmentDocument;
   let shipmentRef;
   let staffDocuments;
+  let driverDocuments;
 
   try{
 
     shipmentRef = doc(db, 'Shipments', id);
     shipmentDocument = await getDocument(shipmentRef);
 
-  }catch(e){
-
-    console.log(e);
-    return false;
-
-  }
-
-  try{
-
-    const q = query(collection(db, 'Staff'));
-    staffDocuments = await getDocuments(q);
-
-  }catch(e){
-
-    console.log(e);
-    return false;
-
-  }
   
-  console.log(staffDocuments);
+    const staffQuery = query(collection(db, 'Staff'));
+    staffDocuments = await getDocuments(staffQuery);
 
-  let runIDs = [];
+    const driverQuery = query(collection(db, 'Drivers'));
+    driverDocuments = await getDocuments(driverQuery);
 
-  const batch = writeBatch(db);
-  const shipmentRunsDocumentIDs = shipmentDocument.data()['runs'];
-
-  //add runs in shipment document to batch
-  for(let i = 0; i < shipmentRunsDocumentIDs.length; i++){
-
-    const runRef = doc(db, "Runs", shipmentRunsDocumentIDs[i]);
-    runIDs.push(shipmentRunsDocumentIDs[i]);
-    batch.delete(runRef);
-
-  }
-
-  //add shipment document to batch
-  batch.delete(shipmentRef);
-
-
-  console.log(runIDs);
-
-  for(let i = 0; i < staffDocuments.docs.length; i++){
-
-    const staffData = staffDocuments.docs[i].data();
-    const assignedRuns = staffData['assignedRuns'];
-
-    const newAssignedRuns = [];
   
-    for(let j = 0; j < assignedRuns.length; j++){
+    let runIDs = [];
+    let shipmentNames = new Set();
 
-      if(!runIDs.includes(assignedRuns[j]['runID'])){
+    const batch = writeBatch(db);
+    const shipmentRunsDocumentIDs = shipmentDocument.data()['runs'];
 
-        newAssignedRuns.push(assignedRuns[j]);
+    //add runs in shipment document to batch
+    for(let i = 0; i < shipmentRunsDocumentIDs.length; i++){
 
-      }
+      const runRef = doc(db, "Runs", shipmentRunsDocumentIDs[i]);
+      runIDs.push(shipmentRunsDocumentIDs[i]);
+      batch.delete(runRef);
 
     }
 
-    const staffDocRef = doc(db, "Staff", staffDocuments.docs[i].id);
-    batch.update(staffDocRef, {"assignedRuns": newAssignedRuns});
+
+
+    //add shipment document to batch
+    batch.delete(shipmentRef);
+
+
+
+    //add unassign staff members to run to batch
+    for(let i = 0; i < staffDocuments.docs.length; i++){
+
+      const staffData = staffDocuments.docs[i].data();
+      const assignedRuns = staffData['assignedRuns'];
+
+      const newAssignedRuns = [];
     
-  }
+      for(let j = 0; j < assignedRuns.length; j++){
+
+        if(!runIDs.includes(assignedRuns[j]['runID'])){
+
+          newAssignedRuns.push(assignedRuns[j]);
+
+        }
+
+      }
+
+      const staffDocRef = doc(db, "Staff", staffDocuments.docs[i].id);
+      batch.update(staffDocRef, {"assignedRuns": newAssignedRuns});
+      
+    }
 
 
-  try{
+    //add unassign staff members to run to batch
+    for(let i = 0; i < driverDocuments.docs.length; i++){
+
+      const driverData = driverDocuments.docs[i].data();
+      const assignedRuns = driverData['assignedRuns'];
+
+      const newAssignedRuns = [];
+    
+      for(let j = 0; j < assignedRuns.length; j++){
+
+        if(!runIDs.includes(assignedRuns[j]['runID'])){
+
+          newAssignedRuns.push(assignedRuns[j]);
+
+        }
+
+      }
+
+      const driverDocRef = doc(db, "Drivers", driverDocuments.docs[i].id);
+      batch.update(driverDocRef, {"assignedRuns": newAssignedRuns});
+      
+    }
 
     await batch.commit();
     return true;
 
   }catch(e){
 
+    console.log(e);
     return false;
 
   }
