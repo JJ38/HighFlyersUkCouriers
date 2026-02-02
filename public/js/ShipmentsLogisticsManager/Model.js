@@ -25,6 +25,7 @@ export async function deleteShipmentDocument(id){
   //fetch shipment document
   let shipmentDocument;
   let shipmentRef;
+  let staffDocuments;
 
   try{
 
@@ -38,6 +39,22 @@ export async function deleteShipmentDocument(id){
 
   }
 
+  try{
+
+    const q = query(collection(db, 'Staff'));
+    staffDocuments = await getDocuments(q);
+
+  }catch(e){
+
+    console.log(e);
+    return false;
+
+  }
+  
+  console.log(staffDocuments);
+
+  let runIDs = [];
+
   const batch = writeBatch(db);
   const shipmentRunsDocumentIDs = shipmentDocument.data()['runs'];
 
@@ -45,12 +62,39 @@ export async function deleteShipmentDocument(id){
   for(let i = 0; i < shipmentRunsDocumentIDs.length; i++){
 
     const runRef = doc(db, "Runs", shipmentRunsDocumentIDs[i]);
+    runIDs.push(shipmentRunsDocumentIDs[i]);
     batch.delete(runRef);
 
   }
 
   //add shipment document to batch
   batch.delete(shipmentRef);
+
+
+  console.log(runIDs);
+
+  for(let i = 0; i < staffDocuments.docs.length; i++){
+
+    const staffData = staffDocuments.docs[i].data();
+    const assignedRuns = staffData['assignedRuns'];
+
+    const newAssignedRuns = [];
+  
+    for(let j = 0; j < assignedRuns.length; j++){
+
+      if(!runIDs.includes(assignedRuns[j]['runID'])){
+
+        newAssignedRuns.push(assignedRuns[j]);
+
+      }
+
+    }
+
+    const staffDocRef = doc(db, "Staff", staffDocuments.docs[i].id);
+    batch.update(staffDocRef, {"assignedRuns": newAssignedRuns});
+    
+  }
+
 
   try{
 
