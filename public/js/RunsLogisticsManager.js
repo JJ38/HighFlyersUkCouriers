@@ -1,6 +1,5 @@
-import { defer } from "lodash";
 import { db, getDocuments } from "/js/Firebase.js";
-import { query, collection, orderBy, where } from "firebase/firestore";
+import { query, collection, orderBy, where, doc, writeBatch } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js";
 
 
@@ -182,14 +181,14 @@ async function parseProgressedRuns(progressedRunsData, progressedRunsDocs){
     for(let i = 0; i < progressedRunsData.length; i++){
 
         calculateStopMetaData(progressedRunsData[i]);
+        console.log(progressedRunsData[i]['deferredPaymentPrimaryKeys']);
 
         const deferredPaymentsQueries = getDeferredPaymentsQueries(progressedRunsData[i]['deferredPaymentPrimaryKeys']);
-        
-        // console.log(progressedRunsData);
-        // console.log(deferredPaymentsQueries);
 
         deferredPaymentsPromisesList = deferredPaymentsPromisesList.concat(deferredPaymentsQueries);
         deferredPaymentsPromises.set(progressedRunsDocs[i].id, deferredPaymentsQueries);  
+
+        progressedRunsData[i]['progressedRunID'] = progressedRunsDocs[i].id;
 
     }
 
@@ -514,7 +513,7 @@ function createTableRunCard(progressedRunData){
     tableRow.classList = "tableDataRow runCard";
 
     const deleteProgressedRunButton = createDeleteProgressedRunButton();
-    addEventListenerToDeleteProgressedRunButton(deleteProgressedRunButton);
+    addEventListenerToDeleteProgressedRunButton(deleteProgressedRunButton, progressedRunData);
 
 
     tableRow.appendChild(tableData(progressedRunData['driverName']));
@@ -544,11 +543,45 @@ function createTableRunCard(progressedRunData){
 
 }
 
-function addEventListenerToDeleteProgressedRunButton(deleteProgressedRunButton){
+function addEventListenerToDeleteProgressedRunButton(deleteProgressedRunButton, progressedRunData){
 
-    deleteProgressedRunButton.addEventListener('click', (e) => {
-
+    deleteProgressedRunButton.addEventListener('click', async (e) => {
+        console.log(progressedRunData);
         e.stopPropagation();
+
+        const progressedRunRef = doc(db, "ProgressedRuns", progressedRunData['progressedRunID']);
+        const deferredPaymentRefs = [];
+
+        for(let i = 0; i < progressedRunData['deferredPayments'].length; i++){
+            const deferredPaymentRef = doc(db, "DeferredPayments", progressedRunData['deferredPayments'][i].id)
+            deferredPaymentRefs.push(deferredPaymentRef);
+        }
+
+        console.log(deferredPaymentRefs);
+        console.log(progressedRunData['progressedRunID']);
+
+        try{
+
+            const batch = writeBatch(db);
+
+            batch.delete(progressedRunRef);
+
+            for(let i = 0; i < deferredPaymentRefs.length; i++){
+                batch.delete(deferredPaymentRefs[i]);
+            }
+
+            
+            await batch.commit();
+
+        }catch(e){
+            console.log(e);
+            showNotification("Error!", "Error deleting progressed run");
+            return;
+        }
+
+        showNotification("Success!", "Successfully deleted progressed run");
+
+        getProgressedRuns();
 
     });
 
