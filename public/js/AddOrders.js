@@ -1,5 +1,5 @@
 import { createAccountSelectOptions } from "./FormModel";
-import { createAnimalTypeSelectOptions, initInternalOrderForm } from "/js/FormModel.js";
+import { createAnimalTypeSelectOptions, initInternalOrderForm, createDescriptionTable } from "/js/FormModel.js";
 
 
 const email = document.getElementById('email');
@@ -16,10 +16,13 @@ const payment = document.getElementById('payment');
 const boxes = document.getElementById('boxes');
 const quantity = document.getElementById('quantity');
 
+const animalTypeWrapper = document.getElementById('animal_type_wrapper');
+const questionMarkWrapper = document.getElementById('question_mark_wrapper');
 
 const validPaymentOptions = ['Account', 'Collection', 'Delivery', 'Pickup'];
 const validAnimalTypes = ['Pigeons - Young Birds', 'Pigeons - Old Birds', 'Aviary & Cage Birds', 'Birds Of Prey', 'Reptiles', 'Small Mammals', 'Small Rodents', 'Poultry & Gamebirds'];
 
+let animalDescriptionTable;
 
 init();
 
@@ -49,6 +52,13 @@ async function init(){
     for(let i =0; i < accountOptions.length; i++){
         accountSelect.appendChild(accountOptions[i]);
     }
+
+    const animalDescriptionTableAnchor = document.createElement('div');
+    animalDescriptionTableAnchor.classList = "animalDescriptionTableAnchor";
+    animalTypeWrapper.appendChild(animalDescriptionTableAnchor);
+
+    animalDescriptionTable = createDescriptionTable(birdSpecies);
+    animalDescriptionTableAnchor.appendChild(animalDescriptionTable);
 
     addEventListeners();
 
@@ -82,6 +92,23 @@ function addEventListeners(){
 
     }else{
         console.log("null");
+    }
+
+    if(questionMarkWrapper != null){
+
+        questionMarkWrapper.addEventListener('click', () => {
+
+            const isHidden = animalDescriptionTable.classList.contains('hidden');
+
+            if(isHidden){
+                animalDescriptionTable.classList.remove('hidden');
+                return;
+            }
+
+            animalDescriptionTable.classList.add('hidden');
+
+        });
+
     }
 
 }
@@ -131,3 +158,5 @@ function validateForm(){
     return null;
 
 }
+
+
