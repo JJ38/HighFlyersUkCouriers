@@ -837,6 +837,17 @@ td > div{
 
 }
 
+.runOptionButton{
+
+    display: flex;
+    align-items: center;
+    width: auto;
+    margin-top: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+
+}
+
 .splitRunSettingsButton{
 
     display: flex;
@@ -847,7 +858,6 @@ td > div{
     background-color: #2881FF;
     padding: 5px 10px;
     margin-top: 10px; 
-    width: fit-content;
 
 }
 
@@ -862,14 +872,9 @@ td > div{
 
 .updateRunSettingsButton{
 
-    display: flex;
     color: white;
-    align-items: center;
-    border-radius: 5px;
     background-color: rgb(32, 189, 64);
     border: 1px solid rgb(32, 189, 64);
-    padding: 5px 10px;
-    width: fit-content;
 
 }
 
@@ -881,16 +886,28 @@ td > div{
     
 }
 
+.lockTimeWindowsButton{
+    
+    color: white;
+    background-color: rgb(150, 42, 238);
+    border: 1px solid rgb(150, 42, 238);
+
+}
+
+
+.lockTimeWindowsButton:hover{
+
+    cursor: pointer;
+    color: rgb(150, 42, 238);
+    background-color: white;
+    
+}
+
 .printPostcodesButton{
 
-    display: flex;
     color: white;
-    align-items: center;
-    border-radius: 5px;
     background-color: rgb(203, 191, 23);
     border: 1px solid rgb(203, 191, 23);
-    padding: 5px 10px;
-    width: fit-content;
 
 }
 
@@ -904,14 +921,9 @@ td > div{
 
 .removeRunButton{
 
-    display: flex;
     color: white;
-    align-items: center;
-    border-radius: 5px;
     background-color: red;
     border: 1px solid red;
-    padding: 5px 10px;
-    width: fit-content;
 
 }
 
@@ -925,12 +937,6 @@ td > div{
 
 .calculateRouteButton{
 
-    display: flex;
-    color: white;
-    align-items: center;
-    border-radius: 5px;
-    padding: 5px 10px;
-    width: fit-content;
     border: 1px solid #2881FF;
     background-color: #2881FF;
     color: white;

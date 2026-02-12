@@ -87,7 +87,7 @@ const selectAssignStaff = document.getElementById('select_assign_staff');
 const selectAssignStaffWrapper = document.getElementById('select_assign_staff_wrapper');
 const assignedStaffText = document.getElementById('assigned_staff_text');
 const assignedStaffTextWrapper = document.getElementById('assigned_staff_text_wrapper');
-
+const lockTimeWindowsButton = document.getElementById('lock_time_windows_button');
 
 
 const validateAddressWidget = document.getElementById('validate_address_widget');
@@ -638,6 +638,16 @@ function addEventListeners(){
 
   }
 
+  if(lockTimeWindowsButton != null){
+
+    lockTimeWindowsButton.addEventListener('click', () => {
+
+      console.log("lock time windows");
+
+    });
+
+  }
+
   if(removeRunButton != null){
 
     removeRunButton.addEventListener('click', async () => {
@@ -746,6 +756,10 @@ function addEventListeners(){
       updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
       updateSelectAssignDriver();
       updateSelectAssignStaffMember();
+
+      console.log(currentSelectedRun);
+
+      updateLockTimeWindowButton(currentSelectedRun.isOptimised);
 
     });
 
@@ -1327,6 +1341,18 @@ function selectTab(tabName){
 }
 
 
+function updateLockTimeWindowButton(isOptimised){
+
+  if(isOptimised){
+    showUI(lockTimeWindowsButton);
+    return;
+  }
+
+  hideUI(lockTimeWindowsButton);
+
+}
+
+
 function showRuns(){
 
   showUI(selectedRunView);
@@ -1457,6 +1483,7 @@ function showUnoptimisedRunState(){
   updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
   updateMapMarkers(currentSelectedRun);
   updateStopList(currentSelectedRun);
+  updateLockTimeWindowButton(currentSelectedRun.isOptimised);
 
 }
 
@@ -2201,6 +2228,8 @@ function updateOptionsTab(runObject){
   runDestinationAddress2.value = destination.address.address2;  
   runDestinationAddress3.value = destination.address.address3; 
   runDestinationPostcode.value = destination.address.postcode;  
+
+  updateLockTimeWindowButton(runObject.isOptimised);
 
 }
 

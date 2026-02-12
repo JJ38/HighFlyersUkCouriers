@@ -127,10 +127,13 @@ function addListenerToRunCard(runCard, runDoc){
         const runData = runDoc.data();
         const stops = runData['stops'];
 
+        console.log(stops);
+
         for(let  i = 0; i < stops.length; i++){
 
+            const stopData = getStopData(stops[i]);
             const stopMetaDataContainer = createStopMetaData(stops[i]);
-            const stopCard = createStopCard(stops[i], stopMetaDataContainer);
+            const stopCard = createStopCard(stops[i], stopData, stopMetaDataContainer);
             runStopsList.appendChild(stopCard);
 
         }
@@ -141,6 +144,42 @@ function addListenerToRunCard(runCard, runDoc){
 
 }
 
+function getStopData(stop){
+
+    const stopType = stop['stopType'];
+
+    const orderData = stop['orderData'];
+    const stopData = {};
+
+
+    stopData['animalType'] = orderData['animalType'];
+    stopData['quantity'] = orderData['quantity'];
+    stopData['boxes'] = orderData['boxes'];
+    stopData['ID'] = orderData['ID'];
+
+
+    if(stopType == "collection"){
+
+        stopData['address1'] = orderData['collectionAddress1'];
+        stopData['address2'] = orderData['collectionAddress2'];
+        stopData['address3'] = orderData['collectionAddress3'];
+        stopData['postcode'] = orderData['collectionPostcode'];
+        stopData['name'] = orderData['collectionName'];
+
+    }else{
+
+        stopData['address1'] = orderData['deliveryAddress1'];
+        stopData['address2'] = orderData['deliveryAddress2'];
+        stopData['address3'] = orderData['deliveryAddress3'];
+        stopData['postcode'] = orderData['deliveryPostcode'];
+        stopData['name'] = orderData['deliveryName'];
+
+    }
+
+    return stopData;
+
+
+}
 
 function createRunCard(driverData){
 
@@ -182,12 +221,9 @@ function createRunCard(driverData){
 
 }
 
-function createStopCard(stop, stopMetaDataContainer){
+function createStopCard(stop, stopData, stopMetaDataContainer){
 
-    console.log(stop);
-
-    const stopData = stop['stopData'];
-
+   
     const stopCardWrapper = document.createElement('div');
     stopCardWrapper.classList = "stopCardWrapper";
 
@@ -239,23 +275,24 @@ function createStopCard(stop, stopMetaDataContainer){
 
 function createStopMetaData(stop){
 
-  const stopData = stop['stopData'];
+    console.log(stop);
+    const orderData = stop['orderData'];
 
-  const stopMetaDataContainer = document.createElement('div');
-  stopMetaDataContainer.classList = "stopMetaDataContainer";
+    const stopMetaDataContainer = document.createElement('div');
+    stopMetaDataContainer.classList = "stopMetaDataContainer";
 
-  const orderID = document.createElement('p');
-  orderID.classList = "orderID";
-  orderID.innerText = "#" + stopData['ID'];
+    const orderID = document.createElement('p');
+    orderID.classList = "orderID";
+    orderID.innerText = "#" + orderData['ID'];
 
-  const stopType = document.createElement('p');
-  stopType.classList = "stopType";
-  stopType.innerText = stop['stopType'] == "collection" ? "Collection" : stop['stopType'] == "delivery" ? "Delivery" : stop['stopType'];
+    const stopType = document.createElement('p');
+    stopType.classList = "stopType";
+    stopType.innerText = stop['stopType'] == "collection" ? "Collection" : stop['stopType'] == "delivery" ? "Delivery" : stop['stopType'];
 
-  stopMetaDataContainer.appendChild(orderID);
-  stopMetaDataContainer.appendChild(stopType);
+    stopMetaDataContainer.appendChild(orderID);
+    stopMetaDataContainer.appendChild(stopType);
 
-  return stopMetaDataContainer;
+    return stopMetaDataContainer;
 
 }
 
