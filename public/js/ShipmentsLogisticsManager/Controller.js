@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createStaffSelectOptions, createDriverSelectOptions, createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "/js/ShipmentsLogisticsManager/Components";
-import { unassignStaffMember, getCurrentAssignedStaffMemberID, getCurrentAssignedStaffMember, assignStaffMember, parseStaffDocuments, fetchStaffMembers, getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { toggleTimeLockRun, unassignStaffMember, getCurrentAssignedStaffMemberID, getCurrentAssignedStaffMember, assignStaffMember, parseStaffDocuments, fetchStaffMembers, getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -640,9 +640,32 @@ function addEventListeners(){
 
   if(lockTimeWindowsButton != null){
 
-    lockTimeWindowsButton.addEventListener('click', () => {
+    lockTimeWindowsButton.addEventListener('click', async () => {
 
       console.log("lock time windows");
+      if(currentSelectedRun == null){
+        showNotification("Error!", "Error time locking run - try reselecting a run");
+        return;
+      }
+
+      const timeLockedRunSuccessfully = await toggleTimeLockRun(currentSelectedRun);
+      
+      if(!timeLockedRunSuccessfully){
+        showNotification("Error!", "Error time locking run");
+        return;
+      }
+
+      //update client
+      currentSelectedRun.isTimeLocked = !currentSelectedRun.isTimeLocked;
+      updatePolylines(currentSelectedRun);
+      updateMapMarkers(currentSelectedRun);
+
+      if(currentSelectedRun.isTimeLocked){
+        showNotification("Success!", "Successfully time locked run");
+        return;
+      }
+      
+      showNotification("Success!", "Successfully time unlocked run");
 
     });
 
@@ -1232,12 +1255,18 @@ function drawPolyline(polylineString){
   //in case there is no route as there is a second delivery at the location
   if(polylineString != null){
 
+    let polylineColour = '#2881FF';
+
+    if(currentSelectedRun.isTimeLocked){
+      polylineColour = 'rgb(150, 42, 238)';
+    }
+
     const decodedPath = GoogleGeometry.decodePath(polylineString);
 
     const routePath = new google.maps.Polyline({
         path: decodedPath,      // The array of LatLng coordinates
         geodesic: true,         // Set to true for accurate rendering on a globe
-        strokeColor: '#2881FF', // Red color for the line (you can choose any hex color)
+        strokeColor: polylineColour, // Red color for the line (you can choose any hex color)
         strokeOpacity: 1.0,     // Fully opaque
         strokeWeight: 4         // Line thickness in pixels
     });
@@ -2008,8 +2037,19 @@ function updateMapMarkers(run){
     let borderColour = '#CC0000';
 
     if(run.isOptimised){
-      backgroundColour = '#0000FF';
-      borderColour = '#0000CC';
+
+      if(run.isTimeLocked){
+
+        backgroundColour = 'rgb(150, 42, 238)';
+        borderColour = 'rgb(150, 42, 238)';
+
+      }else{
+
+        backgroundColour = '#0000FF';
+        borderColour = '#0000CC';
+
+      }
+
     }
 
     const pinTextGlyph = new GooglePinElement({

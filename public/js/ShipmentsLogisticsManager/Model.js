@@ -1577,6 +1577,12 @@ export function parseRunInfo(doc, fuelSettings){
 
   const runData = doc.data();
 
+  let isTimeLocked = runData['isTimeLocked'];
+
+  if(isTimeLocked == undefined){
+    isTimeLocked = false;
+  }
+
   const runStruct = {
     documentId: doc.id,
     assignedDriver: runData['assignedDriver'],
@@ -1585,6 +1591,7 @@ export function parseRunInfo(doc, fuelSettings){
     runWeek: runData['runWeek'],
     runTime: runData['runTime'],
     isOptimised: runData['isOptimised'],
+    isTimeLocked: isTimeLocked,
     optimisedRoute: runData['optimisedRoute'],
     settings: runData['settings']
   }
@@ -1598,6 +1605,27 @@ export function parseRunInfo(doc, fuelSettings){
   return runStruct;
 
 }
+
+
+export async function toggleTimeLockRun(currentSelectedRun){
+
+  const isCurrentlyTimeLocked = currentSelectedRun.isTimeLocked;
+  const runDocID = currentSelectedRun.documentId;
+
+  if(runDocID == undefined || isCurrentlyTimeLocked == undefined){
+    return false;
+  }
+
+  const updatedSuccessfully = await updateRun(runDocID, {isTimeLocked: !isCurrentlyTimeLocked});
+
+  if(!updatedSuccessfully){
+    return false;
+  }
+
+  return true;
+
+}
+
 
 export function calculateFuelCost(travelDistanceMeters, fuelSettings){
 
