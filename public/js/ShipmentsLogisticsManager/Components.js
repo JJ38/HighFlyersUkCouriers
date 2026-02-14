@@ -115,12 +115,16 @@ export function createStopContainer(stopNumber, stopCard){
 }
 
 
-export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, buttonWrapper, isOptimised){
+export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, buttonWrapper, isOptimised, isTimeLocked){
 
   const stopData = stop['stopData'];
 
   const stopCardWrapper = document.createElement('div');
   stopCardWrapper.classList = "stopCardWrapper";
+
+  if(isTimeLocked && stop['stopTime'] != undefined){
+    stopCardWrapper.classList.add('timeLocked');
+  }
 
 
   const stopCard = document.createElement('div');
@@ -505,9 +509,6 @@ export function createUnassignedOrdersTableCard(stopData, generatedRunWeek, clic
   }
 
   tableRow.appendChild(deliveryWeekTableData);
-
-
-  console.log(stopData);
 
 
   let stopAddress;

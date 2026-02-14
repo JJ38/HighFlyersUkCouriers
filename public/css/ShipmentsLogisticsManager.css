@@ -504,6 +504,12 @@ p{
 
 }
 
+.timeLocked{
+
+    filter: drop-shadow(0px 0px 5px rgba(150, 42, 238, 0.5)) !important;
+
+}
+
 .lockButtonWrapper{
 
     width: fit-content;

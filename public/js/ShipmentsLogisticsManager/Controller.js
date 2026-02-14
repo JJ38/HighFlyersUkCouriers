@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createStaffSelectOptions, createDriverSelectOptions, createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "/js/ShipmentsLogisticsManager/Components";
-import { toggleTimeLockRun, unassignStaffMember, getCurrentAssignedStaffMemberID, getCurrentAssignedStaffMember, assignStaffMember, parseStaffDocuments, fetchStaffMembers, getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { getToggledTimeLockedStops, toggleTimeLockRun, unassignStaffMember, getCurrentAssignedStaffMemberID, getCurrentAssignedStaffMember, assignStaffMember, parseStaffDocuments, fetchStaffMembers, getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -642,14 +642,14 @@ function addEventListeners(){
 
     lockTimeWindowsButton.addEventListener('click', async () => {
 
-      console.log("lock time windows");
       if(currentSelectedRun == null){
         showNotification("Error!", "Error time locking run - try reselecting a run");
         return;
       }
-
-      const timeLockedRunSuccessfully = await toggleTimeLockRun(currentSelectedRun);
       
+      const newStops = getToggledTimeLockedStops(currentSelectedRun);
+      const timeLockedRunSuccessfully = await toggleTimeLockRun(currentSelectedRun, newStops);
+      console.log(newStops);
       if(!timeLockedRunSuccessfully){
         showNotification("Error!", "Error time locking run");
         return;
@@ -657,8 +657,11 @@ function addEventListeners(){
 
       //update client
       currentSelectedRun.isTimeLocked = !currentSelectedRun.isTimeLocked;
+      currentSelectedRun.stops = newStops;
       updatePolylines(currentSelectedRun);
       updateMapMarkers(currentSelectedRun);
+      updateStopList(currentSelectedRun);
+
 
       if(currentSelectedRun.isTimeLocked){
         showNotification("Success!", "Successfully time locked run");
@@ -741,6 +744,8 @@ function addEventListeners(){
 
       const routeJSON = await calculateRoute(currentSelectedRun, JWT);
 
+      console.log(routeJSON);
+      console.log(currentSelectedRun)
       if(routeJSON === false){
 
         showNotification("Error!", "Error calculating route");   
@@ -760,6 +765,8 @@ function addEventListeners(){
         console.log(e);
 
       }
+
+      currentSelectedRun.optimisedRoute = routeJSON;
 
       showUI(calculateRouteButton);
       loader.remove();
@@ -782,7 +789,6 @@ function addEventListeners(){
 
       console.log(currentSelectedRun);
 
-      updateLockTimeWindowButton(currentSelectedRun.isOptimised);
 
     });
 
@@ -1370,16 +1376,16 @@ function selectTab(tabName){
 }
 
 
-function updateLockTimeWindowButton(isOptimised){
+// function updateLockTimeWindowButton(isOptimised){
 
-  if(isOptimised){
-    showUI(lockTimeWindowsButton);
-    return;
-  }
+//   if(isOptimised){
+//     showUI(lockTimeWindowsButton);
+//     return;
+//   }
 
-  hideUI(lockTimeWindowsButton);
+//   hideUI(lockTimeWindowsButton);
 
-}
+// }
 
 
 function showRuns(){
@@ -1512,7 +1518,6 @@ function showUnoptimisedRunState(){
   updateCurrentSelectedRunCard(currentSelectedRunCard, currentSelectedRun);
   updateMapMarkers(currentSelectedRun);
   updateStopList(currentSelectedRun);
-  updateLockTimeWindowButton(currentSelectedRun.isOptimised);
 
 }
 
@@ -1529,9 +1534,8 @@ async function updateSelectAssignStaffMember(){
 
   const assignedStaffMember = getCurrentAssignedStaffMemberID(staffMembers, currentSelectedRun.documentId);
 
-
   //is route optimised
-  if(currentSelectedRun.isOptimised){
+  if(currentSelectedRun.isOptimised && currentSelectedRun.isTimeLocked){
 
     //create options for select dropdown
     const options = createStaffSelectOptions(staffMembers, assignedStaffMember);
@@ -1658,8 +1662,9 @@ function getRunCardEventListener(runStruct, runCard){
 
   const runCardEventListener = async () => {
     
-    console.log("runCardEventListener");
     const run = await selectRun(runStruct.documentId);
+
+    console.log(run);
 
     if(run === false){
       return;
@@ -2036,21 +2041,18 @@ function updateMapMarkers(run){
     let backgroundColour = '#FF0000';
     let borderColour = '#CC0000';
 
-    if(run.isOptimised){
+    if(run.isTimeLocked && stops[i]['stopTime'] != undefined){
 
-      if(run.isTimeLocked){
+      backgroundColour = 'rgb(150, 42, 238)';
+      borderColour = 'rgb(150, 42, 238)';
 
-        backgroundColour = 'rgb(150, 42, 238)';
-        borderColour = 'rgb(150, 42, 238)';
+    }else{
 
-      }else{
-
-        backgroundColour = '#0000FF';
-        borderColour = '#0000CC';
-
-      }
+      backgroundColour = '#0000FF';
+      borderColour = '#0000CC';
 
     }
+
 
     const pinTextGlyph = new GooglePinElement({
       glyph: run.isOptimised ? stops[i].stopNumber.toString() : convertStopNumberToLetter(stops[i]['stopNumber']),
@@ -2192,8 +2194,6 @@ function updateStopList(runObject){
     const runTime = document.createElement('p');
     runTime.innerText = "Total Duration: " + convertSecondsToHoursAndMinutes(runObject.runTime);
     runTime.id = "runTime";
-
-    console.log(convertSecondsToHoursAndMinutes(runObject.runTime));
     
     runStopsContainer.appendChild(runTime);
 
@@ -2213,7 +2213,7 @@ function updateStopList(runObject){
         }
 
         const stopNumber = createStopLabel(label, stops[j].isLocked);
-        const stopCard = getStopCard(stops[j], runObject.documentId, stopNumber.firstChild, runObject.isOptimised, runObject.stops.length);
+        const stopCard = getStopCard(stops[j], runObject.documentId, stopNumber.firstChild, runObject.isOptimised, runObject.stops.length, runObject.isTimeLocked);
 
         runStopsContainer.appendChild(stopNumber);
         runStopsContainer.appendChild(stopCard);
@@ -2268,8 +2268,6 @@ function updateOptionsTab(runObject){
   runDestinationAddress2.value = destination.address.address2;  
   runDestinationAddress3.value = destination.address.address3; 
   runDestinationPostcode.value = destination.address.postcode;  
-
-  updateLockTimeWindowButton(runObject.isOptimised);
 
 }
 
@@ -2387,7 +2385,7 @@ function getMimicCard(){
 }
 
 
-function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops){
+function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops, isTimeLocked){
   
   const stopMetaData = createStopMetaData(stop);
 
@@ -2412,7 +2410,7 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops
   
   const stopsWrapper = createStopsWrapper(stopAddress, opposingStopAddress);
 
-  const stopCardWrapper = createStopCard(stop, stopMetaData, stopsWrapper, buttonWrapper, isOptimised);
+  const stopCardWrapper = createStopCard(stop, stopMetaData, stopsWrapper, buttonWrapper, isOptimised, isTimeLocked);
 
   const dragZoneTop = getDragDetectionZone("top");
   const dragZoneBottom= getDragDetectionZone("bottom");

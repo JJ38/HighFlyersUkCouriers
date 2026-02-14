@@ -1,6 +1,7 @@
 import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion, deleteDoc } from "firebase/firestore";
 import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
 import { GeocodingAPIKey, calculateRouteEndpoint } from '/js/Settings.js';
+import { DateTime } from "luxon";
 
 let GoogleAutocomplete;
 let customerAccounts;
@@ -140,10 +141,6 @@ export async function removeRunFromShipment(runIDToRemove, shipmentName){
     return false;
 
   }
-
-  console.log(shipmentDocument);
-  console.log(runIDToRemove);
-
 
   const newRuns = shipmentDocument.data()['runs'].filter((runID) => {
 
@@ -600,7 +597,6 @@ export async function selectRun(documentID){
   }
 
   mergeStopsWithOrderData(runObject.stops, orders);
-  console.log(runObject);
   return runObject;
 
 }
@@ -1089,6 +1085,8 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
   for(let i = 0; i < stopsToAdd.length; i++){
 
     stopsToAdd[i].isLocked = false;
+    delete stopsToAdd[i].stopTime;
+    delete stopsToAdd[i].lockedStopTime;
 
   }
 
@@ -1607,16 +1605,18 @@ export function parseRunInfo(doc, fuelSettings){
 }
 
 
-export async function toggleTimeLockRun(currentSelectedRun){
+export async function toggleTimeLockRun(currentSelectedRun, newStops){
 
-  const isCurrentlyTimeLocked = currentSelectedRun.isTimeLocked;
+  const newIsTimeLocked = !currentSelectedRun.isTimeLocked;
   const runDocID = currentSelectedRun.documentId;
 
-  if(runDocID == undefined || isCurrentlyTimeLocked == undefined){
+  if(runDocID == undefined || newIsTimeLocked == undefined){
     return false;
   }
 
-  const updatedSuccessfully = await updateRun(runDocID, {isTimeLocked: !isCurrentlyTimeLocked});
+  const fieldsToUpdate = {isTimeLocked: newIsTimeLocked, stops: newStops};
+
+  const updatedSuccessfully = await updateRun(runDocID, fieldsToUpdate);
 
   if(!updatedSuccessfully){
     return false;
@@ -1626,6 +1626,56 @@ export async function toggleTimeLockRun(currentSelectedRun){
 
 }
 
+
+export function getToggledTimeLockedStops(currentSelectedRun){
+
+  const newIsTimeLocked = !currentSelectedRun.isTimeLocked;
+
+  let newStops;
+
+
+  if(newIsTimeLocked){
+    newStops = getTimeLockedStops(currentSelectedRun.stops);
+  }else{
+    newStops = getNonTimeLockedStops(currentSelectedRun.stops);
+  }
+
+  return newStops;
+
+}
+
+
+function getTimeLockedStops(stops){
+
+  const newStops = Object.assign(stops, []);
+
+  for(let i = 0; i < newStops.length; i++){
+    
+    if(newStops[i]['stopTime'] != undefined){
+      newStops[i]['lockedStopTime'] = newStops[i]['stopTime'];
+    }
+
+  }
+
+  return newStops;
+
+}
+
+function getNonTimeLockedStops(stops){
+
+  const newStops = Object.assign(stops, []);
+  
+  for(let i = 0; i < newStops.length; i++){
+
+    if(newStops[i]['lockedStopTime'] != undefined){
+      delete newStops[i]['lockedStopTime'];
+    }
+
+  }
+
+  return newStops;
+
+}
 
 export function calculateFuelCost(travelDistanceMeters, fuelSettings){
 
@@ -1843,6 +1893,21 @@ export async function calculateRoute(run, JWT){
     return false;
   }
 
+  const startTime = run.settings.start.time;
+
+  const currentDate = DateTime.now()
+    .setZone("Europe/London")
+    .set({ millisecond: 0 });
+
+  const globalStartTime = currentDate
+    .set({ hour: startTime.hour, minute: startTime.minute })
+    .toUTC();
+
+  const globalEndTime = currentDate
+    .plus({ hours: 48 })
+    .toUTC();
+
+
   const runTimingsData = runTimingsDocument.data();
   const ETAMultiplier = parseFloat("1." + runTimingsData.ETAMultiplierPercentage.toString());
 
@@ -1850,22 +1915,19 @@ export async function calculateRoute(run, JWT){
   
   const lockedStops = getLockedStops(stops);
 
-  const stopJSONs = getStopRequestJSON(runTimingsData, groupedStops, lockedStops);
+  const stopJSONs = getStopRequestJSON(runTimingsData, groupedStops, lockedStops, run.isTimeLocked, globalStartTime);
 
+  console.log(stopJSONs);
+  // return false;
   if(lockedStops === false){
     return false;
   }
 
   const precedenceRules = getPrecedenceRules(lockedStops, stopJSONs.length);
 
-  const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, run.settings.start.time);
-  console.log(requestBody);
-  console.log(JSON.stringify(requestBody));
+  const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, globalStartTime, globalEndTime);
 
   const optimisedRouteJSON = await fetchOptimisedRoute(requestBody, JWT);
-  console.log(optimisedRouteJSON);
-  console.log(JSON.stringify(optimisedRouteJSON));
-
 
   if(optimisedRouteJSON === false){
     return false;
@@ -1886,13 +1948,7 @@ export async function calculateRoute(run, JWT){
 
     runTime = parseInt(optimisedRouteJSON['metrics']['aggregatedRouteMetrics']['totalDuration'].replace("s", ""));
 
-    console.log(runTime);
-    
-
     runTime = runTime * ETAMultiplier
-    console.log(ETAMultiplier);
-    console.log(runTime);
-
 
   }catch(e){
     
@@ -2161,7 +2217,66 @@ function getLockedStops(stops){
 
 }
 
-function getStopRequestJSON(runTimings, groupedStops, lockedStops){
+function getTimeWindows(stopTime, globalStartTime){
+
+  const [hours, minutes] = stopTime.split(":").map(Number);
+
+  let startTimeHour = hours - 1;
+  
+  if(startTimeHour < 0){
+    startTimeHour = 24 - startTimeHour;
+  }
+
+
+  let endTimeHour = hours + 1;
+  
+  if(endTimeHour > 23){
+    endTimeHour = endTimeHour & 24;
+  }
+
+  let startTime = startTimeHour.toString() + ":" + minutes.toString();
+  let endTime = endTimeHour.toString() + ":" + minutes.toString();
+
+  if(startTimeHour.toString().length == 1){
+    startTime = "0" + startTime;
+  }
+
+  if(endTimeHour.toString().length == 1){
+    endTime = "0" + endTime;
+  }
+
+
+  let startDateTime = ukTimeToUtcIso(startTime);
+  const endDateTime = ukTimeToUtcIso(endTime);
+
+  if(startDateTime < globalStartTime){
+    console.log("Start time window is before global start time");
+    startDateTime = globalStartTime;
+  }
+
+  const timeWindows = {
+    "startTime": startDateTime.toISO(),
+    "endTime": endDateTime.toISO()
+  }
+
+  return timeWindows;
+
+}
+
+//need to convert from utc to gmt or bst.
+function ukTimeToUtcIso(time) {
+
+  const currentDate = DateTime.now().setZone("Europe/London").toISODate();
+
+  const dt = DateTime.fromISO(`${currentDate}T${time}`, {
+    zone: "Europe/London"
+  });
+
+  return dt.toUTC();
+}
+
+
+function getStopRequestJSON(runTimings, groupedStops, lockedStops, isTimeLocked, globalStartTime){
 
   const nonDuplicateStops = groupedStops.nonDuplicateStops;
 
@@ -2197,6 +2312,13 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops){
 
     }
 
+    if(isTimeLocked && nonDuplicateStops[i].lockedStopTime != undefined){
+
+      const timeWindows = getTimeWindows(nonDuplicateStops[i].lockedStopTime, globalStartTime);
+      stopObject['deliveries'][0]['timeWindows'] = [timeWindows];
+
+    }
+
     stopObjects.push(stopObject);
     
   }
@@ -2225,6 +2347,14 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops){
         "duration": totalStopDuration + "s"
       }
 
+      
+      if(isTimeLocked && duplicateStops[j].lockedStopTime != undefined){
+
+        const timeWindows = getTimeWindows(duplicateStops[j].lockedStopTime, globalStartTime);
+        deliveryObject['timeWindows'] = [timeWindows];
+
+      }
+
       deliveries.push(deliveryObject);
       
     }
@@ -2250,6 +2380,7 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops){
       }
 
     }
+
 
     const stopObject = 
       {
@@ -2393,14 +2524,32 @@ function getPrecedenceRules(lockedStops, numberOfStops){
 }
 
 //https://developers.google.com/maps/documentation/route-optimization/construct-request?_gl=1*ftiy74*_up*MQ..*_ga*MTQ5NDczNjIwMi4xNzQ5NjU4OTYy*_ga_NRWSTWS78N*czE3NDk2NTg5NjIkbzEkZzEkdDE3NDk2NTkxNzckajI2JGwwJGgw
-function getRouteOptimisationRequestBody(origin, destination, stops, precedenceRules, startTime){
+function getRouteOptimisationRequestBody(origin, destination, stops, precedenceRules, globalStartTime, globalEndTime){
+
+  // let startTimeString = "";
+
+  // const startHour = (startTime.hour).toString();
+  // const startMinute = (startTime.minute).toString();
+
+
+  // if(startHour.length == 1){
+  //   startTimeString = "0" + startHour;
+  // }
+
+  // startTimeString += ":";
+
+  // if(startMinute.length == 1){
+  //   startTimeString = startTimeString + "0" + startMinute;
+  // }
+
+
 
 
   const request = 
   {
     "model": {
-        "globalStartTime": "2025-01-01T" + startTime.hour + ":" + startTime.minute + ":00Z",
-        "globalEndTime": "2026-01-01T00:00:00Z",
+        "globalStartTime": globalStartTime.toISO(),
+        "globalEndTime": globalEndTime.toISO(),
         "shipments": stops,
         "vehicles": [
             {
@@ -2445,8 +2594,6 @@ export async function fetchAutocompleteAddress(incompleteAddress, token, autocom
 // Helper function to refresh the session token.
 function getRequest(incompleteAddress, token) {
 
-    console.log("getting new session token");
-
     const request = {
 
       input: incompleteAddress,
@@ -2456,8 +2603,6 @@ function getRequest(incompleteAddress, token) {
       sessionToken: token,
 
     }
-
-    console.log(request);
     
     return request;
 }
@@ -2724,8 +2869,6 @@ function getOutwardPostcode(postcode){
 }
 
 export function convertSecondsToHoursAndMinutes(secondsString){
-
-  console.log(isNaN(secondsString));
 
   if(secondsString == null || secondsString == undefined || isNaN(secondsString)){
     return "0:0";
