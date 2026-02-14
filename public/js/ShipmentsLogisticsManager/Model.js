@@ -1932,10 +1932,9 @@ export async function calculateRoute(run, JWT){
 
   const optimisedRouteJSON = await fetchOptimisedRoute(requestBody, JWT);
   
-  console.log(optimisedRouteJSON);
-
   if(optimisedRouteJSON['skippedShipments'] != undefined){
-    calculationError = "Impossible run with the given constraints";
+    console.log(optimisedRouteJSON);
+    calculationError = "Impossible run with the given constraints, try loosening the time window";
     return false;
   }
 
@@ -2222,18 +2221,20 @@ function getLockedStops(stops){
 
 }
 
-function getTimeWindows(stopTime, globalStartTime){
+function getTimeWindows(stopTime, globalStartTime, timeWindow){
 
   const [hours, minutes] = stopTime.split(":").map(Number);
 
-  let startTimeHour = hours - 1;
+
+  let startTimeHour = hours - timeWindow;
+
   
   if(startTimeHour < 0){
     startTimeHour = 24 - startTimeHour;
   }
 
 
-  let endTimeHour = hours + 1;
+  let endTimeHour = hours + timeWindow;
   
   if(endTimeHour > 23){
     endTimeHour = endTimeHour & 24;
@@ -2319,7 +2320,7 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops, isTimeLocked,
 
     if(isTimeLocked && nonDuplicateStops[i].lockedStopTime != undefined){
 
-      const timeWindows = getTimeWindows(nonDuplicateStops[i].lockedStopTime, globalStartTime);
+      const timeWindows = getTimeWindows(nonDuplicateStops[i].lockedStopTime, globalStartTime, runTimings.timeWindowHour);
       stopObject['deliveries'][0]['timeWindows'] = [timeWindows];
 
     }
@@ -2355,7 +2356,7 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops, isTimeLocked,
       
       if(isTimeLocked && duplicateStops[j].lockedStopTime != undefined){
 
-        const timeWindows = getTimeWindows(duplicateStops[j].lockedStopTime, globalStartTime);
+        const timeWindows = getTimeWindows(duplicateStops[j].lockedStopTime, globalStartTime, runTimings.timeWindowHour);
         deliveryObject['timeWindows'] = [timeWindows];
 
       }

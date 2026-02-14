@@ -13,7 +13,9 @@ const postcodeExceptionsWrapper = document.getElementById('postcode_exceptions_w
 const stopDurationInput = document.getElementById('stop_duration_input');
 const additionalStopDurationInput = document.getElementById('additional_stop_duration_input');
 const ETAMultiplierInput = document.getElementById('eta_multiplier_input');
+const timeWindowInput = document.getElementById('time_window_input');
 const updateStopSettingsButton = document.getElementById('update_stop_duration_button');
+
 
 
 
@@ -25,9 +27,11 @@ let milesPerGallonUserInput;
 let stopDurationSeconds;
 let additionalStopDurationSeconds;
 let ETAMultiplierPercentage;
+let timeWindowHour;
 let stopDurationSecondsInput;
 let additionalStopDurationSecondsInput;
 let ETAMultiplierPercentageInput;
+let timeWindowHourInput;
 
 
 
@@ -160,6 +164,18 @@ function addEventListeners(){
 
     }
 
+      if(timeWindowInput != null){
+
+        timeWindowInput.addEventListener('input', () => {
+
+            timeWindowHourInput = timeWindowInput.value;
+            stopSettingsContoller();
+
+        });
+
+    }
+
+
 }
 
 async function fetchRunTimings(){
@@ -182,6 +198,12 @@ async function fetchRunTimings(){
     if(ETAMultiplierInput != null){
         ETAMultiplierInput.value = ETAMultiplierPercentage;
         ETAMultiplierPercentageInput = ETAMultiplierPercentage;
+    }
+
+    timeWindowHour = runTimingsDocument.data()['timeWindowHour'];
+    if(timeWindowInput != null){
+        timeWindowInput.value = timeWindowHour;
+        timeWindowHourInput = timeWindowHour;
     }
 
     console.log(stopDurationSecondsInput);
@@ -581,6 +603,11 @@ function stopSettingsContoller(){
         return;
     }
 
+    if(timeWindowHourInput != timeWindowHour){
+        updateStopSettingsButton.classList.remove('hidden');
+        return;
+    }
+
     updateStopSettingsButton.classList.add('hidden');
 
 }
@@ -601,6 +628,11 @@ function updateStopSettingsButtonController(){
         showNotification("Error", "ETA multiplier must be a number greater than -1");
         return
     }
+
+    if(timeWindowHourInput < 0 || isNaN(timeWindowHourInput)){
+        showNotification("Error", "Time window must be a number greater than -1");
+        return
+    }
     
     if(stopDurationSecondsInput % 1 !== 0){
         showNotification("Error!", "stop duration must be a whole number");
@@ -614,6 +646,11 @@ function updateStopSettingsButtonController(){
 
     if(ETAMultiplierPercentageInput % 1 !== 0){
         showNotification("Error!", "ETA multiplier must be a whole number");
+        return;
+    }  
+
+    if(timeWindowHourInput % 1 !== 0){
+        showNotification("Error!", "Time window must be a whole number");
         return;
     }  
 
@@ -670,6 +707,7 @@ function updateStopSettings(){
             stopDurationSeconds: parseInt(stopDurationSecondsInput),
             additionalStopDurationSeconds: parseInt(additionalStopDurationSecondsInput),
             ETAMultiplierPercentage: parseInt(ETAMultiplierPercentageInput),
+            timeWindowHour: parseInt(timeWindowHourInput),
         }
     ).then(() => {
 
@@ -677,6 +715,7 @@ function updateStopSettings(){
         stopDurationSeconds = stopDurationSecondsInput;
         additionalStopDurationSeconds = additionalStopDurationSecondsInput;
         ETAMultiplierPercentage = ETAMultiplierPercentageInput;
+        timeWindowHour = timeWindowHourInput;
 
         updateStopSettingsButton.classList.add('hidden');
 

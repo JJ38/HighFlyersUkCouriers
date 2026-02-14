@@ -122,9 +122,7 @@ export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, button
   const stopCardWrapper = document.createElement('div');
   stopCardWrapper.classList = "stopCardWrapper";
 
-  if(isTimeLocked && stop['stopTime'] != undefined){
-    stopCardWrapper.classList.add('timeLocked');
-  }
+  
 
 
   const stopCard = document.createElement('div');
@@ -137,7 +135,7 @@ export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, button
 
   const stopTime = document.createElement('p');
   stopTime.classList = "stopTime";
-  stopTime.innerText = isOptimised ? stop.stopTime : "";
+  stopTime.innerText = isOptimised ? "Arrival Time: " + stop.stopTime : "";
 
 
   const stopCustomerName = document.createElement('p');
@@ -164,6 +162,19 @@ export function createStopCard(stop, stopMetaDataContainer, stopsWrapper, button
   stopCard.appendChild(stopPrimaryKey);
 
   stopCard.appendChild(stopTime);
+
+
+  if(isTimeLocked && stop['lockedStopTime'] != undefined){
+    
+    stopCardWrapper.classList.add('timeLocked');
+
+    const lockedTime = document.createElement('p');
+    lockedTime.classList = "stopTime";
+    lockedTime.innerText = "Locked time: " + stop.lockedStopTime;
+
+    stopCard.appendChild(lockedTime);
+
+  }
   
 
   stopCard.appendChild(stopCustomerName);
