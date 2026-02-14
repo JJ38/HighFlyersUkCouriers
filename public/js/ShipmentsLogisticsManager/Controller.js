@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createStaffSelectOptions, createDriverSelectOptions, createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "/js/ShipmentsLogisticsManager/Components";
-import { getToggledTimeLockedStops, toggleTimeLockRun, unassignStaffMember, getCurrentAssignedStaffMemberID, getCurrentAssignedStaffMember, assignStaffMember, parseStaffDocuments, fetchStaffMembers, getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { getCalculationError, getToggledTimeLockedStops, toggleTimeLockRun, unassignStaffMember, getCurrentAssignedStaffMemberID, getCurrentAssignedStaffMember, assignStaffMember, parseStaffDocuments, fetchStaffMembers, getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -748,7 +748,7 @@ function addEventListeners(){
       console.log(currentSelectedRun)
       if(routeJSON === false){
 
-        showNotification("Error!", "Error calculating route");   
+        showNotification("Error!", "Error calculating route - " + getCalculationError());   
         showUI(calculateRouteButton);
         loader.remove();
     

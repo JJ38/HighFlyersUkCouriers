@@ -5,6 +5,11 @@ import { DateTime } from "luxon";
 
 let GoogleAutocomplete;
 let customerAccounts;
+let calculationError;
+
+export function getCalculationError(){
+  return calculationError;
+}
 
 export const sortAlphabetically = (a, b) => {
 
@@ -1917,8 +1922,6 @@ export async function calculateRoute(run, JWT){
 
   const stopJSONs = getStopRequestJSON(runTimingsData, groupedStops, lockedStops, run.isTimeLocked, globalStartTime);
 
-  console.log(stopJSONs);
-  // return false;
   if(lockedStops === false){
     return false;
   }
@@ -1928,14 +1931,23 @@ export async function calculateRoute(run, JWT){
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, globalStartTime, globalEndTime);
 
   const optimisedRouteJSON = await fetchOptimisedRoute(requestBody, JWT);
+  
+  console.log(optimisedRouteJSON);
+
+  if(optimisedRouteJSON['skippedShipments'] != undefined){
+    calculationError = "Impossible run with the given constraints";
+    return false;
+  }
 
   if(optimisedRouteJSON === false){
+    calculationError = "Unknown error";
     return false;
   }
 
   const updatedStops = updateStopOrder(optimisedRouteJSON, groupedStops, ETAMultiplier);
 
   if(updatedStops === false){
+    calculationError = "Unable to update stops";
     return false;
   }
 
@@ -1962,6 +1974,7 @@ export async function calculateRoute(run, JWT){
     const storedResult = await storeOptimisedRoute(run.documentId, optimisedRouteJSON, databaseStops, runTime);
 
     if(storedResult === false){
+      calculationError = "Unable to store route";
       return false;
     }
 
@@ -2026,15 +2039,8 @@ function updateStopOrder(optimisedRouteJSON, groupedStops, ETAMultiplier){
 
       if(duplicateStops.has(shipmentLabel)){
 
-        console.log(optimisedTransitions[i]);
-        console.log(optimisedTransitions);
-        console.log(optimisedStops);
-
         const multiStops = duplicateStops.get(shipmentLabel);
         const additionalDriveTime = getAdditionalDriveTime(optimisedTransitions[i].travelDuration, ETAMultiplier);
-
-        console.log(multiStops);
-        console.log(additionalDriveTime);
 
         for(let j = 0; j < multiStops.length; j++){
 
@@ -2046,7 +2052,6 @@ function updateStopOrder(optimisedRouteJSON, groupedStops, ETAMultiplier){
         }
 
         startTimeOffset += additionalDriveTime;
-
 
       }else{
         //error key should always be in duplicateStops
@@ -2469,8 +2474,6 @@ function getPrecedenceRules(lockedStops, numberOfStops){
 
   if(lockedStops.start.isLocked){
 
-    console.log("first stop is locked");
-
     for(let i = 0; i < numberOfStops; i++){
 
       if(i != lockedStops.start.index){
@@ -2492,8 +2495,6 @@ function getPrecedenceRules(lockedStops, numberOfStops){
 
   if(lockedStops.end.isLocked){
 
-    console.log("end stop is locked");
-
     //find index of all stops with same coordinates
     for(let i = 0; i < numberOfStops; i++){
 
@@ -2512,12 +2513,7 @@ function getPrecedenceRules(lockedStops, numberOfStops){
 
     }
 
-    // const groupedRules = getGroupedMultiStopPrecedenceRules(lockedStops, groupedStops.duplicateStops, stopJSONs);
-    // rules = groupedRules.concat(rules);
-
   }
-
-  console.log(rules);
 
   return rules;
 
@@ -2525,24 +2521,6 @@ function getPrecedenceRules(lockedStops, numberOfStops){
 
 //https://developers.google.com/maps/documentation/route-optimization/construct-request?_gl=1*ftiy74*_up*MQ..*_ga*MTQ5NDczNjIwMi4xNzQ5NjU4OTYy*_ga_NRWSTWS78N*czE3NDk2NTg5NjIkbzEkZzEkdDE3NDk2NTkxNzckajI2JGwwJGgw
 function getRouteOptimisationRequestBody(origin, destination, stops, precedenceRules, globalStartTime, globalEndTime){
-
-  // let startTimeString = "";
-
-  // const startHour = (startTime.hour).toString();
-  // const startMinute = (startTime.minute).toString();
-
-
-  // if(startHour.length == 1){
-  //   startTimeString = "0" + startHour;
-  // }
-
-  // startTimeString += ":";
-
-  // if(startMinute.length == 1){
-  //   startTimeString = startTimeString + "0" + startMinute;
-  // }
-
-
 
 
   const request = 
