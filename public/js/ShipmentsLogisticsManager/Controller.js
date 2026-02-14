@@ -649,7 +649,7 @@ function addEventListeners(){
       
       const newStops = getToggledTimeLockedStops(currentSelectedRun);
       const timeLockedRunSuccessfully = await toggleTimeLockRun(currentSelectedRun, newStops);
-      console.log(newStops);
+
       if(!timeLockedRunSuccessfully){
         showNotification("Error!", "Error time locking run");
         return;
@@ -661,6 +661,7 @@ function addEventListeners(){
       updatePolylines(currentSelectedRun);
       updateMapMarkers(currentSelectedRun);
       updateStopList(currentSelectedRun);
+      updateSelectAssignStaffMember();
 
 
       if(currentSelectedRun.isTimeLocked){
