@@ -1885,12 +1885,97 @@ export function mergeStopsWithOrderData(stops, orders){
 }
 
 
+async function checkIfRunIsInSync(clientStops, documentId){
+
+  const runDocument = await getDocument(query(doc(db, 'Runs', documentId)));
+
+  if(runDocument.data() == undefined || runDocument.data() == null){
+
+    calculationError = "Run is undefined or null";
+    return false;
+
+  }
+
+  //check if run document stops are in the same state as client side stop;
+
+  const runDocumentStops = runDocument.data()['stops'];
+
+  if(runDocumentStops == undefined){
+
+    calculationError = "Error checking if run is in sync";
+    return false;
+
+  }
+
+  if(runDocumentStops.length != clientStops.length){
+
+    calculationError = "Run is out of sync with database (different number of stops). Please reload the run";
+    return false;
+
+  }
+  
+
+  const clientStopsPrimaryKeys = [];
+  const databaseStopsPrimaryKeys = [];
+
+
+  for(let i = 0; i < clientStops.length; i++){
+
+    const primaryKey = clientStops[i].orderID + "_" + clientStops[i].stopType;
+    clientStopsPrimaryKeys.push(primaryKey);
+
+  }
+
+  for(let i = 0; i < runDocumentStops.length; i++){
+
+    const primaryKey = runDocumentStops[i].orderID + "_" + runDocumentStops[i].stopType;
+    databaseStopsPrimaryKeys.push(primaryKey);
+
+  }
+
+  console.log(clientStopsPrimaryKeys);
+
+  for(let i = 0; i < databaseStopsPrimaryKeys.length; i++){
+
+    if(!clientStopsPrimaryKeys.includes(databaseStopsPrimaryKeys[i])){
+      console.log(databaseStopsPrimaryKeys[i]);
+      console.log(clientStopsPrimaryKeys.includes(runDocumentStops[i]))
+
+      calculationError = "Run is out of sync with database (different set of stops). Please refresh the run";
+      return false;
+
+    }
+
+  }
+
+  const clientStopsSet = new Set(clientStopsPrimaryKeys);
+
+  if(clientStopsSet.size != clientStopsPrimaryKeys.length){
+
+    calculationError = "The current stop has duplicate orders. Please correct this before calculating a run";
+    return false;
+
+  }
+
+
+  return true;
+
+}
+
 export async function calculateRoute(run, JWT){
 
   const stops = run.stops;
 
   const originCoordinates = run.settings.start.location;
   const destinationCoordinates = run.settings.end.location;
+
+  const runInSync = await checkIfRunIsInSync(run.stops, run.documentId);
+
+  console.log("isRunInSync: " + runInSync);
+  if(!runInSync){
+    return false;
+  }
+
 
   const runTimingsDocument = await getDocument(query(doc(db, 'Settings', 'runTimings')));
 
@@ -1921,7 +2006,7 @@ export async function calculateRoute(run, JWT){
   const lockedStops = getLockedStops(stops);
 
   const stopJSONs = getStopRequestJSON(runTimingsData, groupedStops, lockedStops, run.isTimeLocked, globalStartTime);
-
+  
   if(lockedStops === false){
     return false;
   }
@@ -1929,8 +2014,11 @@ export async function calculateRoute(run, JWT){
   const precedenceRules = getPrecedenceRules(lockedStops, stopJSONs.length);
 
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, globalStartTime, globalEndTime);
-
+  console.log(JSON.stringify(requestBody));
   const optimisedRouteJSON = await fetchOptimisedRoute(requestBody, JWT);
+  console.log(JSON.stringify(optimisedRouteJSON));
+  console.log(optimisedRouteJSON);
+
   
   if(optimisedRouteJSON['skippedShipments'] != undefined){
     console.log(optimisedRouteJSON);
@@ -2240,8 +2328,18 @@ function getTimeWindows(stopTime, globalStartTime, timeWindow){
     endTimeHour = endTimeHour & 24;
   }
 
-  let startTime = startTimeHour.toString() + ":" + minutes.toString();
-  let endTime = endTimeHour.toString() + ":" + minutes.toString();
+  
+
+  let minuteString = minutes.toString();
+
+  if(minuteString.length == 1){
+    minuteString = "0" + minuteString;
+  }
+
+
+  let startTime = startTimeHour.toString() + ":" + minuteString;
+  let endTime = endTimeHour.toString() + ":" + minuteString;
+
 
   if(startTimeHour.toString().length == 1){
     startTime = "0" + startTime;
@@ -2264,6 +2362,7 @@ function getTimeWindows(stopTime, globalStartTime, timeWindow){
     "startTime": startDateTime.toISO(),
     "endTime": endDateTime.toISO()
   }
+
 
   return timeWindows;
 
@@ -2319,7 +2418,7 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops, isTimeLocked,
     }
 
     if(isTimeLocked && nonDuplicateStops[i].lockedStopTime != undefined){
-
+      
       const timeWindows = getTimeWindows(nonDuplicateStops[i].lockedStopTime, globalStartTime, runTimings.timeWindowHour);
       stopObject['deliveries'][0]['timeWindows'] = [timeWindows];
 
