@@ -3,8 +3,8 @@ import { getFirestore, getDocs, getDoc, updateDoc, doc, query, orderBy, where, c
 import { getAuth } from "firebase/auth";
 import { firebaseConfig, databaseName } from "/js/FirebaseSettings.js";
 
-
 const app = initializeApp(firebaseConfig);
+
 
 export const auth = getAuth(app); 
 export const db = getFirestore(app, databaseName);

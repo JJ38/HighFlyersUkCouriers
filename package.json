@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.5.3",
+    "@sentry/browser": "^10.40.0",
     "firebase": "^11.3.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.4",

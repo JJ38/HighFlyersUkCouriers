@@ -2,6 +2,7 @@ import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion, 
 import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
 import { GeocodingAPIKey, calculateRouteEndpoint } from '/js/Settings.js';
 import { DateTime } from "luxon";
+import { logAssignedStops, logRemoveStopsFromShipment, logAddStopsToShipment } from "/js/Sentry.js";
 
 let GoogleAutocomplete;
 let customerAccounts;
@@ -687,8 +688,6 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
 
   }
 
-  console.log(stopsToAdd);
-
   //get coordinates of stops
 
   const promises = [];
@@ -700,8 +699,6 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
   }
 
   await Promise.all(promises);
-
-  console.log(promises);
 
   //returns false or a string
   const result = isStopInShipment(runData, stopsToAdd);
@@ -721,7 +718,9 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
     const newStops = stopsToAdd.concat(unassignedRun.data()['stops']);
     batch.update(runRef, {"stops": newStops})
 
-    batch.commit();
+    await batch.commit();
+
+    logAddStopsToShipment(stopsToAdd, selectedShipment);
 
   }catch(e){
 
@@ -979,6 +978,9 @@ export async function removeStopsFromShipment(stops, unassignedStopsDocumentID){
 
     await updateDocument(runRef, {"stops": unassignedStopsWithStopsRemoved});
 
+    logRemoveStopsFromShipment(stops, unassignedStopsDocument.data()['shipmentName']);
+
+
   }catch(e){
 
     console.log(e);
@@ -1117,9 +1119,16 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   batch.update(runRef, {"stops": newStops, isOptimised: false});
 
+
   try{
 
     await batch.commit();
+
+    const runRemovingStopsName = runRemovingStopsDocument.data()['runName'];
+    const runAddingStopsName = runDocument.data()['runName'];
+
+    logAssignedStops(runRemovingStopsName, runAddingStopsName, stopsToAdd);
+
 
   }catch(e){
 

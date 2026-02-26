@@ -58,7 +58,6 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
       $cleaned_parameters = $manage_order_model->cleanOrder($tainted_parameters, $app);
       //if one of the parameters does not meet requirements
 
-      var_dump($cleaned_parameters);
 
       if(empty($cleaned_parameters)){
 
