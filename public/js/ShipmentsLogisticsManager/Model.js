@@ -97,9 +97,11 @@ export async function deleteShipmentDocument(id){
 
       const driverData = driverDocuments.docs[i].data();
       const assignedRuns = driverData['assignedRuns'];
-      const progressedRuns = driverData['progressedRuns'];
+      let progressedRuns = driverData['progressedRuns'];
 
-      console.log(progressedRuns);
+      if(progressedRuns == undefined){
+        progressedRuns = [];
+      }
 
       const newAssignedRuns = [];
       const newProgressedRuns = [];
