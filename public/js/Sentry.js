@@ -18,7 +18,6 @@ export async function logInfo(message, data = {}, tags = {}) {
         ...tags,
     });
 
-
 }
 
 export async function logAssignedStops(runRemovingStopsName, runAddingStopsName, stopsToAdd){
@@ -42,8 +41,6 @@ export async function logAssignedStops(runRemovingStopsName, runAddingStopsName,
 
 export async function logRemoveStopsFromShipment(stops, shipmentName){
 
-    console.log(stops);
-
     Sentry.logger.info("Removing stops from shipment ", {
         stopIds: stops,
         shipmentName: shipmentName
@@ -52,8 +49,6 @@ export async function logRemoveStopsFromShipment(stops, shipmentName){
 }
 
 export async function logAddStopsToShipment(stops, shipmentName){
-
-    console.log(stops);
 
     Sentry.logger.info("Adding stops to shipment ", {
         stopIds: stops.map(s => s.orderID + "_" + s.stopType),

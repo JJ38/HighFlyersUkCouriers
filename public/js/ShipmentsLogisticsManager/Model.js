@@ -2,7 +2,7 @@ import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion, 
 import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
 import { GeocodingAPIKey, calculateRouteEndpoint } from '/js/Settings.js';
 import { DateTime } from "luxon";
-import { logAssignedStops, logRemoveStopsFromShipment, logAddStopsToShipment } from "/js/Sentry.js";
+import { logAssignedStops, logRemoveStopsFromShipment, logAddStopsToShipment, logInfo } from "/js/Sentry.js";
 
 let GoogleAutocomplete;
 let customerAccounts;
@@ -40,7 +40,6 @@ export async function deleteShipmentDocument(id){
     shipmentRef = doc(db, 'Shipments', id);
     shipmentDocument = await getDocument(shipmentRef);
 
-  
     const staffQuery = query(collection(db, 'Staff'));
     staffDocuments = await getDocuments(staffQuery);
 
@@ -94,14 +93,17 @@ export async function deleteShipmentDocument(id){
     }
 
 
-    //add unassign staff members to run to batch
     for(let i = 0; i < driverDocuments.docs.length; i++){
 
       const driverData = driverDocuments.docs[i].data();
       const assignedRuns = driverData['assignedRuns'];
+      const progressedRuns = driverData['progressedRuns'];
+
+      console.log(progressedRuns);
 
       const newAssignedRuns = [];
-    
+      const newProgressedRuns = [];
+
       for(let j = 0; j < assignedRuns.length; j++){
 
         if(!runIDs.includes(assignedRuns[j]['runID'])){
@@ -112,8 +114,24 @@ export async function deleteShipmentDocument(id){
 
       }
 
+      for(let j = 0; j < progressedRuns.length; j++){
+
+        if(!runIDs.includes(progressedRuns[j]['runID'])){
+
+          newProgressedRuns.push(progressedRuns[j]);
+
+        }
+
+      }
+
       const driverDocRef = doc(db, "Drivers", driverDocuments.docs[i].id);
-      batch.update(driverDocRef, {"assignedRuns": newAssignedRuns});
+      batch.update(
+        driverDocRef, 
+        {
+          "assignedRuns": newAssignedRuns,
+          "progressedRuns": newProgressedRuns
+        }
+      );
       
     }
 
@@ -1596,6 +1614,7 @@ export function parseRunInfo(doc, fuelSettings){
   }
 
   const runStruct = {
+
     documentId: doc.id,
     assignedDriver: runData['assignedDriver'],
     stops: runData['stops'],
@@ -1605,7 +1624,9 @@ export function parseRunInfo(doc, fuelSettings){
     isOptimised: runData['isOptimised'],
     isTimeLocked: isTimeLocked,
     optimisedRoute: runData['optimisedRoute'],
-    settings: runData['settings']
+    settings: runData['settings'],
+    shipmentName: runData['shipmentName'],
+  
   }
 
   if(runStruct.isOptimised && fuelSettings !== false){
@@ -1980,11 +2001,9 @@ export async function calculateRoute(run, JWT){
 
   const runInSync = await checkIfRunIsInSync(run.stops, run.documentId);
 
-  console.log("isRunInSync: " + runInSync);
   if(!runInSync){
     return false;
   }
-
 
   const runTimingsDocument = await getDocument(query(doc(db, 'Settings', 'runTimings')));
 
@@ -2023,14 +2042,10 @@ export async function calculateRoute(run, JWT){
   const precedenceRules = getPrecedenceRules(lockedStops, stopJSONs.length);
 
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, globalStartTime, globalEndTime);
-  console.log(JSON.stringify(requestBody));
   const optimisedRouteJSON = await fetchOptimisedRoute(requestBody, JWT);
-  console.log(JSON.stringify(optimisedRouteJSON));
-  console.log(optimisedRouteJSON);
 
-  
+
   if(optimisedRouteJSON['skippedShipments'] != undefined){
-    console.log(optimisedRouteJSON);
     calculationError = "Impossible run with the given constraints, try loosening the time window";
     return false;
   }
@@ -2077,6 +2092,13 @@ export async function calculateRoute(run, JWT){
     run.stops = updatedStops;
     run.isOptimised = true;
     run.runTime = runTime;
+
+    console.log(run);
+    
+    logInfo("Calculated route " + run.runName + " in shipment " + run.shipmentName, {
+        stopIds: stops,
+        shipmentName: run.shipmentName
+    });
 
     return optimisedRouteJSON;
 

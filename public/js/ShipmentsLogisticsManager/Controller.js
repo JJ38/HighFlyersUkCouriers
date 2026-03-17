@@ -34,11 +34,13 @@ const shipmentTypeInput = document.getElementById('shipment_run_type');
 const shipmentNameInput = document.getElementById('shipment_name');
 const cancelCreateShipmentButton = document.getElementById("cancel_create_shipment");
 const saveCreateShipmentButton = document.getElementById("save_create_shipment");
+const createShipmentLoader = document.getElementById("create_shipment_loader");
 
 const deleteShipmentWidget = document.getElementById("delete_shipment_widget");
 const cancelDeleteShipmentButton = document.getElementById("cancel_delete_shipment");
 const confirmDeleteShipmentButton = document.getElementById("confirm_delete_shipment");
 const selectDeleteShipment = document.getElementById('select_delete_shipment');
+const deleteShipmentLoader = document.getElementById("delete_shipment_loader");
 
 const assignStopsWidget = document.getElementById('assign_stops_widget');
 const selectAssignStopsRun = document.getElementById('select_assign_stops_run');
@@ -296,13 +298,14 @@ function addEventListeners(){
         showNotification("Error!", "Shipment name is already taken. Please choose another one");
       }
 
-      const generateShipmentResult = await generateShipment(shipmentNameInput.value, shipmentTypeInput.value, shipmentDeliveryWeekInput.value);
+      showCreatingShipmentState();
 
-      console.log(generateShipmentResult);
+      const generateShipmentResult = await generateShipment(shipmentNameInput.value, shipmentTypeInput.value, shipmentDeliveryWeekInput.value);
 
       if(!generateShipmentResult){
 
         showNotification("Error!", "Error creating shipment");
+        hideCreatingShipmentState();
         return;
 
       }
@@ -315,6 +318,8 @@ function addEventListeners(){
 
       showNotification("Success!", "Successfully created shipment");
       hideSelectUI(createShipmentWidget);
+      hideCreatingShipmentState();
+
 
     });
 
@@ -336,14 +341,14 @@ function addEventListeners(){
 
       if(selectDeleteShipment.value != "default"){
 
+        showDeletingShipmentState();
+
         const deleteShipmentDocumentResult = await deleteShipmentDocument(selectDeleteShipment.value);
         
-        console.log(deleteShipmentDocumentResult);
-
         if(!deleteShipmentDocumentResult){
 
           showNotification("Error!", "Error deleting shipment");
-
+          hideDeletingShipmentState();
           return;
         }
         
@@ -353,6 +358,7 @@ function addEventListeners(){
 
         showNotification("Success!", "Successfully deleted shipment");
         hideSelectUI(deleteShipmentWidget);
+        hideDeletingShipmentState();
 
       }else{
         alert("Please select a shipment to delete");
@@ -745,8 +751,6 @@ function addEventListeners(){
 
       const routeJSON = await calculateRoute(currentSelectedRun, JWT);
 
-      console.log(routeJSON);
-      console.log(currentSelectedRun)
       if(routeJSON === false){
 
         showNotification("Error!", "Error calculating route - " + getCalculationError());   
@@ -788,9 +792,6 @@ function addEventListeners(){
       updateSelectAssignDriver();
       updateSelectAssignStaffMember();
 
-      console.log(currentSelectedRun);
-
-
     });
 
   }
@@ -815,8 +816,6 @@ function addEventListeners(){
         autocompleteSessionActive = true;
         
         currentSessionToken = new google.maps.places.AutocompleteSessionToken();
-
-        console.log(currentSessionToken);
 
         validateAddressAutocompleteInput.addEventListener('input', async () => {
 
@@ -868,7 +867,6 @@ function addEventListeners(){
 
     validateAddressButton.addEventListener('click', async () => {
 
-      console.log("before");
       removeMapMarkers(validateAddressMapMarkers);
       addressSuggestionWrapper.innerHTML = "";
 
@@ -1341,6 +1339,39 @@ function deselectCheckboxes(checkBoxes){
 
   }
 
+}
+
+function showCreatingShipmentState(){
+
+  showUI(createShipmentLoader);
+  hideUI(cancelCreateShipmentButton);
+  hideUI(saveCreateShipmentButton);
+
+}
+
+function hideCreatingShipmentState(){
+
+  hideUI(createShipmentLoader);
+  showUI(cancelCreateShipmentButton);
+  showUI(saveCreateShipmentButton);
+  
+}
+
+
+function showDeletingShipmentState(){
+
+  showUI(deleteShipmentLoader);
+  hideUI(cancelDeleteShipmentButton);
+  hideUI(confirmDeleteShipmentButton);
+
+}
+
+function hideDeletingShipmentState(){
+
+  hideUI(deleteShipmentLoader);
+  showUI(cancelDeleteShipmentButton);
+  showUI(confirmDeleteShipmentButton);
+  
 }
 
 function clearAndHideValidateAddressWidget(){
