@@ -383,45 +383,15 @@ class ManageOrderModel
     //public cutoff sunday 4pm
     //customer cutoff monday 12pm
 
-    //is it sunday or monday?
-    if(($current_date->format('D') == "Sun" || $current_date->format('D') == "Mon")){
+
+    //is it after 4pm on Monday
+    if($current_date->format('D') == "Mon" && $current_date->format('H') >= 16){
+      //delivery tuesday after next
+      $delivery_date->modify('next monday');
     
-      //is it after 4pm sunday and a public order
-      if($order_type == "PUBLIC"){ //$current_date->format('H')
-        //public order
+    }else if($current_date->format('D') == "Sun"){
 
-    
-        
-        //is it after 4pm on sunday
-        if($current_date->format('D') == "Sun" && $current_date->format('H') >= 16){
-          //delivery tuesday after next
-          $delivery_date->modify('next monday')->modify('next monday');
-        }else if($current_date->format('D') == "Mon"){
-          $delivery_date->modify('next monday');
-        }else{
-
-          //delivery next tuesday
-          $delivery_date->modify('next monday');
-        }
-        
-      }else{
-        //customer order
-
-        //is it after 12pm on Monday
-        if($current_date->format('D') == "Mon" && $current_date->format('H') >= 12){
-          //delivery tuesday after next
-          $delivery_date->modify('next monday');
-        
-        }else if($current_date->format('D') == "Sun"){
-
-          //delivery next tuesday
-          $delivery_date->modify('next monday');
-        }
-
-      }
-
-    }else{
-      //else delivery next tuesday
+      //delivery next tuesday
       $delivery_date->modify('next monday');
     }
 
