@@ -380,23 +380,16 @@ class ManageOrderModel
     $delivery_date->setTimezone(new DateTimeZone('Europe/London'));
 
 
-    //public cutoff sunday 4pm
-    //customer cutoff monday 12pm
-
-
     //is it after 4pm on Monday
     if($current_date->format('D') == "Mon" && $current_date->format('H') >= 16){
       //delivery tuesday after next
-      $delivery_date->modify('next monday');
+      $delivery_date->modify('next monday')->modify('next monday');
     
-    }else if($current_date->format('D') == "Sun"){
+    }else{
 
       //delivery next tuesday
       $delivery_date->modify('next monday');
     }
-
-    // echo $current_date->format('M-d');
-    //$current_date->modify('next tuesday');
 
     $delivery_week = intval($delivery_date->format('W'));
 

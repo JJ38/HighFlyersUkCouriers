@@ -2020,8 +2020,7 @@ export async function calculateRoute(run, JWT){
     .set({ millisecond: 0 });
 
   const globalStartTime = currentDate
-    .set({ hour: startTime.hour, minute: startTime.minute })
-    .toUTC();
+    .toUTC().set({ hour: startTime.hour, minute: startTime.minute })
 
   const globalEndTime = currentDate
     .plus({ hours: 48 })
