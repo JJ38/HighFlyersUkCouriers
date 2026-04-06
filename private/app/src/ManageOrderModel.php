@@ -379,17 +379,18 @@ class ManageOrderModel
     $delivery_date = new DateTime();
     $delivery_date->setTimezone(new DateTimeZone('Europe/London'));
 
+    if($current_date->format('D') == "Mon"){
 
-    //is it after 4pm on Monday
-    if($current_date->format('D') == "Mon" && $current_date->format('H') >= 16){
-      //delivery tuesday after next
-      $delivery_date->modify('next monday')->modify('next monday');
-    
+        if($current_date->format('H') >= 16){
+            $delivery_date->modify('next monday');
+        }
+
     }else{
 
-      //delivery next tuesday
-      $delivery_date->modify('next monday');
+        $delivery_date->modify('next monday');
+
     }
+
 
     $delivery_week = intval($delivery_date->format('W'));
 

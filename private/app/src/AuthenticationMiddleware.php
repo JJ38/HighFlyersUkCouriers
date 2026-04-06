@@ -42,22 +42,33 @@ class AuthenticationMiddleware
      //This is is invoked before every request
     public function __invoke(Request $request, Response $response, callable $next) : Response
     {
+        
 
         $origin = $request->getHeaderLine('Origin');
         
         $allowed_origins = [
             'https://www.highflyersukcouriers.com',
+            'https://highflyersukcouriers.com',
+            'https://www.highflyersukcouriersbackup.com',
+            'https://highflyersukcouriersbackup.com',
             'http://localhost:80',
-            'http://localhost:5173/',
-            'http://localhost:5173/shipments-logistics-manager',
+            'http://localhost:5173',
         ];
 
         $isAllowed = in_array($origin, $allowed_origins);
 
+        if ($request->getMethod() === 'OPTIONS') {
+            return $response
+                ->withHeader('Access-Control-Allow-Origin', $origin)
+                ->withHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type')
+                ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+                ->withStatus(200);
+        }
+
         if ($isAllowed) {
-            $response = $response->withHeader('Access-Control-Allow-Origin', $origin);
+            $response = $response->withHeader('Access-Control-Allow-Origin', $origin)->withHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
         } else {
-            $response = $response->withHeader('Access-Control-Allow-Origin', 'https://www.highflyersukcouriers.com');
+            $response = $response->withHeader('Access-Control-Allow-Origin', 'https://www.highflyersukcouriers.com')->withHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
         }
 
         $is_authenticated = false;

@@ -14,53 +14,36 @@ final class ManageOrderModelTest extends TestCase {
     //As a consequence, if 1 January is on a Monday, Tuesday, Wednesday or Thursday, it is in week 01. 
     //If 1 January is on a Friday, Saturday or Sunday, it is in week 52 or 53 of the previous year (there is no week 00). 28 December is always in the last week of its year.
 
-    public function getDeliveryWeek($order_type, $current_date, $delivery_date) : int{
+    
+    public function getDeliveryWeek($current_date, $delivery_date) : int{
 
-        //public cutoff sunday 4pm
-        //customer cutoff monday 12pm
 
-        //is it sunday or monday?
-        if(($current_date->format('D') == "Sun" || $current_date->format('D') == "Mon")){
-        
-            //is it after 4pm sunday and a public order
-            if($order_type == "PUBLIC"){ //$current_date->format('H')
-                //public order
-
+        // //is it after 4pm on Monday
+        // if($current_date->format('D') == "Mon" && $current_date->format('H') >= 16){
+        //     //delivery tuesday after next
+        //     $delivery_date->modify('next monday');
             
-                
-                //is it after 4pm on sunday
-                if($current_date->format('D') == "Sun" && $current_date->format('H') >= 16){
-                    //delivery tuesday after next
-                    $delivery_date->modify('next monday')->modify('next monday');
-                }else if($current_date->format('D') == "Mon"){
-                    $delivery_date->modify('next monday');
-                }else{
+        // }else if($current_date->format('D') == "Mon" && $current_date->format('H') >= 16){
 
-                    //delivery next tuesday
-                    $delivery_date->modify('next monday');
-                }
-                
-            }else{
-                //customer order
+        //     $delivery_date->modify('next monday')->modify('next monday');
 
-                //is it after 12pm on Monday
-                if($current_date->format('D') == "Mon" && $current_date->format('H') >= 12){
+        // }else{
 
-                    //delivery tuesday after next
-                    $delivery_date->modify('next monday');
-            
-                }else if($current_date->format('D') == "Sun"){
+        //     //delivery next tuesday
+        // }
 
-                    //delivery next tuesday
-                    $delivery_date->modify('next monday');
-                }
+        if($current_date->format('D') == "Mon"){
 
+            if($current_date->format('H') >= 16){
+                $delivery_date->modify('next monday');
             }
 
         }else{
-            //else delivery next tuesday
+
             $delivery_date->modify('next monday');
+
         }
+
 
         $delivery_week = intval($delivery_date->format('W'));
 
@@ -73,62 +56,136 @@ final class ManageOrderModelTest extends TestCase {
         
     }
 
-    public function testMondayBeforeCutoffCustomer(): void
+    public function testMondayBeforeCutoff(): void
     {
-        $current_date = new DateTime("2024-12-30 11:00:00", new DateTimeZone("Europe/London")); // Monday before noon
+        $current_date = new DateTime("2026-04-06 15:00:00", new DateTimeZone("Europe/London")); // Monday before 4
         $delivery_date = clone $current_date;
 
-        $delivery_week = $this->getDeliveryWeek("CUSTOMER", $current_date, $delivery_date);
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
 
-        $this->assertSame(1, $delivery_week);
+        $this->assertSame(15, $delivery_week);
     }
 
-    public function testMondayAfterCutoffCustomer(): void
+    public function testMondayAfterCutoff(): void
     {
-        $current_date = new DateTime("2024-12-30 13:00:00", new DateTimeZone("Europe/London")); // Monday
+        $current_date = new DateTime("2026-04-06 17:00:00", new DateTimeZone("Europe/London")); // Monday before 4
         $delivery_date = clone $current_date;
 
-        $delivery_week = $this->getDeliveryWeek("CUSTOMER", $current_date, $delivery_date);
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
 
-        $this->assertSame(2, $delivery_week);
+        $this->assertSame(16, $delivery_week);
+    }
+
+    public function testWednesdayMidday(): void
+    {
+        $current_date = new DateTime("2026-04-08 12:00:00", new DateTimeZone("Europe/London")); // Monday before 4
+        $delivery_date = clone $current_date;
+
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
+
+        $this->assertSame(16, $delivery_week);
+    }
+
+    
+    public function testThursdayMidday(): void
+    {
+        $current_date = new DateTime("2026-04-09 12:00:00", new DateTimeZone("Europe/London")); // Monday before 4
+        $delivery_date = clone $current_date;
+
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
+
+        $this->assertSame(16, $delivery_week);
+    }
+
+    
+    public function testFridayMidday(): void
+    {
+        $current_date = new DateTime("2026-04-10 12:00:00", new DateTimeZone("Europe/London")); // Monday before 4
+        $delivery_date = clone $current_date;
+
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
+
+        $this->assertSame(16, $delivery_week);
+    }
+
+    
+    public function testSaturdayMidday(): void
+    {
+        $current_date = new DateTime("2026-04-11 12:00:00", new DateTimeZone("Europe/London")); // Monday before 4
+        $delivery_date = clone $current_date;
+
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
+
+        $this->assertSame(16, $delivery_week);
+    }
+    
+    public function testSundayMidday(): void
+    {
+        $current_date = new DateTime("2026-04-12 12:00:00", new DateTimeZone("Europe/London")); // Monday before 4
+        $delivery_date = clone $current_date;
+
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
+
+        $this->assertSame(16, $delivery_week);
+    }
+    
+    
+    public function testNextMondayBeforeCutoff(): void
+    {
+        $current_date = new DateTime("2026-04-13 15:00:00", new DateTimeZone("Europe/London")); // Monday before 4
+        $delivery_date = clone $current_date;
+
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
+
+        $this->assertSame(16, $delivery_week);
+    }
+
+    public function testNextMondayAfterCutoff(): void
+    {
+        $current_date = new DateTime("2026-04-13 17:00:00", new DateTimeZone("Europe/London")); // Monday before 4
+        $delivery_date = clone $current_date;
+
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
+
+        $this->assertSame(17, $delivery_week);
     }
 
     public function testMondayBeforeCutoffYearCustomer(): void
     {
-        $current_date = new DateTime("2024-12-23 11:00:00", new DateTimeZone("Europe/London")); // Monday
+        $current_date = new DateTime("2024-12-23 15:00:00", new DateTimeZone("Europe/London")); // Monday
         $delivery_date = clone $current_date;
 
-        $delivery_week = $this->getDeliveryWeek("CUSTOMER", $current_date, $delivery_date);
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
 
         $this->assertSame(52, $delivery_week);
     }
 
     public function testMondayAfterCutoffYearCustomer(): void
     {
-        $current_date = new DateTime("2024-12-23 13:00:00", new DateTimeZone("Europe/London")); // Monday
+        $current_date = new DateTime("2024-12-23 17:00:00", new DateTimeZone("Europe/London")); // Monday
         $delivery_date = clone $current_date;
 
-        $delivery_week = $this->getDeliveryWeek("CUSTOMER", $current_date, $delivery_date);
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
 
         $this->assertSame(1, $delivery_week);
     }
 
     public function testMondayAfterCutoffYearWeek53YearCustomer(): void
     {
-        $current_date = new DateTime("2020-12-28T13:00:00", new DateTimeZone("Europe/London")); // Monday
+        $current_date = new DateTime("2020-12-28T17:00:00", new DateTimeZone("Europe/London")); // Monday
         $delivery_date = clone $current_date;
 
-        $delivery_week = $this->getDeliveryWeek("CUSTOMER", $current_date, $delivery_date);
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
 
         $this->assertSame(1, $delivery_week);
     }
 
     public function testMondayBeforeCutoffYearWeek53YearCustomer(): void
     {
-        $current_date = new DateTime("2020-12-28T11:00:00", new DateTimeZone("Europe/London")); // Monday
+        $current_date = new DateTime("2020-12-28T15:00:00", new DateTimeZone("Europe/London")); // Monday
         $delivery_date = clone $current_date;
 
-        $delivery_week = $this->getDeliveryWeek("CUSTOMER", $current_date, $delivery_date);
+        $delivery_week = $this->getDeliveryWeek($current_date, $delivery_date);
 
         $this->assertSame(53, $delivery_week);
     }
