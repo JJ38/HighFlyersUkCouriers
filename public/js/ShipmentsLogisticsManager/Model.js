@@ -1965,13 +1965,9 @@ async function checkIfRunIsInSync(clientStops, documentId){
 
   }
 
-  console.log(clientStopsPrimaryKeys);
-
   for(let i = 0; i < databaseStopsPrimaryKeys.length; i++){
 
     if(!clientStopsPrimaryKeys.includes(databaseStopsPrimaryKeys[i])){
-      console.log(databaseStopsPrimaryKeys[i]);
-      console.log(clientStopsPrimaryKeys.includes(runDocumentStops[i]))
 
       calculationError = "Run is out of sync with database (different set of stops). Please refresh the run";
       return false;
@@ -1998,18 +1994,35 @@ export async function calculateRoute(run, JWT){
 
   const stops = run.stops;
 
+  logInfo("Attempting to calculate route " + run.runName + " in shipment " + run.shipmentName, {
+    stopIds: stops,
+    shipmentName: run.shipmentName
+  });
+
   const originCoordinates = run.settings.start.location;
   const destinationCoordinates = run.settings.end.location;
 
   const runInSync = await checkIfRunIsInSync(run.stops, run.documentId);
 
   if(!runInSync){
+
+    logInfo("Run" + run.runName + " in shipment " + run.shipmentName + " failed to calculate as client was out of sync with database", {
+      stopIds: stops,
+      shipmentName: run.shipmentName
+    });
+
     return false;
   }
 
   const runTimingsDocument = await getDocument(query(doc(db, 'Settings', 'runTimings')));
 
   if(runTimingsDocument === false){
+
+    logInfo("Run" + run.runName + " in shipment " + run.shipmentName + " failed to calculate due to run timing document being unavailable", {
+      stopIds: stops,
+      shipmentName: run.shipmentName
+    });
+
     return false;
   }
 
@@ -2031,19 +2044,32 @@ export async function calculateRoute(run, JWT){
   const ETAMultiplier = parseFloat("1." + runTimingsData.ETAMultiplierPercentage.toString());
 
   const groupedStops = getDuplicationStopLocations(stops);
-  
+
   const lockedStops = getLockedStops(stops);
 
   const stopJSONs = getStopRequestJSON(runTimingsData, groupedStops, lockedStops, run.isTimeLocked, globalStartTime);
-  
-  if(lockedStops === false){
-    return false;
-  }
 
   const precedenceRules = getPrecedenceRules(lockedStops, stopJSONs.length);
 
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, globalStartTime, globalEndTime);
+  
   const optimisedRouteJSON = await fetchOptimisedRoute(requestBody, JWT);
+  console.log(optimisedRouteJSON);
+
+  const optimisedRouteHasAllExpectedStops = checkIfOptimisedRouteHasExpectedStops(groupedStops, optimisedRouteJSON);
+
+  if(!optimisedRouteHasAllExpectedStops){
+
+    logInfo("Optimised route didnt have expected stops", {
+      stopIds: stops,
+      shipmentName: run.shipmentName,
+      optimisedRouteJSON: optimisedRouteJSON
+    });
+
+    calculationError = "Optmised route was missing a stop - tell James";
+    return false;
+
+  }
 
 
   if(optimisedRouteJSON['skippedShipments'] != undefined){
@@ -2055,6 +2081,7 @@ export async function calculateRoute(run, JWT){
     calculationError = "Unknown error";
     return false;
   }
+
 
   const updatedStops = updateStopOrder(optimisedRouteJSON, groupedStops, ETAMultiplier);
 
@@ -2093,12 +2120,13 @@ export async function calculateRoute(run, JWT){
     run.stops = updatedStops;
     run.isOptimised = true;
     run.runTime = runTime;
-
-    console.log(run);
     
     logInfo("Calculated route " + run.runName + " in shipment " + run.shipmentName, {
         stopIds: stops,
-        shipmentName: run.shipmentName
+        shipmentName: run.shipmentName,
+        runID: run.documentId,
+        optimisedRouteJSON: optimisedRouteJSON,
+        requestBody: requestBody
     });
 
     return optimisedRouteJSON;
@@ -2107,6 +2135,95 @@ export async function calculateRoute(run, JWT){
     console.log(e);
     return false;
   }
+
+}
+
+function checkIfOptimisedRouteHasExpectedStops(groupedStops, optimisedRouteJSON){
+
+  //check if shipments labels match those given
+  const nonDuplicateStops = groupedStops.nonDuplicateStops;
+  const duplicateStops = groupedStops.duplicateStops;
+  let visits;
+
+  try{
+
+    visits = optimisedRouteJSON['routes'][0]['visits'];
+
+    if(visits === undefined){
+      return false;
+    }
+
+  }catch(e){
+
+    console.log(e);
+    logInfo("Error finding number of visits in optimisedRouteJSON", {
+      groupedStops: groupedStops,
+      optimisedRouteJSON: optimisedRouteJSON
+    });
+
+    return false;
+
+  }
+
+  const shipmentLabels = Array.from(duplicateStops.keys());
+  const optimisedRouteShipmentLabels = [];
+
+  for(let i = 0; i < nonDuplicateStops.length; i++){
+    
+    const primaryKey = nonDuplicateStops[i]['orderID'] + "_" + nonDuplicateStops[i]['stopType'];
+    shipmentLabels.push(primaryKey);
+
+  }
+
+  for(let i = 0; i < visits.length; i++){
+    
+    try{
+
+      optimisedRouteShipmentLabels.push(visits[i]['shipmentLabel']);
+
+    }catch(e){
+
+      logInfo("Optimised stop missing shipmentLabel", {
+        optimisedVisit: visits[i],
+        optimisedRouteShipmentLabels: optimisedRouteShipmentLabels,
+        clientShipmentLabels: shipmentLabels
+      });
+
+      return false;
+    }
+
+  }
+
+  for(let i = 0; i < shipmentLabels.length; i++){
+    
+    if(!optimisedRouteShipmentLabels.includes(shipmentLabels[i])){
+      logInfo("Stop missing in optimised route (optimisedRouteShipmentLabels -> shipmentLabel)", {
+        optimisedRouteShipmentLabels: optimisedRouteShipmentLabels,
+        clientShipmentLabels: shipmentLabels
+      });
+
+      return false
+
+    }
+
+  }
+
+
+  for(let i = 0; i < optimisedRouteShipmentLabels.length; i++){
+    
+    if(!shipmentLabels.includes(optimisedRouteShipmentLabels[i])){
+      logInfo("Stop missing in optimised route (shipmentLabel -> optimisedRouteShipmentLabels)", {
+        optimisedRouteShipmentLabels: optimisedRouteShipmentLabels,
+        clientShipmentLabels: shipmentLabels
+      });
+
+      return false
+
+    }
+
+  }
+
+  return true;
 
 }
 
@@ -2173,6 +2290,11 @@ function updateStopOrder(optimisedRouteJSON, groupedStops, ETAMultiplier){
         startTimeOffset += additionalDriveTime;
 
       }else{
+        
+        logInfo("Run" + run.runName + " in shipment " + run.shipmentName + " failed to calculate due to not being able to process stop after calculation", {
+          shipmentLabel: shipmentLabel,
+        });
+        
         //error key should always be in duplicateStops
         return false;
       }
@@ -2267,6 +2389,10 @@ async function fetchOptimisedRoute(requestBody, JWT){
     if(json['error'] != null){
 
       console.log(json['error']['message']);
+      
+      logInfo("Run" + run.runName + " in shipment " + run.shipmentName + " failed to calculate due to error response from API", {
+        APIErrorMessage: json['error']['message'],
+      });
       return false;
 
     }
@@ -2275,6 +2401,11 @@ async function fetchOptimisedRoute(requestBody, JWT){
 
   } catch (error) {
     console.error(error.message);
+
+    logInfo("Run" + run.runName + " in shipment " + run.shipmentName + " failed to calculate due to try catch error", {
+      errorMessage: error.message,
+    });
+
     return false
   }
 
