@@ -1107,8 +1107,6 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   const stopsOfRunAddingStops = runDocument.data()['stops'];
 
-  const currentNumberOfStops = stopsOfRunAddingStops.length; 
-
   for(let i = 0; i < stopsToAdd.length; i++){
 
     stopsToAdd[i].isLocked = false;
@@ -1117,27 +1115,27 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   }
 
-  let newStops;
+  let runAddingStopsNew;
 
   if(runDocument.data().runName != null){
 
     const startOfStops = stopsOfRunAddingStops.slice(0, 1);
     const endOfStops = stopsOfRunAddingStops.slice(1, stopsOfRunAddingStops.length);
 
-    newStops = startOfStops.concat(stopsToAdd).concat(endOfStops);
-    console.log(newStops);
+    runAddingStopsNew = startOfStops.concat(stopsToAdd).concat(endOfStops);
+    console.log(runAddingStopsNew);
 
-    for(let i = 0; i < newStops.length; i++){
+    for(let i = 0; i < runAddingStopsNew.length; i++){
 
-      newStops[i].stopNumber = i + 1;
+      runAddingStopsNew[i].stopNumber = i + 1;
 
     }
 
   }else{
-    newStops = stopsOfRunAddingStops.concat(stopsToAdd);
+    runAddingStopsNew = stopsOfRunAddingStops.concat(stopsToAdd);
   }
 
-  batch.update(runRef, {"stops": newStops, isOptimised: false});
+  batch.update(runRef, {"stops": runAddingStopsNew, isOptimised: false});
 
 
   try{
@@ -1147,8 +1145,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
     const runRemovingStopsName = runRemovingStopsDocument.data()['runName'];
     const runAddingStopsName = runDocument.data()['runName'];
 
-    logAssignedStops(runRemovingStopsName, runAddingStopsName, stopsToAdd);
-
+    logAssignedStops(runRemovingStopsName, runAddingStopsName, stopsToAdd, runAddingStopsNew, stopsOfRunAddingStops, stopsWithStopsRemoved, stopsOfRunRemovingStops);
 
   }catch(e){
 
@@ -2054,7 +2051,6 @@ export async function calculateRoute(run, JWT){
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, globalStartTime, globalEndTime);
   
   const optimisedRouteJSON = await fetchOptimisedRoute(requestBody, JWT);
-  console.log(optimisedRouteJSON);
 
   const optimisedRouteHasAllExpectedStops = checkIfOptimisedRouteHasExpectedStops(groupedStops, optimisedRouteJSON);
 
@@ -2070,7 +2066,6 @@ export async function calculateRoute(run, JWT){
     return false;
 
   }
-
 
   if(optimisedRouteJSON['skippedShipments'] != undefined){
     calculationError = "Impossible run with the given constraints, try loosening the time window";
@@ -2155,7 +2150,6 @@ function checkIfOptimisedRouteHasExpectedStops(groupedStops, optimisedRouteJSON)
 
   }catch(e){
 
-    console.log(e);
     logInfo("Error finding number of visits in optimisedRouteJSON", {
       groupedStops: groupedStops,
       optimisedRouteJSON: optimisedRouteJSON

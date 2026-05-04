@@ -20,7 +20,7 @@ export async function logInfo(message, data = {}, tags = {}) {
 
 }
 
-export async function logAssignedStops(runRemovingStopsName, runAddingStopsName, stopsToAdd){
+export async function logAssignedStops(runRemovingStopsName, runAddingStopsName, stopsToAdd, runAddingStopsNew, runAddingStopsInitial, runRemovingStopsNew, runRemovingStopsInitial){
 
     if(runRemovingStopsName == null){
         runRemovingStopsName = "Unassigned";
@@ -34,6 +34,10 @@ export async function logAssignedStops(runRemovingStopsName, runAddingStopsName,
         stopIds: stopsToAdd.map(s => s.orderID + "_" + s.stopType),
         runAddingStopsName,
         runRemovingStopsName,
+        runAddingStopsInitial,
+        runAddingStopsNew,
+        runRemovingStopsInitial,
+        runRemovingStopsNew
     });
 
 }
