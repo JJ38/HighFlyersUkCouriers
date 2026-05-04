@@ -1589,9 +1589,9 @@ async function updateSelectAssignStaffMember(){
     hideUI(selectAssignStaffWrapper);
     showUI(assignedStaffTextWrapper);
 
-    // if(assignedStaffMember != undefined){}
-
-    assignedStaffText.innerText = assignedStaffMember.replaceAll("@placeholder.com", "");
+    if(assignedStaffMember != undefined){
+      assignedStaffText.innerText = assignedStaffMember.replaceAll("@placeholder.com", "");
+    }
 
   }
 
