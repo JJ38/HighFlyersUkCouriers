@@ -459,7 +459,7 @@ function addEventListeners(){
         showNotification("Error!", "Error assigning stop(s) to run");
 
       }
-
+      console.log(currentSelectedRun.documentId); //ySKsjTvwdDpW1vcUASH8
       const runObject = await selectRun(currentSelectedRun.documentId);
       currentSelectedRun = runObject;
       updateUnassignedOrdersTable(runObject);
@@ -570,7 +570,9 @@ function addEventListeners(){
       const result = await removeStopsFromShipment(stopIDs, currentShipmentUnassignedOrders);
       
       hideUI(removeStopsWidget);
-      
+
+      const runObject = await selectRun(currentSelectedRun.documentId);
+      currentSelectedRun = runObject;
       updateUnassignedOrdersTable(currentSelectedRun);
 
       if(result){
@@ -1586,6 +1588,8 @@ async function updateSelectAssignStaffMember(){
     //set 
     hideUI(selectAssignStaffWrapper);
     showUI(assignedStaffTextWrapper);
+
+    // if(assignedStaffMember != undefined){}
 
     assignedStaffText.innerText = assignedStaffMember.replaceAll("@placeholder.com", "");
 

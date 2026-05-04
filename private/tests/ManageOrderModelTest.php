@@ -18,20 +18,6 @@ final class ManageOrderModelTest extends TestCase {
     public function getDeliveryWeek($current_date, $delivery_date) : int{
 
 
-        // //is it after 4pm on Monday
-        // if($current_date->format('D') == "Mon" && $current_date->format('H') >= 16){
-        //     //delivery tuesday after next
-        //     $delivery_date->modify('next monday');
-            
-        // }else if($current_date->format('D') == "Mon" && $current_date->format('H') >= 16){
-
-        //     $delivery_date->modify('next monday')->modify('next monday');
-
-        // }else{
-
-        //     //delivery next tuesday
-        // }
-
         if($current_date->format('D') == "Mon"){
 
             if($current_date->format('H') >= 16){
@@ -43,7 +29,6 @@ final class ManageOrderModelTest extends TestCase {
             $delivery_date->modify('next monday');
 
         }
-
 
         $delivery_week = intval($delivery_date->format('W'));
 
