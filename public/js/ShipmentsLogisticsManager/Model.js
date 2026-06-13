@@ -708,18 +708,6 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
 
   }
 
-  //get coordinates of stops
-
-  const promises = [];
-
-  for(let i = 0; i < stopsToAdd.length; i++){
-
-    promises.push(addCoordinatesToStop(stopsToAdd[i]));
-
-  }
-
-  await Promise.all(promises);
-
   //returns false or a string
   const result = isStopInShipment(runData, stopsToAdd);
   
