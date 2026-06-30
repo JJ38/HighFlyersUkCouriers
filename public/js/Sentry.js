@@ -31,13 +31,13 @@ export async function logAssignedStops(runRemovingStopsName, runAddingStopsName,
     }
 
     Sentry.logger.info("Assigned stops", {
-        stopIds: stopsToAdd.map(s => s.orderID + "_" + s.stopType),
+        stopIds: stopsToAdd.map(s => `${s.orderID}_${s.stopType}`).join(" "),
         runAddingStopsName,
         runRemovingStopsName,
-        runAddingStopsInitial,
-        runAddingStopsNew,
-        runRemovingStopsInitial,
-        runRemovingStopsNew
+        runAddingStopsInitial: JSON.stringify(runAddingStopsInitial),
+        runAddingStopsNew: JSON.stringify(runAddingStopsNew),
+        runRemovingStopsInitial: JSON.stringify(runRemovingStopsInitial),
+        runRemovingStopsNew: JSON.stringify(runRemovingStopsNew)
     });
 
 }

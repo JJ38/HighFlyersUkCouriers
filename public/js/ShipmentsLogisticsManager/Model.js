@@ -2062,14 +2062,9 @@ export async function calculateRoute(run, JWT){
       optimisedRouteJSON: optimisedRouteJSON
     });
 
-    calculationError = "Optmised route was missing a stop - tell James";
+    calculationError = "Optmised route is impossible with the given constraints, try loosening the time window or unlocking some stops";
     return false;
 
-  }
-
-  if(optimisedRouteJSON['skippedShipments'] != undefined){
-    calculationError = "Impossible run with the given constraints, try loosening the time window";
-    return false;
   }
 
   if(optimisedRouteJSON === false){
