@@ -379,23 +379,26 @@ class ManageOrderModel
     $delivery_date = new DateTime();
     $delivery_date->setTimezone(new DateTimeZone('Europe/London'));
 
+    $delivery_week = $this->calculateDeliveryWeek($current_date, $delivery_date);
+
+    return $delivery_week; 
+
+  }
+
+  public function calculateDeliveryWeek($current_date, $delivery_date) : int{
+
     if($current_date->format('D') == "Mon"){
 
-        if($current_date->format('H') >= 16){
+        if($current_date->format('H') >= 17){
             $delivery_date->modify('next monday');
         }
 
     }else{
 
         $delivery_date->modify('next monday');
-
     }
 
-
-    $delivery_week = intval($delivery_date->format('W'));
-
-    return $delivery_week; 
-
+    return intval($delivery_date->format('W'));
   }
 
   public function calculateOrderPrice(){

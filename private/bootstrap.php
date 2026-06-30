@@ -21,7 +21,7 @@ $settings = require __DIR__ . '/app/' . 'settings.php';
 $app_path = __DIR__ . APP_PATH;
 
 /** Instantiation of Slim DIC. */
-$container = new \Slim\Container($settings);
+$container = new \Slim\Container([]);
 
 /** Dependencies File - Using DIC Containers for different classes. */
 require $app_path . 'dependencies.php';
@@ -30,12 +30,9 @@ require $app_path . 'dependencies.php';
 //$app = AppFactory::create();
 $app = new \Slim\App($container);
 
-
-
 /** Routes and Middleware. */
 require $app_path . 'routes.php';
 require $app_path . 'middleware.php';
 
-
-
 $app->run();
+

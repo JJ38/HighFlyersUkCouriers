@@ -708,18 +708,6 @@ export async function assignStopsToShipment(orderIDs, stopType, selectedShipment
 
   }
 
-  //get coordinates of stops
-
-  const promises = [];
-
-  for(let i = 0; i < stopsToAdd.length; i++){
-
-    promises.push(addCoordinatesToStop(stopsToAdd[i]));
-
-  }
-
-  await Promise.all(promises);
-
   //returns false or a string
   const result = isStopInShipment(runData, stopsToAdd);
   
@@ -1993,7 +1981,6 @@ export async function calculateRoute(run, JWT){
 
   logInfo("Attempting to calculate route " + run.runName + " in shipment " + run.shipmentName, {
     stopIds: stops,
-    shipmentName: run.shipmentName
   });
 
   const originCoordinates = run.settings.start.location;
@@ -2005,7 +1992,6 @@ export async function calculateRoute(run, JWT){
 
     logInfo("Run" + run.runName + " in shipment " + run.shipmentName + " failed to calculate as client was out of sync with database", {
       stopIds: stops,
-      shipmentName: run.shipmentName
     });
 
     return false;
@@ -2017,7 +2003,6 @@ export async function calculateRoute(run, JWT){
 
     logInfo("Run" + run.runName + " in shipment " + run.shipmentName + " failed to calculate due to run timing document being unavailable", {
       stopIds: stops,
-      shipmentName: run.shipmentName
     });
 
     return false;
@@ -2059,6 +2044,7 @@ export async function calculateRoute(run, JWT){
     logInfo("Optimised route didnt have expected stops", {
       stopIds: stops,
       shipmentName: run.shipmentName,
+      runName: run.runName,
       optimisedRouteJSON: optimisedRouteJSON
     });
 
@@ -2280,7 +2266,7 @@ function updateStopOrder(optimisedRouteJSON, groupedStops, ETAMultiplier){
 
       }else{
         
-        logInfo("Run" + run.runName + " in shipment " + run.shipmentName + " failed to calculate due to not being able to process stop after calculation", {
+        logInfo("Run failed to calculate due to not being able to process stop after calculation", {
           shipmentLabel: shipmentLabel,
         });
         
@@ -2379,7 +2365,7 @@ async function fetchOptimisedRoute(requestBody, JWT){
 
       console.log(json['error']['message']);
       
-      logInfo("Run" + run.runName + " in shipment " + run.shipmentName + " failed to calculate due to error response from API", {
+      logInfo("Run failed to calculate due to error response from API", {
         APIErrorMessage: json['error']['message'],
       });
       return false;
@@ -2391,7 +2377,7 @@ async function fetchOptimisedRoute(requestBody, JWT){
   } catch (error) {
     console.error(error.message);
 
-    logInfo("Run" + run.runName + " in shipment " + run.shipmentName + " failed to calculate due to try catch error", {
+    logInfo("Run failed to calculate due to try catch error", {
       errorMessage: error.message,
     });
 
