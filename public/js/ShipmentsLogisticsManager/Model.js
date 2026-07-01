@@ -1990,7 +1990,7 @@ export async function calculateRoute(run, JWT){
 
   if(!runInSync){
 
-    logInfo("Run" + run.runName + " in shipment " + run.shipmentName + " failed to calculate as client was out of sync with database", {
+    logInfo("Run " + run.runName + " in shipment " + run.shipmentName + " failed to calculate as client was out of sync with database", {
       stopIds: stops,
     });
 

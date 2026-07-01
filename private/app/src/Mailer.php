@@ -160,7 +160,7 @@ class Mailer{
     ''.
     '<p>To contact for anything urgent out of hours please call 07707889868 (no bookings are taken on this number)</p>'.
     ''.
-    '<p>Please note that last bookings need to be sent in by each Sunday 4pm for collections the following week, if you have sent this after Sunday 4pm, your order will be automatically booked into the week after. However, if we can fit your booking in sooner, we will contact you.</p>'.
+    '<p>Please note that last bookings need to be sent in by each Monday 5pm for collections the following week, if you have sent this after Monday 5pm, your order will be automatically booked into the week after. However, if we can fit your booking in sooner, we will contact you.</p>'.
     ''.
     '<p>Many thanks for your custom</p>'.
     ''.
@@ -573,7 +573,7 @@ class Mailer{
       ''.
       '<p>To contact for anything urgent out of hours please call 07707889868 (no bookings are taken on this number)</p>'.
       ''.
-      '<p>Please note that last bookings need to be sent in by each Sunday 4pm for collections the following week, if you have sent this after Sunday 4pm, your order will be automatically booked into the week after. However, if we can fit your booking in sooner, we will contact you.</p>'.
+      '<p>Please note that last bookings need to be sent in by each Monday 5pm for collections the following week, if you have sent this after Monday 5pm, your order will be automatically booked into the week after. However, if we can fit your booking in sooner, we will contact you.</p>'.
       ''.
       '<p>Many thanks for your custom</p>'.
       ''.
