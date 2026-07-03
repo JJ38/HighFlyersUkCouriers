@@ -2,7 +2,7 @@ import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion, 
 import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
 import { GeocodingAPIKey, calculateRouteEndpoint } from '/js/Settings.js';
 import { DateTime } from "luxon";
-import { logAssignedStops, logRemoveStopsFromShipment, logAddStopsToShipment, logInfo } from "/js/Sentry.js";
+import { logAssignedStops, logRemoveStopsFromShipment, logAddStopsToShipment, logInfo, logErrorAssigningStops } from "/js/Sentry.js";
 
 let GoogleAutocomplete;
 let customerAccounts;
@@ -658,7 +658,7 @@ export async function fetchRunsInShipment(runIDs){
 
 }
 
-//assigns stops to the unassighed run within the currently selected shipment
+//assigns stops to the unassigned run within the currently selected shipment
 export async function assignStopsToShipment(orderIDs, stopType, selectedShipment){
 
   let runData;
@@ -1069,6 +1069,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
     stopsWithStopsRemoved[i].isLocked = false;
   }
 
+
   batch.update(runRemovingStopRef, {"stops": stopsWithStopsRemoved, isOptimised: false})
 
   //add runs to run document
@@ -1078,6 +1079,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
     return stops.includes(primaryKey);
 
   });
+
 
   const runRef = doc(db, 'Runs', runToAddStopID); 
   let runDocument;
@@ -1124,6 +1126,36 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
   }
 
   batch.update(runRef, {"stops": runAddingStopsNew, isOptimised: false});
+
+
+
+
+
+  //check if any stops are missing.
+
+  const numberOfStopsAfter = stopsWithStopsRemoved.length + runAddingStopsNew.length;
+  const numberOfStopsBefore = stopsOfRunRemovingStops.length + stopsOfRunAddingStops.length;
+
+  if(numberOfStopsAfter != numberOfStopsBefore){
+    console.log("numberOfStopsAfter != numberOfStopsBefore");
+    logErrorAssigningStops(stopsWithStopsRemoved, runAddingStopsNew, stops);
+    return false;
+  }
+
+
+  if(stopsWithStopsRemoved.length + stops.length != stopsOfRunRemovingStops.length){
+    console.log("stopsWithStopsRemoved.length + stops.length != stopsOfRunRemovingStops.length");
+    logErrorAssigningStops(stopsWithStopsRemoved, runAddingStopsNew, stops);
+    return false;
+  }
+
+
+  if(runAddingStopsNew.length - stops.length != stopsOfRunAddingStops.length){
+    console.log("runAddingStopsNew.length - stops.length != stopsOfRunAddingStops.length");
+    logErrorAssigningStops(stopsWithStopsRemoved, runAddingStopsNew, stops);
+    return false;
+  }
+
 
 
   try{

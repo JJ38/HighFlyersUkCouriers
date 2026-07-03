@@ -77,6 +77,11 @@ $app->post('/delete-order', function (Request $request, Response $response) use 
     $query_result = $delete_order_model->getFirebaseFirestoreResult();
 
     if($query_result){
+
+      if($logger != null){
+        $logger->error('DELETE_ORDER_POST', array($tainted_parameters));
+      }
+      
       return $response->withRedirect('/manage-orders?deleted=true', 302);
     }
 

@@ -21,7 +21,7 @@ $settings = require __DIR__ . '/app/' . 'settings.php';
 $app_path = __DIR__ . APP_PATH;
 
 /** Instantiation of Slim DIC. */
-$container = new \Slim\Container([]);
+$container = new \Slim\Container($settings);
 
 /** Dependencies File - Using DIC Containers for different classes. */
 require $app_path . 'dependencies.php';

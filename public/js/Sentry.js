@@ -46,7 +46,7 @@ export async function logAssignedStops(runRemovingStopsName, runAddingStopsName,
 export async function logRemoveStopsFromShipment(stops, shipmentName){
 
     Sentry.logger.info("Removing stops from shipment ", {
-        stopIds: stops,
+        stopIds: stops.map(s => s).join(" "),
         shipmentName: shipmentName
     });
 
@@ -55,8 +55,18 @@ export async function logRemoveStopsFromShipment(stops, shipmentName){
 export async function logAddStopsToShipment(stops, shipmentName){
 
     Sentry.logger.info("Adding stops to shipment ", {
-        stopIds: stops.map(s => s.orderID + "_" + s.stopType),
+        stopIds: stops.map(s => `${s.orderID}_${s.stopType}`).join(" "),
         shipmentName: shipmentName
+    });
+
+}
+
+export async function logErrorAssigningStops(stopsWithStopsRemoved, runAddingStopsNew, stops){
+
+    Sentry.logger.info("Error assigning stops ", {
+        stopIds: stops.map(s => `${s.orderID}_${s.stopType}`).join(" "),
+        stopsWithStopsRemoved: JSON.stringify(stopsWithStopsRemoved),
+        runAddingStopsNew: JSON.stringify(runAddingStopsNew),
     });
 
 }
