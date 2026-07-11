@@ -450,13 +450,13 @@ function addEventListeners(){
       const result = await assignStopsToRun(selectAssignStopsRun.value, orderIDs, currentShipmentUnassignedOrders);
 
       
-      if(result){
+      if(result === true){
         
         showNotification("Success!", "Stop(s) successfully assigned to run");
 
       }else{
 
-        showNotification("Error!", "Error assigning stop(s) to run");
+        showNotification("Error!", "Error assigning stop(s) to run " + result);
 
       }
       console.log(currentSelectedRun.documentId); //ySKsjTvwdDpW1vcUASH8
@@ -701,7 +701,7 @@ function addEventListeners(){
       }
 
       //remove run document
-      if(assignStopsResult){
+      if(assignStopsResult === true){
 
         if(currentShipmentUnassignedOrders == currentSelectedRun.documentId){
           showNotification("Error!", "Cannot remove unassigned stops document from shipment");
@@ -724,7 +724,7 @@ function addEventListeners(){
    
       }else{
 
-        showNotification("Error!", "Error removing run from shipment");
+        showNotification("Error!", "Error removing run from shipment " + assignStopsResult);
 
       }
 
@@ -2534,7 +2534,7 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops
 
     const result = await assignStopsToRun(currentShipmentUnassignedOrders, [stop.orderID + "_" + stop.stopType], runDocumentID);
 
-    if(result){
+    if(result === true){
 
       showNotification("Success!", "Removed stop from run");
 
@@ -2549,7 +2549,7 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops
       return;
     } 
 
-    showNotification("Error!", "Error removing stop from run");
+    showNotification("Error!", "Error removing stop from run " + result);
 
   })
 

@@ -1135,32 +1135,29 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
   const numberOfStopsBefore = stopsOfRunRemovingStops.length + stopsOfRunAddingStops.length;
 
   if(numberOfStopsAfter != numberOfStopsBefore){
-    console.log("numberOfStopsAfter != numberOfStopsBefore");
 
     const message = "Number of stops before assignment and after assignment are different. Before: " + numberOfStopsBefore + " After: " + numberOfStopsAfter;
     
     logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, message);
-    return false;
+    return message;
   }
 
 
   if(runRemovingStopsWithStopsRemoved.length + stops.length != stopsOfRunRemovingStops.length){
-    console.log("runRemovingStopsWithStopsRemoved.length + stops.length != stopsOfRunRemovingStops.length");
 
     const message = "Removing stops from run removed more than expected. Before: " + stopsOfRunRemovingStops.length + " After: " + runRemovingStopsWithStopsRemoved.length + " Stops removed: " + stops.length;
 
     logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, message);
-    return false;
+    return message;
   }
 
 
   if(runAddingStopsWithAddedStops.length - stops.length != stopsOfRunAddingStops.length){
-    console.log("runAddingStopsWithAddedStops.length - stops.length != stopsOfRunAddingStops.length");
 
     const message = "Run adding stops added more than expected. Before: " + stopsOfRunAddingStops.length + " After: " + runAddingStopsWithAddedStops.length + " Stops added: " + stops.length;
 
     logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, message);
-    return false;
+    return message;
   }
 
 
@@ -2057,7 +2054,7 @@ export async function calculateRoute(run, JWT){
     .toUTC().set({ hour: startTime.hour, minute: startTime.minute })
 
   const globalEndTime = currentDate
-    .plus({ hours: 48 })
+    .plus({ hours: 24 })
     .toUTC();
 
 
