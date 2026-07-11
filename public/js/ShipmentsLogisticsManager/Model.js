@@ -7,9 +7,14 @@ import { logAssignedStops, logRemoveStopsFromShipment, logAddStopsToShipment, lo
 let GoogleAutocomplete;
 let customerAccounts;
 let calculationError;
+let errorMessage;
 
 export function getCalculationError(){
   return calculationError;
+}
+
+export function getErrorMessage(){
+  return errorMessage;
 }
 
 export const sortAlphabetically = (a, b) => {
@@ -1136,28 +1141,28 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   if(numberOfStopsAfter != numberOfStopsBefore){
 
-    const message = "Number of stops before assignment and after assignment are different. Before: " + numberOfStopsBefore + " After: " + numberOfStopsAfter;
+    errorMessage = "Number of stops before assignment and after assignment are different. Before: " + numberOfStopsBefore + " After: " + numberOfStopsAfter;
     
-    logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, message);
-    return message;
+    logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, errorMessage);
+    return false;
   }
 
 
   if(runRemovingStopsWithStopsRemoved.length + stops.length != stopsOfRunRemovingStops.length){
 
-    const message = "Removing stops from run removed more than expected. Before: " + stopsOfRunRemovingStops.length + " After: " + runRemovingStopsWithStopsRemoved.length + " Stops removed: " + stops.length;
+    errorMessage = "Removing stops from run removed more than expected. Before: " + stopsOfRunRemovingStops.length + " After: " + runRemovingStopsWithStopsRemoved.length + " Stops removed: " + stops.length;
 
-    logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, message);
-    return message;
+    logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, errorMessage);
+    return false;
   }
 
 
   if(runAddingStopsWithAddedStops.length - stops.length != stopsOfRunAddingStops.length){
 
-    const message = "Run adding stops added more than expected. Before: " + stopsOfRunAddingStops.length + " After: " + runAddingStopsWithAddedStops.length + " Stops added: " + stops.length;
+    errorMessage = "Run adding stops added more than expected. Before: " + stopsOfRunAddingStops.length + " After: " + runAddingStopsWithAddedStops.length + " Stops added: " + stops.length;
 
-    logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, message);
-    return message;
+    logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, errorMessage);
+    return false;
   }
 
 
@@ -3538,5 +3543,29 @@ export async function getCustomerAccounts(){
   }
 
   customerAccounts = customerAccountMap;
+
+}
+
+export async function submitBugReport(){
+
+  //get previous state
+
+
+  //get current state
+
+
+  try{
+
+    //upload report to firebase
+    const bugReportRef = doc(collection(db, 'BugReports'));
+    await setDocument(bugReportRef, {"report": "test"});
+
+
+    return true;
+
+  }catch(e){
+
+    return false;
+  }
 
 }

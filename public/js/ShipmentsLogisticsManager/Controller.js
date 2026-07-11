@@ -3,7 +3,7 @@ import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
 import { createStaffSelectOptions, createDriverSelectOptions, createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "/js/ShipmentsLogisticsManager/Components";
-import { getCalculationError, getToggledTimeLockedStops, toggleTimeLockRun, unassignStaffMember, getCurrentAssignedStaffMemberID, getCurrentAssignedStaffMember, assignStaffMember, parseStaffDocuments, fetchStaffMembers, getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
+import { getErrorMessage, getCalculationError, getToggledTimeLockedStops, toggleTimeLockRun, unassignStaffMember, getCurrentAssignedStaffMemberID, getCurrentAssignedStaffMember, assignStaffMember, parseStaffDocuments, fetchStaffMembers, getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 
@@ -131,6 +131,10 @@ const unassignedOrdersTableBackArrow = document.getElementById('back_arrow_unass
 const addRunsTableBackArrow = document.getElementById('back_arrow_add_runs_table');
 const selectedRunBackArrow = document.getElementById('back_arrow_selected_run_view');
 
+const reportBugWidget = document.getElementById('report_bug_widget');
+const reportBugButton = document.getElementById('report_bug_button');
+const cancelReportBugButton = document.getElementById('cancel_report_bug_button');
+const submitReportBugButton = document.getElementById('submit_report_bug_button');
 
 const mapWrapper = document.getElementById("map");
 
@@ -450,13 +454,13 @@ function addEventListeners(){
       const result = await assignStopsToRun(selectAssignStopsRun.value, orderIDs, currentShipmentUnassignedOrders);
 
       
-      if(result === true){
+      if(result){
         
         showNotification("Success!", "Stop(s) successfully assigned to run");
 
       }else{
 
-        showNotification("Error!", "Error assigning stop(s) to run " + result);
+        showNotification("Error!", "Error assigning stop(s) to run - " + getErrorMessage());
 
       }
       console.log(currentSelectedRun.documentId); //ySKsjTvwdDpW1vcUASH8
@@ -701,7 +705,7 @@ function addEventListeners(){
       }
 
       //remove run document
-      if(assignStopsResult === true){
+      if(assignStopsResult){
 
         if(currentShipmentUnassignedOrders == currentSelectedRun.documentId){
           showNotification("Error!", "Cannot remove unassigned stops document from shipment");
@@ -724,7 +728,7 @@ function addEventListeners(){
    
       }else{
 
-        showNotification("Error!", "Error removing run from shipment " + assignStopsResult);
+        showNotification("Error!", "Error removing run from shipment - " + getErrorMessage());
 
       }
 
@@ -1153,6 +1157,38 @@ function addEventListeners(){
 
       });
 
+
+  }
+
+  if(reportBugButton != null){
+
+    reportBugButton.addEventListener('click', () => {
+
+      console.log("report bug button clicked");
+      reportBugWidget.classList.remove('hidden');
+
+
+    });
+
+  }
+
+  if(cancelReportBugButton != null){
+
+    cancelReportBugButton.addEventListener('click', () => {
+
+      reportBugWidget.classList.add('hidden');
+
+    });
+
+  }
+
+  if(submitReportBugButton != null){
+
+    submitReportBugButton.addEventListener('click', async () => {
+
+
+
+    });
 
   }
 
@@ -2534,7 +2570,7 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops
 
     const result = await assignStopsToRun(currentShipmentUnassignedOrders, [stop.orderID + "_" + stop.stopType], runDocumentID);
 
-    if(result === true){
+    if(result){
 
       showNotification("Success!", "Removed stop from run");
 
@@ -2549,7 +2585,7 @@ function getStopCard(stop, runDocumentID, stopNumber, isOptimised, numberOfStops
       return;
     } 
 
-    showNotification("Error!", "Error removing stop from run " + result);
+    showNotification("Error!", "Error removing stop from run - " + getErrorMessage());
 
   })
 

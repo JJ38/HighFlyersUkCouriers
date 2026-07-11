@@ -63,8 +63,6 @@ export async function logAddStopsToShipment(stops, shipmentName){
 
 export async function logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, message){
 
-    logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, message);
-
     Sentry.logger.info("Error assigning stops ", {
         stopIds: stops.map(s => s).join(" "),
         stopsOfRunRemovingStops: JSON.stringify(stopsOfRunRemovingStops),
