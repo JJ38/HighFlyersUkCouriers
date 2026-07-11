@@ -1,4 +1,4 @@
-import { db, getDocuments, filterSearch, auth } from "/js/Firebase.js";
+import { db, getDocuments, filterSearch, auth, getShipmentCollectionName } from "/js/Firebase.js";
 import { query, collection, limit, orderBy } from "firebase/firestore";
 import { showNotification } from "/js/Notification.js"
 import { createStopsWrapper, createStopAddress, createOption, createAddStopButton, createStopCard, createUnassignedOrdersTableCard, createUnassignedOrdersButton, createTableOrderCard, createRunCard } from "/js/ShipmentsLogisticsManager/Components.js"
@@ -1188,6 +1188,7 @@ function addEventListeners(){
 
       if(reportBugDescription.value == ""){
         showNotification("Error!", "Please enter a description of the bug you want to report");
+        return;
       }
 
       const result = await submitBugReport(currentSelectedShipmentName, reportBugDescription.value);
@@ -1890,8 +1891,8 @@ async function updateSelectShipment(shipmentName){
 
   try{
 
-    shipments = await getDocuments(query(collection(db, 'Shipments')));
- 
+    shipments = await getDocuments(query(collection(db, getShipmentCollectionName())));
+
   }catch(e){
 
     showNotification("Error!", "Error updating shipment options");

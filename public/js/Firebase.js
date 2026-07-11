@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, getDocs, getDoc, updateDoc, doc, query, orderBy, where, collection, runTransaction, or, documentId } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { firebaseConfig, databaseName } from "/js/FirebaseSettings.js";
+import { firebaseConfig, databaseName, sessionType } from "/js/FirebaseSettings.js";
 
 const app = initializeApp(firebaseConfig);
 
@@ -9,6 +9,27 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app); 
 export const db = getFirestore(app, databaseName);
 export const dbdev = getFirestore(app, 'development');
+
+
+export function getShipmentCollectionName(){
+
+    if(sessionType == "Prod"){
+        return "Shipments";
+    }
+
+    return "BugReportShipments";
+}
+
+
+export function getRunCollectionName(){
+
+    if(sessionType == "Prod"){
+        return "Runs";
+    }
+
+    return "BugReportRuns";
+}
+
 
 
 export async function getDocuments(q){

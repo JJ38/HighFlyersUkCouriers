@@ -1,5 +1,5 @@
 import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion, deleteDoc, setDoc } from "firebase/firestore";
-import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
+import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch, getShipmentCollectionName, getRunCollectionName } from "/js/Firebase.js";
 import { GeocodingAPIKey, calculateRouteEndpoint } from '/js/Settings.js';
 import { DateTime } from "luxon";
 import { logAssignedStops, logRemoveStopsFromShipment, logAddStopsToShipment, logInfo, logErrorAssigningStops } from "/js/Sentry.js";
@@ -602,7 +602,7 @@ function generateRunDoc(runName, runDefaultProperties, deliveryWeek, shipmentNam
 
 export async function fetchShipment(shipmentName){
   
-  const shipmentData = await getDocuments(query(collection(db, 'Shipments'), where("shipmentName", "==", shipmentName), limit(1)));
+  const shipmentData = await getDocuments(query(collection(db, getShipmentCollectionName()), where("shipmentName", "==", shipmentName), limit(1)));
 
   if(shipmentData.empty){
     console.log("shipment doesnt exist");
@@ -637,7 +637,7 @@ export async function fetchRun(runID){
 
   try{
 
-    const runData = await getDocument(query(doc(db, 'Runs', runID)));
+    const runData = await getDocument(query(doc(db, getRunCollectionName(), runID)));
     return runData;
 
   }catch(e){
@@ -1657,7 +1657,10 @@ export function parseRunInfo(doc, fuelSettings){
   
   }
 
-  if(runStruct.isOptimised && fuelSettings !== false){
+  console.log(runData['optimisedRoute']);
+  
+
+  if(runStruct.isOptimised && fuelSettings !== false && runStruct.optimisedRoute !== undefined){
 
     runStruct.fuelCost = calculateFuelCost(runData['optimisedRoute']['metrics']['aggregatedRouteMetrics']['travelDistanceMeters'], fuelSettings);
      
@@ -1945,7 +1948,7 @@ export function mergeStopsWithOrderData(stops, orders){
 
 async function checkIfRunIsInSync(clientStops, documentId){
 
-  const runDocument = await getDocument(query(doc(db, 'Runs', documentId)));
+  const runDocument = await getDocument(query(doc(db, getRunCollectionName(), documentId)));
 
   if(runDocument.data() == undefined || runDocument.data() == null){
 
@@ -3642,9 +3645,15 @@ export async function submitBugReport(currentSelectedShipmentName, bugMessage){
 
     }
 
+    const currentTime = DateTime.now();
+
+    const bugReportShipmentName = currentTime.toString() + " - " + currentSelectedShipmentName;
+
+
     //create shipment doc with run refs
     const bugReportRef = doc(collection(db, 'BugReportShipments'));
     batch.set(bugReportRef, {
+      "shipmentName": bugReportShipmentName,
       "message": bugMessage ?? "No message provided",
       "runs": runDocRefs,
     });
@@ -3669,7 +3678,7 @@ function generateBugReportRunDoc(run, orderData){
         stopType: stop.stopType ?? "unknown",
         stopNumber: stop.stopNumber ?? "unknown",
         stopTime: stop.stopTime ?? "unknown",
-        isLocked: stop.isLocked ?? "unknown",
+        isLocked: stop.isLocked ?? false,
         lockedStopTime: stop.lockedStopTime ?? "unknown",
         coordinates: stop.coordinates ?? "unknown",
         orderData: stop.orderData ?? "unknown"
@@ -3679,15 +3688,22 @@ function generateBugReportRunDoc(run, orderData){
   );
 
   const runDoc = {
-
-    runDocID: run.documentId ?? "unknown",
+    
+    assignedDriver: run.assignedDriver ?? "",
+    documentId: run.documentId ?? "unknown",
     runName: run.runName ?? "unknown",
+    runWeek: run.runWeek,
     shipmentName: run.shipmentName ?? "unknown",
-    isOptimised: run.isOptimised ?? "unknown",
-    isTimeLocked: run.isTimeLocked ?? "unknown",
+    isOptimised: run.isOptimised ?? false,
+    isTimeLocked: run.isTimeLocked ?? false,
     runTime: run.runTime ?? "unknown",
     settings: run.settings ?? "unknown",
     stops: stops
+
+  }
+
+  if(run.optimisedRoute !== undefined){
+    runDoc.optimisedRoute = run.optimisedRoute;
   }
 
   return runDoc;
