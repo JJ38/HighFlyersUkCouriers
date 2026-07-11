@@ -3546,7 +3546,7 @@ export async function getCustomerAccounts(){
 
 }
 
-export async function submitBugReport(currentSelectedShipmentName){  
+export async function submitBugReport(currentSelectedShipmentName, bugMessage){  
 
   console.log(currentSelectedShipmentName);
   if(currentSelectedShipmentName === null){
@@ -3640,17 +3640,12 @@ export async function submitBugReport(currentSelectedShipmentName){
       console.log(runDocs[i]);
       batch.set(runRef, runDocs[i]);
 
-      console.log(runRef);
-      console.log(runDocs[i]);
-      console.log("----------------------------------");
-
-
     }
 
     //create shipment doc with run refs
     const bugReportRef = doc(collection(db, 'BugReportShipments'));
     batch.set(bugReportRef, {
-      "message": "test",
+      "message": bugMessage ?? "No message provided",
       "runs": runDocRefs,
     });
 

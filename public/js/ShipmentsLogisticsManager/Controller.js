@@ -135,6 +135,7 @@ const reportBugWidget = document.getElementById('report_bug_widget');
 const reportBugButton = document.getElementById('report_bug_button');
 const cancelReportBugButton = document.getElementById('cancel_report_bug_button');
 const submitReportBugButton = document.getElementById('submit_report_bug_button');
+const reportBugDescription = document.getElementById('report_bug_description');
 
 const mapWrapper = document.getElementById("map");
 
@@ -1185,7 +1186,11 @@ function addEventListeners(){
 
     submitReportBugButton.addEventListener('click', async () => {
 
-      const result = await submitBugReport(currentSelectedShipmentName);
+      if(reportBugDescription.value == ""){
+        showNotification("Error!", "Please enter a description of the bug you want to report");
+      }
+
+      const result = await submitBugReport(currentSelectedShipmentName, reportBugDescription.value);
 
       if(result){
         showNotification("Success!", "Successfully submitted bug report");
