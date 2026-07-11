@@ -975,7 +975,7 @@ export async function removeStopsFromShipment(stops, unassignedStopsDocumentID){
 
   const currentUnassignedStops = unassignedStopsDocument.data()['stops'];
 
-  const unassignedStopsWithStopsRemoved = currentUnassignedStops.filter((stop) => {
+  const unassignedrunRemovingStopsWithStopsRemoved = currentUnassignedStops.filter((stop) => {
 
     const primaryKey = stop.orderID + "_" + stop.stopType;
     return !stops.includes(primaryKey);
@@ -984,7 +984,7 @@ export async function removeStopsFromShipment(stops, unassignedStopsDocumentID){
 
   try{
 
-    await updateDocument(runRef, {"stops": unassignedStopsWithStopsRemoved});
+    await updateDocument(runRef, {"stops": unassignedrunRemovingStopsWithStopsRemoved});
 
     logRemoveStopsFromShipment(stops, unassignedStopsDocument.data()['shipmentName']);
 
@@ -1052,7 +1052,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   const stopsOfRunRemovingStops = runRemovingStopsDocument.data()['stops'];
 
-  const stopsWithStopsRemoved = stopsOfRunRemovingStops.filter((stop) => {
+  const runRemovingStopsWithStopsRemoved = stopsOfRunRemovingStops.filter((stop) => {
 
     const primaryKey = stop.orderID + "_" + stop.stopType;
     return !stops.includes(primaryKey);
@@ -1061,16 +1061,16 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   //reorder stopNumbers
 
-  for(let i = 0; i < stopsWithStopsRemoved.length; i++){
+  for(let i = 0; i < runRemovingStopsWithStopsRemoved.length; i++){
 
-    stopsWithStopsRemoved[i].stopNumber = i + 1;
+    runRemovingStopsWithStopsRemoved[i].stopNumber = i + 1;
 
     //**hotfix for locked stops being moved when a stop is deleted from a run */
-    stopsWithStopsRemoved[i].isLocked = false;
+    runRemovingStopsWithStopsRemoved[i].isLocked = false;
   }
 
 
-  batch.update(runRemovingStopRef, {"stops": stopsWithStopsRemoved, isOptimised: false})
+  batch.update(runRemovingStopRef, {"stops": runRemovingStopsWithStopsRemoved, isOptimised: false})
 
   //add runs to run document
   const stopsToAdd = stopsOfRunRemovingStops.filter((stop) => {
@@ -1105,54 +1105,61 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
 
   }
 
-  let runAddingStopsNew;
+  let runAddingStopsWithAddedStops;
 
   if(runDocument.data().runName != null){
 
     const startOfStops = stopsOfRunAddingStops.slice(0, 1);
     const endOfStops = stopsOfRunAddingStops.slice(1, stopsOfRunAddingStops.length);
 
-    runAddingStopsNew = startOfStops.concat(stopsToAdd).concat(endOfStops);
-    console.log(runAddingStopsNew);
+    runAddingStopsWithAddedStops = startOfStops.concat(stopsToAdd).concat(endOfStops);
+    console.log(runAddingStopsWithAddedStops);
 
-    for(let i = 0; i < runAddingStopsNew.length; i++){
+    for(let i = 0; i < runAddingStopsWithAddedStops.length; i++){
 
-      runAddingStopsNew[i].stopNumber = i + 1;
+      runAddingStopsWithAddedStops[i].stopNumber = i + 1;
 
     }
 
   }else{
-    runAddingStopsNew = stopsOfRunAddingStops.concat(stopsToAdd);
+    runAddingStopsWithAddedStops = stopsOfRunAddingStops.concat(stopsToAdd);
   }
 
-  batch.update(runRef, {"stops": runAddingStopsNew, isOptimised: false});
-
-
+  batch.update(runRef, {"stops": runAddingStopsWithAddedStops, isOptimised: false});
 
 
 
   //check if any stops are missing.
 
-  const numberOfStopsAfter = stopsWithStopsRemoved.length + runAddingStopsNew.length;
+  const numberOfStopsAfter = runRemovingStopsWithStopsRemoved.length + runAddingStopsWithAddedStops.length;
   const numberOfStopsBefore = stopsOfRunRemovingStops.length + stopsOfRunAddingStops.length;
 
   if(numberOfStopsAfter != numberOfStopsBefore){
     console.log("numberOfStopsAfter != numberOfStopsBefore");
-    logErrorAssigningStops(stopsWithStopsRemoved, runAddingStopsNew, stops);
+
+    const message = "Number of stops before assignment and after assignment are different. Before: " + numberOfStopsBefore + " After: " + numberOfStopsAfter;
+    
+    logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, message);
     return false;
   }
 
 
-  if(stopsWithStopsRemoved.length + stops.length != stopsOfRunRemovingStops.length){
-    console.log("stopsWithStopsRemoved.length + stops.length != stopsOfRunRemovingStops.length");
-    logErrorAssigningStops(stopsWithStopsRemoved, runAddingStopsNew, stops);
+  if(runRemovingStopsWithStopsRemoved.length + stops.length != stopsOfRunRemovingStops.length){
+    console.log("runRemovingStopsWithStopsRemoved.length + stops.length != stopsOfRunRemovingStops.length");
+
+    const message = "Removing stops from run removed more than expected. Before: " + stopsOfRunRemovingStops.length + " After: " + runRemovingStopsWithStopsRemoved.length + " Stops removed: " + stops.length;
+
+    logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, message);
     return false;
   }
 
 
-  if(runAddingStopsNew.length - stops.length != stopsOfRunAddingStops.length){
-    console.log("runAddingStopsNew.length - stops.length != stopsOfRunAddingStops.length");
-    logErrorAssigningStops(stopsWithStopsRemoved, runAddingStopsNew, stops);
+  if(runAddingStopsWithAddedStops.length - stops.length != stopsOfRunAddingStops.length){
+    console.log("runAddingStopsWithAddedStops.length - stops.length != stopsOfRunAddingStops.length");
+
+    const message = "Run adding stops added more than expected. Before: " + stopsOfRunAddingStops.length + " After: " + runAddingStopsWithAddedStops.length + " Stops added: " + stops.length;
+
+    logErrorAssigningStops(runRemovingStopsWithStopsRemoved, runAddingStopsWithAddedStops, stopsOfRunRemovingStops, stopsOfRunAddingStops, stops, message);
     return false;
   }
 
@@ -1165,7 +1172,7 @@ export async function assignStopsToRun(runToAddStopID, stops, runToRemoveStopID)
     const runRemovingStopsName = runRemovingStopsDocument.data()['runName'];
     const runAddingStopsName = runDocument.data()['runName'];
 
-    logAssignedStops(runRemovingStopsName, runAddingStopsName, stopsToAdd, runAddingStopsNew, stopsOfRunAddingStops, stopsWithStopsRemoved, stopsOfRunRemovingStops);
+    logAssignedStops(runRemovingStopsName, runAddingStopsName, stopsToAdd, runAddingStopsWithAddedStops, stopsOfRunAddingStops, runRemovingStopsWithStopsRemoved, stopsOfRunRemovingStops);
 
   }catch(e){
 
