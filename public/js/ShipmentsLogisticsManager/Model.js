@@ -1,4 +1,4 @@
-import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion, deleteDoc } from "firebase/firestore";
+import { query, collection, where, limit, orderBy, doc, writeBatch, arrayUnion, deleteDoc, setDoc } from "firebase/firestore";
 import { db, getDocuments, getDocument, updateDocument, bulkReadTransaction, filterSearch } from "/js/Firebase.js";
 import { GeocodingAPIKey, calculateRouteEndpoint } from '/js/Settings.js';
 import { DateTime } from "luxon";
@@ -542,7 +542,7 @@ async function storeShipment(runDocuments, shipmentName, deliveryWeek){
   const batch = writeBatch(db);
 
   let runDocRefs = [];
-
+0
   for(let i = 0; i < runDocuments.length; i++){
 
     const runRef = doc(collection(db, 'Runs'));
@@ -3546,26 +3546,155 @@ export async function getCustomerAccounts(){
 
 }
 
-export async function submitBugReport(){
+export async function submitBugReport(currentSelectedShipmentName){  
 
-  //get previous state
-
+  console.log(currentSelectedShipmentName);
+  if(currentSelectedShipmentName === null){
+    errorMessage = "Please select a shipment to submit a bug report for";
+    return false;
+  }
 
   //get current state
+  const shipmentData = await fetchShipment(currentSelectedShipmentName);
 
+  if(shipmentData === false){
+    return false;
+  }
+
+  const runIDs = shipmentData.data()['runs'];
+  const runData = await fetchRunsInShipment(runIDs);
+  const runsList = [];
+
+  for(let i = 0; i < runData.length; i++){
+
+    runsList.push(parseRunInfo(runData[i], false));
+
+  }
+
+  for(let i = 0; i < runsList.length; i++){
+
+    for(let j = 0; j < runsList[i].stops.length; j++){
+
+      delete runsList[i].stops[j].orderData;
+
+    }
+
+  }
+
+  //fetch order data for each stop in each run  
+  const orderPromises = [];
+
+  for(let i = 0; i < runsList.length; i++){
+
+    for(let j = 0; j < runsList[i].stops.length; j++){
+
+      const orderPromise = getDocument(doc(db, 'Orders', runsList[i].stops[j].orderID));
+      orderPromises.push(orderPromise);
+      runsList[i].stops[j].orderData = orderPromise;
+
+    }
+
+  }
+
+  await Promise.all(orderPromises);
+
+  const runDocs = [];
+
+  for(let i = 0; i < runsList.length; i++){
+
+    for(let j = 0; j < runsList[i].stops.length; j++){
+
+      try{
+
+        const orderData = await runsList[i].stops[j].orderData;
+        const orderDocData = orderData.data();
+        runsList[i].stops[j].orderData = orderDocData;
+
+      }catch(e){
+
+        runsList[i].stops[j].orderData = "Error fetching order data";
+
+      }
+
+
+    }
+
+    runDocs.push(generateBugReportRunDoc(runsList[i]));
+
+  }
+
+  console.log(runsList);
 
   try{
 
     //upload report to firebase
-    const bugReportRef = doc(collection(db, 'BugReports'));
-    await setDocument(bugReportRef, {"report": "test"});
+    const batch = writeBatch(db);
+
+    //create run docs
+    const runDocRefs = [];
+
+    for(let i = 0; i < runDocs.length; i++){
+
+      const runRef = doc(collection(db, 'BugReportRuns'));
+      runDocRefs.push(runRef.id);
+      console.log(runDocs[i]);
+      batch.set(runRef, runDocs[i]);
+
+      console.log(runRef);
+      console.log(runDocs[i]);
+      console.log("----------------------------------");
 
 
+    }
+
+    //create shipment doc with run refs
+    const bugReportRef = doc(collection(db, 'BugReportShipments'));
+    batch.set(bugReportRef, {
+      "message": "test",
+      "runs": runDocRefs,
+    });
+
+    await batch.commit();
     return true;
 
   }catch(e){
-
+    console.log(e);
     return false;
   }
+
+}
+
+
+function generateBugReportRunDoc(run, orderData){
+
+  const stops = run.stops.map((stop) => {
+
+      return {
+        orderID: stop.orderID ?? "unknown",
+        stopType: stop.stopType ?? "unknown",
+        stopNumber: stop.stopNumber ?? "unknown",
+        stopTime: stop.stopTime ?? "unknown",
+        isLocked: stop.isLocked ?? "unknown",
+        lockedStopTime: stop.lockedStopTime ?? "unknown",
+        coordinates: stop.coordinates ?? "unknown",
+        orderData: stop.orderData ?? "unknown"
+      }
+    }
+
+  );
+
+  const runDoc = {
+
+    runDocID: run.documentId ?? "unknown",
+    runName: run.runName ?? "unknown",
+    shipmentName: run.shipmentName ?? "unknown",
+    isOptimised: run.isOptimised ?? "unknown",
+    isTimeLocked: run.isTimeLocked ?? "unknown",
+    runTime: run.runTime ?? "unknown",
+    settings: run.settings ?? "unknown",
+    stops: stops
+  }
+
+  return runDoc;
 
 }
