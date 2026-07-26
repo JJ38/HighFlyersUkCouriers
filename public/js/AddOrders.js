@@ -1,5 +1,7 @@
 import { createAccountSelectOptions } from "./FormModel";
 import { createAnimalTypeSelectOptions, initInternalOrderForm, createDescriptionTable } from "/js/FormModel.js";
+import { auth } from "/js/Firebase.js";
+import { onAuthStateChanged } from "firebase/auth";
 
 
 const email = document.getElementById('email');
@@ -23,8 +25,49 @@ const validPaymentOptions = ['Account', 'Collection', 'Delivery', 'Pickup'];
 const validAnimalTypes = ['Pigeons - Young Birds', 'Pigeons - Old Birds', 'Aviary & Cage Birds', 'Birds Of Prey', 'Reptiles', 'Small Mammals', 'Small Rodents', 'Poultry & Gamebirds'];
 
 let animalDescriptionTable;
+let role;
 
 init();
+
+onAuthStateChanged(auth, (user) => {
+
+    if(!user){
+        return;
+    }
+
+    auth.currentUser.getIdTokenResult().then((getIdTokenResult) => {
+
+        role = getIdTokenResult.claims.role;
+
+        if(role == "staff"){
+            restrictAccountPaymentOption();
+        }
+
+    });
+
+});
+
+function restrictAccountPaymentOption(){
+
+    const accountOption = payment.querySelector('option[value="Account"]');
+
+    if(accountOption != null){
+
+        if(accountOption.selected){
+            payment.value = "";
+        }
+
+        accountOption.remove();
+
+    }
+
+    const indexOfAccount = validPaymentOptions.indexOf('Account');
+
+    if(indexOfAccount != -1){
+        validPaymentOptions.splice(indexOfAccount, 1);
+    }
+
+}
 
 async function init(){
 

@@ -64,6 +64,43 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
         return $response->withRedirect('/manage-orders?updated=false', 301);
       }
 
+      $logger = $container->get('logger');
+
+      if($logger != null){
+        $logger->error('EDIT_ORDER_POST', array($tainted_parameters));
+      }
+
+      $authentication_model->setLogger($logger);
+      $authentication_model->fetchOAuth2Token();
+
+      $access_token = $authentication_model->getOAuth2Token();
+
+      $rest_API_wrapper = $container->get('restAPIWrapper');
+      $rest_API_wrapper->setLogger($logger);
+      $rest_API_wrapper->setAccessToken($access_token);
+
+      if($account_type == "staff" && $cleaned_parameters['payment_option'] == "Account"){
+
+        $rest_API_wrapper->initialiseConfig();
+        $rest_API_wrapper->fetchMultipleDocuments(['Orders/' . $tainted_parameters['docRef']]);
+
+        $original_payment_option = null;
+
+        if($rest_API_wrapper->getFirebaseFirestoreResult()){
+
+          $original_order_document = $rest_API_wrapper->getMultiDocuments()['Orders/' . $tainted_parameters['docRef']];
+          $original_payment_option = $original_order_document->getStringField('payment');
+
+        }
+
+        //only allow the submission through if the order's payment was already Account (i.e. it isn't being changed)
+        if($original_payment_option != "Account"){
+
+          return $response->withRedirect('/manage-orders?updated=false', 301);
+        }
+
+      }
+
       $cleaned_parameters['docRef'] = $tainted_parameters['docRef'];
 
      //convert printed value to int
@@ -74,21 +111,9 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
         $cleaned_parameters['printed'] = 0;
 
       }
-      
+
       //store in database
-      $logger = $container->get('logger');
 
-      
-      if($logger != null){
-        $logger->error('EDIT_ORDER_POST', array($tainted_parameters));
-      }
-
-
-      $authentication_model->setLogger($logger);
-      $authentication_model->fetchOAuth2Token();
-
-      $access_token = $authentication_model->getOAuth2Token();
-  
       $firestore = $authentication_model->getAuthenticatedFirebaseClient();
 
       if($firestore == null){
@@ -96,14 +121,10 @@ $app->post('/edit-order', function (Request $request, Response $response) use ($
       }
 
       $finance_model = $container->get('financeModel');
-      $rest_API_wrapper = $container->get('restAPIWrapper');
 
       if(empty($cleaned_parameters['price'])){
 
         //finance
-        $rest_API_wrapper->setLogger($logger);
-        $rest_API_wrapper->setAccessToken($access_token);
-
         $finance_model->setLogger($logger);
         $finance_model->setOrderData($cleaned_parameters);
 

@@ -1,5 +1,6 @@
-import { db, getDocuments } from "/js/Firebase.js";
+import { db, getDocuments, auth } from "/js/Firebase.js";
 import { where, query, collection } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import { createPaymentSelectOptions, fetchBirdSpecies, createAnimalTypeSelectOptions, createAccountSelectOptions, createDescriptionTable, initInternalOrderForm } from "/js/FormModel.js";
 
 
@@ -49,9 +50,25 @@ const fieldsMap = {
 let animalTypeOptions;
 let accountNameOptions;
 let paymentOptions;
+let originalPaymentValue;
+let role;
 
-init();
-addEventListeners();
+onAuthStateChanged(auth, (user) => {
+
+    if(!user){
+        return;
+    }
+
+    auth.currentUser.getIdTokenResult().then((getIdTokenResult) => {
+
+        role = getIdTokenResult.claims.role;
+
+        init();
+        addEventListeners();
+
+    });
+
+});
 
 
 async function init(){
@@ -181,15 +198,21 @@ async function init(){
                     break;
 
                 }
-                case "payment": 
+                case "payment":
                 {
+                    originalPaymentValue = sortedOrderData[fields];
+
                     const select = document.createElement('select');
                     select.id = "payment";
                     select.name = "payment";
-                    
+
                     let setSelected = false;
 
                     for(let i = 0; i < selectablePaymentOptions.length; i++){
+
+                        if(role == "staff" && selectablePaymentOptions[i] == "Account" && originalPaymentValue != "Account"){
+                            continue;
+                        }
 
                         if(paymentOptions[i].value == sortedOrderData[fields]){
                             paymentOptions[i].selected = true;
@@ -353,6 +376,10 @@ function validateForm(){
 
     if(!validPaymentTypeOptions.includes(payment.value)){
         return "Please select a valid payment option";
+    }
+
+    if(role == "staff" && payment.value == "Account" && originalPaymentValue != "Account"){
+        return "Staff members are not permitted to select Account as a payment option";
     }
 
     if(!validAnimalTypes.includes(animalTypeSelect.value)){

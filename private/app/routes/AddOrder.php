@@ -74,7 +74,7 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
   if(empty($cleaned_parameters)){
 
     $error_message = "Error (No parameters were posted - connection error)"; //default error message
-    
+
     $error_message = $manage_order_model->getErrorMessage();
     if($logger != null){
         $logger->error('INVALID_ORDER_ERROR', array($tainted_parameters));
@@ -83,7 +83,18 @@ $app->post('/add-order', function (Request $request, Response $response) use ($a
 
     return $response->withRedirect("/manage-orders?addorder=$error_message", 301);
   }
-  
+
+  if($account_type == "staff" && $cleaned_parameters['payment_option'] == "Account"){
+
+    $error_message = "Staff members are not permitted to select Account as a payment option";
+
+    if($logger != null){
+        $logger->error('INVALID_ORDER_ERROR_MESSAGE', array($error_message));
+    }
+
+    return $response->withRedirect("/manage-orders?addorder=$error_message", 301);
+  }
+
   $username = $request->getAttribute('username');
   $cleaned_parameters['added_by'] = $username;
 
