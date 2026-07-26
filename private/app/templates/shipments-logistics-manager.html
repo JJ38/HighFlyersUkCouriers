@@ -17,11 +17,11 @@
 
 
         <title>HighFlyersUkCouriers</title>
-      <script type="module" crossorigin src="./assets/ShipmentsLogisticsManager-C7v5QUBw.js"></script>
+      <script type="module" crossorigin src="./assets/ShipmentsLogisticsManager-jthi9upg.js"></script>
       <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
       <link rel="modulepreload" crossorigin href="./assets/index-35c79a8a-Bai5Djro.js">
-      <link rel="modulepreload" crossorigin href="./assets/Firebase-XNevuQ-T.js">
-      <link rel="modulepreload" crossorigin href="./assets/Logout-CZGrtvM1.js">
+      <link rel="modulepreload" crossorigin href="./assets/Firebase-C8NtMwUM.js">
+      <link rel="modulepreload" crossorigin href="./assets/Logout-WRulQLMX.js">
       <link rel="modulepreload" crossorigin href="./assets/MobileNavigationBar-DV7LXJHe.js">
       <link rel="modulepreload" crossorigin href="./assets/Notification-CxUWC9Hr.js">
       <link rel="modulepreload" crossorigin href="./assets/AddressAutocomplete-BlkJuFwu.js">
@@ -268,6 +268,22 @@
           
         </div>
 
+        <div id="report_bug_widget" class="reportBugWidget widget hidden">
+
+          <h2>Report Bug</h2>
+
+          <label for="report_bug_description">Describe the bug: </label>
+          <textarea id="report_bug_description" name="report_bug_description" rows="4" cols="50"></textarea>
+
+          <div>
+
+            <button id="cancel_report_bug_button" class="widgetButton">Cancel</button>
+            <button id="submit_report_bug_button" class="widgetButton">Submit Bug Report</button>
+
+          </div>
+
+        </div>
+
         <nav class="logisticsVerticalNavbar">
           <a class="verticalNavbarLink" href="/live-logistics-manager">
               <span id="liveLogisticsManagerButton" class="material-symbols-outlined navbarIcon">
@@ -287,6 +303,11 @@
             settings
             </span>
           </a>
+          <div class="verticalNavbarLink" style="color: red">
+            <span id="report_bug_button" class="material-symbols-outlined navbarIcon">
+            report
+            </span>
+          </div>
         </nav>
 
         <Section class="mainContent">

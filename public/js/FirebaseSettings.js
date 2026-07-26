@@ -11,7 +11,7 @@ export const firebaseConfig = {
 export const databaseName = "(default)";
 // export const databaseName = "development";
 
-// export const sessionType = "Bug" //Bug, Prod
 export const sessionType = "Prod" //Bug, Prod
+// export const sessionType = "Prod" //Bug, Prod
 
 
