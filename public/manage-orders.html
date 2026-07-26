@@ -48,14 +48,38 @@
             <div></div>
             <div></div>
           </div>
-          <a class="navLinks logoutButton">Logout</a>
-          <a class="navLinks" href="/manage-orders">Bookings</a>
-          <a class="navLinks adminLink hidden" href="/content-manager">Content Manager</a>
-          <a class="navLinks adminLink hidden" href="/manage-accounts">Accounts</a>
-          <a class="navLinks adminLink hidden" href="/system-settings">System Settings</a>
-          <a class="navLinks adminLink hidden" href="/live-logistics-manager">Logistics</a>
-          <a class="navLinks " href="/label-runs">Label Runs</a>
-          <a class="navLinks adminLink hidden" href="/finance">Finance</a>
+          <div class="navitem">
+            <a class="navLinks logoutButton">Logout</a>
+            <div class="underline"></div>
+          </div>
+          <div class="navitem">
+            <a class="navLinks" href="/manage-orders">Bookings</a>
+            <div class="underlineBookings"></div>
+          </div>
+          <div class="navitem">
+            <a class="navLinks adminLink hidden" href="/content-manager">Content Manager</a>
+            <div class="underline"></div>
+          </div>
+          <div class="navitem">
+            <a class="navLinks adminLink hidden" href="/manage-accounts">Accounts</a>
+            <div class="underline"></div>
+          </div>
+          <div class="navitem">
+            <a class="navLinks adminLink hidden" href="/system-settings">System Settings</a>
+            <div class="underline"></div>
+          </div>
+          <div class="navitem">
+            <a class="navLinks adminLink hidden" href="/live-logistics-manager">Logistics</a>
+            <div class="underline"></div>
+          </div>
+          <div class="navitem">
+            <a class="navLinks " href="/label-runs">Label Runs</a>
+            <div class="underline"></div>
+          </div>
+          <div class="navitem">
+            <a class="navLinks adminLink hidden" href="/finance">Finance</a>
+            <div class="underline"></div>
+          </div>
 
         </nav>
       </header>
@@ -108,9 +132,13 @@
                   type="button">Search</button>
               </div>
               <div>
-                <a class="button" href="/add-order">
-                  Add
+                <a class="button button-primary" href="/add-order">
+                  + Add order
                 </a>
+              </div>
+              <div>
+                <button id="clearSearchButton" class="searchoption button hidden"
+                  type="button">Clear</button>
               </div>
             </div>
 
@@ -119,7 +147,12 @@
                 <button id="selectall" class="massactionbutton"
                   type="button">Select all</button>
               </form>
-        
+
+              <form>
+                <button id="deselectall" class="massactionbutton"
+                  type="button">Deselect all</button>
+              </form>
+
               <form id="deleteselectedform" action="/delete-multiple-orders"
                 method="get">
                 <button id="deleteselected" class="massactionbutton hidden"

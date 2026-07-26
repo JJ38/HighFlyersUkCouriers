@@ -8,10 +8,12 @@ import { fetchCustomerAccounts } from "/js/FormModel.js";
 const massActionButtons = document.getElementById('massActionButtons');
 
 const selectAllButton = document.getElementById('selectall');
+const deselectAllButton = document.getElementById('deselectall');
 const deletedSelectedButton = document.getElementById('deleteselected');
 const printSelectedButton = document.getElementById('printselected');
 
 const searchButton = document.getElementById('searchButton');
+const clearSearchButton = document.getElementById('clearSearchButton');
 const searchValue = document.getElementById('searchValue');
 const searchOption = document.getElementById('searchOption');
 
@@ -128,8 +130,36 @@ searchButton.addEventListener('click', async () => {
 
   console.log("4");
 
+  if(clearSearchButton != null){
+
+    if(searchOptionInput == "" || searchOptionInput == undefined){
+      clearSearchButton.classList.add("hidden");
+    }else{
+      clearSearchButton.classList.remove("hidden");
+    }
+
+  }
 
 });
+
+if(clearSearchButton != null){
+
+  clearSearchButton.addEventListener('click', async () => {
+
+    searchOption.value = "";
+    searchValue.value = "";
+    clearSearchButton.classList.add("hidden");
+
+    const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = "";
+
+    initialQuery = true;
+
+    await loadOrders();
+
+  });
+
+}
 
 
 async function loadOrders(){
@@ -232,85 +262,117 @@ function getDeliveryWeekColour(week){
 
   switch (weekNumber % 8) {
     case 0:
-      weekColour = "red";
+      weekColour = { background: "red", text: "#ffffff" };
       break;
 
     case 1:
-      weekColour = "green";
+      weekColour = { background: "green", text: "#ffffff" };
       break;
 
     case 2:
-      weekColour = "yellow";
+      weekColour = { background: "yellow", text: "#3a3300" };
       break;
 
     case 3:
-      weekColour = "blue";
+      weekColour = { background: "blue", text: "#ffffff" };
       break;
 
     case 4:
-      weekColour = "#B5651D";
+      weekColour = { background: "#B5651D", text: "#ffffff" };
       break;
 
     case 5:
-      weekColour = "#CBC3E3";
+      weekColour = { background: "#CBC3E3", text: "#3a2e52" };
       break;
 
     case 6:
-      weekColour = "pink";
+      weekColour = { background: "pink", text: "#5c1f34" };
       break;
 
     case 7:
-      weekColour = "orange";
+      weekColour = { background: "orange", text: "#4a2600" };
       break;
 
     default:
-      weekColour = "white";
+      weekColour = { background: "white", text: "#171717" };
   }
 
   return weekColour;
 
 }
 
+//payment field can also hold the legacy value "Collection", which is treated the same as "Pickup"
+function getPaymentPillClass(payment){
+
+  let pillClass;
+
+  switch (payment) {
+    case "Account":
+      pillClass = "pill-account";
+      break;
+
+    case "Delivery":
+      pillClass = "pill-delivery";
+      break;
+
+    case "Pickup":
+    case "Collection":
+      pillClass = "pill-pickup";
+      break;
+
+    default:
+      pillClass = "pill-default";
+  }
+
+  return pillClass;
+
+}
+
+function getPrintedPillClass(printed){
+
+  return printed == "Printed" ? "pill-printed" : "pill-notprinted";
+
+}
+
 function getAnimalTypeColour(animalType){
 
-  
   let animalTypeColour;
 
   switch (animalType) {
     case "Pigeons - Young Birds":
-      animalTypeColour = "red";
+      animalTypeColour = { background: "red", text: "#ffffff" };
       break;
 
     case "Pigeons - Old Birds":
-      animalTypeColour = "green";
+      animalTypeColour = { background: "green", text: "#ffffff" };
       break;
 
     case "Aviary & Cage Birds":
-      animalTypeColour = "yellow";
+      animalTypeColour = { background: "yellow", text: "#3a3300" };
       break;
 
     case "Birds Of Prey":
-      animalTypeColour = "blue";
+      animalTypeColour = { background: "blue", text: "#ffffff" };
       break;
 
     case "Reptiles":
-      animalTypeColour = "#B5651D";
+      animalTypeColour = { background: "#B5651D", text: "#ffffff" };
       break;
 
     case "Small Mammals":
-      animalTypeColour = "#CBC3E3";
+      animalTypeColour = { background: "#CBC3E3", text: "#3a2e52" };
       break;
 
     case "Small Rodents":
-      animalTypeColour = "pink";
+      animalTypeColour = { background: "pink", text: "#5c1f34" };
       break;
 
     case "Poultry & Gamebirds":
-      animalTypeColour = "orange";
+      animalTypeColour = { background: "orange", text: "#4a2600" };
       break;
 
     default:
-      animalTypeColour = "white";
+      animalTypeColour = { background: "white", text: "#171717" };
   }
 
   return animalTypeColour;
@@ -340,15 +402,36 @@ export function addOrdersToTable(orderArray, prepend){
 
           if(field == "price"){
 
-            tableData.innerHTML = sortedOrderData[field] == undefined || sortedOrderData[field] == "" || sortedOrderData[field] == null || sortedOrderData[field] == "N/A" ? "N/A" : "£" + sortedOrderData[field]; 
-          
+            tableData.innerHTML = sortedOrderData[field] == undefined || sortedOrderData[field] == "" || sortedOrderData[field] == null || sortedOrderData[field] == "N/A" ? "N/A" : "£" + sortedOrderData[field];
+
           }else if(field == "boxes"){
 
             tableData.innerHTML = sortedOrderData[field] == undefined || sortedOrderData[field] == "" || sortedOrderData[field] == null || sortedOrderData[field] == "N/A" ? "N/A" : sortedOrderData[field];
-          
+
           }else if(field == "account"){
 
             tableData.innerHTML = getAccountName(sortedOrderData[field]);
+
+          }else if(field == "printed"){
+
+            const printedPill = document.createElement('span');
+            printedPill.classList.add('pill', 'pill-status', getPrintedPillClass(sortedOrderData[field]));
+            printedPill.textContent = sortedOrderData[field];
+            tableData.appendChild(printedPill);
+
+          }else if(field == "payment"){
+
+            const paymentPill = document.createElement('span');
+            paymentPill.classList.add('pill', 'pill-payment', getPaymentPillClass(sortedOrderData[field]));
+            paymentPill.textContent = sortedOrderData[field];
+            tableData.appendChild(paymentPill);
+
+          }else if(field == "deliveryWeek"){
+
+            const weekColour = getDeliveryWeekColour(sortedOrderData[field]);
+            tableData.style.background = weekColour.background;
+            tableData.style.color = weekColour.text;
+            tableData.textContent = sortedOrderData[field];
 
           }else{
 
@@ -358,14 +441,12 @@ export function addOrdersToTable(orderArray, prepend){
 
           tableData.classList.add(field);
 
-          if(field == "deliveryWeek"){
-            tableData.style.background = getDeliveryWeekColour(sortedOrderData['deliveryWeek'])
+          if(field == "animalType"){
+            const animalTypeColour = getAnimalTypeColour(sortedOrderData['animalType']);
+            tableData.style.background = animalTypeColour.background;
+            tableData.style.color = animalTypeColour.text;
           }
 
-          if(field == "animalType"){
-            tableData.style.background = getAnimalTypeColour(sortedOrderData['animalType'])
-          }
-          
           tableRow.append(tableData);
       
       }
@@ -511,6 +592,13 @@ function addListeners(){
     });
   }
 
+  if(deselectAllButton != null){
+
+    deselectAllButton.addEventListener('click', e => {
+      deselectAll();
+    });
+  }
+
   if(deletedSelectedButton != null){
 
     deletedSelectedButton.addEventListener('click', e => {
@@ -544,7 +632,19 @@ function selectAll(){
     allCheckBoxes[i].parentElement.parentElement.classList.add("highlightorder");
 
   }
-  
+
+}
+
+function deselectAll(){
+
+  const allCheckBoxes = document.querySelectorAll('input[type=checkbox]');
+
+  for(let i = 0; i < allCheckBoxes.length; i++){
+    allCheckBoxes[i].checked = false;
+    allCheckBoxes[i].parentElement.parentElement.classList.remove("highlightorder");
+
+  }
+
 }
 
 function deleteSelected(){

@@ -4,6 +4,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@1,300&family=Roboto:wght@100;300&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap');
 
+:root{
+  --moBg: #E1E7F1;
+  --moBorder: #D4DCEA;
+  --moShadow: 0 2px 4px rgba(23,32,51,0.06), 0 12px 28px -12px rgba(23,32,51,0.22);
+  --moNavShadow: 0 4px 16px -4px rgba(23,32,51,0.10);
+  --moAccent: #2881FF;
+  --moAccentStrong: #1D6AE0;
+  --moAccentTint: rgba(40,129,255,0.08);
+  --moAccentTintStrong: rgba(40,129,255,0.16);
+  --moGoodBg: #E4F2EA;
+  --moGoodText: #1C8754;
+  --moWarnBg: #FBF0DC;
+  --moWarnText: #B4740A;
+  --moDangerText: #C23B3B;
+  --moDangerBg: #FBEAEA;
+  --moAccountBg: #E5EEFC;
+  --moAccountText: #2867C9;
+  --moDeliveryBg: #EFE6FA;
+  --moDeliveryText: #7248B5;
+  --moPickupBg: #DBF3F1;
+  --moPickupText: #0E7C72;
+  --moDefaultBg: #EEF0F3;
+  --moDefaultText: #4B5563;
+  --moHeaderBg: #EEF1F6;
+  --moZebra: #F6F8FB;
+}
+
 html,
 body {
   height: 100%;
@@ -13,6 +40,7 @@ body {
   font-weight: 400;
   font-size: 1.1em;
   line-height: 2em;
+  letter-spacing: 0.02em;
 }
 
 #wrapper {
@@ -27,7 +55,7 @@ header {
 
 
 nav > a{
- 
+
   font-family: 'inter', sans-serif;
   font-style: normal;
   font-weight: 400;
@@ -45,32 +73,136 @@ a:hover{
   color: grey;
 }
 
-#maincontent {
-  flex: 0 1 auto;
+/* navbar refresh — overrides Navbar.css, which loads first */
 
-  background-color: #D9D9D9;
+nav{
+  border-bottom: none;
+  box-shadow: var(--moNavShadow);
+  position: relative;
+  z-index: 3;
+}
+
+a.navLinks{
+  margin: 0 1.3em;
+  transition: color 0.15s ease;
+}
+
+a.navLinks:hover{
+  color: var(--moAccent);
+}
+
+.navitem{
+  padding-top: calc(0.4em + 3px);
+}
+
+div.underlineBookings{
+  background-color: var(--moAccent);
+  height: 3px;
+  margin-top: 0.4em;
+  margin-left: 0.8em;
+  margin-right: 0.8em;
+  border-radius: 20em;
+}
+
+a.navLinks.logoutButton{
+  cursor: pointer;
+}
+
+a.navLinks.logoutButton:hover{
+  color: var(--moDangerText);
+}
+
+#maincontent {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--moBg);
+  background-image: linear-gradient(180deg, #EAF0FB 0%, var(--moBg) 320px);
 }
 
 div.orderviewcontainer{
-  height: 100vh;
+  flex: 1 1 auto;
+  min-height: 0;
   white-space: nowrap;
   font-size: 1.1em;
+  display: flex;
+  flex-direction: column;
+}
+
+#loaderWrapper{
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#loaderOrderDataWrapper{
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 div.searchbar{
-  padding: 15px 20px;
+  padding: 18px 22px;
   display: flex;
   flex-wrap: wrap;
-  max-width: 650px;
+  max-width: 100%;
   width: fit-content;
   line-height: normal;
   align-items: center;
+  gap: 0.9em;
+  border: 1px solid var(--moBorder);
 
 }
 
 .searchoption{
-  margin-right: 1em;
+  margin-right: 0;
   padding: 0px;
+}
+
+div.searchbar > div:first-child{
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--moDefaultText);
+}
+
+div.searchbar select.searchoption,
+div.searchbar input.searchoption{
+  box-sizing: border-box;
+  height: 32px;
+  border: 1px solid var(--moBorder);
+  border-radius: 6px;
+  padding: 4px 8px;
+  background-color: white;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  scrollbar-width: thin;
+  scrollbar-color: #AEB8C7 transparent;
+}
+
+div.searchbar select.searchoption:hover,
+div.searchbar input.searchoption:hover{
+  border-color: var(--moAccent);
+}
+
+.button-primary{
+  background-color: var(--moAccent) !important;
+  border: 1px solid var(--moAccent) !important;
+  color: white !important;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(40,129,255,0.35) !important;
+}
+
+@media (hover: hover) {
+  .button-primary:hover{
+    background-color: var(--moAccentStrong) !important;
+    border-color: var(--moAccentStrong) !important;
+    box-shadow: 0 1px 3px rgba(40,129,255,0.4) !important;
+  }
 }
 
 #searchform{
@@ -80,15 +212,41 @@ div.searchbar{
 }
 
 .button{
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: middle;
+  font-family: inherit;
+  line-height: normal;
   text-decoration: none;
-  background-color: #f1f1f1;
+  background-color: white;
   font-size: 15px !important;
-  border: 1px solid grey;
-  border-radius: 2px;
-  padding: 0px 5px !important;
-  font-weight: normal;
-  color: rgb(34, 34, 34);
+  border: 1px solid var(--moBorder);
+  border-radius: 6px;
+  padding: 6px 16px !important;
+  font-weight: 500;
+  color: var(--moDefaultText);
+  box-shadow: 0 1px 2px rgba(23,32,51,0.05);
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
+}
 
+@media (hover: hover) {
+  .button:hover{
+    background-color: var(--moZebra);
+    border-color: var(--moAccent);
+  }
+}
+
+.button:active{
+  transform: scale(0.97);
+}
+
+.button:focus-visible,
+.massactionbutton:focus-visible,
+td.orderbuttons button:focus-visible,
+input:focus-visible,
+select:focus-visible{
+  outline: 2px solid var(--moAccent);
+  outline-offset: 2px;
 }
 
 .hidden{
@@ -118,11 +276,11 @@ input[type="checkbox"]{
   }
 
   .headerrow:hover{
-    background-color: white !important;
+    background-color: var(--moHeaderBg) !important;
   }
-  
-  tr:hover{
-    background-color: rgb(196, 233, 245);
+
+  tbody tr:hover{
+    background-color: var(--moAccentTint) !important;
   }
 }
 
@@ -138,7 +296,8 @@ input, select{
   margin-left: 3vw;
   margin-right: 3vw;
   background-color: white;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: var(--moShadow);
   width: auto;
   height: auto;
 
@@ -149,7 +308,7 @@ input, select{
 div.orderdata{
   direction: rtl;
   padding: 0 1em;
-  height: 60vh;
+  height: 100%;
 
 }
 
@@ -163,8 +322,11 @@ table{
 
 th{
 
-  font-weight: 600;
-  font-size: 1.3rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--moDefaultText);
   padding-top: 1em;
   padding-left: 1em;
   padding-bottom: 1em;
@@ -179,12 +341,74 @@ td{
 }
 
 tr{
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--moBorder);
+  transition: background-color 0.15s ease;
 }
 
+tbody tr:nth-child(even){
+  background-color: var(--moZebra);
+}
 
 .highlightorder{
-  background-color: rgb(213, 243, 254);
+  background-color: var(--moAccentTintStrong) !important;
+  box-shadow: inset 3px 0 0 var(--moAccent);
+}
+
+/* status / payment / delivery week pills */
+
+.pill{
+  display: inline-block;
+  padding: 0.25em 0.85em;
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.pill-status{
+  width: 6.5em;
+  text-align: center;
+}
+
+.pill-payment{
+  width: 6em;
+  text-align: center;
+}
+
+.pill-printed{
+  background-color: var(--moGoodBg);
+  color: var(--moGoodText);
+}
+
+.pill-notprinted{
+  background-color: var(--moWarnBg);
+  color: var(--moWarnText);
+}
+
+.pill-account{
+  background-color: var(--moAccountBg);
+  color: var(--moAccountText);
+}
+
+.pill-delivery{
+  background-color: var(--moDeliveryBg);
+  color: var(--moDeliveryText);
+}
+
+.pill-pickup{
+  background-color: var(--moPickupBg);
+  color: var(--moPickupText);
+}
+
+.pill-default{
+  background-color: var(--moDefaultBg);
+  color: var(--moDefaultText);
+}
+
+td.deliveryWeek,
+td.animalType{
+  font-weight: 500;
 }
 
 tr:last-of-type{
@@ -196,8 +420,9 @@ tr:last-of-type{
 .headerrow{
   position: sticky;
   top: 0;
-  background-color: white;
-  border-bottom: none;
+  background-color: var(--moHeaderBg);
+  border-bottom: 1px solid var(--moBorder);
+  box-shadow: 0 1px 0 var(--moBorder);
   z-index: 2;
 }
 
@@ -205,7 +430,7 @@ tr:last-of-type{
   position: sticky;
   top:0px;
   right:0px;
-  background-color: white;
+  background-color: var(--moHeaderBg);
 }
 
 td.orderbuttons{
@@ -213,12 +438,21 @@ td.orderbuttons{
   position: sticky;
   right: 0px;
   background-color: white;
- 
+
+}
+
+tbody tr:nth-child(even) td.orderbuttons{
+  background-color: var(--moZebra);
 }
 
 div.orderdatawrapper{
   position: relative;
   overflow: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #AEB8C7 transparent;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: calc(100% - 4.5em);
 }
 
 ::-webkit-scrollbar-track
@@ -231,14 +465,19 @@ div.orderdatawrapper{
 {
 	width: 10px;
   height: 10px;
-	
+
 }
 
 ::-webkit-scrollbar-thumb
 {
   border-radius: 5px;
-	background-color: black;
+	background-color: #AEB8C7;
 	border: none;
+}
+
+::-webkit-scrollbar-thumb:hover
+{
+	background-color: var(--moAccent);
 }
 
 .massactionbuttons{
@@ -255,16 +494,71 @@ div.orderdatawrapper{
   font-family: 'Inter';
   font-style: normal;
   font-size: 20px;
-  color: black;
-  padding: 5px 15px;
+  font-weight: 500;
+  color: var(--moDefaultText);
+  padding: 6px 18px;
   background: white;
+  border: 1px solid var(--moBorder);
   border-radius: 6px;
-  border: none;
+  box-shadow: var(--moShadow);
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
 }
 
 .massactionbutton:hover{
-  background: #F5F4F4;
+  background: var(--moZebra);
   cursor: pointer;
+}
+
+.massactionbutton:active{
+  transform: scale(0.97);
+}
+
+#printselected{
+  background: var(--moAccent);
+  border-color: var(--moAccent);
+  color: white;
+}
+
+@media (hover: hover) {
+  #printselected:hover{
+    background: var(--moAccentStrong);
+    border-color: var(--moAccentStrong);
+  }
+}
+
+#deleteselected{
+  color: var(--moDangerText);
+  border-color: #EFD3D3;
+}
+
+@media (hover: hover) {
+  #deleteselected:hover{
+    background: var(--moDangerBg);
+    border-color: var(--moDangerText);
+  }
+}
+
+td.orderbuttons button{
+  font-family: 'Inter';
+  font-size: 14px;
+  color: rgb(34, 34, 34);
+  background: white;
+  border: 1px solid var(--moBorder);
+  border-radius: 6px;
+  padding: 4px 10px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+}
+
+@media (hover: hover) {
+  td.orderbuttons button:hover{
+    background: #F5F4F4;
+    border-color: var(--moAccent);
+    cursor: pointer;
+  }
+}
+
+td.orderbuttons button:active{
+  transform: scale(0.96);
 }
 
 .centre{
