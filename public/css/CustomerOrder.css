@@ -37,6 +37,16 @@ nav{
     box-shadow: 0px 0px 10px #00000022;
 }
 
+#question_mark{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#question_mark_wrapper{
+    position: relative;
+}
+
 #maincontent{
     margin:50px 6vw;
 }
