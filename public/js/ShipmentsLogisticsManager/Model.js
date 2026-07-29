@@ -2073,7 +2073,7 @@ export async function calculateRoute(run, JWT){
   const lockedStops = getLockedStops(stops);
 
   const stopJSONs = getStopRequestJSON(runTimingsData, groupedStops, lockedStops, run.isTimeLocked, globalStartTime);
-  console.log(stopJSONs);
+
   const precedenceRules = getPrecedenceRules(lockedStops, stopJSONs.length);
 
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, globalStartTime, globalEndTime);
@@ -2505,36 +2505,19 @@ function getLockedStops(stops){
 
 function getTimeWindows(stopTime, globalStartTime, timeWindow){
 
-  console.log("GET TIME WINDOWS");
-  console.log(timeWindow);
-
   const [hours, minutes] = stopTime.split(":").map(Number);
 
+  let stopDateTime = globalStartTime.setZone("Europe/London").set({ hour: hours, minute: minutes, second: 0 });
 
-  let startTimeHour = hours - timeWindow;
-
-
-  if(startTimeHour < 0){
-    startTimeHour = 24 + startTimeHour;
+  if(stopDateTime < globalStartTime){
+    stopDateTime = stopDateTime.plus({ days: 1 });
   }
 
-
-  let endTimeHour = hours + timeWindow;
-
-  if(endTimeHour > 23){
-    endTimeHour = endTimeHour % 24;
-  }
-
-
-  let startDateTime = globalStartTime.setZone("Europe/London").set({ hour: startTimeHour, minute: minutes, second: 0 });
-  let endDateTime = globalStartTime.setZone("Europe/London").set({ hour: endTimeHour, minute: minutes, second: 0 });
+  let startDateTime = stopDateTime.minus({ hours: timeWindow });
+  let endDateTime = stopDateTime.plus({ hours: timeWindow });
 
   if(startDateTime < globalStartTime){
-    startDateTime = startDateTime.plus({ days: 1 });
-  }
-
-  if(endDateTime < startDateTime){
-    endDateTime = endDateTime.plus({ days: 1 });
+    startDateTime = globalStartTime;
   }
 
   startDateTime = startDateTime.toUTC();
@@ -2544,8 +2527,6 @@ function getTimeWindows(stopTime, globalStartTime, timeWindow){
     "startTime": startDateTime.toISO(),
     "endTime": endDateTime.toISO()
   }
-
-  console.log(timeWindows);
 
   return timeWindows;
 
