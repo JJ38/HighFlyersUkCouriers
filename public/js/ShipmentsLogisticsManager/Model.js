@@ -2443,8 +2443,6 @@ async function fetchOptimisedRoute(requestBody, JWT){
 }
 
 
-
-
 function getLockedStops(stops){
 
   let start = {isLocked: false};
@@ -2511,6 +2509,9 @@ function getTimeWindows(stopTime, globalStartTime, timeWindow){
   console.log(timeWindow);
 
   const [hours, minutes] = stopTime.split(":").map(Number);
+
+
+  let startTimeHour = hours - timeWindow;
 
 
   if(startTimeHour < 0){
