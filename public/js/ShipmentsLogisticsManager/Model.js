@@ -2059,11 +2059,10 @@ export async function calculateRoute(run, JWT){
     .set({ millisecond: 0 });
 
   const globalStartTime = currentDate
-    .toUTC().set({ hour: startTime.hour, minute: startTime.minute })
-
-  const globalEndTime = currentDate
-    .plus({ hours: 24 })
+    .set({ hour: startTime.hour, minute: startTime.minute, second: 0 })
     .toUTC();
+
+  const globalEndTime = globalStartTime.plus({ hours: 24 });
 
 
   const runTimingsData = runTimingsDocument.data();
@@ -2074,7 +2073,7 @@ export async function calculateRoute(run, JWT){
   const lockedStops = getLockedStops(stops);
 
   const stopJSONs = getStopRequestJSON(runTimingsData, groupedStops, lockedStops, run.isTimeLocked, globalStartTime);
-
+  console.log(stopJSONs);
   const precedenceRules = getPrecedenceRules(lockedStops, stopJSONs.length);
 
   const requestBody = getRouteOptimisationRequestBody(originCoordinates, destinationCoordinates, stopJSONs, precedenceRules, globalStartTime, globalEndTime);
@@ -2084,6 +2083,13 @@ export async function calculateRoute(run, JWT){
   const optimisedRouteHasAllExpectedStops = checkIfOptimisedRouteHasExpectedStops(groupedStops, optimisedRouteJSON);
 
   if(!optimisedRouteHasAllExpectedStops){
+
+    console.log({
+      stopIds: stops,
+      shipmentName: run.shipmentName,
+      runName: run.runName,
+      optimisedRouteJSON: optimisedRouteJSON
+    });
 
     logInfo("Optimised route didnt have expected stops", {
       stopIds: stops,
@@ -2389,6 +2395,8 @@ async function fetchOptimisedRoute(requestBody, JWT){
 
   const url = calculateRouteEndpoint;
 
+  console.log(requestBody);
+
   try {
 
     const body = {
@@ -2403,7 +2411,11 @@ async function fetchOptimisedRoute(requestBody, JWT){
     const response = await fetch(url, body);
     const jsonString = await response.json();
 
+
     const json = JSON.parse(jsonString);
+
+
+    console.log(json);
 
     if(json['error'] != null){
 
@@ -2429,6 +2441,8 @@ async function fetchOptimisedRoute(requestBody, JWT){
   }
 
 }
+
+
 
 
 function getLockedStops(stops){
@@ -2493,58 +2507,44 @@ function getLockedStops(stops){
 
 function getTimeWindows(stopTime, globalStartTime, timeWindow){
 
+  console.log("GET TIME WINDOWS");
+  console.log(timeWindow);
+
   const [hours, minutes] = stopTime.split(":").map(Number);
 
 
-  let startTimeHour = hours - timeWindow;
-
-  
   if(startTimeHour < 0){
-    startTimeHour = 24 - startTimeHour;
+    startTimeHour = 24 + startTimeHour;
   }
 
 
   let endTimeHour = hours + timeWindow;
-  
+
   if(endTimeHour > 23){
-    endTimeHour = endTimeHour & 24;
-  }
-
-  
-
-  let minuteString = minutes.toString();
-
-  if(minuteString.length == 1){
-    minuteString = "0" + minuteString;
+    endTimeHour = endTimeHour % 24;
   }
 
 
-  let startTime = startTimeHour.toString() + ":" + minuteString;
-  let endTime = endTimeHour.toString() + ":" + minuteString;
-
-
-  if(startTimeHour.toString().length == 1){
-    startTime = "0" + startTime;
-  }
-
-  if(endTimeHour.toString().length == 1){
-    endTime = "0" + endTime;
-  }
-
-
-  let startDateTime = ukTimeToUtcIso(startTime);
-  const endDateTime = ukTimeToUtcIso(endTime);
+  let startDateTime = globalStartTime.setZone("Europe/London").set({ hour: startTimeHour, minute: minutes, second: 0 });
+  let endDateTime = globalStartTime.setZone("Europe/London").set({ hour: endTimeHour, minute: minutes, second: 0 });
 
   if(startDateTime < globalStartTime){
-    console.log("Start time window is before global start time");
-    startDateTime = globalStartTime;
+    startDateTime = startDateTime.plus({ days: 1 });
   }
+
+  if(endDateTime < startDateTime){
+    endDateTime = endDateTime.plus({ days: 1 });
+  }
+
+  startDateTime = startDateTime.toUTC();
+  endDateTime = endDateTime.toUTC();
 
   const timeWindows = {
     "startTime": startDateTime.toISO(),
     "endTime": endDateTime.toISO()
   }
 
+  console.log(timeWindows);
 
   return timeWindows;
 
@@ -2599,8 +2599,8 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops, isTimeLocked,
 
     }
 
-    if(isTimeLocked && nonDuplicateStops[i].lockedStopTime != undefined){
-      
+    if(isTimeLocked && nonDuplicateStops[i].lockedStopTime != undefined && runTimings.timeWindowHour > 0){
+
       const timeWindows = getTimeWindows(nonDuplicateStops[i].lockedStopTime, globalStartTime, runTimings.timeWindowHour);
       stopObject['deliveries'][0]['timeWindows'] = [timeWindows];
 
@@ -2635,7 +2635,7 @@ function getStopRequestJSON(runTimings, groupedStops, lockedStops, isTimeLocked,
       }
 
       
-      if(isTimeLocked && duplicateStops[j].lockedStopTime != undefined){
+      if(isTimeLocked && duplicateStops[j].lockedStopTime != undefined && runTimings.timeWindowHour > 0){
 
         const timeWindows = getTimeWindows(duplicateStops[j].lockedStopTime, globalStartTime, runTimings.timeWindowHour);
         deliveryObject['timeWindows'] = [timeWindows];
