@@ -25,6 +25,7 @@ const numberOfBoxes = document.getElementById('boxes');
 
 const animalTypeWrapper = document.getElementById('animal_type_wrapper');
 const hintWrapper = document.getElementById('question_mark_wrapper');
+const reptileDisclaimer = document.getElementById('reptileDisclaimer');
 
 const orderPrice = document.getElementById('order_price');
 
@@ -79,6 +80,8 @@ async function init(){
 
     addEventListeners(animalDescriptionTable);
 
+    updateReptileDisclaimer();
+
 }
 
 function addEventListeners(animalDescriptionTable){
@@ -124,10 +127,11 @@ function addEventListeners(animalDescriptionTable){
     }
 
     if(animalTypeSelect != null){
-    
+
         animalTypeSelect.addEventListener('input', () => {
 
             updatePrice(calculateOrderPrice(collectionPostcode.value, deliveryPostcode.value, quantity.value, numberOfBoxes.value, animalTypeSelect.value, birdSpecies, priceDefinitions, birdSpeciesSet));
+            updateReptileDisclaimer();
 
         });
 
@@ -246,5 +250,19 @@ function updatePrice(price){
 
     orderPrice.innerText = " £" + price;
 
+
+}
+
+function updateReptileDisclaimer(){
+
+    if(reptileDisclaimer == null){
+        return;
+    }
+
+    if(animalTypeSelect.value == "Reptiles"){
+        reptileDisclaimer.classList.remove("hidden");
+    }else{
+        reptileDisclaimer.classList.add("hidden");
+    }
 
 }

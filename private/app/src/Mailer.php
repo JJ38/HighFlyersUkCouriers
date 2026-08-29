@@ -110,6 +110,15 @@ class Mailer{
     '</head>'.
     '<body>';
 
+
+    $message = $message . 
+    
+    "<b>Due to the owners illness we will be closed week commencing 1st September and re open 
+    week commencing 7th September. All bookings will be fufilled from Tuesday the 8th through Friday 11th September. 
+    We are sorry for any inconvenience caused.</b> 
+    <br>
+    <br>";
+
     $message = $message .
     "
     
@@ -137,8 +146,6 @@ class Mailer{
     Payment on Pickup or Delivery: {$this->mailer_data['payment_option']}" . "<br>". "
     Message: {$this->mailer_data['message']}" . "<br><br>". "
     Price: &#163;{$this->mailer_data['price']}" . "<br><br>";
-
-   
 
 
     $message = $message .
@@ -554,7 +561,19 @@ class Mailer{
       ''.
       '</style>'.
       '</head>'.
-      '<body>'.
+      '<body>';
+      
+
+      $message = $message . 
+    
+      "<br><br><b>Due to the owners illness we will be closed week commencing 1st September and re open 
+      week commencing 7th September. All bookings will be fufilled from Tuesday the 8th through Friday 11th September. 
+      We are sorry for any inconvenience caused.</b> 
+      <br>
+      <br>";
+
+
+
       ''.
       '<p>Thank you for booking with Highflyers. Your order has been received and being processed.</p>'.
       ''.

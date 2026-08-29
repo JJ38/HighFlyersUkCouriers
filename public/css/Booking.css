@@ -53,6 +53,11 @@ h1{
   padding-bottom: 20px;
 }
 
+.notice{
+  color: red;
+  text-align: center;
+}
+
 h2{
   margin:0;
   font-family: 'Raleway';

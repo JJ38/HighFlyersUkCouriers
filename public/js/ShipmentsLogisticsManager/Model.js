@@ -2348,7 +2348,7 @@ function getStopArrivalTime(optimisedStop, startTimeOffset, additionalDriveTime)
 
   const durationSecondsInt = parseInt(durationSecondsString.replaceAll("s", ""));
 
-  const startTimeString = DateTime.fromISO(startTimeDate, { zone: "utc" }).setZone("Europe/London").toFormat("HH:mm:ss");
+  const startTimeString = startTimeDate.substring(startTimeDate.indexOf("T") + 1, startTimeDate.length).replaceAll(["Z"], "");
   
   const startTimeComponentsStrings = startTimeString.split(":");
 
