@@ -5,6 +5,7 @@ import { createStopsWrapper, createStopAddress, createOption, createAddStopButto
 import { createStaffSelectOptions, createDriverSelectOptions, createMoveUpButton, createMoveDownButton, createLoader, createEditButton, createUnassignedStopCardClickableElement, createAddRunButton, createButtonWrapper, createDeleteStopButton, createShipmentOptions, createOpenLockIcon, createLockIcon, createDragDetectionZone, createStopLockButton, createStopMetaData, createAddressSuggestionCard, createStopLabel } from "/js/ShipmentsLogisticsManager/Components";
 import { submitBugReport, getErrorMessage, getCalculationError, getToggledTimeLockedStops, toggleTimeLockRun, unassignStaffMember, getCurrentAssignedStaffMemberID, getCurrentAssignedStaffMember, assignStaffMember, parseStaffDocuments, fetchStaffMembers, getCustomerAccounts, isShipmentNameAvailable, getCurrentAssignedDriver, getCurrentAssignedDriverName, assignDriver, unassignDriver, parseDriverDocuments, fetchDrivers, convertSecondsToHoursAndMinutes, moveStopToBottom, moveStopToTop, getPostcodesToPrint, splitRun, fetchCoordinatesForUpdatedRunSettings, updateRunSettings, calculateFuelCost, fetchFuelSettings, convertStopNumberToLetter, updateStopAddress, parseAddress, fetchStopCoordinates, fetchSuggestionPlace, fetchAutocompleteAddress, doesStopHaveCoordinates, calculateRoute, addRunToShipment, removeStopsFromShipment, selectRun, fetchRunsInShipment, toggleStopLock, updateStopNumberInRun, removeStopDataFromStop, generateShipment, parseRunInfo, updateRun, assignStopsToRun, sortAlphabetically, deleteShipmentDocument, fetchShipment, removeRunFromShipment, assignStopsToShipment } from "./Model";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
+import { logError } from "/js/Sentry.js";
 
 
 let GoogleAdvancedMarkerElement;
@@ -184,6 +185,10 @@ let currentlySelectedStop;
 
 let routePaths = [];
 
+
+window.gm_authFailure = function(){
+  logError("Google Maps auth failure (Shipments Logistics Manager) - check API key restrictions/quota in Google Cloud Console", {});
+};
 
 addEventListeners();
 init();
@@ -2050,26 +2055,33 @@ async function selectShipment(shipmentName){
 }
 
 async function initMap() {
-  
-  const { Map } = await google.maps.importLibrary("maps");
-  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-  const { encoding } = await google.maps.importLibrary("geometry");
+
+  try{
+
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+    const { encoding } = await google.maps.importLibrary("geometry");
 
 
-  GoogleGeometry = encoding;
-  GoogleAdvancedMarkerElement = AdvancedMarkerElement;
-  GooglePinElement = PinElement;
-  GoogleMap = Map;
+    GoogleGeometry = encoding;
+    GoogleAdvancedMarkerElement = AdvancedMarkerElement;
+    GooglePinElement = PinElement;
+    GoogleMap = Map;
 
-  const position = { lat: 53.165573, lng: -2.204147 };
-  
-  mainMap = new GoogleMap(document.getElementById("map"), {
-    zoom: 10,
-    center: position,
-    mapId: "298860eb89cd00b43e74dbd5",
-  });
+    const position = { lat: 53.165573, lng: -2.204147 };
 
-  initValidateAddressMap();
+    mainMap = new GoogleMap(document.getElementById("map"), {
+      zoom: 10,
+      center: position,
+      mapId: "298860eb89cd00b43e74dbd5",
+    });
+
+    initValidateAddressMap();
+
+  }catch(e){
+    console.log(e);
+    logError("Google Maps failed to load (Shipments Logistics Manager)", { error: e.message });
+  }
 
 }
 

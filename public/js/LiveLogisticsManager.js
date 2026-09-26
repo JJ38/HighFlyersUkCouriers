@@ -2,6 +2,7 @@ import { db, getDocuments, getDocument } from "/js/Firebase.js";
 import { query, collection, doc, onSnapshot, Timestamp, where} from "firebase/firestore";
 import { showNotification } from "./Notification";
 import { bulkReadTransaction } from "./Firebase.js";
+import { logError } from "/js/Sentry.js";
 
 const driverList = document.getElementById("runList");
 
@@ -23,6 +24,10 @@ let completedProgressedRunStructList = [];
 let offlineProgressedRunStructList = [];
 let progressedRunStructList = [];
 
+
+window.gm_authFailure = function(){
+  logError("Google Maps auth failure (Live Logistics Manager) - check API key restrictions/quota in Google Cloud Console", {});
+};
 
 initMap();
 fetchProgressedRunsInfo();
@@ -179,18 +184,25 @@ async function updateDriverMarker(driverData){
 
 async function initMap() {
 
-  const { Map } = await google.maps.importLibrary("maps");
-  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+  try{
 
-  GoogleMap = Map;
-  GoogleAdvancedMarkerElement = AdvancedMarkerElement;
-  GooglePinElement = PinElement;
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
-  map = new Map(document.getElementById("map"), {
-    center: { lat: 51, lng: -1 },
-    zoom: 8,
-    mapId: "298860eb89cd00b43e74dbd5",
-  });
+    GoogleMap = Map;
+    GoogleAdvancedMarkerElement = AdvancedMarkerElement;
+    GooglePinElement = PinElement;
+
+    map = new Map(document.getElementById("map"), {
+      center: { lat: 51, lng: -1 },
+      zoom: 8,
+      mapId: "298860eb89cd00b43e74dbd5",
+    });
+
+  }catch(e){
+    console.log(e);
+    logError("Google Maps failed to load (Live Logistics Manager)", { error: e.message });
+  }
 
 }
 

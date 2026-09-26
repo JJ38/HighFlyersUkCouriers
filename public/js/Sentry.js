@@ -20,6 +20,30 @@ export async function logInfo(message, data = {}, tags = {}) {
 
 }
 
+export async function logError(message, data = {}, tags = {}){
+
+    Sentry.logger.error(message, {
+        ...data,
+        ...tags,
+    });
+
+}
+
+const originalConsoleError = console.error;
+
+//Google Maps only reports the specific failure reason (RefererNotAllowedMapError, InvalidKeyMapError, etc.) via console.error, not via any callback
+console.error = function(...args){
+
+    originalConsoleError.apply(console, args);
+
+    const message = args.map(arg => (typeof arg === "string" ? arg : JSON.stringify(arg))).join(" ");
+
+    if(message.includes("Google Maps JavaScript API error")){
+        logError("Google Maps JavaScript API error", { details: message, page: window.location.pathname });
+    }
+
+};
+
 export async function logAssignedStops(runRemovingStopsName, runAddingStopsName, stopsToAdd, runAddingStopsNew, runAddingStopsInitial, runRemovingStopsNew, runRemovingStopsInitial){
 
     if(runRemovingStopsName == null){
