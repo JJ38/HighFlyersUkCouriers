@@ -387,19 +387,15 @@ class ManageOrderModel
 
   public function calculateDeliveryWeek($current_date, $delivery_date) : int{
 
+    $delivery_date->modify('next monday');
+
     if($current_date->format('D') == "Sun"){
 
         if($current_date->format('H') >= 16){
             $delivery_date->modify('next monday');
         }
 
-    }else{
-
-        $delivery_date->modify('next monday');
     }
-
-    
-    $delivery_date->modify('next monday');
 
     return intval($delivery_date->format('W'));
   }
