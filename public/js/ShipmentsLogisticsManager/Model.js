@@ -485,9 +485,9 @@ function validateCoordinatesForShipmentGeneration(json, stopPostcode, addressStr
     return false;
   }
 
-  if(json['results'].length > 1){
-    return false
-  }
+  // if(json['results'].length > 1){
+  //   return false
+  // }
 
   if(json['results'].length == 0){
     // console.log("!validCoordinates " + addressString + " status: " + json['status'] + " - No result");
@@ -542,7 +542,7 @@ async function storeShipment(runDocuments, shipmentName, deliveryWeek){
   const batch = writeBatch(db);
 
   let runDocRefs = [];
-0
+
   for(let i = 0; i < runDocuments.length; i++){
 
     const runRef = doc(collection(db, 'Runs'));
@@ -796,7 +796,7 @@ function getStopPostcode(orderData, stopType){
 
   if(stopType == "collection"){
     return orderData['collectionPostcode'];
-  }else if(stopType = "delivery"){
+  }else if(stopType == "delivery"){
     return orderData['deliveryPostcode'];
   }
 
