@@ -6,6 +6,7 @@ import { showNotification } from "/js/Notification.js";
 const progressedRunsTableBody = document.getElementById('progressed_runs_table_body');
 const progressedRunsTableWrapper = document.getElementById('progressed_runs_table_wrapper');
 const searchFilterInput = document.getElementById('runs_search_input');
+const searchFilterKnownValuesSelect = document.getElementById('runs_search_known_values_select');
 const searchFilterSelect = document.getElementById('search_filter_select');
 const searchRunsButton = document.getElementById('search_runs_button');
 const tableHeader = document.getElementById('table_header_container');
@@ -16,16 +17,24 @@ const progressedRunsDetailsTableBody = document.getElementById('progressed_run_d
 
 const isNumber = new RegExp('^[0-9]*$');
 
+const OTHER_VALUE = "__OTHER__";
+
+const knownValuesCollectionByField = {
+    shipmentName: { collectionName: 'Shipments', docField: 'shipmentName' },
+    driverName: { collectionName: 'Drivers', docField: 'driverName' },
+};
+
 let searchFilterInputValue;
 let searchFilterSelectValue;
 let loadingSymbol;
+let knownValuesCache = {};
 
 init();
 
 
 function init(){
 
-    getProgressedRuns();
+    showSelectFilterPrompt();
     addEventListeners();
 
 }
@@ -43,10 +52,22 @@ function addEventListeners(){
     }
 
     if(searchFilterSelect != null){
-        
+
         searchFilterSelect.addEventListener('input', () => {
 
             searchFilterSelectValue = searchFilterSelect.value;
+
+            switchToKnownValuesFieldUI(searchFilterSelectValue);
+
+        });
+
+    }
+
+    if(searchFilterKnownValuesSelect != null){
+
+        searchFilterKnownValuesSelect.addEventListener('input', () => {
+
+            handleKnownValueSelected();
 
         });
 
@@ -56,11 +77,7 @@ function addEventListeners(){
 
         searchRunsButton.addEventListener('click', () => {
 
-            const searchedRunsSuccessfully = searchRuns();
-
-            if(!searchedRunsSuccessfully){
-                showNotification("Error!", "")
-            }
+            triggerSearch();
 
         });
 
@@ -83,6 +100,116 @@ function showUI(element){
 
 function hideUI(element){
     element.classList.add('hidden');
+}
+
+async function switchToKnownValuesFieldUI(field){
+
+    const knownValuesSource = knownValuesCollectionByField[field];
+
+    if(knownValuesSource == null){
+
+        hideUI(searchFilterKnownValuesSelect);
+        showUI(searchFilterInput);
+        showUI(searchRunsButton);
+
+        return;
+
+    }
+
+    showUI(searchFilterKnownValuesSelect);
+    hideUI(searchFilterInput);
+
+    searchFilterInputValue = "";
+    searchFilterInput.value = "";
+
+    const knownValues = await fetchKnownValues(field, knownValuesSource);
+
+    populateKnownValuesSelect(knownValues);
+
+    handleKnownValueSelected();
+
+}
+
+function handleKnownValueSelected(){
+
+    if(searchFilterKnownValuesSelect.value == OTHER_VALUE){
+
+        searchFilterInputValue = "";
+        searchFilterInput.value = "";
+        showUI(searchFilterInput);
+        showUI(searchRunsButton);
+        searchFilterInput.focus();
+
+        return;
+
+    }
+
+    hideUI(searchFilterInput);
+    hideUI(searchRunsButton);
+    searchFilterInputValue = searchFilterKnownValuesSelect.value;
+
+    triggerSearch();
+
+}
+
+function triggerSearch(){
+
+    const searchedRunsSuccessfully = searchRuns();
+
+    if(!searchedRunsSuccessfully){
+        showNotification("Error!", "")
+    }
+
+}
+
+async function fetchKnownValues(field, knownValuesSource){
+
+    if(knownValuesCache[field] != null){
+        return knownValuesCache[field];
+    }
+
+    const docs = await getDocuments(query(collection(db, knownValuesSource.collectionName)));
+
+    const values = [];
+
+    for(let i = 0; i < docs.docs.length; i++){
+
+        const value = docs.docs[i].data()[knownValuesSource.docField];
+
+        if(!isEmpty(value) && !values.includes(value)){
+            values.push(value);
+        }
+
+    }
+
+    values.sort();
+
+    knownValuesCache[field] = values;
+
+    return values;
+
+}
+
+function populateKnownValuesSelect(knownValues){
+
+    searchFilterKnownValuesSelect.innerHTML = "";
+
+    for(let i = 0; i < knownValues.length; i++){
+
+        const option = document.createElement('option');
+        option.value = knownValues[i];
+        option.innerText = knownValues[i];
+
+        searchFilterKnownValuesSelect.appendChild(option);
+
+    }
+
+    const otherOption = document.createElement('option');
+    otherOption.value = OTHER_VALUE;
+    otherOption.innerText = "Other (type manually)";
+
+    searchFilterKnownValuesSelect.appendChild(otherOption);
+
 }
 
 
@@ -117,6 +244,22 @@ function hideLoadingOrders(){
 
 }
 
+function showSelectFilterPrompt(){
+
+    progressedRunsTableBody.innerHTML = "";
+
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+
+    cell.colSpan = 12;
+    cell.innerText = "Select a Shipment Name or Driver Name above and search to view runs";
+    cell.classList = "emptyStateMessage";
+
+    row.appendChild(cell);
+    progressedRunsTableBody.appendChild(row);
+
+}
+
 async function searchRuns(){
 
     if(isEmpty(searchFilterInputValue)){
@@ -133,7 +276,16 @@ async function searchRuns(){
 
 
     //fetch documents
-    const progressedRunsDocs = await getDocuments(query(collection(db, 'ProgressedRuns'), where(searchFilterSelectValue, "==", searchFilterInputValue)));
+    //">=" + "<" range on the same field gives a startsWith prefix match in Firestore;
+    //the trailing character is U+F8FF (a high private-use codepoint) so the range covers
+    //every string starting with searchFilterInputValue. Still case-sensitive - no index
+    //exists to lowercase-match historical documents without a schema change.
+    const progressedRunsDocs = await getDocuments(query(
+        collection(db, 'ProgressedRuns'),
+        orderBy(searchFilterSelectValue),
+        where(searchFilterSelectValue, ">=", searchFilterInputValue),
+        where(searchFilterSelectValue, "<", searchFilterInputValue + '')
+    ));
     console.log(progressedRunsDocs);
 
     if(progressedRunsDocs == false){
